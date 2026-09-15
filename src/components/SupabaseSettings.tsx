@@ -99,6 +99,26 @@ export const SupabaseSettings: React.FC<SupabaseSettingsProps> = ({
                 ? 'Supabase Conectado'
                 : 'Modo Armazenamento Local Ativo'}
             </span>
+
+            {supabaseConfig.isConnected && (
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/supabase/sync', { method: 'POST' });
+                    if (res.ok) {
+                      setSaveSuccess(true);
+                      setTimeout(() => setSaveSuccess(false), 3000);
+                    }
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }}
+                className="flex items-center gap-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-2xs cursor-pointer"
+              >
+                <Layers className="w-3.5 h-3.5 text-slate-600" />
+                <span>Sincronizar Agora</span>
+              </button>
+            )}
           </div>
         </div>
 

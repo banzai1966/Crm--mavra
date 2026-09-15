@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
   Lead,
@@ -9,6 +11,8 @@ import {
   SupabaseConfig,
   WebhookEventLog,
 } from '../src/types';
+
+const STORAGE_FILE = path.join(process.cwd(), 'mavra_data.json');
 
 // In-memory / persistent fallback state
 class Database {
@@ -114,7 +118,7 @@ class Database {
       leadId: 'lead-1',
       phone: '5511987654321',
       sender: 'ai',
-      text: 'Olá, Dr. Roberto! Que prazer falar com você. O MAVRA conecta sua Evolution API v2 diretamente ao nosso CRM com atendimento Multi-IA (Gemini, GPT-4o ou Claude). Ele responde em tempo real com base no seu catálogo e move os leads automaticamente no funil de vendas! Qual é o tamanho da sua equipe?',
+      text: 'Olá, Dr. Roberto! Que prazer falar com você. Nossa Inteligência Artificial corporativa atende diretamente no WhatsApp da sua clínica com respostas ágeis, personalizadas e integração direta ao CRM em tempo real! Qual é o tamanho da sua equipe?',
       timestamp: new Date(Date.now() - 1000 * 60 * 34).toISOString(),
       status: 'read',
     },
@@ -158,49 +162,56 @@ class Database {
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
-    knowledgeFaq: `P: Como funciona a conexão com o WhatsApp?
-R: O MAVRA se conecta de forma nativa e sem intermediários com a Evolution API v2 instalada na sua VPS, garantindo latência zero e total controle.
+    knowledgeFaq: `P: Como funciona o atendimento inteligente da MAVRA?
+R: A MAVRA integra inteligência artificial avançada diretamente ao WhatsApp da sua empresa, atendendo clientes 24 horas por dia com respostas personalizadas e atualizando o CRM em tempo real.
 
 P: O que acontece se o atendente humano quiser assumir?
-R: Basta clicar no botão "Assumir Atendimento" na Central de Chat. A IA pausa instantaneamente para aquele lead e você conversa normalmente.
+R: Basta clicar no botão "Assumir Atendimento" na Central de Chat. A inteligência artificial pausa instantaneamente para aquele cliente e a equipe humana continua a conversa com total naturalidade.
 
-P: Posso usar mais de um provedor de IA?
-R: Sim! Você pode alternar instantaneamente entre Google Gemini (2.5 Flash / Pro), OpenAI (GPT-4o) e Anthropic Claude 3.5 Sonnet.
+P: Como a IA sabe sobre os produtos ou serviços da empresa?
+R: O sistema possui uma base de conhecimento exclusiva alimentada com catálogos, tabela de serviços e documentos oficiais do seu negócio.
 
 P: Como funciona a garantia e suporte?
-R: Oferecemos suporte dedicado liderado pelo arquiteto Marco Duarte, com onboarding expresso em até 15 minutos.`,
-    knowledgeCatalog: `CATÁLOGO DE SOLUÇÕES MAVRA:
-1. MAVRA Starter: R$ 890/mês. Ideal para até 2 números de WhatsApp, 5.000 mensagens com IA/mês, CRM Kanban visual integrado.
-2. MAVRA Professional: R$ 1.950/mês. Até 5 números de WhatsApp, 25.000 mensagens com IA/mês, base de conhecimento com upload de documentos, gatilhos automáticos de funil.
-3. MAVRA Enterprise: A partir de R$ 4.500/mês. Números ilimitados, alta concorrência de mensagens, instâncias dedicadas de Evolution API v2, multi-provedor de IA e suporte SLA 2h.`,
-    knowledgePricing: `TABELA DE PREÇOS E FORMAS DE PAGAMENTO:
-- Pagamento via PIX com 10% de desconto ou Cartão de Crédito em até 12x.
-- Setup e Onboarding guiado: R$ 1.200 (gratuito no plano anual).
-- Mensagens adicionais: R$ 0,02 por mensagem enviada.`,
-    knowledgeRules: `REGRAS DE NEGÓCIO E ANTI-ALUCINAÇÃO:
-1. NUNCA invente preços, prazos ou recursos que não constem expressamente neste catálogo.
-2. Se o cliente perguntar algo fora da sua base, diga educadamente: "Vou encaminhar essa sua dúvida técnica para nosso arquiteto especialista Marco Duarte para lhe passar o detalhamento preciso".
-3. Mantenha mensagens concisas e fluidas, com no máximo 2 a 3 parágrafos curtos, ideais para leitura no WhatsApp.
-4. Identifique o nome do cliente, e-mail e interesse para registrar no CRM.`,
+R: Oferecemos suporte dedicado e acompanhamento completo, com implementação ágil e personalizada para a sua empresa.`,
+    knowledgeCatalog: `SOLUÇÕES DISPONÍVEIS:
+1. MAVRA Starter: Ideal para empresas em crescimento, com atendimento automatizado inteligente no WhatsApp e CRM visual integrado.
+2. MAVRA Professional: Para equipes comerciais ativas, com múltiplos números de atendimento, qualificação avançada de clientes e movimentação automática de funil.
+3. MAVRA Enterprise: Solução corporativa de alta performance, com personalização completa de regras de negócio, suporte prioritário e capacidade ilimitada de atendimentos.`,
+    knowledgePricing: `CONDIÇÕES COMERCIAIS E FORMAS DE PAGAMENTO:
+- Pagamento facilitado via PIX ou Cartão de Crédito em até 12x.
+- Implantação e treinamento assistido para sua equipe.
+- Planos flexíveis conforme a necessidade da sua empresa.`,
+    knowledgeRules: `REGRAS DE CONDUTA E DIRETRIZES:
+1. Jamais cite nomes de ferramentas de tecnologia de bastidores (Evolution, Supabase, etc). Refira-se à solução como nossa Inteligência Artificial Comercial proprietária.
+2. Seja sempre ágil, cordial e transmita autoridade e acolhimento.
+3. Responda em no máximo 2 a 3 frases curtas e objetivas, com quebras de linha limpas.
+4. Conduza o lead para agendamento de uma demonstração ou consulta, perguntando qual dia ou horário é mais conveniente para ele.`,
     strictKnowledgeOnly: true,
     autoTriggerCRMStages: true,
+    isGlobalAiActive: true,
+    testModeEnabled: false,
+    testNumberWhitelist: '',
+    autoTranscribeAudio: true,
+    typingDelayMs: 1500,
+    catalogPdfUrl: '',
+    catalogPdfName: 'Apresentacao_Oficial_MAVRA.pdf',
   };
 
   public documents: KnowledgeDocument[] = [
     {
       id: 'doc-1',
-      name: 'Guia_Comercial_MAVRA_2026.txt',
+      name: 'Guia_Institucional_MAVRA.txt',
       type: 'txt',
-      size: 4520,
-      contentText: 'Documento de Especificação Comercial MAVRA: Automação completa de canais de atendimento corporativo com Evolution API v2 e Inteligência Artificial generativa com Function Calling para movimentação de funil de vendas.',
+      size: 1520,
+      contentText: 'Apresentação Institucional MAVRA: Solução corporativa de atendimento inteligente e gestão de relacionamento com clientes no WhatsApp. Utilizamos Inteligência Artificial proprietária de última geração treinada exclusivamente para qualificação ágil de clientes e conversão comercial.',
       uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     },
     {
       id: 'doc-2',
-      name: 'Politica_Privacidade_e_SLA.txt',
+      name: 'SLA_e_Qualidade_de_Atendimento.txt',
       type: 'txt',
-      size: 3200,
-      contentText: 'SLA de Atendimento: Disponibilidade de 99.9% para endpoints da Evolution API v2, criptografia de ponta a ponta e total conformidade com a LGPD.',
+      size: 1200,
+      contentText: 'Padrão de Atendimento MAVRA: Disponibilidade contínua 24/7, privacidade e conformidade rigorosa com a LGPD, garantindo respostas rápidas, acolhedoras e personalizadas para cada lead.',
       uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
     }
   ];
@@ -240,6 +251,110 @@ R: Oferecemos suporte dedicado liderado pelo arquiteto Marco Duarte, com onboard
 
   constructor() {
     this.initSupabaseClient();
+    this.loadFromFile();
+  }
+
+  public async saveToFile(): Promise<void> {
+    try {
+      const payload = {
+        stages: this.stages,
+        leads: this.leads,
+        messages: this.messages,
+        agentConfig: this.agentConfig,
+        documents: this.documents,
+        evolutionConfig: this.evolutionConfig,
+        supabaseConfig: this.supabaseConfig,
+      };
+      fs.writeFileSync(STORAGE_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+    } catch (err) {
+      console.error('[DB Storage] Falha ao salvar dados em disco:', err);
+    }
+
+    // Se o cliente Supabase estiver conectado, sincronizar também na nuvem
+    if (this.supabaseClient && this.supabaseConfig.isConnected) {
+      try {
+        await this.syncToSupabase();
+      } catch (err: any) {
+        // Fallback silencioso sem travar o aplicativo
+        console.warn('[Supabase Sync] Aviso ao sincronizar na nuvem:', err.message);
+      }
+    }
+  }
+
+  public async syncToSupabase(): Promise<void> {
+    if (!this.supabaseClient) return;
+
+    try {
+      // Upsert leads no Supabase
+      if (this.leads.length > 0) {
+        const dbLeads = this.leads.map((l) => ({
+          id: l.id,
+          name: l.name,
+          phone: l.phone,
+          email: l.email || null,
+          stage_id: l.stageId,
+          value: l.value || 0,
+          interest: l.interest || null,
+          tags: l.tags || [],
+          notes: l.notes || null,
+          ai_paused: Boolean(l.aiPaused),
+          last_interaction: l.lastInteraction,
+          created_at: l.createdAt,
+        }));
+        await this.supabaseClient.from('leads').upsert(dbLeads, { onConflict: 'id' });
+      }
+
+      // Upsert últimas mensagens do chat
+      if (this.messages.length > 0) {
+        const recentMessages = this.messages.slice(-50).map((m) => ({
+          id: m.id,
+          lead_id: m.leadId,
+          phone: m.phone,
+          sender: m.sender,
+          text: m.text,
+          status: m.status || 'delivered',
+          created_at: m.timestamp,
+        }));
+        await this.supabaseClient.from('mensagens_chat').upsert(recentMessages, { onConflict: 'id' });
+      }
+    } catch (err: any) {
+      // Tabela pode ainda não ter sido criada pelo script SQL
+    }
+  }
+
+  public loadFromFile(): void {
+    try {
+      if (fs.existsSync(STORAGE_FILE)) {
+        const raw = fs.readFileSync(STORAGE_FILE, 'utf-8');
+        const data = JSON.parse(raw);
+        if (data.stages && Array.isArray(data.stages)) this.stages = data.stages;
+        if (data.leads && Array.isArray(data.leads)) this.leads = data.leads;
+        if (data.messages && Array.isArray(data.messages)) this.messages = data.messages;
+        if (data.agentConfig) {
+          this.agentConfig = {
+            ...this.agentConfig,
+            ...data.agentConfig,
+          };
+        }
+        if (data.documents && Array.isArray(data.documents)) this.documents = data.documents;
+        if (data.evolutionConfig) {
+          this.evolutionConfig = {
+            ...this.evolutionConfig,
+            ...data.evolutionConfig,
+          };
+        }
+        if (data.supabaseConfig) {
+          this.supabaseConfig = {
+            ...this.supabaseConfig,
+            ...data.supabaseConfig,
+          };
+          this.initSupabaseClient();
+        }
+        console.log(`[DB Storage] Dados restaurados com sucesso do disco (${this.leads.length} leads, ${this.messages.length} mensagens).`);
+      }
+    } catch (err) {
+      console.error('[DB Storage] Falha ao ler dados do disco:', err);
+    }
   }
 
   public initSupabaseClient(): boolean {

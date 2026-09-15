@@ -15,7 +15,11 @@ import {
   ShoppingBag,
   CreditCard,
   FileCheck,
-  AlertCircle
+  AlertCircle,
+  Power,
+  Filter,
+  ShieldAlert,
+  Phone
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider } from '../types';
 
@@ -38,6 +42,24 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [activeKnowledgeTab, setActiveKnowledgeTab] = useState<'faq' | 'catalog' | 'pricing' | 'rules'>('faq');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Synchronize internal state whenever agentConfig updates from backend
+  React.useEffect(() => {
+    setConfig(agentConfig);
+  }, [agentConfig]);
+
+  // Helper to instantly persist critical toggle switches (Global AI & Test Mode)
+  const handleQuickToggle = async (updatedFields: Partial<AgentConfig>) => {
+    const updated = { ...config, ...updatedFields };
+    setConfig(updated);
+    try {
+      await onSaveConfig(updated);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (err) {
+      console.error('Falha ao salvar toggle:', err);
+    }
+  };
 
   // Playground state
   const [testPrompt, setTestPrompt] = useState('Quanto custa o plano Starter e como funciona o WhatsApp?');
@@ -137,6 +159,126 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               <Save className="w-4 h-4" />
               <span>{isSaving ? 'Salvando...' : 'Salvar Alterações'}</span>
             </button>
+          </div>
+        </div>
+
+        {/* CONTROLE MASTER: MODO TESTE (ESTILO N8N) & CHAVE GERAL DA IA */}
+        <div className="bg-white border-2 border-amber-300/80 rounded-2xl p-6 shadow-sm space-y-5 bg-gradient-to-br from-amber-50/40 via-white to-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200/60 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-amber-500 text-white shadow-2xs">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  Proteção de WhatsApp Pessoal & Modo de Teste
+                  <span className="text-[10px] bg-amber-100 text-amber-900 font-mono font-bold px-2 py-0.5 rounded border border-amber-300">
+                    Estilo n8n Test Step
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Protege seus contatos pessoais (família, amigos, grupos). A IA só responderá números autorizados ou quando você ligar.
+                </p>
+              </div>
+            </div>
+
+            {/* Master Switch: IA Global Ativa / Inativa */}
+            <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-xs font-semibold text-slate-700">IA no WhatsApp:</span>
+              <button
+                type="button"
+                id="toggle-global-ai"
+                onClick={() => handleQuickToggle({ isGlobalAiActive: config.isGlobalAiActive !== false ? false : true })}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  config.isGlobalAiActive !== false
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-rose-600 text-white shadow-xs'
+                }`}
+              >
+                <Power className="w-3.5 h-3.5" />
+                <span>{config.isGlobalAiActive !== false ? 'LIGADA (Ativa)' : 'DESLIGADA (Muda)'}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Opção Modo de Teste Restrito */}
+            <div className={`p-4 rounded-xl border transition-all ${
+              config.testModeEnabled
+                ? 'bg-amber-50/60 border-amber-300 shadow-2xs'
+                : 'bg-slate-50/80 border-slate-200'
+            }`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-amber-700" />
+                  <span className="text-xs font-bold text-slate-900">
+                    Modo Teste: Whitelist de Números
+                  </span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="checkbox-test-mode"
+                    checked={config.testModeEnabled || false}
+                    onChange={(e) => handleQuickToggle({ testModeEnabled: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+                </label>
+              </div>
+
+              <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                Quando ativado, a IA <b>ignora 100% silenciosamente</b> mensagens de amigos, família ou desconhecidos. Somente os números cadastrados abaixo receberão respostas da Sofia!
+              </p>
+
+              {config.testModeEnabled && (
+                <div className="mt-3 space-y-1.5">
+                  <label className="text-[11px] font-semibold text-slate-700 flex items-center gap-1.5">
+                    <Phone className="w-3 h-3 text-slate-600" />
+                    Número(s) Autorizados para Teste (com DDD):
+                  </label>
+                  <input
+                    type="text"
+                    id="input-test-whitelist"
+                    value={config.testNumberWhitelist || ''}
+                    onChange={(e) => setConfig({ ...config, testNumberWhitelist: e.target.value })}
+                    onBlur={() => handleQuickToggle({ testNumberWhitelist: config.testNumberWhitelist })}
+                    placeholder="Ex: 5511987654321, 5511999998888"
+                    className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 focus:outline-hidden focus:border-amber-500 shadow-2xs"
+                  />
+                  <p className="text-[10px] text-amber-800">
+                    Coloque aqui o número do celular de teste (ex: o da sua esposa Tania). Se você receber mensagem de qualquer outro número, a IA não fará nada.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Explicação e status atual */}
+            <div className="p-4 rounded-xl border border-slate-200 bg-white flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-slate-800 block mb-1">
+                  Status de Proteção Atual:
+                </span>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${config.isGlobalAiActive !== false ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                    <span className="text-slate-600">Motor WhatsApp:</span>
+                    <span className="font-semibold text-slate-900">{config.isGlobalAiActive !== false ? 'Disponível' : 'Desativado (Silêncio Total)'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${config.testModeEnabled ? 'bg-amber-500' : 'bg-blue-500'}`}></span>
+                    <span className="text-slate-600">Filtro de Audiência:</span>
+                    <span className="font-semibold text-slate-900">
+                      {config.testModeEnabled ? 'Restrito aos números de teste' : 'Aberto a todos os contatos'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400 mt-3 pt-2 border-t border-slate-100 italic">
+                Dica: Lembre-se de clicar em "Salvar Alterações" no topo após alterar o modo.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -406,6 +548,62 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 Gatilhos Automáticos do CRM (mover estágios e salvar dados do lead via Function Calling)
               </span>
             </label>
+
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={config.autoTranscribeAudio !== false}
+                onChange={(e) => setConfig({ ...config, autoTranscribeAudio: e.target.checked })}
+                className="rounded bg-white border-slate-300 text-slate-900 focus:ring-0 cursor-pointer"
+              />
+              <span className="font-semibold text-sky-800">
+                Ouvir Áudios do WhatsApp (Transcrição instantânea com Gemini e resposta automática em texto)
+              </span>
+            </label>
+          </div>
+
+          {/* Envio Automático de Apresentação / Catálogo em PDF */}
+          <div className="mt-4 pt-4 border-t border-slate-200/80 bg-slate-50/60 p-4 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-rose-700" />
+                <h4 className="text-xs font-bold text-slate-900">
+                  Envio Automático de Apresentação Oficial em PDF
+                </h4>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                Disparo via WhatsApp
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Quando o cliente pedir apresentação, proposta, catálogo ou tabela no WhatsApp, a Sofia responde amigavelmente e anexa o arquivo PDF automaticamente para ele baixar.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Link Público do PDF (URL direta do documento)
+                </label>
+                <input
+                  type="url"
+                  value={config.catalogPdfUrl || ''}
+                  onChange={(e) => setConfig({ ...config, catalogPdfUrl: e.target.value })}
+                  placeholder="https://sua-empresa.com/apresentacao.pdf"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 focus:outline-hidden focus:border-slate-400"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Nome do Arquivo PDF Exibido no WhatsApp
+                </label>
+                <input
+                  type="text"
+                  value={config.catalogPdfName || ''}
+                  onChange={(e) => setConfig({ ...config, catalogPdfName: e.target.value })}
+                  placeholder="Ex: Apresentacao_Institucional_MAVRA.pdf"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-slate-400"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -616,11 +814,19 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <>
                   <div className="flex items-center justify-between text-[11px] text-slate-500 border-b border-slate-200 pb-2">
                     <span>Motor utilizado: <b className="text-slate-900">{testResponse.providerUsed} ({testResponse.modelUsed})</b></span>
-                    {testResponse.stageTriggered && (
-                      <span className="text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        Funil Atualizado para: {testResponse.stageTriggered}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {testResponse.sendCatalogPdf && (
+                        <span className="text-rose-800 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200 flex items-center gap-1">
+                          <FileText className="w-3 h-3" />
+                          PDF de Apresentação Solicitado
+                        </span>
+                      )}
+                      {testResponse.stageTriggered && (
+                        <span className="text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Funil Atualizado para: {testResponse.stageTriggered}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div>

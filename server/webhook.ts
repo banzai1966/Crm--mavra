@@ -1,6 +1,14 @@
 import { db } from './db';
-import { processAiConversation } from './ai';
-import { sendWhatsAppMessage } from './evolution';
+import {
+  processAiConversation,
+  transcribeAudioWithGemini,
+  analyzeImageWithGemini,
+} from './ai';
+import {
+  sendWhatsAppMessage,
+  sendWhatsAppMedia,
+  getBase64FromMediaMessage,
+} from './evolution';
 import { Lead, ChatMessage } from '../src/types';
 
 export function handleIncomingWebhook(body: any): void {
@@ -70,7 +78,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   }
 
   // Extract message content according to Evolution API v2 spec
-  const messageText: string =
+  let messageText: string =
     data?.message?.conversation ||
     data?.message?.extendedTextMessage?.text ||
     data?.messageText ||
@@ -82,12 +90,82 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     body?.messageText ||
     '';
 
+  // Check if message is a voice message / audio note (audioMessage)
+  const isAudioMessage = Boolean(
+    data?.message?.audioMessage ||
+    body?.message?.audioMessage ||
+    data?.messageType === 'audioMessage' ||
+    body?.messageType === 'audioMessage'
+  );
+
+  // Check if message is an image/photo (imageMessage)
+  const isImageMessage = Boolean(
+    data?.message?.imageMessage ||
+    body?.message?.imageMessage ||
+    data?.messageType === 'imageMessage' ||
+    body?.messageType === 'imageMessage'
+  );
+
+  let isAudioTranscribed = false;
+  let isImageAnalyzed = false;
+
+  if (!messageText.trim() && isAudioMessage && db.agentConfig.autoTranscribeAudio !== false) {
+    console.log(`[Webhook] Mensagem de áudio recebida de ${cleanPhone}. Processando transcrição de voz...`);
+    const audioObj = data?.message?.audioMessage || body?.message?.audioMessage;
+    let base64Audio = data?.base64 || body?.base64 || audioObj?.base64;
+    const mimeType = audioObj?.mimetype || 'audio/ogg';
+
+    // If base64 was not sent in webhook payload, fetch directly from Evolution API
+    if (!base64Audio && (data?.key || body?.key)) {
+      base64Audio = await getBase64FromMediaMessage(data?.key || body?.key);
+    }
+
+    if (base64Audio) {
+      try {
+        const transcribedText = await transcribeAudioWithGemini(base64Audio, mimeType);
+        if (transcribedText) {
+          messageText = transcribedText;
+          isAudioTranscribed = true;
+          console.log(`[Webhook] Áudio de ${cleanPhone} transcrito com sucesso: "${messageText}"`);
+        }
+      } catch (err: any) {
+        console.error('[Webhook] Falha ao transcrever áudio:', err.message);
+      }
+    }
+  } else if (isImageMessage) {
+    // Process image with Gemini Vision AI
+    console.log(`[Webhook] Imagem recebida de ${cleanPhone}. Processando análise visual com IA...`);
+    const imageObj = data?.message?.imageMessage || body?.message?.imageMessage;
+    let base64Image = data?.base64 || body?.base64 || imageObj?.base64;
+    const caption = messageText.trim() || imageObj?.caption || '';
+    const mimeType = imageObj?.mimetype || 'image/jpeg';
+
+    if (!base64Image && (data?.key || body?.key)) {
+      base64Image = await getBase64FromMediaMessage(data?.key || body?.key);
+    }
+
+    if (base64Image) {
+      try {
+        const analysis = await analyzeImageWithGemini(base64Image, caption, mimeType);
+        if (analysis) {
+          messageText = caption ? `${caption}\n[Análise Visual da Imagem]: ${analysis}` : `[Imagem Recebida]: ${analysis}`;
+          isImageAnalyzed = true;
+          console.log(`[Webhook] Imagem de ${cleanPhone} analisada com sucesso: "${analysis.slice(0, 60)}..."`);
+        }
+      } catch (err: any) {
+        console.error('[Webhook] Falha ao analisar imagem com IA:', err.message);
+      }
+    }
+  }
+
   if (!messageText.trim()) {
     db.logWebhookEvent({
       event: eventName,
       senderPhone: cleanPhone,
       status: 'no_text',
-      details: 'Payload recebido sem texto reconhecível (áudio/mídia sem legenda ou evento de presença)',
+      details: isAudioMessage
+        ? 'Áudio recebido, mas sem base64 disponível ou não foi possível transcrever.'
+        : 'Payload recebido sem texto reconhecível (mídia sem legenda ou evento de presença)',
       rawPayloadSnippet: JSON.stringify(body).slice(0, 200),
     });
     return;
@@ -133,18 +211,59 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   }
 
   // 3. Register incoming message in chat history
+  let displayText = messageText.trim();
+  if (isAudioTranscribed) {
+    displayText = `🎤 [Áudio Transcrito]: "${messageText.trim()}"`;
+  } else if (isImageAnalyzed && !displayText.startsWith('[')) {
+    displayText = `📷 [Foto Recebida]: ${displayText}`;
+  }
+
   const incomingMsg: ChatMessage = {
     id: 'msg-' + Date.now() + '-in',
     leadId: lead.id,
     phone: cleanPhone,
     sender: 'lead',
-    text: messageText.trim(),
+    text: displayText,
     timestamp: new Date().toISOString(),
     status: 'delivered',
   };
   db.messages.push(incomingMsg);
+  db.saveToFile();
 
-  // 4. Check if AI is paused for this lead (human agent has taken over)
+  // 4. Check Global AI Switch (ON / OFF)
+  if (db.agentConfig.isGlobalAiActive === false) {
+    console.log(`[Webhook] IA Global DESLIGADA no painel. Ignorando resposta automática para ${cleanPhone}.`);
+    db.logWebhookEvent({
+      event: eventName,
+      senderPhone: cleanPhone,
+      status: 'ignored_from_me',
+      details: 'IA Global desativada pelo administrador. Mensagem salva apenas para histórico.',
+    });
+    return;
+  }
+
+  // 4b. Check Test Mode Whitelist (Prevent replying to friends/family on personal WhatsApp)
+  if (db.agentConfig.testModeEnabled) {
+    const whitelist = (db.agentConfig.testNumberWhitelist || '')
+      .split(/[,;\s]+/)
+      .map((p) => p.replace(/\D/g, ''))
+      .filter(Boolean);
+
+    const isAuthorized = whitelist.length === 0 || whitelist.some((w) => cleanPhone.endsWith(w) || w.endsWith(cleanPhone));
+
+    if (!isAuthorized) {
+      console.log(`[Webhook] MODO TESTE ATIVO: Número ${cleanPhone} não está na lista autorizada (${whitelist.join(', ')}). Ignorando silenciosamente.`);
+      db.logWebhookEvent({
+        event: eventName,
+        senderPhone: cleanPhone,
+        status: 'ignored_from_me',
+        details: `Modo de Teste ativo: Número ${cleanPhone} ignorado para proteger contatos pessoais.`,
+      });
+      return;
+    }
+  }
+
+  // 4c. Check if AI is paused for this specific lead (human agent has taken over)
   if (lead.aiPaused) {
     console.log(`[Webhook] Atendimento humano ativo para ${lead.name} (${cleanPhone}). IA pausada.`);
     return;
@@ -201,6 +320,30 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     // 9. Send response back to WhatsApp via Evolution API v2
     await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
     aiMsg.status = 'delivered';
+
+    // 10. If the lead requested catalog/presentation and a PDF URL is configured, send the PDF document
+    if (aiResult.sendCatalogPdf && db.agentConfig.catalogPdfUrl) {
+      console.log(`[Webhook] Enviando PDF de apresentação para ${cleanPhone}...`);
+      const pdfUrl = db.agentConfig.catalogPdfUrl;
+      const pdfName = db.agentConfig.catalogPdfName || 'Apresentacao_Oficial_MAVRA.pdf';
+      await sendWhatsAppMedia(
+        cleanPhone,
+        pdfUrl,
+        pdfName,
+        'Segue em anexo nossa apresentação oficial em PDF com todos os detalhes!'
+      );
+      db.messages.push({
+        id: 'msg-' + Date.now() + '-pdf',
+        leadId: lead.id,
+        phone: cleanPhone,
+        sender: 'ai',
+        text: `📄 [Documento Enviado]: "${pdfName}"`,
+        timestamp: new Date().toISOString(),
+        status: 'delivered',
+      });
+    }
+
+    db.saveToFile();
   } catch (aiErr: any) {
     console.error('[Webhook] Falha ao gerar resposta da IA:', aiErr.message);
 
@@ -233,5 +376,6 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       status: 'delivered',
     };
     db.messages.push(adminAlertMsg);
+    db.saveToFile();
   }
 }

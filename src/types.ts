@@ -66,6 +66,13 @@ export interface AgentConfig {
   knowledgeRules: string;
   strictKnowledgeOnly: boolean;
   autoTriggerCRMStages: boolean;
+  isGlobalAiActive: boolean;
+  testModeEnabled: boolean;
+  testNumberWhitelist: string;
+  autoTranscribeAudio?: boolean;
+  typingDelayMs?: number;
+  catalogPdfUrl?: string;
+  catalogPdfName?: string;
 }
 
 export interface EvolutionConfig {

@@ -58,6 +58,19 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3 text-slate-600">
+          {/* Test Mode / Protection Badge */}
+          {agentConfig.testModeEnabled ? (
+            <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-300 text-amber-900 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+              <span>Modo Teste Ativo</span>
+            </div>
+          ) : agentConfig.isGlobalAiActive === false ? (
+            <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-300 text-rose-800 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+              <span>IA Desligada</span>
+            </div>
+          ) : null}
+
           {/* Active AI model */}
           <div className="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-md border border-slate-200 text-xs shadow-2xs">
             <Sparkles className="w-3 h-3 text-amber-600" />

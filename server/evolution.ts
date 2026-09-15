@@ -47,6 +47,7 @@ export async function sendWhatsAppMessage(
   }
 
   try {
+    const typingDelay = db.agentConfig.typingDelayMs || 1500;
     const endpoint = `${baseUrl}/message/sendText/${encodeURIComponent(config.instanceName.trim())}`;
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -57,7 +58,7 @@ export async function sendWhatsAppMessage(
       body: JSON.stringify({
         number: cleanPhone,
         text: text,
-        delay: 1200, // natural human typing latency
+        delay: typingDelay, // configurable human typing latency
         linkPreview: true,
       }),
     });
@@ -83,6 +84,106 @@ export async function sendWhatsAppMessage(
       error: err.message,
     };
   }
+}
+
+export async function sendWhatsAppMedia(
+  phone: string,
+  mediaUrl: string,
+  fileName: string,
+  caption?: string
+): Promise<EvolutionSendResult> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const cleanPhone = phone.replace(/\D/g, '');
+
+  if (!cleanPhone || !mediaUrl) {
+    return { success: false, error: 'Telefone ou URL do documento ausente' };
+  }
+
+  const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
+  if (isDummyUrl || !config.apiKey) {
+    console.log(`[Evolution API Simulada] Documento PDF enviado para ${cleanPhone}: "${fileName}" (${mediaUrl})`);
+    return { success: true, messageId: 'simulated-media-' + Date.now() };
+  }
+
+  try {
+    const endpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(config.instanceName.trim())}`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: config.apiKey.trim(),
+      },
+      body: JSON.stringify({
+        number: cleanPhone,
+        mediatype: 'document',
+        mimetype: 'application/pdf',
+        caption: caption || '',
+        media: mediaUrl,
+        fileName: fileName || 'Apresentacao_MAVRA.pdf',
+        delay: 1500,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`Evolution sendMedia HTTP ${response.status}:`, errText);
+      return { success: false, error: `Evolution sendMedia HTTP ${response.status}` };
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      messageId: data?.key?.id || data?.id || 'media-' + Date.now(),
+    };
+  } catch (err: any) {
+    console.error('Falha ao enviar documento na Evolution API:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Downloads base64 audio/media directly from Evolution API v2 if not included in the webhook payload
+ */
+export async function getBase64FromMediaMessage(messageKey: {
+  id?: string;
+  remoteJid?: string;
+  fromMe?: boolean;
+}): Promise<string | null> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  if (!baseUrl || !config.apiKey || !messageKey.id) {
+    return null;
+  }
+
+  try {
+    const endpoint = `${baseUrl}/chat/getBase64FromMediaMessage/${encodeURIComponent(config.instanceName.trim())}`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: config.apiKey.trim(),
+      },
+      body: JSON.stringify({
+        message: {
+          key: messageKey,
+        },
+        convertToMp4: false,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const base64Data = data?.base64 || data?.data;
+      if (base64Data && typeof base64Data === 'string') {
+        // Strip data:audio/ogg;base64, prefix if present
+        return base64Data.replace(/^data:[^;]+;base64,/, '');
+      }
+    }
+  } catch (err: any) {
+    console.warn('[Evolution API] Não foi possível obter base64 da mídia remota:', err.message);
+  }
+  return null;
 }
 
 export async function checkEvolutionStatus(): Promise<{
@@ -193,7 +294,7 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string): Promise<
           enabled: true,
           url: targetWebhookUrl.trim(),
           byEvents: false,
-          base64: false,
+          base64: true,
           events: [
             'MESSAGES_UPSERT',
             'MESSAGES_UPDATE',

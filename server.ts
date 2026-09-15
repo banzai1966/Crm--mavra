@@ -131,6 +131,7 @@ async function startServer() {
     };
 
     db.leads.unshift(newLead);
+    db.saveToFile();
     res.status(201).json(newLead);
   });
 
@@ -147,6 +148,7 @@ async function startServer() {
       phone: req.body.phone ? req.body.phone.replace(/\D/g, '') : db.leads[index].phone,
     };
 
+    db.saveToFile();
     res.json(db.leads[index]);
   });
 
@@ -154,6 +156,7 @@ async function startServer() {
     const { id } = req.params;
     db.leads = db.leads.filter((l) => l.id !== id);
     db.messages = db.messages.filter((m) => m.leadId !== id);
+    db.saveToFile();
     res.json({ success: true });
   });
 
@@ -172,6 +175,7 @@ async function startServer() {
 
     lead.stageId = stageId;
     lead.notes = `${lead.notes || ''}\n[${new Date().toLocaleDateString('pt-BR')}] Movido manualmente para "${stage.name}".`;
+    db.saveToFile();
     res.json(lead);
   });
 
@@ -265,6 +269,7 @@ async function startServer() {
       ...db.agentConfig,
       ...req.body,
     };
+    db.saveToFile();
     res.json(db.agentConfig);
   });
 
@@ -384,16 +389,28 @@ async function startServer() {
     res.json(db.supabaseConfig);
   });
 
-  app.put('/api/supabase-config', (req: Request, res: Response) => {
+  app.put('/api/supabase-config', async (req: Request, res: Response) => {
     db.supabaseConfig = {
       ...db.supabaseConfig,
       ...req.body,
     };
     const connected = db.initSupabaseClient();
+    await db.saveToFile();
+    if (connected) {
+      await db.syncToSupabase();
+    }
     res.json({
       ...db.supabaseConfig,
       isConnected: connected,
     });
+  });
+
+  app.post('/api/supabase/sync', async (req: Request, res: Response) => {
+    if (!db.supabaseConfig.isConnected || !db.getSupabaseClient()) {
+      return res.status(400).json({ error: 'Supabase não conectado' });
+    }
+    await db.syncToSupabase();
+    res.json({ success: true, message: 'Dados sincronizados com o Supabase' });
   });
 
   app.get('/api/supabase/schema', (req: Request, res: Response) => {

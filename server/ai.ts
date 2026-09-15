@@ -7,12 +7,115 @@ export interface AIResponseResult {
   providerUsed: string;
   modelUsed: string;
   stageTriggered?: string;
+  sendCatalogPdf?: boolean;
   extractedInfo?: {
     name?: string;
     email?: string;
     interest?: string;
     value?: number;
   };
+}
+
+/**
+ * Transcribes incoming WhatsApp voice audio using Google GenAI
+ */
+export async function transcribeAudioWithGemini(
+  base64Audio: string,
+  mimeType: string = 'audio/ogg'
+): Promise<string> {
+  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
+  const ai = new GoogleGenAI({ apiKey });
+
+  const cleanMime = mimeType.split(';')[0].trim() || 'audio/ogg';
+  const cleanBase64 = base64Audio.replace(/^data:[^;]+;base64,/, '').trim();
+
+  // Try gemini-2.5-flash which handles native multimodal audio transcription with ultra low latency
+  const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+
+  for (const model of candidateModels) {
+    try {
+      const response = await ai.models.generateContent({
+        model: model,
+        contents: [
+          {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: cleanMime,
+                  data: cleanBase64,
+                },
+              },
+              {
+                text: 'Transcreva com exatidão todo o áudio falado em português do Brasil. Retorne apenas o texto falado transcrito, sem introduções ou comentários.',
+              },
+            ],
+          },
+        ],
+      });
+
+      const transcription = response.text?.trim();
+      if (transcription) {
+        return transcription;
+      }
+    } catch (err: any) {
+      console.warn(`[Audio Transcribe] Modelo ${model} falhou:`, err.message);
+    }
+  }
+
+  return '';
+}
+
+/**
+ * Analyzes incoming WhatsApp images/photos (Vision AI) with Gemini
+ */
+export async function analyzeImageWithGemini(
+  base64Image: string,
+  caption?: string,
+  mimeType: string = 'image/jpeg'
+): Promise<string> {
+  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
+  const ai = new GoogleGenAI({ apiKey });
+
+  const cleanMime = mimeType.split(';')[0].trim() || 'image/jpeg';
+  const cleanBase64 = base64Image.replace(/^data:[^;]+;base64,/, '').trim();
+
+  const promptText = caption?.trim()
+    ? `O usuário enviou esta imagem no WhatsApp acompanhada da seguinte legenda/pergunta: "${caption}". Descreva e interprete o conteúdo relevante da imagem (se for comprovante, documento, print de tela, foto de produto ou dúvida) para que possamos entender e responder comercialmente de forma precisa.`
+    : 'O usuário enviou esta foto/imagem no WhatsApp sem texto. Descreva sucintamente o que há na imagem (se for comprovante de pagamento, documento, foto de erro, produto ou tabela) em português brasileiro para contexto de atendimento.';
+
+  const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+
+  for (const model of candidateModels) {
+    try {
+      const response = await ai.models.generateContent({
+        model: model,
+        contents: [
+          {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: cleanMime,
+                  data: cleanBase64,
+                },
+              },
+              {
+                text: promptText,
+              },
+            ],
+          },
+        ],
+      });
+
+      const description = response.text?.trim();
+      if (description) {
+        return description;
+      }
+    } catch (err: any) {
+      console.warn(`[Image Vision] Modelo ${model} falhou ao analisar imagem:`, err.message);
+    }
+  }
+
+  return caption || 'Imagem recebida pelo WhatsApp';
 }
 
 export async function processAiConversation(
@@ -63,11 +166,24 @@ ${config.knowledgeRules}
 
 ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
 
-=== DIRETRIZES DE ATENDIMENTO NO WHATSAPP ===
-1. Responda em português brasileiro de forma natural, simpática e profissional.
-2. Seja objetivo: use frases curtas e quebras de linha limpas para visualização fácil no WhatsApp.
-3. ${config.strictKnowledgeOnly ? 'ANTI-ALUCINAÇÃO ATIVADO: Responda ESTRITAMENTE com base nos dados fornecidos na Base de Conhecimento. Se não souber ou a informação não estiver expressa, informe que consultará o arquiteto especialista Marco Duarte para retornar em seguida.' : 'Utilize bom senso comercial mantendo alinhamento com a empresa.'}
-4. Conduza o lead para o próximo passo no funil comercial com perguntas abertas e convites para ação.
+=== DIRETRIZES E REGRAS DE ATENDIMENTO NO WHATSAPP (MUITO IMPORTANTE) ===
+1. Responda SEMPRE em mensagens CURTAS, DINÂMICAS e NATURAIS (máximo de 2 a 3 frases por resposta).
+2. NUNCA envie blocos gigantes de texto. Seja caloroso, direto ao ponto e termine sempre com UMA pergunta amigável para continuar a conversa.
+3. SIGILO DE TECNOLOGIA E INFRAESTRUTURA:
+   - É EXPRESSAMENTE PROIBIDO mencionar nomes de ferramentas internas, infraestrutura técnica ou jargões como "Evolution API", "Supabase", "n8n", "VPS", "Contabo", "Node.js", "Docker", "webhooks" ou similares.
+   - Quando questionada sobre a tecnologia do atendimento, apresente a solução como: "uma Inteligência Artificial corporativa de última geração, desenvolvida exclusivamente para atendimento humano, ágil e personalizado da nossa empresa".
+4. AGENDAMENTOS E CONSULTAS:
+   - Se o lead demonstrar interesse em marcar uma consulta, reunião ou agendamento, pergunte com gentileza qual dia e período (manhã ou tarde) fica melhor para ele.
+   - Assim que o lead disser a preferência, confirme o agendamento amigavelmente, registre nas notas e mova o lead no funil para a etapa apropriada ("Qualificado / Interesse" ou "Proposta / Apresentação").
+5. ${config.strictKnowledgeOnly ? 'ANTI-ALUCINAÇÃO: Utilize as informações da Base de Conhecimento oficial. Se houver alguma dúvida específica que não conste na base, diga com simpatia que vai verificar com o especialista responsável para passar todos os detalhes.' : 'Mantenha total alinhamento comercial e bom senso.'}
+6. CONTEXTO E MENSAGENS INCOMUNS / ENGANOS:
+   - Se o lead enviar uma mensagem curta, confusa, ou que pareça conversa pessoal ou engano (por exemplo "oi fulano", "cadê você?", "tudo bem?", "tá podendo falar?"), responda de forma educada, acolhedora e humana.
+   - Exemplo: "Olá! Tudo bem? Aqui é a Sofia da MAVRA. Em que posso te ajudar hoje?"
+   - NUNCA envie respostas robóticas, jargões técnicos ou suposições forçadas sobre vendas se o cliente ainda não indicou o motivo do contato.
+7. CASO O CLIENTE DIRECIONE A CONVERSA DIRETAMENTE AO MARCO DUARTE:
+   - Responda cordialmente: "Olá! O Marco já foi avisado da sua mensagem. Gostaria de adiantar em algo enquanto ele assume o atendimento?"
+8. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
+   - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
 
 === ESTÁGIOS DISPONÍVEIS NO CRM KANBAN ===
 ${stagesList}
@@ -77,6 +193,7 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
 {
   "replyText": "O texto da mensagem que será enviada diretamente pelo WhatsApp para o lead",
   "suggestedStageId": "ID do estágio para onde mover o lead no CRM se a intenção ou contexto mudou, ou null se mantiver o mesmo",
+  "sendCatalogPdf": true ou false (true apenas se o lead solicitou apresentação/catálogo/PDF),
   "extractedInfo": {
     "name": "Nome da pessoa caso ela tenha dito ou corrigido (ou null)",
     "email": "E-mail informado pelo lead (ou null)",
@@ -125,9 +242,10 @@ async function callGemini(
 
   // Try prioritized models in sequence in case of 503 / high demand spikes
   const candidateModels = [
-    modelName.includes('pro') ? 'gemini-2.5-pro' : 'gemini-2.5-flash',
-    'gemini-2.0-flash',
-    'gemini-1.5-flash',
+    modelName || 'gemini-2.5-flash',
+    'gemini-2.5-flash',
+    'gemini-2.5-pro',
+    'gemini-3.1-flash-lite',
   ];
 
   let lastError: any = null;
@@ -290,6 +408,7 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       providerUsed: provider,
       modelUsed: model,
       stageTriggered: parsed.suggestedStageId || undefined,
+      sendCatalogPdf: Boolean(parsed.sendCatalogPdf),
       extractedInfo: parsed.extractedInfo || undefined,
     };
   } catch (err) {
