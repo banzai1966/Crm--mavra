@@ -19,7 +19,14 @@ import {
   Power,
   Filter,
   ShieldAlert,
-  Phone
+  Phone,
+  Mic,
+  Volume2,
+  VolumeX,
+  Loader2,
+  ExternalLink,
+  Clock,
+  RefreshCw
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider } from '../types';
 
@@ -66,6 +73,11 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [testResponse, setTestResponse] = useState<any>(null);
   const [isTesting, setIsTesting] = useState(false);
 
+  // Voice synthesis playground state
+  const [isTestingVoice, setIsTestingVoice] = useState(false);
+  const [voiceTestError, setVoiceTestError] = useState<string | null>(null);
+  const [voiceTestSuccess, setVoiceTestSuccess] = useState<string | null>(null);
+
   // File upload state
   const [uploadFileName, setUploadFileName] = useState('');
   const [uploadContent, setUploadContent] = useState('');
@@ -99,6 +111,47 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       setTestResponse({ error: err.message });
     } finally {
       setIsTesting(false);
+    }
+  };
+
+  const handleTestVoice = async (customText?: string) => {
+    setIsTestingVoice(true);
+    setVoiceTestError(null);
+    setVoiceTestSuccess(null);
+    try {
+      const textToSynthesize = customText || 'Olá! Aqui é a Sofia da MAVRA. Seja muito bem-vindo! Como posso ajudar a impulsionar as suas vendas e o seu atendimento hoje?';
+      const keyToSend = config.voiceEngine === 'elevenlabs' 
+        ? config.elevenLabsApiKey 
+        : (config.googleTtsApiKey || config.geminiApiKey);
+      const res = await fetch('/api/test-voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: textToSynthesize,
+          apiKey: keyToSend,
+          voiceName: config.voiceVoiceName || 'pt-BR-FranciscaNeural',
+          engine: config.voiceEngine || 'native_sofia',
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.audioBase64) {
+        const engineLabel = data.engineUsed === 'native_sofia' ? 'Motor Neural Sofia (Voz Humana)' : data.engineUsed === 'elevenlabs' ? 'ElevenLabs' : 'Google Cloud TTS';
+        if (data.notice) {
+          setVoiceTestSuccess(`${data.notice} Tocando áudio agora no navegador!`);
+        } else {
+          setVoiceTestSuccess(`Áudio gerado com sucesso via ${engineLabel}! Tocando agora no navegador...`);
+        }
+        const audio = new Audio(`data:audio/mp3;base64,${data.audioBase64}`);
+        audio.play().catch((playErr) => {
+          console.warn('Auto-play bloqueado pelo navegador:', playErr);
+        });
+      } else {
+        setVoiceTestError(data.error || 'Falha ao sintetizar áudio.');
+      }
+    } catch (err: any) {
+      setVoiceTestError('Erro de conexão ao testar áudio: ' + err.message);
+    } finally {
+      setIsTestingVoice(false);
     }
   };
 
@@ -419,14 +472,14 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               <Key className="w-3.5 h-3.5 text-slate-700" />
               Chaves de API dos Provedores (Armazenadas de forma segura no backend)
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-[11px] text-slate-500 mb-1">
+                <label className="block text-[11px] text-slate-500 mb-1 font-medium">
                   Google Gemini API Key
                 </label>
                 <input
                   type="password"
-                  placeholder="Injetada automaticamente ou personalizada..."
+                  placeholder="Injetada automaticamente..."
                   value={config.geminiApiKey || ''}
                   onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
                   className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 font-mono focus:outline-hidden focus:border-slate-400"
@@ -434,7 +487,20 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-500 mb-1">
+                <label className="block text-[11px] text-slate-500 mb-1 font-medium">
+                  Google Cloud TTS API Key (Voz Oficial)
+                </label>
+                <input
+                  type="password"
+                  placeholder="AIzaSy... (Chave com TTS ativo)"
+                  value={config.googleTtsApiKey || ''}
+                  onChange={(e) => setConfig({ ...config, googleTtsApiKey: e.target.value })}
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 font-mono focus:outline-hidden focus:border-slate-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-slate-500 mb-1 font-medium">
                   OpenAI API Key
                 </label>
                 <input
@@ -447,14 +513,14 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-500 mb-1">
-                  Anthropic API Key
+                <label className="block text-[11px] text-slate-500 mb-1 font-medium">
+                  ElevenLabs API Key
                 </label>
                 <input
                   type="password"
-                  placeholder="sk-ant-..."
-                  value={config.anthropicApiKey || ''}
-                  onChange={(e) => setConfig({ ...config, anthropicApiKey: e.target.value })}
+                  placeholder="xi-api-key..."
+                  value={config.elevenLabsApiKey || ''}
+                  onChange={(e) => setConfig({ ...config, elevenLabsApiKey: e.target.value })}
                   className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 font-mono focus:outline-hidden focus:border-slate-400"
                 />
               </div>
@@ -602,6 +668,406 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   placeholder="Ex: Apresentacao_Institucional_MAVRA.pdf"
                   className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-slate-400"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Respostas de Voz Nativas (Google Cloud Text-to-Speech / WhatsApp PTT) */}
+          <div className="mt-4 pt-4 border-t border-slate-200/80 bg-violet-50/50 p-5 rounded-xl space-y-4 border border-violet-200/60">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mic className="w-4 h-4 text-violet-700" />
+                <h4 className="text-xs font-bold text-slate-900">
+                  Respostas de Áudio da Sofia (Google Cloud Text-to-Speech & WhatsApp PTT)
+                </h4>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="toggle-voice-response"
+                  checked={config.voiceResponseEnabled !== false}
+                  onChange={(e) => handleQuickToggle({ voiceResponseEnabled: e.target.checked })}
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-violet-600"></div>
+              </label>
+            </div>
+
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Com o <b>Google Cloud Text-to-Speech (Vozes Neural2 & Journey)</b>, a Sofia gera áudios em português brasileiro com entonação humana, natural e fluida em menos de 800ms, enviando diretamente no WhatsApp do lead como nota de voz original (PTT com ondas sonoras).
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Modo de Resposta */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Comportamento da Sofia
+                </label>
+                <select
+                  value={config.voiceResponseMode || 'smart_discernment'}
+                  onChange={(e) => setConfig({ ...config, voiceResponseMode: e.target.value as any })}
+                  className="w-full bg-white border border-violet-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-violet-400 font-medium"
+                >
+                  <option value="smart_discernment">🧠 Discernimento Inteligente (Áudio com Áudio / Texto com Texto)</option>
+                  <option value="always_audio">🎙️ Sempre Responder em Áudio (100% dos contatos)</option>
+                  <option value="only_text">💬 Apenas Texto Rápido (Desativa áudio)</option>
+                </select>
+              </div>
+
+              {/* Motor de Voz */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Motor de Síntese de Voz
+                </label>
+                <select
+                  value={config.voiceEngine || 'native_sofia'}
+                  onChange={(e) => {
+                    const engine = e.target.value as any;
+                    const defaultVoice = engine === 'elevenlabs' ? '21m00Tcm4TlvDq8ikWAM' : engine === 'google_cloud_tts' ? 'pt-BR-Neural2-C' : 'pt-BR-FranciscaNeural';
+                    setConfig({ ...config, voiceEngine: engine, voiceVoiceName: defaultVoice });
+                  }}
+                  className="w-full bg-white border border-violet-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-violet-400 font-medium"
+                >
+                  <option value="native_sofia">⚡ Motor Neural Sofia (Recomendado - 100% Humano, Grátis & Sem Chaves)</option>
+                  <option value="elevenlabs">💎 ElevenLabs (Vozes Ultra-Humanas / Clonadas do Ela)</option>
+                  <option value="google_cloud_tts">🌐 Google Cloud TTS (Neural2 / Journey - Requer GCP)</option>
+                </select>
+              </div>
+
+              {/* Tom / Perfil de Voz */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Perfil de Voz Nativa (pt-BR)
+                </label>
+                <select
+                  value={config.voiceVoiceName || 'pt-BR-FranciscaNeural'}
+                  onChange={(e) => setConfig({ ...config, voiceVoiceName: e.target.value })}
+                  className="w-full bg-white border border-violet-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-violet-400 font-medium"
+                >
+                  {config.voiceEngine === 'elevenlabs' ? (
+                    <>
+                      <option value="21m00Tcm4TlvDq8ikWAM">Rachel (ElevenLabs - Feminina Calma & Confiante)</option>
+                      <option value="EXAVITQu4vr4xnSDxMaL">Bella (ElevenLabs - Feminina Jovem & Expressiva)</option>
+                      <option value="AZnzlk1XvdvUeBnXmlld">Domi (ElevenLabs - Feminina Comercial & Firme)</option>
+                      <option value="pNInz6obpgDQGcFmaJgB">Adam (ElevenLabs - Masculina Profunda & Profissional)</option>
+                      <option value="ErXwobaYiN019PkySvjV">Antoni (ElevenLabs - Masculina Acolhedora)</option>
+                    </>
+                  ) : config.voiceEngine === 'google_cloud_tts' ? (
+                    <>
+                      <option value="pt-BR-Neural2-C">Sofia Comercial (pt-BR-Neural2-C)</option>
+                      <option value="pt-BR-Neural2-A">Sofia Acolhedora (pt-BR-Neural2-A)</option>
+                      <option value="pt-BR-Journey-F">Sofia Podcast (pt-BR-Journey-F)</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="pt-BR-FranciscaNeural">Sofia Neural Humana (pt-BR - Mais Realista, Fluida & Empática)</option>
+                      <option value="pt-BR-ThalitaNeural">Sofia Jovem & Comercial (pt-BR - Dinâmica e Descontraída)</option>
+                      <option value="pt-BR-BrendaNeural">Sofia Acolhedora (pt-BR - Suave, Calma e Educada)</option>
+                      <option value="pt-BR-AntonioNeural">Executivo Comercial (pt-BR - Masculina Firme & Confiante)</option>
+                      <option value="pt-BR-NicolauNeural">Diretor Comercial (pt-BR - Masculina Grave & Segura)</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            {/* Painel do Motor de Voz e Teste ao Vivo */}
+            <div className="bg-white/90 border border-violet-200/80 rounded-xl p-3.5 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Volume2 className="w-4 h-4 text-violet-700" />
+                    {config.voiceEngine === 'native_sofia'
+                      ? 'Motor Neural Sofia (Voz Humana com Respiração Natural)'
+                      : config.voiceEngine === 'elevenlabs'
+                      ? 'Motor ElevenLabs (Voz Clonada & Hiper-Realista)'
+                      : 'Google Cloud Text-to-Speech'}
+                  </h5>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {config.voiceEngine === 'native_sofia'
+                      ? 'Voz neural de última geração com prosódia humana real, pausas naturais e sem sotaque robótico dos anos 90! 100% pronta e gratuita.'
+                      : config.voiceEngine === 'elevenlabs'
+                      ? 'Insira abaixo sua chave xi-api-key da ElevenLabs para usar a mesma voz ultra-humana do seu outro aplicativo.'
+                      : 'Insira suas credenciais abaixo ou use o teste direto.'}
+                  </p>
+                </div>
+
+                {/* Botão de Teste de Voz ao Vivo */}
+                <button
+                  type="button"
+                  id="btn-test-voice"
+                  onClick={() => handleTestVoice()}
+                  disabled={isTestingVoice}
+                  className="flex items-center justify-center gap-2 bg-violet-700 hover:bg-violet-800 disabled:bg-violet-400 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-xs cursor-pointer shrink-0"
+                >
+                  {isTestingVoice ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sintetizando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="w-4 h-4" />
+                      <span>🎧 Testar e Ouvir Voz Agora</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Informação sobre chaves Google AI Studio vs Google Cloud */}
+              {config.voiceEngine === 'google_cloud_tts' && (
+                <div className="pt-2 border-t border-violet-100 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+                      <Key className="w-3.5 h-3.5 text-violet-700" />
+                      Chave de API do Google Cloud (Text-to-Speech)
+                    </label>
+                    {config.geminiApiKey && !config.googleTtsApiKey && (
+                      <button
+                        type="button"
+                        onClick={() => setConfig({ ...config, googleTtsApiKey: config.geminiApiKey })}
+                        className="text-[10px] text-violet-700 hover:text-violet-900 font-semibold underline cursor-pointer"
+                      >
+                        Copiar chave usada no Gemini
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="password"
+                    id="input-google-tts-key"
+                    placeholder="Cole aqui sua API Key do Google Cloud"
+                    value={config.googleTtsApiKey || ''}
+                    onChange={(e) => setConfig({ ...config, googleTtsApiKey: e.target.value })}
+                    className="w-full bg-slate-50 border border-violet-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-violet-500 focus:bg-white"
+                  />
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 text-[10px] text-amber-800">
+                    💡 <b>Nota do Google:</b> Chaves geradas no <i>Google AI Studio</i> são destinadas ao <b>Gemini</b> (para o cérebro/inteligência). O Google Cloud Text-to-Speech v1 exige OAuth2/Service Account. Caso o Google Cloud bloqueie a chave, o sistema automaticamente usa o <b>Motor Nativo Sofia</b> para que seu cliente nunca fique sem áudio!
+                  </div>
+                </div>
+              )}
+
+              {config.voiceEngine === 'elevenlabs' && (
+                <div className="pt-2 border-t border-violet-100 space-y-2">
+                  <label className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+                    <Key className="w-3.5 h-3.5 text-violet-700" />
+                    ElevenLabs API Key
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="xi-api-key..."
+                    value={config.elevenLabsApiKey || ''}
+                    onChange={(e) => setConfig({ ...config, elevenLabsApiKey: e.target.value })}
+                    className="w-full bg-slate-50 border border-violet-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-violet-500 focus:bg-white"
+                  />
+                </div>
+              )}
+
+              {/* Status e Feedback do Teste de Voz */}
+              {voiceTestSuccess && (
+                <div className="flex items-center gap-2 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg p-2.5">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>{voiceTestSuccess}</span>
+                </div>
+              )}
+
+              {voiceTestError && (
+                <div className="text-[11px] text-rose-800 bg-rose-50 border border-rose-200 rounded-lg p-2.5 space-y-1">
+                  <div className="flex items-center gap-2 font-bold">
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>Não foi possível sintetizar a voz com essa chave:</span>
+                  </div>
+                  <p className="font-mono text-[10px] pl-6">{voiceTestError}</p>
+                  <p className="text-[10px] text-rose-700 pl-6">
+                    💡 Dica: Certifique-se de que a API <b>Cloud Text-to-Speech API</b> está ativada no seu Google Cloud Console na mesma conta da sua chave.
+                  </p>
+                </div>
+              )}
+
+              <p className="text-[10px] text-slate-500 leading-normal">
+                🔒 A chave é armazenada de forma segura no servidor. Com o Motor Neural Sofia nativo, nenhum custo ou chave externa é necessária.
+              </p>
+            </div>
+
+            {/* Travas Inteligentes e Economia de Áudio */}
+            <div className="bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200/80 rounded-xl p-3.5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-violet-700" />
+                  <h5 className="text-xs font-bold text-slate-900">
+                    Travas de Áudio & Economia Inteligente (Anti-Spam de Voz)
+                  </h5>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-100 text-violet-800">
+                  Proteção Ativa
+                </span>
+              </div>
+
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Configure os limites de áudio para manter a conversa ágil, sem cansar o cliente e economizando processamento.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Máximo de Áudios Seguidos
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={1}
+                      max={5}
+                      value={config.maxConsecutiveAudios ?? 2}
+                      onChange={(e) => setConfig({ ...config, maxConsecutiveAudios: Math.max(1, parseInt(e.target.value) || 1) })}
+                      className="w-24 bg-white border border-violet-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 font-bold focus:outline-hidden focus:border-violet-500"
+                    />
+                    <span className="text-[11px] text-slate-500">áudios consecutivos</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Após essa quantidade, a Sofia passa a responder em texto para não sobrecarregar o cliente.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Tamanho Máximo para Áudio
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={80}
+                      max={600}
+                      step={20}
+                      value={config.maxAudioChars ?? 220}
+                      onChange={(e) => setConfig({ ...config, maxAudioChars: Math.max(80, parseInt(e.target.value) || 220) })}
+                      className="w-24 bg-white border border-violet-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 font-bold focus:outline-hidden focus:border-violet-500"
+                    />
+                    <span className="text-[11px] text-slate-500">caracteres (~15 a 20s)</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Respostas longas, explicações detalhadas ou especificações são priorizadas em <b>TEXTO</b> automaticamente.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white/80 border border-violet-100 rounded-lg p-2.5 text-[11px] text-slate-600 space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-violet-900">
+                  <Sparkles className="w-3.5 h-3.5 text-violet-600" />
+                  <span>Prioridades de Discernimento Ativas:</span>
+                </div>
+                <ul className="list-disc list-inside space-y-0.5 text-[10.5px] text-slate-600 pl-1">
+                  <li><b>Cliente enviou Texto ➡️ Sempre responde em Texto:</b> Se a pessoa digitou, ela quer ler rápido e em silêncio. Sofia NUNCA manda áudio para mensagem de texto (a não ser que a pessoa peça expressamente "manda um áudio").</li>
+                  <li><b>Cliente enviou Áudio ➡️ Responde em Áudio:</b> Mantém o tom acolhedor e a conversa humanizada.</li>
+                  <li><b>PIX, Links, Contas e E-mails:</b> Sempre enviados em texto para permitir cópia imediata com 1 toque.</li>
+                  <li><b>Respostas Longas (&gt; limite de caracteres):</b> Convertidas automaticamente em texto para não gerar áudios cansativos.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Envio de Chave PIX e Fechamento Comercial */}
+          <div className="mt-4 pt-4 border-t border-slate-200/80 bg-emerald-50/50 p-4 rounded-xl space-y-3 border border-emerald-200/60">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-emerald-700" />
+                <h4 className="text-xs font-bold text-slate-900">
+                  Dados de Pagamento & Chave PIX Oficial
+                </h4>
+              </div>
+              <span className="text-[10px] font-semibold text-emerald-800 bg-white border border-emerald-200 px-2 py-0.5 rounded-full">
+                Conversão Direta
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Quando o lead demonstrar intenção de pagamento ou pedir chave PIX, a Sofia envia automaticamente a chave formatada pronta para cópia rápida no WhatsApp e orienta o envio do comprovante.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Chave PIX Oficial da Empresa
+                </label>
+                <input
+                  type="text"
+                  value={config.pixKey || ''}
+                  onChange={(e) => setConfig({ ...config, pixKey: e.target.value })}
+                  placeholder="Ex: seu-email@empresa.com ou CNPJ"
+                  className="w-full bg-white border border-emerald-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 focus:outline-hidden focus:border-emerald-400"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Tipo da Chave
+                </label>
+                <select
+                  value={config.pixKeyType || 'email'}
+                  onChange={(e) => setConfig({ ...config, pixKeyType: e.target.value as any })}
+                  className="w-full bg-white border border-emerald-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-emerald-400"
+                >
+                  <option value="email">E-mail</option>
+                  <option value="cnpj">CNPJ</option>
+                  <option value="cpf">CPF</option>
+                  <option value="telefone">Telefone (com DDD)</option>
+                  <option value="aleatoria">Chave Aleatória (EVP)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Follow-up Automático para Leads Dormentes */}
+          <div className="mt-4 pt-4 border-t border-slate-200/80 bg-sky-50/50 p-4 rounded-xl space-y-3 border border-sky-200/60">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-sky-700" />
+                <h4 className="text-xs font-bold text-slate-900">
+                  Follow-up Automático de Recuperação de Leads
+                </h4>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="toggle-followup"
+                  checked={config.autoFollowUpEnabled !== false}
+                  onChange={(e) => handleQuickToggle({ autoFollowUpEnabled: e.target.checked })}
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
+              </label>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Recupere contatos sem resposta! Se um cliente parar de responder após a Sofia tirar dúvidas ou apresentar uma proposta, ela envia uma mensagem carinhosa e sutil de acompanhamento.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Intervalo de Inatividade para Disparo (Horas)
+                </label>
+                <select
+                  value={config.followUpDelayHours || 24}
+                  onChange={(e) => setConfig({ ...config, followUpDelayHours: Number(e.target.value) })}
+                  className="w-full bg-white border border-sky-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-sky-400"
+                >
+                  <option value={12}>12 horas após a última resposta</option>
+                  <option value={24}>24 horas (Recomendado para WhatsApp)</option>
+                  <option value={48}>48 horas (2 dias)</option>
+                  <option value={72}>72 horas (3 dias)</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch('/api/followup/run', { method: 'POST' });
+                      const d = await res.json();
+                      alert(d.count > 0 ? `Follow-up enviado para ${d.count} lead(s): ${d.leadsFollowedUp.join(', ')}` : 'Nenhum lead dormente precisando de follow-up no momento.');
+                    } catch (e: any) {
+                      alert('Erro ao executar follow-up: ' + e.message);
+                    }
+                  }}
+                  className="w-full bg-white hover:bg-sky-50 text-sky-800 border border-sky-300 font-semibold px-3 py-2 rounded-lg text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-sky-600" />
+                  <span>Verificar & Disparar Follow-ups Agora</span>
+                </button>
               </div>
             </div>
           </div>

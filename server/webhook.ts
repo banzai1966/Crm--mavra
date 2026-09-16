@@ -3,10 +3,13 @@ import {
   processAiConversation,
   transcribeAudioWithGemini,
   analyzeImageWithGemini,
+  analyzeDocumentWithGemini,
+  synthesizeSpeech,
 } from './ai';
 import {
   sendWhatsAppMessage,
   sendWhatsAppMedia,
+  sendWhatsAppVoiceAudio,
   getBase64FromMediaMessage,
 } from './evolution';
 import { Lead, ChatMessage } from '../src/types';
@@ -26,7 +29,16 @@ export function handleIncomingWebhook(body: any): void {
 async function executeWebhookPipeline(body: any): Promise<void> {
   if (!body) return;
 
-  const eventName = body.event || body.type || 'webhook';
+  const eventName = (body.event || body.type || 'webhook').toLowerCase();
+
+  // Only ignore pure presence or contacts sync updates
+  if (
+    eventName === 'presence.update' ||
+    eventName === 'chats.update' ||
+    eventName === 'contacts.update'
+  ) {
+    return;
+  }
 
   // 1. Detect and parse Evolution API v2 event payload
   const data = body.data || body;
@@ -90,34 +102,78 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     body?.messageText ||
     '';
 
-  // Check if message is a voice message / audio note (audioMessage)
-  const isAudioMessage = Boolean(
+  // Check if message is a voice message / audio note (audioMessage or PTT)
+  const audioObj =
     data?.message?.audioMessage ||
     body?.message?.audioMessage ||
+    data?.message?.documentWithCaptionMessage?.message?.audioMessage ||
+    data?.message?.ephemeralMessage?.message?.audioMessage ||
+    data?.message?.viewOnceMessage?.message?.audioMessage;
+
+  const isAudioMessage = Boolean(
+    audioObj ||
     data?.messageType === 'audioMessage' ||
-    body?.messageType === 'audioMessage'
+    body?.messageType === 'audioMessage' ||
+    data?.messageType === 'ptt' ||
+    body?.messageType === 'ptt' ||
+    data?.mediaType === 'audio' ||
+    body?.mediaType === 'audio'
   );
 
   // Check if message is an image/photo (imageMessage)
-  const isImageMessage = Boolean(
+  const imageObj =
     data?.message?.imageMessage ||
     body?.message?.imageMessage ||
+    data?.message?.documentWithCaptionMessage?.message?.imageMessage ||
+    data?.message?.ephemeralMessage?.message?.imageMessage ||
+    data?.message?.viewOnceMessage?.message?.imageMessage;
+
+  const isImageMessage = Boolean(
+    imageObj ||
     data?.messageType === 'imageMessage' ||
-    body?.messageType === 'imageMessage'
+    body?.messageType === 'imageMessage' ||
+    data?.mediaType === 'image' ||
+    body?.mediaType === 'image'
+  );
+
+  // Check if message is a document (PDF, DOCX, TXT, etc.)
+  const documentObj =
+    data?.message?.documentMessage ||
+    body?.message?.documentMessage ||
+    data?.message?.documentWithCaptionMessage?.message?.documentMessage ||
+    data?.message?.ephemeralMessage?.message?.documentMessage ||
+    data?.message?.viewOnceMessage?.message?.documentMessage;
+
+  const isDocumentMessage = Boolean(
+    documentObj ||
+    data?.messageType === 'documentMessage' ||
+    body?.messageType === 'documentMessage' ||
+    data?.mediaType === 'document' ||
+    body?.mediaType === 'document'
   );
 
   let isAudioTranscribed = false;
   let isImageAnalyzed = false;
+  let isDocumentAnalyzed = false;
 
   if (!messageText.trim() && isAudioMessage && db.agentConfig.autoTranscribeAudio !== false) {
-    console.log(`[Webhook] Mensagem de áudio recebida de ${cleanPhone}. Processando transcrição de voz...`);
-    const audioObj = data?.message?.audioMessage || body?.message?.audioMessage;
-    let base64Audio = data?.base64 || body?.base64 || audioObj?.base64;
+    console.log(`[Webhook] Mensagem de áudio recebida de ${cleanPhone}. Processando transcrição de voz com Gemini...`);
+    let base64Audio =
+      data?.base64 ||
+      body?.base64 ||
+      audioObj?.base64 ||
+      data?.message?.base64 ||
+      body?.message?.base64 ||
+      data?.message?.audioMessage?.base64 ||
+      body?.message?.audioMessage?.base64;
+
     const mimeType = audioObj?.mimetype || 'audio/ogg';
 
     // If base64 was not sent in webhook payload, fetch directly from Evolution API
     if (!base64Audio && (data?.key || body?.key)) {
-      base64Audio = await getBase64FromMediaMessage(data?.key || body?.key);
+      const messageKeyToFetch = data?.key || body?.key;
+      console.log(`[Webhook] Baixando base64 do áudio diretamente da Evolution API (ID: ${messageKeyToFetch?.id})...`);
+      base64Audio = await getBase64FromMediaMessage(messageKeyToFetch);
     }
 
     if (base64Audio) {
@@ -127,16 +183,30 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           messageText = transcribedText;
           isAudioTranscribed = true;
           console.log(`[Webhook] Áudio de ${cleanPhone} transcrito com sucesso: "${messageText}"`);
+        } else {
+          console.warn('[Webhook] Transcrição do Gemini retornou vazia.');
+          // Fallback context so the user is never left hanging
+          messageText = '[Mensagem de Voz Recebida via WhatsApp]';
         }
       } catch (err: any) {
-        console.error('[Webhook] Falha ao transcrever áudio:', err.message);
+        console.error('[Webhook] Falha ao transcrever áudio com Gemini:', err.message);
+        messageText = '[Mensagem de Voz Recebida via WhatsApp]';
       }
+    } else {
+      console.warn('[Webhook] Não foi possível obter o arquivo de áudio (base64 ausente na Evolution API).');
+      // If audio file wasn't deliverable by Evolution, Sofia politely responds acknowledging the audio
+      messageText = '[Mensagem de Voz Recebida via WhatsApp - Não foi possível reproduzir o áudio completo]';
     }
   } else if (isImageMessage) {
     // Process image with Gemini Vision AI
     console.log(`[Webhook] Imagem recebida de ${cleanPhone}. Processando análise visual com IA...`);
-    const imageObj = data?.message?.imageMessage || body?.message?.imageMessage;
-    let base64Image = data?.base64 || body?.base64 || imageObj?.base64;
+    let base64Image =
+      data?.base64 ||
+      body?.base64 ||
+      imageObj?.base64 ||
+      data?.message?.base64 ||
+      body?.message?.base64;
+
     const caption = messageText.trim() || imageObj?.caption || '';
     const mimeType = imageObj?.mimetype || 'image/jpeg';
 
@@ -155,6 +225,41 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       } catch (err: any) {
         console.error('[Webhook] Falha ao analisar imagem com IA:', err.message);
       }
+    }
+  } else if (isDocumentMessage) {
+    // Process PDF or document with Gemini Multimodal AI
+    console.log(`[Webhook] Documento/PDF recebido de ${cleanPhone}. Processando leitura com IA...`);
+    let base64Doc =
+      data?.base64 ||
+      body?.base64 ||
+      documentObj?.base64 ||
+      data?.message?.base64 ||
+      body?.message?.base64;
+
+    const docFileName = documentObj?.fileName || data?.message?.documentMessage?.fileName || 'documento.pdf';
+    const docCaption = messageText.trim() || documentObj?.caption || '';
+    const docMime = documentObj?.mimetype || 'application/pdf';
+
+    if (!base64Doc && (data?.key || body?.key)) {
+      base64Doc = await getBase64FromMediaMessage(data?.key || body?.key);
+    }
+
+    if (base64Doc) {
+      try {
+        const docAnalysis = await analyzeDocumentWithGemini(base64Doc, docFileName, docCaption, docMime);
+        if (docAnalysis) {
+          messageText = docCaption
+            ? `${docCaption}\n[Documento/PDF Anexo "${docFileName}"]: ${docAnalysis}`
+            : `[Documento/PDF Anexo "${docFileName}"]: ${docAnalysis}`;
+          isDocumentAnalyzed = true;
+          console.log(`[Webhook] Documento "${docFileName}" de ${cleanPhone} analisado com sucesso!`);
+        }
+      } catch (err: any) {
+        console.error('[Webhook] Falha ao analisar documento/PDF com IA:', err.message);
+        messageText = docCaption || `[Documento PDF Recebido: ${docFileName}]`;
+      }
+    } else {
+      messageText = docCaption || `[Documento PDF Recebido: ${docFileName}]`;
     }
   }
 
@@ -216,6 +321,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     displayText = `🎤 [Áudio Transcrito]: "${messageText.trim()}"`;
   } else if (isImageAnalyzed && !displayText.startsWith('[')) {
     displayText = `📷 [Foto Recebida]: ${displayText}`;
+  } else if (isDocumentAnalyzed && !displayText.startsWith('[')) {
+    displayText = `📄 [Documento/PDF]: ${displayText}`;
   }
 
   const incomingMsg: ChatMessage = {
@@ -274,7 +381,10 @@ async function executeWebhookPipeline(body: any): Promise<void> {
 
   // 6. Process with Multi-IA Engine (Gemini / OpenAI / Anthropic)
   try {
-    const aiResult = await processAiConversation(lead, messageText.trim(), leadHistory);
+    const aiResult = await processAiConversation(lead, messageText.trim(), leadHistory, {
+      isAudioMessage,
+      isImageMessage,
+    });
 
     // 7. Update CRM if Function Calling / Intent detection triggered stage move or info extraction
     let stageTriggered: string | undefined;
@@ -318,14 +428,108 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     db.messages.push(aiMsg);
 
     // 9. Send response back to WhatsApp via Evolution API v2
-    await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
-    aiMsg.status = 'delivered';
+    // Check if voice note (PTT) is enabled
+    const voiceMode = db.agentConfig.voiceResponseMode || 'smart_discernment';
+    const voiceEnabled = db.agentConfig.voiceResponseEnabled !== false && voiceMode !== 'only_text';
+    const maxChars = db.agentConfig.maxAudioChars ?? 220;
+    const maxConsecutive = db.agentConfig.maxConsecutiveAudios ?? 2;
+
+    // Count consecutive audios sent recently to this lead
+    const previousAiMessages = leadHistory.filter((m) => m.sender === 'ai');
+    let consecutiveAudioCount = 0;
+    for (let i = previousAiMessages.length - 1; i >= 0; i--) {
+      if (previousAiMessages[i].text?.startsWith('🎙️ [Áudio de Voz Enviado]')) {
+        consecutiveAudioCount++;
+      } else {
+        break;
+      }
+    }
+
+    // Discernment determination:
+    let shouldSendVoice = false;
+    if (voiceEnabled) {
+      if (voiceMode === 'always_audio') {
+        shouldSendVoice = true;
+      } else if (voiceMode === 'smart_discernment') {
+        if (isAudioMessage) {
+          // O cliente enviou áudio: responde em áudio por padrão (respeitando travas de tamanho e quantidade)
+          shouldSendVoice = aiResult.sendAsVoice !== false;
+        } else {
+          // O cliente enviou texto: REGRA ESTRITA - SEMPRE responde em texto!
+          // Só enviará áudio se o cliente escreveu explicitamente pedindo para ouvir áudio ("manda áudio", "grava um áudio", etc)
+          const requestedVoiceInText = /áudio|audio|grava|voz|ouvir|fala comigo/i.test(messageText);
+          shouldSendVoice = requestedVoiceInText && aiResult.sendAsVoice === true;
+        }
+      }
+    }
+
+    // =========================================================================
+    // TRAVAS INTELIGENTES DE ÁUDIO (Economia de tokens, clareza e anti-spam)
+    // =========================================================================
+    // Trava 1: Se a resposta for longa (> maxChars), SEMPRE mandar em TEXTO
+    if (shouldSendVoice && aiResult.replyText.length > maxChars) {
+      console.log(`[Trava de Áudio] Mensagem tem ${aiResult.replyText.length} caracteres (> limite ${maxChars}). Forçando envio em TEXTO para clareza e economia.`);
+      shouldSendVoice = false;
+    }
+
+    // Trava 2: Se atingiu o limite de áudios seguidos (ex: 2 seguidos), alternar para TEXTO
+    if (shouldSendVoice && consecutiveAudioCount >= maxConsecutive) {
+      console.log(`[Trava de Áudio] Limite atingido (${consecutiveAudioCount} áudios seguidos >= ${maxConsecutive}). Alternando para TEXTO.`);
+      shouldSendVoice = false;
+    }
+
+    // Trava 3: Se houver PIX, links, códigos numéricos ou e-mails, SEMPRE mandar em TEXTO para cópia fácil
+    const hasTechnicalOrCopyableData =
+      aiResult.sendPixInfo ||
+      /https?:\/\/|[\w.-]+@[\w.-]+\.\w+|\b\d{4,}\b/.test(aiResult.replyText);
+    if (shouldSendVoice && hasTechnicalOrCopyableData) {
+      console.log(`[Trava de Áudio] Conteúdo com dados copiáveis/PIX/links detectado. Forçando envio em TEXTO.`);
+      shouldSendVoice = false;
+    }
+
+    if (shouldSendVoice) {
+      console.log(`[Webhook] Gerando áudio de voz Sofia (${db.agentConfig.voiceEngine || 'native_sofia'}) para ${cleanPhone}...`);
+      try {
+        const speechRes = await synthesizeSpeech(aiResult.replyText, {
+          engine: db.agentConfig.voiceEngine || 'native_sofia',
+          voiceName: db.agentConfig.voiceVoiceName || 'pt-BR-FranciscaNeural',
+          apiKey:
+            db.agentConfig.voiceEngine === 'elevenlabs'
+              ? db.agentConfig.elevenLabsApiKey
+              : db.agentConfig.googleTtsApiKey,
+        });
+
+        if (speechRes.success && speechRes.audioBase64) {
+          const voiceSendResult = await sendWhatsAppVoiceAudio(cleanPhone, speechRes.audioBase64);
+          if (voiceSendResult.success) {
+            aiMsg.text = `🎙️ [Áudio de Voz Enviado]: "${aiResult.replyText}"`;
+            aiMsg.status = 'delivered';
+          } else {
+            console.warn('[Webhook] Envio de áudio na Evolution não teve sucesso. Disparando texto como garantia:', voiceSendResult.error);
+            await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+            aiMsg.status = 'delivered';
+          }
+        } else {
+          // Fallback to text if speech synthesis fails
+          console.warn('[Webhook] Falha ao sintetizar áudio, enviando texto:', speechRes.error);
+          await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+          aiMsg.status = 'delivered';
+        }
+      } catch (voiceErr: any) {
+        console.warn('[Webhook] Erro no envio de áudio, caindo para texto:', voiceErr.message);
+        await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+        aiMsg.status = 'delivered';
+      }
+    } else {
+      await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+      aiMsg.status = 'delivered';
+    }
 
     // 10. If the lead requested catalog/presentation and a PDF URL is configured, send the PDF document
     if (aiResult.sendCatalogPdf && db.agentConfig.catalogPdfUrl) {
       console.log(`[Webhook] Enviando PDF de apresentação para ${cleanPhone}...`);
       const pdfUrl = db.agentConfig.catalogPdfUrl;
-      const pdfName = db.agentConfig.catalogPdfName || 'Apresentacao_Oficial_MAVRA.pdf';
+      const pdfName = db.agentConfig.catalogPdfName || 'Apresentacao_Oficial_NEXA_CRM.pdf';
       await sendWhatsAppMedia(
         cleanPhone,
         pdfUrl,
@@ -338,6 +542,22 @@ async function executeWebhookPipeline(body: any): Promise<void> {
         phone: cleanPhone,
         sender: 'ai',
         text: `📄 [Documento Enviado]: "${pdfName}"`,
+        timestamp: new Date().toISOString(),
+        status: 'delivered',
+      });
+    }
+
+    // 11. If the lead requested PIX information, send copy-paste key box
+    if (aiResult.sendPixInfo && db.agentConfig.pixKey) {
+      console.log(`[Webhook] Enviando chave PIX oficial para ${cleanPhone}...`);
+      const pixMessage = `💳 *Chave PIX Oficial NEXA CRM:*\n\`${db.agentConfig.pixKey}\`\n(Tipo: ${db.agentConfig.pixKeyType || 'E-mail'})\n\nAssim que efetuar o pagamento, basta me enviar o comprovante por aqui que já daremos andamento na sua ativação! ✨`;
+      await sendWhatsAppMessage(cleanPhone, pixMessage);
+      db.messages.push({
+        id: 'msg-' + Date.now() + '-pix',
+        leadId: lead.id,
+        phone: cleanPhone,
+        sender: 'ai',
+        text: pixMessage,
         timestamp: new Date().toISOString(),
         status: 'delivered',
       });

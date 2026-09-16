@@ -9,8 +9,12 @@ import {
   fetchRemoteWebhookConfig,
   setRemoteWebhookConfig,
   sanitizeEvolutionUrl,
+  getEvolutionQRCode,
+  createEvolutionInstance,
+  logoutEvolutionInstance,
+  fetchAllEvolutionInstances,
 } from './server/evolution';
-import { processAiConversation } from './server/ai';
+import { processAiConversation, synthesizeSpeech } from './server/ai';
 import { ChatMessage } from './src/types';
 
 async function startServer() {
@@ -59,26 +63,57 @@ async function startServer() {
 
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
-    const { phone, message, pushName } = req.body;
+    const { phone, message, pushName, mediaType, fileName } = req.body;
     if (!phone || !message) {
       return res.status(400).json({ error: 'Telefone e mensagem são obrigatórios' });
     }
 
-    const simulatedPayload = {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const simulatedPayload: any = {
       event: 'messages.upsert',
       data: {
         key: {
-          remoteJid: `${phone.replace(/\D/g, '')}@s.whatsapp.net`,
+          remoteJid: `${cleanPhone}@s.whatsapp.net`,
           fromMe: false,
           id: 'SIM-' + Date.now(),
         },
         pushName: pushName || 'Lead WhatsApp',
-        message: {
-          conversation: message,
-        },
-        messageType: 'conversation',
+        message: {},
       },
     };
+
+    if (mediaType === 'audio') {
+      simulatedPayload.data.messageType = 'audioMessage';
+      simulatedPayload.data.message = {
+        conversation: message,
+        audioMessage: {
+          mimetype: 'audio/ogg; codecs=opus',
+          seconds: 8,
+        },
+      };
+    } else if (mediaType === 'document') {
+      simulatedPayload.data.messageType = 'documentMessage';
+      simulatedPayload.data.message = {
+        documentMessage: {
+          fileName: fileName || 'comprovante_pix.pdf',
+          mimetype: 'application/pdf',
+          caption: message,
+        },
+      };
+    } else if (mediaType === 'image') {
+      simulatedPayload.data.messageType = 'imageMessage';
+      simulatedPayload.data.message = {
+        imageMessage: {
+          caption: message,
+          mimetype: 'image/jpeg',
+        },
+      };
+    } else {
+      simulatedPayload.data.messageType = 'conversation';
+      simulatedPayload.data.message = {
+        conversation: message,
+      };
+    }
 
     // Return immediate confirmation
     res.status(200).json({ status: 'simulated_queued' });
@@ -273,6 +308,12 @@ async function startServer() {
     res.json(db.agentConfig);
   });
 
+  // Trigger manual or background follow-up check for dormant leads
+  app.post('/api/followup/run', async (req: Request, res: Response) => {
+    const executed = await runDormantLeadFollowUp();
+    res.json({ success: true, count: executed.length, leadsFollowedUp: executed });
+  });
+
   // Instant AI playground testing endpoint
   app.post('/api/test-ai', async (req: Request, res: Response) => {
     const { prompt, leadMock } = req.body;
@@ -298,6 +339,26 @@ async function startServer() {
       res.json(result);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Voice synthesis testing endpoint for instant audio preview in UI
+  app.post('/api/test-voice', async (req: Request, res: Response) => {
+    const { text, apiKey, voiceName, engine } = req.body;
+    const testText = text || 'Olá! Aqui é a Sofia da MAVRA. Tudo bem com você? Como posso te ajudar hoje?';
+    try {
+      const result = await synthesizeSpeech(testText, {
+        apiKey,
+        voiceName,
+        engine,
+      });
+      if (result.success && result.audioBase64) {
+        res.json({ success: true, audioBase64: result.audioBase64, engineUsed: result.engineUsed, notice: result.notice });
+      } else {
+        res.status(400).json({ success: false, error: result.error || 'Falha ao sintetizar áudio' });
+      }
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
     }
   });
 
@@ -334,7 +395,14 @@ async function startServer() {
   // =========================================================================
   // 5. EVOLUTION API & SUPABASE CONFIGURATION
   // =========================================================================
-  app.get('/api/evolution-config', (req: Request, res: Response) => {
+  app.get('/api/evolution-config', async (req: Request, res: Response) => {
+    // Dynamically check live connection state with the VPS
+    try {
+      const status = await checkEvolutionStatus();
+      db.evolutionConfig.isConnected = status.isConnected;
+      db.evolutionConfig.state = status.state;
+      if (status.qrcode) db.evolutionConfig.qrcode = status.qrcode;
+    } catch (e) {}
     res.json(db.evolutionConfig);
   });
 
@@ -357,6 +425,40 @@ async function startServer() {
     db.evolutionConfig.qrcode = status.qrcode;
     db.evolutionConfig.lastTestedAt = new Date().toISOString();
     res.json(db.evolutionConfig);
+  });
+
+  // Fetch live QR Code for connecting WhatsApp
+  app.get('/api/evolution/qrcode', async (req: Request, res: Response) => {
+    const instance = req.query.instance as string | undefined;
+    const result = await getEvolutionQRCode(instance);
+    res.json(result);
+  });
+
+  // Fetch all instances from VPS
+  app.get('/api/evolution/instances', async (req: Request, res: Response) => {
+    const result = await fetchAllEvolutionInstances();
+    res.json(result);
+  });
+
+  // Create a new instance dynamically
+  app.post('/api/evolution/create-instance', async (req: Request, res: Response) => {
+    const { instanceName } = req.body;
+    if (!instanceName) {
+      return res.status(400).json({ error: 'instanceName é obrigatório' });
+    }
+    const result = await createEvolutionInstance(instanceName);
+    res.json(result);
+  });
+
+  // Logout / Disconnect instance
+  app.post('/api/evolution/logout', async (req: Request, res: Response) => {
+    const { instanceName } = req.body;
+    const result = await logoutEvolutionInstance(instanceName);
+    if (result.success) {
+      db.evolutionConfig.isConnected = false;
+      db.evolutionConfig.state = 'disconnected';
+    }
+    res.json(result);
   });
 
   // Check what webhook URL is currently configured inside the Evolution API VPS
@@ -438,7 +540,80 @@ async function startServer() {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`MAVRA Server running on http://0.0.0.0:${PORT}`);
     console.log(`Master Admin: Marco Duarte (marco.agduarte22@gmail.com)`);
+
+    // Run follow-up check periodically every 30 minutes
+    setInterval(async () => {
+      try {
+        if (db.agentConfig.autoFollowUpEnabled && db.agentConfig.isGlobalAiActive !== false) {
+          await runDormantLeadFollowUp();
+        }
+      } catch (err) {
+        console.error('[Follow-up Timer Error]:', err);
+      }
+    }, 1000 * 60 * 30);
   });
+}
+
+/**
+ * Intelligent follow-up engine: checks for leads without response for > X hours
+ * and sends a friendly re-engagement message crafted in Sofia's voice.
+ */
+async function runDormantLeadFollowUp(): Promise<string[]> {
+  const config = db.agentConfig;
+  const delayHours = config.followUpDelayHours || 24;
+  const thresholdMs = Date.now() - delayHours * 60 * 60 * 1000;
+  const followedUpLeadNames: string[] = [];
+
+  for (const lead of db.leads) {
+    // Skip if AI is paused for this lead or if lead is already won/lost
+    if (lead.aiPaused) continue;
+    if (lead.stageId === 'stage-5' || lead.stageId === 'stage-6') continue;
+
+    // Check last interaction timestamp
+    const lastTime = new Date(lead.lastInteraction || lead.createdAt).getTime();
+    if (lastTime < thresholdMs) {
+      // Check last message sender
+      const leadMsgs = db.messages.filter((m) => m.leadId === lead.id);
+      const lastMsg = leadMsgs[leadMsgs.length - 1];
+
+      // Only follow up if the last message was from AI or if lead stopped answering
+      if (lastMsg && lastMsg.sender !== 'lead') {
+        // Skip if already followed up recently (check last message text)
+        if (lastMsg.text.includes('passando para ver se conseguiu dar uma olhadinha') ||
+            lastMsg.text.includes('conseguiu avaliar nossa proposta')) {
+          continue;
+        }
+
+        console.log(`[Follow-Up Automático] Lead dormente identificado: ${lead.name} (${lead.phone})`);
+        
+        const followUpText = `Olá, ${lead.name.split(' ')[0]}! Tudo bem? Passando rapidinho para ver se você conseguiu dar uma olhadinha no material e se restou alguma dúvida que eu possa te esclarecer por aqui? 😊`;
+
+        // Send via WhatsApp
+        await sendWhatsAppMessage(lead.phone, followUpText);
+
+        const newMsg: ChatMessage = {
+          id: 'msg-' + Date.now() + '-followup',
+          leadId: lead.id,
+          phone: lead.phone,
+          sender: 'ai',
+          text: `🔄 [Follow-up Automático]: ${followUpText}`,
+          timestamp: new Date().toISOString(),
+          status: 'delivered',
+        };
+
+        db.messages.push(newMsg);
+        lead.lastInteraction = new Date().toISOString();
+        lead.notes = `${lead.notes || ''}\n[${new Date().toLocaleDateString('pt-BR')}] Follow-up automático de ${delayHours}h disparado por Sofia.`;
+        followedUpLeadNames.push(lead.name);
+      }
+    }
+  }
+
+  if (followedUpLeadNames.length > 0) {
+    await db.saveToFile();
+  }
+
+  return followedUpLeadNames;
 }
 
 startServer();

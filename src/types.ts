@@ -73,6 +73,18 @@ export interface AgentConfig {
   typingDelayMs?: number;
   catalogPdfUrl?: string;
   catalogPdfName?: string;
+  voiceResponseEnabled?: boolean;
+  voiceResponseMode?: 'smart_discernment' | 'always_audio' | 'only_text';
+  voiceEngine?: 'native_sofia' | 'google_cloud_tts' | 'elevenlabs';
+  voiceVoiceName?: string;
+  maxConsecutiveAudios?: number;
+  maxAudioChars?: number;
+  googleTtsApiKey?: string;
+  elevenLabsApiKey?: string;
+  pixKey?: string;
+  pixKeyType?: 'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria';
+  autoFollowUpEnabled?: boolean;
+  followUpDelayHours?: number;
 }
 
 export interface EvolutionConfig {

@@ -284,13 +284,15 @@ export default function App() {
   const handleSimulateWebhook = async (
     phone: string,
     message: string,
-    pushName: string
+    pushName: string,
+    mediaType?: 'text' | 'audio' | 'document' | 'image',
+    fileName?: string
   ) => {
     try {
       await fetch('/api/webhook/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, message, pushName }),
+        body: JSON.stringify({ phone, message, pushName, mediaType, fileName }),
       });
       // Quick refresh of leads
       setTimeout(async () => {

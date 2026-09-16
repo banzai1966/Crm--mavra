@@ -143,6 +143,114 @@ export async function sendWhatsAppMedia(
 }
 
 /**
+ * Sends a real WhatsApp Voice Note (PTT / Blue Microphone Waveform)
+ * Accepts base64 audio (MP3/OGG) or public URL
+ */
+export async function sendWhatsAppVoiceAudio(
+  phone: string,
+  base64OrUrl: string
+): Promise<EvolutionSendResult> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const cleanPhone = phone.replace(/\D/g, '');
+
+  if (!cleanPhone || !base64OrUrl) {
+    return { success: false, error: 'Telefone ou áudio ausente' };
+  }
+
+  const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
+  if (isDummyUrl || !config.apiKey) {
+    console.log(`[Evolution API Simulada] Áudio de voz (PTT) enviado para ${cleanPhone} (${base64OrUrl.slice(0, 30)}...)`);
+    return { success: true, messageId: 'simulated-voice-' + Date.now() };
+  }
+
+  try {
+    const endpoint = `${baseUrl}/message/sendWhatsAppAudio/${encodeURIComponent(config.instanceName.trim())}`;
+    
+    const rawBase64 = base64OrUrl.replace(/^data:[^;]+;base64,/, '');
+    const audioData = `data:audio/mp3;base64,${rawBase64}`;
+
+    console.log(`[Evolution API] Disparando áudio de voz PTT para ${cleanPhone} (${rawBase64.length} chars base64)...`);
+
+    // Attempt 1: Standard sendWhatsAppAudio with encoding: true
+    let response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: config.apiKey.trim(),
+      },
+      body: JSON.stringify({
+        number: cleanPhone,
+        audio: audioData,
+        delay: 500,
+        encoding: true,
+      }),
+    });
+
+    // Attempt 2: sendWhatsAppAudio with raw base64 and encoding: true
+    if (!response.ok) {
+      console.warn(`[Evolution] Tentativa 1 de áudio falhou (${response.status}). Tentando formato raw base64...`);
+      
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: config.apiKey.trim(),
+        },
+        body: JSON.stringify({
+          number: cleanPhone,
+          audio: rawBase64,
+          delay: 500,
+          encoding: true,
+        }),
+      });
+    }
+
+    // Attempt 3: sendMedia fallback as audio/mp3
+    if (!response.ok) {
+      console.warn(`[Evolution] Tentativa 2 de áudio falhou (${response.status}). Tentando via sendMedia...`);
+      const altEndpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(config.instanceName.trim())}`;
+      const altResponse = await fetch(altEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: config.apiKey.trim(),
+        },
+        body: JSON.stringify({
+          number: cleanPhone,
+          mediatype: 'audio',
+          mimetype: 'audio/mp3',
+          media: audioData,
+          delay: 500,
+        }),
+      });
+
+      if (altResponse.ok) {
+        const altData = await altResponse.json();
+        console.log(`[Evolution API] Áudio enviado com sucesso via sendMedia para ${cleanPhone}!`);
+        return {
+          success: true,
+          messageId: altData?.key?.id || altData?.id || 'voice-' + Date.now(),
+        };
+      }
+
+      const errText = await response.text();
+      console.warn(`Evolution sendWhatsAppAudio HTTP ${response.status}:`, errText);
+      return { success: false, error: `Evolution sendWhatsAppAudio HTTP ${response.status}: ${errText.slice(0, 100)}` };
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      messageId: data?.key?.id || data?.id || 'voice-' + Date.now(),
+    };
+  } catch (err: any) {
+    console.warn('Falha ao enviar áudio na Evolution API:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
  * Downloads base64 audio/media directly from Evolution API v2 if not included in the webhook payload
  */
 export async function getBase64FromMediaMessage(messageKey: {
@@ -166,7 +274,11 @@ export async function getBase64FromMediaMessage(messageKey: {
       },
       body: JSON.stringify({
         message: {
-          key: messageKey,
+          key: {
+            id: messageKey.id,
+            remoteJid: messageKey.remoteJid,
+            fromMe: messageKey.fromMe || false,
+          },
         },
         convertToMp4: false,
       }),
@@ -315,3 +427,191 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string): Promise<
     return { success: false, error: err.message };
   }
 }
+
+/**
+ * Fetch QR Code or connection state for an instance from Evolution API v2
+ */
+export async function getEvolutionQRCode(targetInstance?: string): Promise<{
+  success: boolean;
+  state: string;
+  qrcode?: string; // base64 string or image url
+  pairingCode?: string;
+  count?: number;
+  error?: string;
+}> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const instance = encodeURIComponent((targetInstance || config.instanceName).trim());
+
+  if (!baseUrl || !config.apiKey) {
+    return { success: false, state: 'disconnected', error: 'Servidor Evolution não configurado' };
+  }
+
+  try {
+    const endpoint = `${baseUrl}/instance/connect/${instance}`;
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        apikey: config.apiKey.trim(),
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      // Evolution returns { base64: "data:image/png;base64,...", code: "...", pairingCode: "..." } or similar
+      const qrcode = data?.base64 || data?.qrcode?.base64 || (typeof data?.code === 'string' && data.code.startsWith('data:') ? data.code : undefined);
+      const pairingCode = data?.pairingCode || data?.pairing;
+      const state = data?.instance?.state || data?.state || (qrcode ? 'connecting' : 'open');
+      
+      return {
+        success: true,
+        state,
+        qrcode: qrcode || (data?.code ? data.code : undefined),
+        pairingCode,
+        count: data?.count,
+      };
+    }
+
+    const errText = await response.text();
+    return { success: false, state: 'disconnected', error: `HTTP ${response.status}: ${errText.slice(0, 150)}` };
+  } catch (err: any) {
+    return { success: false, state: 'disconnected', error: err.message };
+  }
+}
+
+/**
+ * Create a new Evolution instance directly via API
+ */
+export async function createEvolutionInstance(instanceName: string): Promise<{
+  success: boolean;
+  data?: any;
+  error?: string;
+}> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const cleanName = instanceName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+
+  if (!baseUrl || !config.apiKey) {
+    return { success: false, error: 'Servidor Evolution não configurado' };
+  }
+  if (!cleanName) {
+    return { success: false, error: 'Nome de instância inválido' };
+  }
+
+  try {
+    const endpoint = `${baseUrl}/instance/create`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: config.apiKey.trim(),
+      },
+      body: JSON.stringify({
+        instanceName: cleanName,
+        token: config.apiKey.trim(),
+        qrcode: true,
+        integration: 'WHATSAPP-BAILEYS',
+      }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (response.ok || response.status === 201 || (data?.message && data.message.includes('already in use'))) {
+      return { success: true, data };
+    }
+
+    return {
+      success: false,
+      error: data?.response?.message?.[0] || data?.message || `HTTP ${response.status}`,
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Disconnect (Logout) an Evolution instance
+ */
+export async function logoutEvolutionInstance(targetInstance?: string): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const instance = encodeURIComponent((targetInstance || config.instanceName).trim());
+
+  if (!baseUrl || !config.apiKey) {
+    return { success: false, error: 'Servidor Evolution não configurado' };
+  }
+
+  try {
+    const endpoint = `${baseUrl}/instance/logout/${instance}`;
+    const response = await fetch(endpoint, {
+      method: 'DELETE',
+      headers: {
+        apikey: config.apiKey.trim(),
+      },
+    });
+
+    if (response.ok) {
+      return { success: true, message: 'Instância desconectada com sucesso!' };
+    }
+    const errText = await response.text();
+    return { success: false, error: `HTTP ${response.status}: ${errText.slice(0, 100)}` };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Fetch all available instances directly from Evolution API VPS
+ */
+export async function fetchAllEvolutionInstances(): Promise<{
+  success: boolean;
+  instances: Array<{
+    name: string;
+    connectionStatus: string;
+    profileName?: string;
+    profilePictureUrl?: string;
+  }>;
+  error?: string;
+}> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+
+  if (!baseUrl || !config.apiKey) {
+    return { success: false, instances: [], error: 'Servidor Evolution não configurado' };
+  }
+
+  try {
+    const endpoint = `${baseUrl}/instance/fetchInstances`;
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        apikey: config.apiKey.trim(),
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const list = Array.isArray(data) ? data : (data?.instances || []);
+      const mapped = list.map((item: any) => {
+        const inst = item?.instance || item;
+        return {
+          name: inst?.instanceName || inst?.name || '',
+          connectionStatus: inst?.status || inst?.state || item?.connectionStatus || 'close',
+          profileName: inst?.profileName || item?.profileName,
+          profilePictureUrl: inst?.profilePictureUrl || item?.profilePictureUrl,
+        };
+      }).filter((item: any) => item.name);
+
+      return { success: true, instances: mapped };
+    }
+
+    const errText = await response.text();
+    return { success: false, instances: [], error: `HTTP ${response.status}: ${errText.slice(0, 100)}` };
+  } catch (err: any) {
+    return { success: false, instances: [], error: err.message };
+  }
+}
+

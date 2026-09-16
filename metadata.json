@@ -1,6 +1,6 @@
 {
-  "name": "MAVRA - CRM Conversacional Autônomo",
-  "description": "Plataforma de CRM Visual Kanban com atendimento inteligente Multi-IA, base de conhecimento dinâmica e conexão nativa com WhatsApp via Evolution API v2 e Supabase.",
+  "name": "NEXA CRM - Inteligência Conversacional Autônoma",
+  "description": "Plataforma corporativa de CRM Conversacional com atendimento inteligente Multi-IA no WhatsApp via Evolution API v2 e Supabase.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

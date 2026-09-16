@@ -154,7 +154,7 @@ class Database {
 
   public agentConfig: AgentConfig = {
     personaName: 'Sofia Mendes',
-    role: 'Especialista em Soluções Comerciais MAVRA',
+    role: 'Especialista em Soluções Comerciais NEXA CRM',
     toneOfVoice: 'Profissional, empático, dinâmico, consultivo e focado em conversão de vendas',
     salesGoal: 'Descobrir as dores do lead, tirar dúvidas com base no catálogo oficial, qualificar o tamanho da operação e avançar a oportunidade no funil de vendas',
     activeProvider: 'gemini',
@@ -162,8 +162,8 @@ class Database {
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
-    knowledgeFaq: `P: Como funciona o atendimento inteligente da MAVRA?
-R: A MAVRA integra inteligência artificial avançada diretamente ao WhatsApp da sua empresa, atendendo clientes 24 horas por dia com respostas personalizadas e atualizando o CRM em tempo real.
+    knowledgeFaq: `P: Como funciona o atendimento inteligente do NEXA CRM?
+R: O NEXA CRM integra inteligência artificial avançada diretamente ao WhatsApp da sua empresa, atendendo clientes 24 horas por dia com respostas personalizadas e atualizando o CRM em tempo real.
 
 P: O que acontece se o atendente humano quiser assumir?
 R: Basta clicar no botão "Assumir Atendimento" na Central de Chat. A inteligência artificial pausa instantaneamente para aquele cliente e a equipe humana continua a conversa com total naturalidade.
@@ -174,9 +174,9 @@ R: O sistema possui uma base de conhecimento exclusiva alimentada com catálogos
 P: Como funciona a garantia e suporte?
 R: Oferecemos suporte dedicado e acompanhamento completo, com implementação ágil e personalizada para a sua empresa.`,
     knowledgeCatalog: `SOLUÇÕES DISPONÍVEIS:
-1. MAVRA Starter: Ideal para empresas em crescimento, com atendimento automatizado inteligente no WhatsApp e CRM visual integrado.
-2. MAVRA Professional: Para equipes comerciais ativas, com múltiplos números de atendimento, qualificação avançada de clientes e movimentação automática de funil.
-3. MAVRA Enterprise: Solução corporativa de alta performance, com personalização completa de regras de negócio, suporte prioritário e capacidade ilimitada de atendimentos.`,
+1. NEXA Starter: Ideal para empresas em crescimento, com atendimento automatizado inteligente no WhatsApp e CRM visual integrado.
+2. NEXA Professional: Para equipes comerciais ativas, com múltiplos números de atendimento, qualificação avançada de clientes e movimentação automática de funil.
+3. NEXA Enterprise: Solução corporativa de alta performance, com personalização completa de regras de negócio, suporte prioritário e capacidade ilimitada de atendimentos.`,
     knowledgePricing: `CONDIÇÕES COMERCIAIS E FORMAS DE PAGAMENTO:
 - Pagamento facilitado via PIX ou Cartão de Crédito em até 12x.
 - Implantação e treinamento assistido para sua equipe.
@@ -194,7 +194,19 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
     autoTranscribeAudio: true,
     typingDelayMs: 1500,
     catalogPdfUrl: '',
-    catalogPdfName: 'Apresentacao_Oficial_MAVRA.pdf',
+    catalogPdfName: 'Apresentacao_Oficial_NEXA_CRM.pdf',
+    voiceResponseEnabled: true,
+    voiceResponseMode: 'smart_discernment',
+    voiceEngine: 'native_sofia',
+    voiceVoiceName: 'pt-BR-FranciscaNeural',
+    maxConsecutiveAudios: 2,
+    maxAudioChars: 220,
+    googleTtsApiKey: '',
+    elevenLabsApiKey: '',
+    pixKey: 'marco.agduarte22@gmail.com',
+    pixKeyType: 'email',
+    autoFollowUpEnabled: true,
+    followUpDelayHours: 24,
   };
 
   public documents: KnowledgeDocument[] = [
@@ -220,8 +232,8 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
     serverUrl: process.env.EVOLUTION_API_URL || 'https://api.makprojetosmake.com.br',
     apiKey: process.env.EVOLUTION_API_KEY || 'CE08ADFF7647-4B88-91A4-55E66D9A0620',
     instanceName: process.env.EVOLUTION_INSTANCE || 'agente-ia',
-    isConnected: true,
-    state: 'connected',
+    isConnected: false,
+    state: 'disconnected',
     lastTestedAt: new Date().toISOString(),
   };
 

@@ -17,7 +17,10 @@ import {
   Check,
   PanelRightClose,
   PanelRightOpen,
-  MessageSquare
+  MessageSquare,
+  FileText,
+  Mic,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Lead, ChatMessage, KanbanStage } from '../types';
 
@@ -376,9 +379,53 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                         </div>
 
                         {/* Message text */}
-                        <p className="text-xs leading-relaxed whitespace-pre-wrap">
-                          {msg.text}
-                        </p>
+                        {msg.text.startsWith('📄 [Documento') ? (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-1.5 p-2 bg-slate-100/90 rounded-lg text-slate-800 border border-slate-200">
+                              <FileText className="w-4 h-4 text-emerald-700 shrink-0" />
+                              <span className="font-semibold text-xs truncate">
+                                {msg.text.split(']:')[0].replace('📄 [', '').replace(']', '')}
+                              </span>
+                            </div>
+                            <p className="text-xs leading-relaxed whitespace-pre-wrap">
+                              {msg.text.includes(']:') ? msg.text.split(']:')[1]?.trim() : msg.text}
+                            </p>
+                          </div>
+                        ) : msg.text.startsWith('🎙️ [Áudio') || msg.text.startsWith('🎤 [Áudio') ? (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-2 p-2 bg-purple-50/90 rounded-lg text-purple-900 border border-purple-200">
+                              <Mic className="w-4 h-4 text-purple-700 shrink-0" />
+                              <div className="flex-1 flex items-center gap-0.5">
+                                <span className="h-2 w-0.5 bg-purple-500 rounded-full"></span>
+                                <span className="h-3 w-0.5 bg-purple-600 rounded-full"></span>
+                                <span className="h-4 w-0.5 bg-purple-700 rounded-full"></span>
+                                <span className="h-2 w-0.5 bg-purple-500 rounded-full"></span>
+                                <span className="h-3.5 w-0.5 bg-purple-600 rounded-full"></span>
+                                <span className="h-2 w-0.5 bg-purple-400 rounded-full"></span>
+                              </div>
+                              <span className="text-[10px] font-bold text-purple-800">
+                                {msg.text.startsWith('🎙️') ? 'Voz Sofia Enviada' : 'Áudio Recebido'}
+                              </span>
+                            </div>
+                            <p className="text-xs leading-relaxed whitespace-pre-wrap italic">
+                              {msg.text.replace(/^[🎙️🎤]\s*\[[^\]]+\]:\s*/, '')}
+                            </p>
+                          </div>
+                        ) : msg.text.startsWith('📷 [Foto') ? (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-1.5 p-2 bg-amber-50/90 rounded-lg text-amber-900 border border-amber-200">
+                              <ImageIcon className="w-4 h-4 text-amber-700 shrink-0" />
+                              <span className="text-xs font-semibold">Foto / Imagem WhatsApp</span>
+                            </div>
+                            <p className="text-xs leading-relaxed whitespace-pre-wrap">
+                              {msg.text.replace(/^📷\s*\[[^\]]+\]:\s*/, '')}
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-xs leading-relaxed whitespace-pre-wrap">
+                            {msg.text}
+                          </p>
+                        )}
 
                         {/* Stage trigger tag if AI moved the lead */}
                         {msg.stageTriggered && (

@@ -20,7 +20,11 @@ import {
   Info,
   Activity,
   Trash2,
-  Inbox
+  Inbox,
+  X,
+  Plus,
+  LogOut,
+  Smartphone
 } from 'lucide-react';
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
@@ -28,7 +32,13 @@ interface EvolutionSettingsProps {
   evolutionConfig: EvolutionConfig;
   onSaveConfig: (config: EvolutionConfig) => Promise<void>;
   onTestConnection: () => Promise<void>;
-  onSimulateWebhook: (phone: string, message: string, pushName: string) => Promise<void>;
+  onSimulateWebhook: (
+    phone: string,
+    message: string,
+    pushName: string,
+    mediaType?: 'text' | 'audio' | 'document' | 'image',
+    fileName?: string
+  ) => Promise<void>;
 }
 
 export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
@@ -38,6 +48,11 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   onSimulateWebhook,
 }) => {
   const [config, setConfig] = useState<EvolutionConfig>(evolutionConfig);
+
+  // Keep local config in sync with parent evolutionConfig
+  useEffect(() => {
+    setConfig(evolutionConfig);
+  }, [evolutionConfig]);
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
@@ -96,6 +111,154 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     });
   };
 
+  // Instant QR Code & Multiple Instance Management State
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState<string | null>(null);
+  const [qrPairingCode, setQrPairingCode] = useState<string | null>(null);
+  const [qrStatusText, setQrStatusText] = useState<string>('Carregando QR Code...');
+  const [isQrLoading, setIsQrLoading] = useState(false);
+  const [selectedInstanceTab, setSelectedInstanceTab] = useState<'agente-ia' | 'demo-ao-vivo' | 'custom'>('agente-ia');
+  const [newInstanceName, setNewInstanceName] = useState('');
+  const [customInstanceInput, setCustomInstanceInput] = useState('');
+  const [isCreatingInstance, setIsCreatingInstance] = useState(false);
+  const [createFeedback, setCreateFeedback] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [availableInstances, setAvailableInstances] = useState<Array<{ name: string; connectionStatus: string }>>([]);
+  const [isLoadingInstances, setIsLoadingInstances] = useState(false);
+
+  // Fetch real instances from VPS
+  const fetchInstancesFromVps = async () => {
+    setIsLoadingInstances(true);
+    try {
+      const res = await fetch('/api/evolution/instances');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.instances)) {
+        setAvailableInstances(data.instances);
+      }
+    } catch (err) {
+      console.warn('Erro ao listar instâncias:', err);
+    } finally {
+      setIsLoadingInstances(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInstancesFromVps();
+  }, []);
+
+  // Function to load live QR Code from backend
+  const loadQrCode = async (instanceToLoad?: string) => {
+    const targetInst = instanceToLoad || config.instanceName;
+    setIsQrLoading(true);
+    setQrStatusText('Solicitando QR Code na VPS...');
+    try {
+      const res = await fetch(`/api/evolution/qrcode?instance=${encodeURIComponent(targetInst)}`);
+      const data = await res.json();
+      if (data.success) {
+        if (data.qrcode) {
+          setQrCodeData(data.qrcode);
+          setQrPairingCode(data.pairingCode || null);
+          setQrStatusText('Aguardando leitura do QR Code pelo celular...');
+        } else if (data.state === 'open' || data.state === 'connected') {
+          setQrCodeData(null);
+          setQrStatusText('✅ WhatsApp já está conectado nesta instância!');
+        } else {
+          setQrCodeData(null);
+          setQrStatusText(`Status da instância: ${data.state}`);
+        }
+      } else {
+        setQrStatusText(data.error || 'Não foi possível obter o QR Code');
+      }
+    } catch (err: any) {
+      setQrStatusText('Erro ao buscar QR Code: ' + err.message);
+    } finally {
+      setIsQrLoading(false);
+    }
+  };
+
+  // Poll QR Code state while modal is open
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showQrModal) {
+      loadQrCode(config.instanceName);
+      interval = setInterval(() => {
+        loadQrCode(config.instanceName);
+      }, 5000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [showQrModal, config.instanceName]);
+
+  // Handle Switch Instance Tab
+  const handleSelectInstanceTab = (inst: 'agente-ia' | 'demo-ao-vivo' | 'custom', customName?: string) => {
+    setSelectedInstanceTab(inst);
+    let targetName = 'agente-ia';
+    if (inst === 'demo-ao-vivo') targetName = 'demo-ao-vivo';
+    if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
+
+    const updated = {
+      ...config,
+      serverUrl: 'https://api.makprojetosmake.com.br',
+      apiKey: 'CE08ADFF7647-4B88-91A4-55E66D9A0620',
+      instanceName: targetName,
+    };
+    setConfig(updated);
+    onSaveConfig(updated);
+  };
+
+  // Handle Create Instance
+  const handleCreateInstance = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newInstanceName.trim()) return;
+    setIsCreatingInstance(true);
+    setCreateFeedback(null);
+    try {
+      const clean = newInstanceName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+      const res = await fetch('/api/evolution/create-instance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instanceName: clean }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCreateFeedback(`Instância "${clean}" criada com sucesso!`);
+        handleSelectInstanceTab('custom', clean);
+        setTimeout(() => setShowQrModal(true), 600);
+      } else {
+        setCreateFeedback(`Erro: ${data.error || 'Falha ao criar instância'}`);
+      }
+    } catch (err: any) {
+      setCreateFeedback('Erro ao criar: ' + err.message);
+    } finally {
+      setIsCreatingInstance(false);
+    }
+  };
+
+  // Handle Logout / Disconnect
+  const handleLogoutInstance = async () => {
+    if (!confirm(`Deseja desconectar o WhatsApp da instância "${config.instanceName}"?`)) return;
+    setIsLoggingOut(true);
+    try {
+      const res = await fetch('/api/evolution/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instanceName: config.instanceName }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Instância desconectada com sucesso! O QR Code poderá ser lido novamente.');
+        loadQrCode(config.instanceName);
+      } else {
+        alert('Erro ao desconectar: ' + (data.error || 'Erro desconhecido'));
+      }
+    } catch (err: any) {
+      alert('Erro ao desconectar: ' + err.message);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   // Helper to extract clean URL without label leftovers
   const cleanUrlString = (val: string) => {
     const match = val.match(/https?:\/\/[^\s"'<>]+/i);
@@ -106,8 +269,32 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   const [simPhone, setSimPhone] = useState('5511999998888');
   const [simPushName, setSimPushName] = useState('Juliana Costa (Lead Teste)');
   const [simMessage, setSimMessage] = useState('Olá! Gostaria de saber os valores do plano Enterprise para 8 atendentes.');
+  const [simMediaType, setSimMediaType] = useState<'text' | 'audio' | 'document' | 'image'>('text');
+  const [simFileName, setSimFileName] = useState('comprovante_pix_2900.pdf');
   const [isSimulating, setIsSimulating] = useState(false);
   const [simSuccess, setSimSuccess] = useState(false);
+
+  const handleApplyPreset = (type: 'text' | 'audio' | 'document' | 'image') => {
+    setSimMediaType(type);
+    if (type === 'text') {
+      setSimPhone('5511999998888');
+      setSimPushName('Juliana Costa (Lead Teste)');
+      setSimMessage('Olá! Gostaria de saber os valores do plano Enterprise para 8 atendentes.');
+    } else if (type === 'audio') {
+      setSimPhone('5511988887777');
+      setSimPushName('Carlos Eduardo (Áudio WhatsApp)');
+      setSimMessage('Oi Sofia! Gostei muito da apresentação do CRM e queria saber se vocês oferecem treinamento pra equipe e qual o prazo de implementação?');
+    } else if (type === 'document') {
+      setSimPhone('5511977776666');
+      setSimPushName('Roberto Almeida (Comprovante PIX)');
+      setSimMessage('Acabei de fazer o PIX de R$ 2.900,00 referente à adesão do plano anual. Segue o comprovante em PDF para liberação!');
+      setSimFileName('comprovante_pix_2900.pdf');
+    } else if (type === 'image') {
+      setSimPhone('5511966665555');
+      setSimPushName('Fernanda Lima (Foto Proposta)');
+      setSimMessage('Sofia, tirei uma foto da tabela com a quantidade de usuários que precisamos na nossa filial. Dá uma olhada e me passa o orçamento fechado.');
+    }
+  };
 
   // Dynamically derive current origin webhook URL
   const webhookUrl = `${window.location.origin}/api/webhook`;
@@ -194,7 +381,13 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     setIsSimulating(true);
     setSimSuccess(false);
     try {
-      await onSimulateWebhook(simPhone.trim(), simMessage.trim(), simPushName.trim());
+      await onSimulateWebhook(
+        simPhone.trim(),
+        simMessage.trim(),
+        simPushName.trim(),
+        simMediaType,
+        simMediaType === 'document' ? simFileName.trim() : undefined
+      );
       setSimSuccess(true);
       setTimeout(() => setSimSuccess(false), 4000);
     } finally {
@@ -217,7 +410,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </h2>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Conecte sua VPS diretamente com o MAVRA sem precisar de n8n, Typebot ou intermediários.
+              Conecte seu WhatsApp comercial ou instâncias de teste ao vivo para demonstrações com clientes.
             </p>
           </div>
 
@@ -234,9 +427,201 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                   evolutionConfig.isConnected ? 'bg-emerald-600 animate-pulse' : 'bg-rose-600'
                 }`}
               ></span>
-              {evolutionConfig.isConnected ? 'Instância Conectada' : 'Aguardando Conexão'}
+              {evolutionConfig.isConnected ? 'WhatsApp Conectado' : 'Aguardando Leitura do QR'}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setShowQrModal(true)}
+              id="btn-open-qrcode-modal"
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-xs cursor-pointer transition-all"
+            >
+              <QrCode className="w-4 h-4" />
+              <span>Conectar / Ver QR Code</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 0. SELETOR RÁPIDO DE INSTÂNCIAS (ESTILO AMBULATÓRIO IA) */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <Smartphone className="w-4 h-4 text-indigo-600" />
+              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                Instância Ativa para Atendimento & Demonstração
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-500">
+              Alterne entre seu número oficial e instâncias de demonstração ao vivo
             </span>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Tab 1: Instância Oficial Marco Duarte */}
+            <div
+              onClick={() => handleSelectInstanceTab('agente-ia')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'agente-ia'
+                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900">Marco Duarte (Oficial)</span>
+                {config.instanceName === 'agente-ia' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-slate-700">agente-ia</strong>
+              </p>
+              <span className="inline-block text-[10px] text-indigo-700 font-semibold bg-indigo-100/70 px-2 py-0.5 rounded mt-2">
+                Número Comercial Principal
+              </span>
+            </div>
+
+            {/* Tab 2: Instância Curinga para Demonstrações / Dra. Lúcia */}
+            <div
+              onClick={() => handleSelectInstanceTab('demo-ao-vivo')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'demo-ao-vivo'
+                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900">Demonstração ao Vivo</span>
+                {config.instanceName === 'demo-ao-vivo' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-slate-700">demo-ao-vivo</strong>
+              </p>
+              <span className="inline-block text-[10px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded mt-2">
+                Curinga (Clientes / Dra. Lúcia)
+              </span>
+            </div>
+
+            {/* Tab 3: Personalizada / Criar Nova */}
+            <div
+              onClick={() => {
+                const target = customInstanceInput.trim() || (config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' ? config.instanceName : 'cliente-novo');
+                handleSelectInstanceTab('custom', target);
+              }}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo'
+                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900">Outro Cliente / Personalizada</span>
+                {config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-indigo-700">{config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' ? config.instanceName : 'Clique para ativar'}</strong>
+              </p>
+              <span className="inline-block text-[10px] text-indigo-800 font-semibold bg-indigo-100/70 px-2 py-0.5 rounded mt-2">
+                {config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' ? 'Instância Ativada' : 'Ativar Instância de Cliente'}
+              </span>
+            </div>
+          </div>
+
+          {/* Lista de instâncias reais encontradas na VPS ou campo rápido de ativação */}
+          {availableInstances.length > 0 && (
+            <div className="bg-slate-50/80 p-3 rounded-xl border border-slate-200/80 flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+                <Server className="w-3.5 h-3.5 text-slate-500" />
+                Instâncias encontradas na sua VPS:
+              </span>
+              {availableInstances.map((inst) => (
+                <button
+                  key={inst.name}
+                  type="button"
+                  onClick={() => handleSelectInstanceTab('custom', inst.name)}
+                  className={`text-xs px-2.5 py-1 rounded-lg font-mono font-medium border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    config.instanceName === inst.name
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      inst.connectionStatus === 'open' || inst.connectionStatus === 'connected'
+                        ? 'bg-emerald-400'
+                        : 'bg-slate-400'
+                    }`}
+                  ></span>
+                  <span>{inst.name}</span>
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={fetchInstancesFromVps}
+                disabled={isLoadingInstances}
+                className="text-[10px] text-indigo-700 hover:underline flex items-center gap-1 ml-auto cursor-pointer"
+                title="Recarregar instâncias da VPS"
+              >
+                <RefreshCw className={`w-3 h-3 ${isLoadingInstances ? 'animate-spin' : ''}`} />
+                <span>Atualizar lista</span>
+              </button>
+            </div>
+          )}
+
+          {/* Form to dynamically create or switch to a new instance */}
+          <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-slate-100">
+            <input
+              type="text"
+              placeholder="Nome da instância (ex: dra-lucia-murata)"
+              value={newInstanceName}
+              onChange={(e) => {
+                setNewInstanceName(e.target.value);
+                setCustomInstanceInput(e.target.value);
+              }}
+              className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-slate-400 w-full sm:w-auto"
+            />
+            <button
+              type="button"
+              onClick={handleCreateInstance}
+              disabled={isCreatingInstance || !newInstanceName.trim()}
+              className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer transition-all shrink-0 w-full sm:w-auto justify-center"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>{isCreatingInstance ? 'Criando na VPS...' : 'Criar Instância & Gerar QR'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                loadQrCode(config.instanceName);
+                setShowQrModal(true);
+              }}
+              className="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer transition-all shrink-0 w-full sm:w-auto justify-center"
+            >
+              <QrCode className="w-3.5 h-3.5" />
+              <span>Ver QR da Selecionada</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogoutInstance}
+              disabled={isLoggingOut}
+              className="flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer transition-all shrink-0 w-full sm:w-auto justify-center"
+              title="Desconectar o aparelho desta instância para ler outro celular"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>{isLoggingOut ? 'Desconectando...' : 'Desconectar'}</span>
+            </button>
+          </div>
+
+          {createFeedback && (
+            <p className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 p-2 rounded-lg">
+              {createFeedback}
+            </p>
+          )}
         </div>
 
         {/* 1. WEBHOOK BLINDADO (<50ms) COPY BOX & AUTO-GRAVAÇÃO NA VPS */}
@@ -245,7 +630,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             <div className="flex items-center gap-2 text-slate-900">
               <Zap className="w-4 h-4 text-emerald-600" />
               <h3 className="text-sm font-bold text-slate-900">
-                URL do Webhook do Mavra CRM (Substituto Direto do n8n)
+                URL do Webhook do Nexa CRM (Substituto Direto do n8n)
               </h3>
             </div>
 
@@ -264,7 +649,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
           </div>
 
           <p className="text-xs text-slate-600 leading-relaxed">
-            O Mavra CRM substitui totalmente o n8n: ele recebe o webhook da Evolution API diretamente, cadastra o lead, aciona a IA Sofia e dispara a resposta de volta ao WhatsApp. Para que a Evolution API saiba onde enviar as mensagens, esta URL precisa estar configurada na sua instância.
+            O Nexa CRM substitui totalmente o n8n: ele recebe o webhook da Evolution API diretamente, cadastra o lead, aciona a IA Sofia e dispara a resposta de volta ao WhatsApp. Para que a Evolution API saiba onde enviar as mensagens, esta URL precisa estar configurada na sua instância.
           </p>
 
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5">
@@ -446,6 +831,98 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             Teste o recebimento de mensagens e assista o webhook blindado processar em background, cadastrar o lead no CRM, invocar a IA e mover o card no Kanban automaticamente!
           </p>
 
+          {/* Cenários de Teste Rápidos (1-clique) */}
+          <div className="space-y-2">
+            <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+              🧪 Escolha o Tipo de Mídia para Simular:
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button
+                type="button"
+                onClick={() => handleApplyPreset('text')}
+                className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  simMediaType === 'text'
+                    ? 'bg-indigo-50/90 border-indigo-300 ring-2 ring-indigo-500/20 shadow-xs'
+                    : 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                  <span>💬</span>
+                  <span>Texto Puro</span>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 line-clamp-1">
+                  Pergunta comum
+                </span>
+                <span className="text-[10px] font-semibold text-indigo-700 mt-1">
+                  Sofia responde em TEXTO
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleApplyPreset('audio')}
+                className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  simMediaType === 'audio'
+                    ? 'bg-purple-50/90 border-purple-300 ring-2 ring-purple-500/20 shadow-xs'
+                    : 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                  <span>🎙️</span>
+                  <span>Áudio de Voz</span>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 line-clamp-1">
+                  Mensagem de voz
+                </span>
+                <span className="text-[10px] font-semibold text-purple-700 mt-1">
+                  Sofia responde em ÁUDIO
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleApplyPreset('document')}
+                className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  simMediaType === 'document'
+                    ? 'bg-emerald-50/90 border-emerald-300 ring-2 ring-emerald-500/20 shadow-xs'
+                    : 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                  <span>📄</span>
+                  <span>Documento / PDF</span>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 line-clamp-1">
+                  Comprovante PIX
+                </span>
+                <span className="text-[10px] font-semibold text-emerald-700 mt-1">
+                  IA analisa PDF
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleApplyPreset('image')}
+                className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  simMediaType === 'image'
+                    ? 'bg-amber-50/90 border-amber-300 ring-2 ring-amber-500/20 shadow-xs'
+                    : 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                  <span>📷</span>
+                  <span>Foto / Imagem</span>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 line-clamp-1">
+                  Foto de orçamento
+                </span>
+                <span className="text-[10px] font-semibold text-amber-700 mt-1">
+                  IA analisa foto
+                </span>
+              </button>
+            </div>
+          </div>
+
           <form onSubmit={handleRunSimulation} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -475,6 +952,21 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                 />
               </div>
             </div>
+
+            {simMediaType === 'document' && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Nome do Arquivo PDF / Documento
+                </label>
+                <input
+                  type="text"
+                  value={simFileName}
+                  onChange={(e) => setSimFileName(e.target.value)}
+                  placeholder="comprovante_pix_2900.pdf"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-slate-400"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -630,6 +1122,148 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
           )}
         </div>
       </div>
+
+      {/* MODAL DE CONEXÃO WHATSAPP / QR CODE (ESTILO AMBULATÓRIO IA) */}
+      {showQrModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-indigo-700 to-indigo-800 text-white p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/10 rounded-lg">
+                  <QrCode className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base">Conexão WhatsApp Comercial</h3>
+                  <p className="text-xs text-indigo-200">
+                    Pareamento fácil via QR Code do seu celular
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowQrModal(false)}
+                className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-5 text-center">
+              {/* Status card */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex items-center justify-between">
+                <div className="text-left">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                    Status da Instância ({config.instanceName})
+                  </span>
+                  <span className="text-xs font-semibold text-slate-800">
+                    {qrStatusText}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => loadQrCode(config.instanceName)}
+                  disabled={isQrLoading}
+                  className="p-2 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors cursor-pointer"
+                  title="Atualizar QR Code"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isQrLoading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+
+              {/* QR Code Container */}
+              <div className="flex flex-col items-center justify-center min-h-[260px] p-4 bg-white border-2 border-dashed border-indigo-200 rounded-2xl">
+                {isQrLoading && !qrCodeData ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
+                    <span className="text-xs text-slate-500 font-medium">
+                      Buscando QR Code na VPS Evolution...
+                    </span>
+                  </div>
+                ) : qrCodeData ? (
+                  <div className="space-y-3">
+                    <div className="p-2 bg-white rounded-xl shadow-md border border-slate-200 inline-block">
+                      <img
+                        src={qrCodeData.startsWith('data:') ? qrCodeData : `data:image/png;base64,${qrCodeData}`}
+                        alt="QR Code WhatsApp"
+                        className="w-56 h-56 object-contain mx-auto"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      Aguardando leitura pelo aplicativo do seu celular...
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 py-6">
+                    <CheckCircle2 className="w-12 h-12 text-emerald-600" />
+                    <p className="text-sm font-bold text-slate-900">
+                      WhatsApp Conectado com Sucesso!
+                    </p>
+                    <p className="text-xs text-slate-500 max-w-xs">
+                      A instância <strong>{config.instanceName}</strong> está ativa e recebendo mensagens.
+                    </p>
+                  </div>
+                )}
+
+                {/* Pairing Code Alternative */}
+                {qrPairingCode && (
+                  <div className="mt-3 p-2 bg-slate-100 rounded-lg text-center font-mono">
+                    <span className="text-[10px] text-slate-500 block uppercase">
+                      Ou digite este Código de Pareamento:
+                    </span>
+                    <strong className="text-sm text-slate-900 tracking-wider">
+                      {qrPairingCode}
+                    </strong>
+                  </div>
+                )}
+              </div>
+
+              {/* Passo a Passo para Conectar */}
+              <div className="bg-slate-50 rounded-xl p-4 text-left border border-slate-200 space-y-2 text-xs">
+                <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
+                  Passo a Passo para Conectar:
+                </p>
+                <ol className="text-[11px] text-slate-600 space-y-1 list-decimal list-inside">
+                  <li>Abra o <strong>WhatsApp</strong> no celular comercial.</li>
+                  <li>Toque em <strong>Configurações</strong> (iPhone) ou <strong>Mais opções ⋮</strong> (Android).</li>
+                  <li>Selecione <strong>Dispositivos Conectados</strong>.</li>
+                  <li>Toque em <strong>Conectar um dispositivo</strong> e aponte a câmera para o QR Code acima.</li>
+                </ol>
+              </div>
+
+              {/* Botões do Modal */}
+              <div className="flex items-center justify-between pt-2">
+                <button
+                  type="button"
+                  onClick={() => loadQrCode(config.instanceName)}
+                  disabled={isQrLoading}
+                  className="flex items-center gap-1.5 text-xs text-indigo-700 font-semibold hover:underline cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Atualizar QR Code</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowQrModal(false)}
+                  className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  Fechar
+                </button>
+              </div>
+
+              <div className="pt-1">
+                <span className="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  Conexão direta encriptada ponta a ponta via Evolution API oficial.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

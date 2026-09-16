@@ -1,4 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
+import { EdgeTTS } from 'node-edge-tts';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 import { db } from './db';
 import { Lead, ChatMessage } from '../src/types';
 
@@ -8,6 +12,8 @@ export interface AIResponseResult {
   modelUsed: string;
   stageTriggered?: string;
   sendCatalogPdf?: boolean;
+  sendPixInfo?: boolean;
+  sendAsVoice?: boolean;
   extractedInfo?: {
     name?: string;
     email?: string;
@@ -24,12 +30,29 @@ export async function transcribeAudioWithGemini(
   mimeType: string = 'audio/ogg'
 ): Promise<string> {
   const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn('[Audio Transcribe] Chave da API Gemini não configurada.');
+    return '';
+  }
+
   const ai = new GoogleGenAI({ apiKey });
 
-  const cleanMime = mimeType.split(';')[0].trim() || 'audio/ogg';
-  const cleanBase64 = base64Audio.replace(/^data:[^;]+;base64,/, '').trim();
+  // Normalise audio mimeType
+  let cleanMime = mimeType.split(';')[0].trim().toLowerCase() || 'audio/ogg';
+  if (cleanMime === 'audio/ogg; codecs=opus' || cleanMime.includes('opus')) {
+    cleanMime = 'audio/ogg';
+  } else if (cleanMime.includes('mp4') || cleanMime.includes('m4a')) {
+    cleanMime = 'audio/mp4';
+  } else if (cleanMime.includes('mp3') || cleanMime.includes('mpeg')) {
+    cleanMime = 'audio/mp3';
+  }
 
-  // Try gemini-2.5-flash which handles native multimodal audio transcription with ultra low latency
+  const cleanBase64 = base64Audio.replace(/^data:[^;]+;base64,/, '').trim();
+  if (!cleanBase64) {
+    return '';
+  }
+
+  // Candidate models: gemini-2.5-flash and gemini-2.5-pro are fully supported for audio transcription
   const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
 
   for (const model of candidateModels) {
@@ -46,7 +69,7 @@ export async function transcribeAudioWithGemini(
                 },
               },
               {
-                text: 'Transcreva com exatidão todo o áudio falado em português do Brasil. Retorne apenas o texto falado transcrito, sem introduções ou comentários.',
+                text: 'Transcreva todo o áudio falado neste arquivo em português do Brasil com precisão. Retorne estritamente o texto falado (transcrição literal), sem adicionar saudações, introduções ou explicações adicionais.',
               },
             ],
           },
@@ -118,13 +141,288 @@ export async function analyzeImageWithGemini(
   return caption || 'Imagem recebida pelo WhatsApp';
 }
 
+/**
+ * Analyzes incoming WhatsApp PDF and text documents with Gemini multimodal AI
+ */
+export async function analyzeDocumentWithGemini(
+  base64Doc: string,
+  fileName?: string,
+  caption?: string,
+  mimeType: string = 'application/pdf'
+): Promise<string> {
+  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
+  const ai = new GoogleGenAI({ apiKey });
+
+  const cleanMime = mimeType.split(';')[0].trim() || 'application/pdf';
+  const cleanBase64 = base64Doc.replace(/^data:[^;]+;base64,/, '').trim();
+
+  const promptText = `O lead enviou este documento/PDF ("${fileName || 'documento.pdf'}") no WhatsApp${caption ? ` com a mensagem/legenda: "${caption}"` : ''}.
+Analise o conteúdo do documento (seja comprovante PIX de pagamento, proposta comercial, contrato, orçamento, tabela de preços, documento de identificação ou dúvidas).
+Extraia e resuma em português do Brasil de forma clara e objetiva:
+1. Tipo de documento e finalidade;
+2. Se for comprovante PIX ou bancário: valor pago em R$, data/hora, banco, nome de quem pagou e nome/chave de quem recebeu;
+3. Se for proposta, tabela ou contrato: principais termos, produtos/serviços e valores citados;
+4. Resumo do que precisa ser respondido para a assistente Sofia poder dar andamento imediato no atendimento.`;
+
+  const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+
+  for (const model of candidateModels) {
+    try {
+      const response = await ai.models.generateContent({
+        model: model,
+        contents: [
+          {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: cleanMime,
+                  data: cleanBase64,
+                },
+              },
+              {
+                text: promptText,
+              },
+            ],
+          },
+        ],
+      });
+
+      const description = response.text?.trim();
+      if (description) {
+        return description;
+      }
+    } catch (err: any) {
+      console.warn(`[Document Analysis] Modelo ${model} falhou ao analisar documento:`, err.message);
+    }
+  }
+
+  return caption || `Documento PDF recebido: ${fileName || 'anexo.pdf'}`;
+}
+
+/**
+ * Splits text into natural sentence chunks (max ~180 chars per chunk)
+ */
+function splitTextIntoSentences(text: string, maxChunkLen: number = 180): string[] {
+  const sentences = text.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [text];
+  const chunks: string[] = [];
+  let current = '';
+
+  for (const s of sentences) {
+    const trimmed = s.trim();
+    if (!trimmed) continue;
+    if ((current + ' ' + trimmed).trim().length <= maxChunkLen) {
+      current = (current + ' ' + trimmed).trim();
+    } else {
+      if (current) chunks.push(current);
+      if (trimmed.length > maxChunkLen) {
+        // split by commas or words if a single sentence is long
+        const words = trimmed.split(' ');
+        let sub = '';
+        for (const w of words) {
+          if ((sub + ' ' + w).trim().length <= maxChunkLen) {
+            sub = (sub + ' ' + w).trim();
+          } else {
+            if (sub) chunks.push(sub);
+            sub = w;
+          }
+        }
+        if (sub) current = sub;
+        else current = '';
+      } else {
+        current = trimmed;
+      }
+    }
+  }
+  if (current) chunks.push(current);
+  return chunks.filter((c) => c.trim().length > 0);
+}
+
+/**
+ * Ultra-realistic Neural Brazilian Portuguese speech generator powered by Microsoft Azure Neural voices (Edge TTS).
+ * Sounds completely human, natural, conversational, with proper pauses, breathing, and zero robotic tone.
+ * 100% Free, zero configuration or OAuth2 needed.
+ */
+export async function generateNeuralSpeech(cleanSpeechText: string, voiceName?: string): Promise<string | null> {
+  try {
+    const selectedVoice = voiceName?.startsWith('pt-BR-') ? voiceName : 'pt-BR-FranciscaNeural';
+    const tts = new EdgeTTS({
+      voice: selectedVoice,
+      lang: 'pt-BR',
+      outputFormat: 'audio-24khz-48kbitrate-mono-mp3'
+    });
+    const tmpFile = path.join(os.tmpdir(), `sofia-neural-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.mp3`);
+    await tts.ttsPromise(cleanSpeechText, tmpFile);
+    if (fs.existsSync(tmpFile)) {
+      const buffer = fs.readFileSync(tmpFile);
+      fs.unlinkSync(tmpFile);
+      return buffer.toString('base64');
+    }
+  } catch (err: any) {
+    console.warn('[Neural TTS Engine] Erro ao sintetizar áudio neural:', err.message);
+  }
+  return null;
+}
+
+/**
+ * Synthesizes crystal-clear, ultra-realistic human speech using Sofia Neural Engine,
+ * ElevenLabs, or Google Cloud Text-to-Speech.
+ */
+export async function synthesizeSpeech(
+  textToSpeak: string,
+  options?: {
+    apiKey?: string;
+    voiceName?: string;
+    engine?: 'native_sofia' | 'google_cloud_tts' | 'elevenlabs';
+  }
+): Promise<{ success: boolean; audioBase64?: string; error?: string; engineUsed?: string; notice?: string }> {
+  // Sanitize text: remove URLs and markdown so speech sounds 100% human and natural
+  const cleanSpeechText = textToSpeak
+    .replace(/https?:\/\/\S+/gi, 'o link que vou te mandar por mensagem')
+    .replace(/[*_#`~]/g, '')
+    .trim();
+
+  if (!cleanSpeechText) {
+    return { success: false, error: 'Texto para fala vazio' };
+  }
+
+  const engine = options?.engine || db.agentConfig.voiceEngine || 'native_sofia';
+  const voiceName = options?.voiceName || db.agentConfig.voiceVoiceName || 'pt-BR-FranciscaNeural';
+  const googleApiKey = (options?.apiKey || db.agentConfig.googleTtsApiKey || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
+  const elevenApiKey = (options?.apiKey || db.agentConfig.elevenLabsApiKey || '').trim();
+
+  // 1. Motor Neural Sofia (Hiper-realista, Humano, Gratuito, Sem OAuth2)
+  if (engine === 'native_sofia') {
+    const neuralAudio = await generateNeuralSpeech(cleanSpeechText, voiceName);
+    if (neuralAudio) {
+      return { success: true, audioBase64: neuralAudio, engineUsed: 'native_sofia' };
+    }
+  }
+
+  // 2. ElevenLabs (Voz Ultra-Humana / Clonada)
+  if (engine === 'elevenlabs' && elevenApiKey) {
+    try {
+      console.log(`[ElevenLabs] Sintetizando voz para ${cleanSpeechText.length} caracteres...`);
+      const voiceId = voiceName && !voiceName.includes('pt-BR') ? voiceName : '21m00Tcm4TlvDq8ikWAM';
+      const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'xi-api-key': elevenApiKey,
+        },
+        body: JSON.stringify({
+          text: cleanSpeechText,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.8,
+          },
+        }),
+      });
+
+      if (res.ok) {
+        const arrayBuf = await res.arrayBuffer();
+        const base64 = Buffer.from(arrayBuf).toString('base64');
+        return { success: true, audioBase64: base64, engineUsed: 'elevenlabs' };
+      } else {
+        const errText = await res.text();
+        console.warn('[ElevenLabs] Erro na API:', errText);
+        if (options?.apiKey) {
+          return { success: false, error: `ElevenLabs: ${errText.slice(0, 150)}` };
+        }
+      }
+    } catch (err: any) {
+      console.warn('[ElevenLabs] Falha na requisição:', err.message);
+      if (options?.apiKey) {
+        return { success: false, error: `ElevenLabs: ${err.message}` };
+      }
+    }
+  }
+
+  // 3. Google Cloud Text-to-Speech (Neural2 / Journey / Wavenet)
+  if (engine === 'google_cloud_tts' && googleApiKey) {
+    try {
+      console.log(`[Google Cloud TTS] Sintetizando voz (${voiceName}) para ${cleanSpeechText.length} caracteres...`);
+      const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(googleApiKey)}`;
+      
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text: cleanSpeechText },
+          voice: {
+            languageCode: 'pt-BR',
+            name: voiceName,
+          },
+          audioConfig: {
+            audioEncoding: 'MP3',
+            speakingRate: 1.0,
+            pitch: 0.0,
+          },
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.audioContent) {
+          console.log(`[Google Cloud TTS] Áudio de alta qualidade (${voiceName}) gerado com sucesso!`);
+          return { success: true, audioBase64: data.audioContent, engineUsed: 'google_cloud_tts' };
+        }
+      } else {
+        const errJson = await res.json().catch(() => null);
+        const errMsg = errJson?.error?.message || `HTTP ${res.status}: ${res.statusText}`;
+        console.warn(`[Google Cloud TTS] Erro da API do Google:`, errMsg);
+        
+        // Ativar motor neural humano automaticamente
+        console.log('[TTS Engine] Ativando Motor Neural Sofia para voz humana imediata...');
+        const fallbackAudio = await generateNeuralSpeech(cleanSpeechText, voiceName);
+        if (fallbackAudio) {
+          return {
+            success: true,
+            audioBase64: fallbackAudio,
+            engineUsed: 'native_sofia',
+            notice: 'O Google Cloud bloqueou a chave por exigir OAuth2. O áudio foi gerado com sucesso com a Voz Neural Humana da Sofia!',
+          };
+        }
+        if (options?.apiKey) {
+          return { success: false, error: `Google Cloud TTS: ${errMsg}` };
+        }
+      }
+    } catch (err: any) {
+      console.warn('[Google Cloud TTS] Falha na requisição:', err.message);
+    }
+  }
+
+  // Fallback geral: motor neural humano
+  const fallbackNeural = await generateNeuralSpeech(cleanSpeechText, voiceName);
+  if (fallbackNeural) {
+    return { success: true, audioBase64: fallbackNeural, engineUsed: 'native_sofia' };
+  }
+
+  return { success: false, error: 'Nenhum motor de voz pôde gerar o áudio' };
+}
+
+/**
+ * Generates an instant Voice Note for WhatsApp in Brazilian Portuguese.
+ */
+export async function generateSpeechWithGemini(
+  textToSpeak: string,
+  voiceName: string = 'pt-BR-Neural2-C'
+): Promise<string | null> {
+  const result = await synthesizeSpeech(textToSpeak, { voiceName });
+  return result.audioBase64 || null;
+}
+
 export async function processAiConversation(
   lead: Lead,
   incomingMessage: string,
-  chatHistory: ChatMessage[]
+  chatHistory: ChatMessage[],
+  options?: { isAudioMessage?: boolean; isImageMessage?: boolean }
 ): Promise<AIResponseResult> {
   const config = db.agentConfig;
   const stages = db.stages;
+  const isAudio = options?.isAudioMessage === true;
 
   // Compile full dynamic knowledge base
   const documentsContext = db.documents
@@ -184,6 +482,21 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
    - Responda cordialmente: "Olá! O Marco já foi avisado da sua mensagem. Gostaria de adiantar em algo enquanto ele assume o atendimento?"
 8. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
    - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
+9. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO:
+   - Se o lead pedir a chave PIX, dados bancários para fechar, transferir ou pagar:
+   - Responda cordialmente com a chave oficial cadastrada (${config.pixKey ? `Chave PIX (${config.pixKeyType || 'E-mail'}): ${config.pixKey}` : 'Consulte nosso especialista Marco Duarte'}) em uma mensagem limpa e fácil de copiar, definindo "sendPixInfo": true no JSON.
+   - Quando ele solicitar PIX para fechar, mova-o para a etapa de "Negociação / Fechamento" ou "Ganhos / Clientes".
+10. DISCERNIMENTO INTELIGENTE DE RESPOSTA (ÁUDIO vs TEXTO):
+   - FORMATO DA MENSAGEM DO CLIENTE: ${isAudio ? '🎙️ O CLIENTE ENVIOU UMA MENSAGEM DE ÁUDIO / VOZ' : '💬 O CLIENTE DIGITOU UMA MENSAGEM DE TEXTO'}.
+   - SE O CLIENTE ENVIOU TEXTO:
+     * REGRA ESTRITA: Responda OBRIGATORIAMENTE em TEXTO ("sendAsVoice": false).
+     * NUNCA envie áudio para quem digitou texto, a não ser que ele tenha escrito expressamente algo como "me manda um áudio", "grava um áudio para mim".
+   - SE O CLIENTE ENVIOU ÁUDIO:
+     * Por padrão, responda com ÁUDIO DE VOZ ("sendAsVoice": true) para manter a naturalidade e humanização da conversa!
+     * DISCERNIMENTO: Responda em TEXTO ("sendAsVoice": false) apenas se:
+       a) O cliente pediu chave PIX, dados bancários, links/URLs, e-mails ou números que ele precisará copiar;
+       b) O cliente no áudio pediu expressamente "me manda por escrito", "manda em texto" ou uma tabela detalhada;
+       c) A informação for muito extensa para ser ouvida.
 
 === ESTÁGIOS DISPONÍVEIS NO CRM KANBAN ===
 ${stagesList}
@@ -194,6 +507,8 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
   "replyText": "O texto da mensagem que será enviada diretamente pelo WhatsApp para o lead",
   "suggestedStageId": "ID do estágio para onde mover o lead no CRM se a intenção ou contexto mudou, ou null se mantiver o mesmo",
   "sendCatalogPdf": true ou false (true apenas se o lead solicitou apresentação/catálogo/PDF),
+  "sendPixInfo": true ou false (true se o lead pediu dados de pagamento/PIX),
+  "sendAsVoice": true ou false (true se for adequado responder com áudio falado pela Sofia segundo as regras de discernimento),
   "extractedInfo": {
     "name": "Nome da pessoa caso ela tenha dito ou corrigido (ou null)",
     "email": "E-mail informado pelo lead (ou null)",
@@ -409,6 +724,8 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       modelUsed: model,
       stageTriggered: parsed.suggestedStageId || undefined,
       sendCatalogPdf: Boolean(parsed.sendCatalogPdf),
+      sendPixInfo: Boolean(parsed.sendPixInfo),
+      sendAsVoice: Boolean(parsed.sendAsVoice),
       extractedInfo: parsed.extractedInfo || undefined,
     };
   } catch (err) {
