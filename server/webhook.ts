@@ -14,6 +14,30 @@ import {
 } from './evolution';
 import { Lead, ChatMessage } from '../src/types';
 
+// In-memory cache for processed message IDs to prevent double processing & infinite duplicate loops
+const processedMessageIds = new Map<string, number>();
+
+function isDuplicateMessage(messageId?: string): boolean {
+  if (!messageId) return false;
+  const now = Date.now();
+
+  // Garbage collect entries older than 3 minutes
+  if (processedMessageIds.size > 200) {
+    for (const [id, time] of processedMessageIds.entries()) {
+      if (now - time > 180000) {
+        processedMessageIds.delete(id);
+      }
+    }
+  }
+
+  if (processedMessageIds.has(messageId)) {
+    return true;
+  }
+
+  processedMessageIds.set(messageId, now);
+  return false;
+}
+
 export function handleIncomingWebhook(body: any): void {
   // CRITICAL: We execute the entire pipeline inside setImmediate / background async queue
   // so the caller function in server.ts has already returned HTTP 200 within <5ms.
@@ -31,11 +55,15 @@ async function executeWebhookPipeline(body: any): Promise<void> {
 
   const eventName = (body.event || body.type || 'webhook').toLowerCase();
 
-  // Only ignore pure presence or contacts sync updates
+  // Only ignore pure presence, contacts sync, status updates, or receipt confirmations
   if (
     eventName === 'presence.update' ||
     eventName === 'chats.update' ||
-    eventName === 'contacts.update'
+    eventName === 'contacts.update' ||
+    eventName === 'messages.update' ||
+    eventName === 'message.update' ||
+    eventName === 'message.ack' ||
+    eventName === 'send.message'
   ) {
     return;
   }
@@ -55,6 +83,13 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       details: 'Mensagem enviada pelo próprio bot/instância (fromMe=true)',
       rawPayloadSnippet: JSON.stringify(body).slice(0, 150),
     });
+    return;
+  }
+
+  // Check and discard duplicate events sent by Evolution API retries
+  const messageId = key?.id || data?.id || body?.id;
+  if (messageId && isDuplicateMessage(messageId)) {
+    console.log(`[Webhook] Evento duplicado ignorado (ID: ${messageId})`);
     return;
   }
 
@@ -102,13 +137,15 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     body?.messageText ||
     '';
 
-  // Check if message is a voice message / audio note (audioMessage or PTT)
+  // Check if message is a voice message / audio note (audioMessage, PTT or audio media)
   const audioObj =
     data?.message?.audioMessage ||
     body?.message?.audioMessage ||
     data?.message?.documentWithCaptionMessage?.message?.audioMessage ||
     data?.message?.ephemeralMessage?.message?.audioMessage ||
-    data?.message?.viewOnceMessage?.message?.audioMessage;
+    data?.message?.viewOnceMessage?.message?.audioMessage ||
+    data?.audioMessage ||
+    body?.audioMessage;
 
   const isAudioMessage = Boolean(
     audioObj ||
@@ -116,8 +153,12 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     body?.messageType === 'audioMessage' ||
     data?.messageType === 'ptt' ||
     body?.messageType === 'ptt' ||
+    data?.messageType === 'audio' ||
+    body?.messageType === 'audio' ||
     data?.mediaType === 'audio' ||
-    body?.mediaType === 'audio'
+    body?.mediaType === 'audio' ||
+    data?.message?.audio ||
+    body?.message?.audio
   );
 
   // Check if message is an image/photo (imageMessage)
@@ -185,17 +226,18 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           console.log(`[Webhook] Áudio de ${cleanPhone} transcrito com sucesso: "${messageText}"`);
         } else {
           console.warn('[Webhook] Transcrição do Gemini retornou vazia.');
-          // Fallback context so the user is never left hanging
-          messageText = '[Mensagem de Voz Recebida via WhatsApp]';
+          messageText = 'Olá! Recebi seu áudio. Em que posso te ajudar hoje?';
+          isAudioTranscribed = true;
         }
       } catch (err: any) {
         console.error('[Webhook] Falha ao transcrever áudio com Gemini:', err.message);
-        messageText = '[Mensagem de Voz Recebida via WhatsApp]';
+        messageText = 'Olá! Recebi seu áudio. Como posso te auxiliar?';
+        isAudioTranscribed = true;
       }
     } else {
       console.warn('[Webhook] Não foi possível obter o arquivo de áudio (base64 ausente na Evolution API).');
-      // If audio file wasn't deliverable by Evolution, Sofia politely responds acknowledging the audio
-      messageText = '[Mensagem de Voz Recebida via WhatsApp - Não foi possível reproduzir o áudio completo]';
+      messageText = 'Olá! Recebi sua mensagem de voz. Poderia me contar mais sobre como posso te ajudar?';
+      isAudioTranscribed = true;
     }
   } else if (isImageMessage) {
     // Process image with Gemini Vision AI
@@ -413,6 +455,36 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       }
     }
 
+    // Handle Urgency Detection
+    if (aiResult.isUrgent) {
+      lead.isUrgent = true;
+      lead.urgencyReason = aiResult.urgencyReason || 'Paciente/lead relatou dor aguda ou situação crítica';
+      if (!lead.tags.includes('URGENTE')) {
+        lead.tags.unshift('URGENTE');
+      }
+      lead.notes = `${lead.notes || ''}\n🚨 [URGÊNCIA ${new Date().toLocaleTimeString('pt-BR')}]: ${lead.urgencyReason}`;
+      console.log(`[Webhook 🚨 URGÊNCIA DETECTADA] Lead ${lead.name} (${cleanPhone}): ${lead.urgencyReason}`);
+    }
+
+    // Handle Pre-appointment Triage Extraction
+    if (aiResult.triage && (aiResult.triage.procedure || aiResult.triage.preferredPeriod || aiResult.triage.preferredDays)) {
+      lead.triage = {
+        ...(lead.triage || {}),
+        procedure: aiResult.triage.procedure || lead.triage?.procedure,
+        preferredPeriod: aiResult.triage.preferredPeriod || lead.triage?.preferredPeriod,
+        preferredDays: aiResult.triage.preferredDays || lead.triage?.preferredDays,
+        paymentType: aiResult.triage.paymentType || lead.triage?.paymentType || 'particular',
+        convenioName: aiResult.triage.convenioName || lead.triage?.convenioName,
+        isUrgent: aiResult.isUrgent || lead.isUrgent,
+        urgencyReason: aiResult.urgencyReason || lead.urgencyReason,
+        status: lead.triage?.status || 'pending_confirmation',
+      };
+      if (!lead.tags.includes('Triagem Agendada')) {
+        lead.tags.push('Triagem Agendada');
+      }
+      lead.notes = `${lead.notes || ''}\n🗓️ [Triagem ${new Date().toLocaleDateString('pt-BR')}]: ${lead.triage.procedure || 'Consulta'} - Período: ${lead.triage.preferredPeriod || 'A definir'} (${lead.triage.preferredDays || 'dias flexíveis'})`;
+    }
+
     // 8. Register AI reply in chat history
     const aiMsg: ChatMessage = {
       id: 'msg-' + Date.now() + '-ai',
@@ -431,8 +503,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     // Check if voice note (PTT) is enabled
     const voiceMode = db.agentConfig.voiceResponseMode || 'smart_discernment';
     const voiceEnabled = db.agentConfig.voiceResponseEnabled !== false && voiceMode !== 'only_text';
-    const maxChars = db.agentConfig.maxAudioChars ?? 220;
-    const maxConsecutive = db.agentConfig.maxConsecutiveAudios ?? 2;
+    const maxChars = db.agentConfig.maxAudioChars ?? 450;
+    const maxConsecutive = db.agentConfig.maxConsecutiveAudios ?? 4;
 
     // Count consecutive audios sent recently to this lead
     const previousAiMessages = leadHistory.filter((m) => m.sender === 'ai');
@@ -455,10 +527,10 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           // O cliente enviou áudio: responde em áudio por padrão (respeitando travas de tamanho e quantidade)
           shouldSendVoice = aiResult.sendAsVoice !== false;
         } else {
-          // O cliente enviou texto: REGRA ESTRITA - SEMPRE responde em texto!
-          // Só enviará áudio se o cliente escreveu explicitamente pedindo para ouvir áudio ("manda áudio", "grava um áudio", etc)
-          const requestedVoiceInText = /áudio|audio|grava|voz|ouvir|fala comigo/i.test(messageText);
-          shouldSendVoice = requestedVoiceInText && aiResult.sendAsVoice === true;
+          // Se o cliente enviou texto, a IA decide se é adequado mandar áudio (ex: sendAsVoice === true)
+          // ou se o cliente pediu expressamente por áudio no texto
+          const requestedVoiceInText = /áudio|audio|grava|voz|ouvir|fala comigo|manda voz/i.test(messageText);
+          shouldSendVoice = requestedVoiceInText || aiResult.sendAsVoice === true;
         }
       }
     }

@@ -5,6 +5,8 @@ import { LiveChat } from './components/LiveChat';
 import { AgentBuilder } from './components/AgentBuilder';
 import { EvolutionSettings } from './components/EvolutionSettings';
 import { SupabaseSettings } from './components/SupabaseSettings';
+import { ExecutiveDashboard } from './components/ExecutiveDashboard';
+import { AdminAuthModal } from './components/AdminAuthModal';
 import {
   Lead,
   KanbanStage,
@@ -16,7 +18,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'kanban' | 'chat' | 'agent' | 'evolution' | 'supabase'
+    'dashboard' | 'kanban' | 'chat' | 'agent' | 'evolution' | 'supabase'
   >('kanban');
 
   const [stages, setStages] = useState<KanbanStage[]>([]);
@@ -55,6 +57,25 @@ export default function App() {
 
   const [documents, setDocuments] = useState<KnowledgeDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Admin Mestre state (defaults to true if unlocked in localStorage, or false for clean client mode)
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
+    return localStorage.getItem('nexa_admin_unlocked') === 'true';
+  });
+  const [showAdminAuthModal, setShowAdminAuthModal] = useState(false);
+
+  const handleUnlockAdmin = () => {
+    setIsAdminUnlocked(true);
+  };
+
+  const handleLockAdmin = () => {
+    localStorage.removeItem('nexa_admin_unlocked');
+    setIsAdminUnlocked(false);
+    // If on a technical tab, return safely to kanban
+    if (activeTab === 'agent' || activeTab === 'evolution' || activeTab === 'supabase') {
+      setActiveTab('kanban');
+    }
+  };
 
   // Initial load
   const loadAllData = async () => {
@@ -164,6 +185,33 @@ export default function App() {
     }
   };
 
+  const handleClearAllLeads = async () => {
+    try {
+      const res = await fetch('/api/leads/clear-all', { method: 'POST' });
+      if (res.ok) {
+        setLeads([]);
+        setSelectedLeadId(null);
+      }
+    } catch (err) {
+      console.error('Erro ao limpar base de leads:', err);
+    }
+  };
+
+  const handleRestoreDemoLeads = async () => {
+    try {
+      const res = await fetch('/api/leads/restore-demo', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setLeads(data.leads);
+        if (data.leads.length > 0) {
+          setSelectedLeadId(data.leads[0].id);
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao restaurar dados de demo:', err);
+    }
+  };
+
   const handleOpenChat = (leadId: string) => {
     setSelectedLeadId(leadId);
     setActiveTab('chat');
@@ -178,6 +226,34 @@ export default function App() {
       }
     } catch (err) {
       console.error('Erro ao alternar IA:', err);
+    }
+  };
+
+  const handleResolveUrgency = async (leadId: string) => {
+    try {
+      const res = await fetch(`/api/leads/${leadId}/resolve-urgency`, { method: 'PUT' });
+      if (res.ok) {
+        const updatedLead = await res.json();
+        setLeads((prev) => prev.map((l) => (l.id === leadId ? updatedLead : l)));
+      }
+    } catch (err) {
+      console.error('Erro ao resolver urgência:', err);
+    }
+  };
+
+  const handleConfirmTriage = async (leadId: string, confirmedDate: string) => {
+    try {
+      const res = await fetch(`/api/leads/${leadId}/confirm-triage`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmedDate }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLeads((prev) => prev.map((l) => (l.id === leadId ? data.lead : l)));
+      }
+    } catch (err) {
+      console.error('Erro ao confirmar triagem:', err);
     }
   };
 
@@ -321,6 +397,7 @@ export default function App() {
 
   const totalPipelineValue = leads.reduce((acc, l) => acc + (l.value || 0), 0);
   const totalUnreadCount = leads.reduce((acc, l) => acc + (l.unreadCount || 0), 0);
+  const urgentCount = leads.filter((l) => l.isUrgent).length;
 
   if (isLoading) {
     return (
@@ -333,7 +410,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-slate-900 selection:text-white">
-      {/* Global Header */}
+      {/* Global Header with Admin Controls */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -342,10 +419,30 @@ export default function App() {
         totalLeads={leads.length}
         totalPipelineValue={totalPipelineValue}
         unreadCount={totalUnreadCount}
+        urgentCount={urgentCount}
+        isAdminUnlocked={isAdminUnlocked}
+        onOpenAdminAuth={() => setShowAdminAuthModal(true)}
+        onLockAdmin={handleLockAdmin}
       />
 
       {/* Main Content Modules */}
       <main className="flex-1 flex min-h-0 overflow-hidden bg-slate-50">
+        {activeTab === 'dashboard' && (
+          <ExecutiveDashboard
+            leads={leads}
+            stages={stages}
+            agentConfig={agentConfig}
+            evolutionConfig={evolutionConfig}
+            onOpenChat={handleOpenChat}
+            onNavigateToTab={(tab) => setActiveTab(tab)}
+            onUpdateEvolutionConfig={handleSaveEvolutionConfig}
+            onUpdateAgentConfig={handleSaveAgentConfig}
+            onClearAllLeads={handleClearAllLeads}
+            onRestoreDemoLeads={handleRestoreDemoLeads}
+            isAdmin={isAdminUnlocked}
+          />
+        )}
+
         {activeTab === 'kanban' && (
           <KanbanBoard
             stages={stages}
@@ -355,6 +452,10 @@ export default function App() {
             onDeleteLead={handleDeleteLead}
             onOpenChat={handleOpenChat}
             onToggleAi={handleToggleAi}
+            onResolveUrgency={handleResolveUrgency}
+            onClearAllLeads={handleClearAllLeads}
+            onRestoreDemoLeads={handleRestoreDemoLeads}
+            isAdmin={isAdminUnlocked}
           />
         )}
 
@@ -368,10 +469,14 @@ export default function App() {
             onToggleAi={handleToggleAi}
             onSendManualMessage={handleSendManualMessage}
             onUpdateLeadNotes={handleUpdateLeadNotes}
+            onResolveUrgency={handleResolveUrgency}
+            onConfirmTriage={handleConfirmTriage}
+            onDeleteLead={handleDeleteLead}
           />
         )}
 
-        {activeTab === 'agent' && (
+        {/* Technical Modules (Protected: only rendered if admin is unlocked) */}
+        {activeTab === 'agent' && isAdminUnlocked && (
           <AgentBuilder
             agentConfig={agentConfig}
             documents={documents}
@@ -381,7 +486,7 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'evolution' && (
+        {activeTab === 'evolution' && isAdminUnlocked && (
           <EvolutionSettings
             evolutionConfig={evolutionConfig}
             onSaveConfig={handleSaveEvolutionConfig}
@@ -390,13 +495,20 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'supabase' && (
+        {activeTab === 'supabase' && isAdminUnlocked && (
           <SupabaseSettings
             supabaseConfig={supabaseConfig}
             onSaveConfig={handleSaveSupabaseConfig}
           />
         )}
       </main>
+
+      {/* Admin Authentication Modal */}
+      <AdminAuthModal
+        isOpen={showAdminAuthModal}
+        onClose={() => setShowAdminAuthModal(false)}
+        onSuccess={handleUnlockAdmin}
+      />
     </div>
   );
 }

@@ -1013,12 +1013,12 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           </div>
 
           {/* Follow-up Automático para Leads Dormentes */}
-          <div className="mt-4 pt-4 border-t border-slate-200/80 bg-sky-50/50 p-4 rounded-xl space-y-3 border border-sky-200/60">
+          <div className="mt-4 pt-4 border-t border-slate-200/80 bg-sky-50/50 p-5 rounded-xl space-y-4 border border-sky-200/60">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-sky-700" />
                 <h4 className="text-xs font-bold text-slate-900">
-                  Follow-up Automático de Recuperação de Leads
+                  Motor de Follow-up Automático de Recuperação de Leads
                 </h4>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -1032,43 +1032,115 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div className="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
               </label>
             </div>
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Recupere contatos sem resposta! Se um cliente parar de responder após a Sofia tirar dúvidas ou apresentar uma proposta, ela envia uma mensagem carinhosa e sutil de acompanhamento.
+            
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Reative contatos que pararam de responder! Se um paciente ou cliente parar de responder após tirar dúvidas, receber valores ou passar por triagem, o motor em segundo plano envia uma mensagem humanizada, carinhosa e natural no WhatsApp.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Nicho do Follow-up */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                  Intervalo de Inatividade para Disparo (Horas)
+                  Nicho / Contexto do Follow-up
                 </label>
                 <select
-                  value={config.followUpDelayHours || 24}
-                  onChange={(e) => setConfig({ ...config, followUpDelayHours: Number(e.target.value) })}
-                  className="w-full bg-white border border-sky-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-sky-400"
+                  value={config.followUpNiche || 'dental'}
+                  onChange={(e) => setConfig({ ...config, followUpNiche: e.target.value as any })}
+                  className="w-full bg-white border border-sky-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-sky-400 font-medium"
                 >
-                  <option value={12}>12 horas após a última resposta</option>
-                  <option value={24}>24 horas (Recomendado para WhatsApp)</option>
-                  <option value={48}>48 horas (2 dias)</option>
-                  <option value={72}>72 horas (3 dias)</option>
+                  <option value="dental">🦷 Odontologia (Consultas, Procedimentos & Dor)</option>
+                  <option value="medical">🩺 Clínica Médica / Saúde (Avaliações & Exames)</option>
+                  <option value="sales">🚀 Vendas B2B / Corporativo (Propostas & Fechamento)</option>
+                  <option value="custom">✏️ Mensagem Personalizada (Template Manual)</option>
                 </select>
               </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      const res = await fetch('/api/followup/run', { method: 'POST' });
-                      const d = await res.json();
-                      alert(d.count > 0 ? `Follow-up enviado para ${d.count} lead(s): ${d.leadsFollowedUp.join(', ')}` : 'Nenhum lead dormente precisando de follow-up no momento.');
-                    } catch (e: any) {
-                      alert('Erro ao executar follow-up: ' + e.message);
-                    }
-                  }}
-                  className="w-full bg-white hover:bg-sky-50 text-sky-800 border border-sky-300 font-semibold px-3 py-2 rounded-lg text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
+
+              {/* Intervalo de Inatividade */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Tempo de Inatividade para Disparo
+                </label>
+                <select
+                  value={config.followUpDelayHours || 4}
+                  onChange={(e) => setConfig({ ...config, followUpDelayHours: Number(e.target.value) })}
+                  className="w-full bg-white border border-sky-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-sky-400 font-medium"
                 >
-                  <RefreshCw className="w-3.5 h-3.5 text-sky-600" />
-                  <span>Verificar & Disparar Follow-ups Agora</span>
-                </button>
+                  <option value={2}>2 horas sem resposta (Ágil)</option>
+                  <option value={4}>4 horas sem resposta (Recomendado)</option>
+                  <option value={8}>8 horas sem resposta</option>
+                  <option value={12}>12 horas sem resposta</option>
+                  <option value={24}>24 horas (Dia seguinte)</option>
+                  <option value={48}>48 horas (2 dias)</option>
+                </select>
               </div>
+
+              {/* Máximo de Tentativas */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Máximo de Follow-ups por Lead
+                </label>
+                <select
+                  value={config.maxFollowUpsPerLead || 2}
+                  onChange={(e) => setConfig({ ...config, maxFollowUpsPerLead: Number(e.target.value) })}
+                  className="w-full bg-white border border-sky-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-sky-400 font-medium"
+                >
+                  <option value={1}>1 follow-up (Apenas 1 tentativa)</option>
+                  <option value={2}>2 follow-ups (Recomendado)</option>
+                  <option value={3}>3 follow-ups (Máximo)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Custom Template Field if selected */}
+            {config.followUpNiche === 'custom' && (
+              <div className="bg-white border border-sky-200 rounded-lg p-3 space-y-2">
+                <label className="block text-[11px] font-bold text-slate-800">
+                  Modelo de Mensagem Personalizada
+                </label>
+                <textarea
+                  rows={2}
+                  value={config.followUpCustomMessage || ''}
+                  onChange={(e) => setConfig({ ...config, followUpCustomMessage: e.target.value })}
+                  placeholder="Ex: Olá, {nome}! Tudo bem? Passando para ver se você conseguiu avaliar nosso orçamento de {procedimento}?"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 focus:outline-hidden focus:border-sky-400 font-mono"
+                />
+                <p className="text-[10px] text-slate-500">
+                  Variáveis suportadas: <code className="bg-slate-100 px-1 rounded font-bold">{"{nome}"}</code>, <code className="bg-slate-100 px-1 rounded font-bold">{"{procedimento}"}</code>, <code className="bg-slate-100 px-1 rounded font-bold">{"{interesse}"}</code>
+                </p>
+              </div>
+            )}
+
+            {/* Preview Box & Run Now Button */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2 border-t border-sky-100">
+              <div className="text-[11px] text-sky-900 bg-white/80 p-2 rounded-lg border border-sky-200 flex-1">
+                <span className="font-bold block text-[10px] text-sky-700">Exemplo de Mensagem Gerada ({config.followUpNiche || 'dental'}):</span>
+                <span className="italic text-slate-700">
+                  {config.followUpNiche === 'dental'
+                    ? '"Olá, Roberto! Tudo bem por aí? Passando rapidinho para saber se você conseguiu ver os horários para a sua avaliação ou se prefere que a gente veja outro período para você! 😊"'
+                    : config.followUpNiche === 'medical'
+                    ? '"Olá, Roberto! Como você está? Gostaria de confirmar se podemos reservar o seu horário na clínica ou se prefere uma outra data!"'
+                    : config.followUpNiche === 'sales'
+                    ? '"Olá, Roberto! Tudo bem? Passando para saber se conseguiu dar uma olhada na nossa apresentação ou se ficou alguma dúvida que eu possa esclarecer para avançarmos! 🚀"'
+                    : (config.followUpCustomMessage || 'Mensagem personalizada...')}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/followup/run-now', { method: 'POST' });
+                    const d = await res.json();
+                    alert(d.message || 'Ciclo de follow-up concluído com sucesso!');
+                  } catch (e: any) {
+                    alert('Erro ao executar follow-up: ' + e.message);
+                  }
+                }}
+                className="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs shrink-0"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Executar Follow-up Agora</span>
+              </button>
             </div>
           </div>
         </div>

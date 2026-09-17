@@ -1,5 +1,16 @@
 export type AIProvider = 'gemini' | 'openai' | 'anthropic';
 
+export interface PreAppointmentTriage {
+  procedure?: string;
+  preferredPeriod?: 'manha' | 'tarde' | 'noite' | 'qualquer';
+  preferredDays?: string;
+  paymentType?: 'convenio' | 'particular' | 'indefinido';
+  convenioName?: string;
+  isUrgent?: boolean;
+  urgencyReason?: string;
+  status?: 'pending_confirmation' | 'confirmed' | 'rescheduled';
+}
+
 export interface Lead {
   id: string;
   name: string;
@@ -14,6 +25,11 @@ export interface Lead {
   lastInteraction: string;
   createdAt: string;
   unreadCount?: number;
+  isUrgent?: boolean;
+  urgencyReason?: string;
+  triage?: PreAppointmentTriage;
+  lastFollowUpAt?: string;
+  followUpCount?: number;
 }
 
 export interface KanbanStage {
@@ -50,6 +66,17 @@ export interface KnowledgeDocument {
   uploadedAt: string;
 }
 
+export type BusinessNiche =
+  | 'dental'
+  | 'medical'
+  | 'retail'
+  | 'sales'
+  | 'real_estate'
+  | 'legal'
+  | 'services'
+  | 'general'
+  | 'custom';
+
 export interface AgentConfig {
   personaName: string;
   role: string;
@@ -85,6 +112,9 @@ export interface AgentConfig {
   pixKeyType?: 'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria';
   autoFollowUpEnabled?: boolean;
   followUpDelayHours?: number;
+  followUpNiche?: BusinessNiche;
+  followUpCustomMessage?: string;
+  maxFollowUpsPerLead?: number;
 }
 
 export interface EvolutionConfig {

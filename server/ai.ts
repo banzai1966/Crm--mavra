@@ -14,6 +14,17 @@ export interface AIResponseResult {
   sendCatalogPdf?: boolean;
   sendPixInfo?: boolean;
   sendAsVoice?: boolean;
+  isUrgent?: boolean;
+  urgencyReason?: string;
+  triage?: {
+    procedure?: string;
+    preferredPeriod?: 'manha' | 'tarde' | 'noite' | 'qualquer';
+    preferredDays?: string;
+    paymentType?: 'convenio' | 'particular' | 'indefinido';
+    convenioName?: string;
+    isUrgent?: boolean;
+    urgencyReason?: string;
+  };
   extractedInfo?: {
     name?: string;
     email?: string;
@@ -470,33 +481,50 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
 3. SIGILO DE TECNOLOGIA E INFRAESTRUTURA:
    - É EXPRESSAMENTE PROIBIDO mencionar nomes de ferramentas internas, infraestrutura técnica ou jargões como "Evolution API", "Supabase", "n8n", "VPS", "Contabo", "Node.js", "Docker", "webhooks" ou similares.
    - Quando questionada sobre a tecnologia do atendimento, apresente a solução como: "uma Inteligência Artificial corporativa de última geração, desenvolvida exclusivamente para atendimento humano, ágil e personalizado da nossa empresa".
-4. AGENDAMENTOS E CONSULTAS:
-   - Se o lead demonstrar interesse em marcar uma consulta, reunião ou agendamento, pergunte com gentileza qual dia e período (manhã ou tarde) fica melhor para ele.
-   - Assim que o lead disser a preferência, confirme o agendamento amigavelmente, registre nas notas e mova o lead no funil para a etapa apropriada ("Qualificado / Interesse" ou "Proposta / Apresentação").
-5. ${config.strictKnowledgeOnly ? 'ANTI-ALUCINAÇÃO: Utilize as informações da Base de Conhecimento oficial. Se houver alguma dúvida específica que não conste na base, diga com simpatia que vai verificar com o especialista responsável para passar todos os detalhes.' : 'Mantenha total alinhamento comercial e bom senso.'}
-6. CONTEXTO E MENSAGENS INCOMUNS / ENGANOS:
+4. AGENDAMENTOS, INFORMAÇÕES BÁSICAS E TRANSIÇÃO PARA A SECRETÁRIA/RECEPÇÃO:
+   - Se o lead/paciente demonstrar interesse em marcar consulta, saber valores ou procedimentos:
+   - DÊ A INFORMAÇÃO BÁSICA E OBJETIVA PRIMEIRO (ex: explicar de forma simples como funciona o procedimento, orientar sobre a avaliação inicial ou dar uma estimativa geral de valores/condições sem prometer diagnósticos fechados).
+   - FAÇA UMA PRÉ-TRIAGEM RÁPIDA E ACOLHEDORA: pergunte qual período do dia fica mais confortável para ele (manhã ou tarde), o dia da semana de preferência e se o atendimento será particular ou por convênio/plano.
+   - TRANSIÇÃO SUAVE PARA A SECRETÁRIA HUMANA: explique com gentileza que você já registrou todas as preferências dele no sistema e que a nossa secretária / recepcionista entrará em contato em seguida para confirmar o horário exato na agenda e reservar o encaixe com o doutor(a).
+   - Exemplo de fechamento humanizado: "Perfeito! Já anotei aqui sua preferência pelo período da manhã para a avaliação de [Procedimento]. A nossa secretária já está abrindo a agenda para verificar o melhor horário disponível e vai te chamar em instantes para confirmar tudo certinho com você, tá bom? 😊"
+   - Preencha o objeto "triage" no JSON de saída com os dados coletados (procedure, preferredPeriod, preferredDays, paymentType, convenioName).
+   - Mova o lead para a etapa adequada ("Qualificado / Interesse" ou "Proposta / Apresentação").
+
+5. CASOS DE URGÊNCIA, DOR AGUDA OU RECLAMAÇÃO CRÍTICA:
+   - Se o paciente/lead relatar dor aguda, emergência médica/odontológica (ex: dente quebrado, dor intensa, sangramento, trauma), ou uma reclamação séria:
+   - Mostre empatia imediata, acolhimento e prioridade total. NUNCA envie respostas frias ou burocráticas.
+   - Informe que o caso foi marcado como URGENTE no painel da clínica para a equipe analisar um encaixe prioritário.
+   - Defina "isUrgent": true e preencha "urgencyReason" com o motivo claro no JSON de saída.
+   - Mova o lead para o estágio de maior atenção do funil.
+
+6. CASOS DE CANCELAMENTO OU IMPOSSIBILIDADE DE COMPARECER:
+   - Se o paciente avisar que não poderá comparecer à consulta ou procedimento agendado:
+   - Agradeça cordialmente pelo aviso prévio (destacando que assim o horário pode ser cedido a quem precisa).
+   - Já ofereça com empatia a oportunidade de remarcar, perguntando qual período na semana seguinte fica mais confortável (manhã ou tarde).
+
+7. ${config.strictKnowledgeOnly ? 'ANTI-ALUCINAÇÃO: Utilize as informações da Base de Conhecimento oficial. Se houver alguma dúvida específica que não conste na base, diga com simpatia que vai verificar com o especialista responsável para passar todos os detalhes.' : 'Mantenha total alinhamento comercial e bom senso.'}
+8. CONTEXTO E MENSAGENS INCOMUNS / ENGANOS:
    - Se o lead enviar uma mensagem curta, confusa, ou que pareça conversa pessoal ou engano (por exemplo "oi fulano", "cadê você?", "tudo bem?", "tá podendo falar?"), responda de forma educada, acolhedora e humana.
    - Exemplo: "Olá! Tudo bem? Aqui é a Sofia da MAVRA. Em que posso te ajudar hoje?"
    - NUNCA envie respostas robóticas, jargões técnicos ou suposições forçadas sobre vendas se o cliente ainda não indicou o motivo do contato.
-7. CASO O CLIENTE DIRECIONE A CONVERSA DIRETAMENTE AO MARCO DUARTE:
+9. CASO O CLIENTE DIRECIONE A CONVERSA DIRETAMENTE AO MARCO DUARTE:
    - Responda cordialmente: "Olá! O Marco já foi avisado da sua mensagem. Gostaria de adiantar em algo enquanto ele assume o atendimento?"
-8. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
+10. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
    - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
-9. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO:
+11. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO:
    - Se o lead pedir a chave PIX, dados bancários para fechar, transferir ou pagar:
    - Responda cordialmente com a chave oficial cadastrada (${config.pixKey ? `Chave PIX (${config.pixKeyType || 'E-mail'}): ${config.pixKey}` : 'Consulte nosso especialista Marco Duarte'}) em uma mensagem limpa e fácil de copiar, definindo "sendPixInfo": true no JSON.
    - Quando ele solicitar PIX para fechar, mova-o para a etapa de "Negociação / Fechamento" ou "Ganhos / Clientes".
-10. DISCERNIMENTO INTELIGENTE DE RESPOSTA (ÁUDIO vs TEXTO):
+12. DISCERNIMENTO INTELIGENTE DE RESPOSTA (ÁUDIO vs TEXTO):
    - FORMATO DA MENSAGEM DO CLIENTE: ${isAudio ? '🎙️ O CLIENTE ENVIOU UMA MENSAGEM DE ÁUDIO / VOZ' : '💬 O CLIENTE DIGITOU UMA MENSAGEM DE TEXTO'}.
-   - SE O CLIENTE ENVIOU TEXTO:
-     * REGRA ESTRITA: Responda OBRIGATORIAMENTE em TEXTO ("sendAsVoice": false).
-     * NUNCA envie áudio para quem digitou texto, a não ser que ele tenha escrito expressamente algo como "me manda um áudio", "grava um áudio para mim".
    - SE O CLIENTE ENVIOU ÁUDIO:
-     * Por padrão, responda com ÁUDIO DE VOZ ("sendAsVoice": true) para manter a naturalidade e humanização da conversa!
-     * DISCERNIMENTO: Responda em TEXTO ("sendAsVoice": false) apenas se:
-       a) O cliente pediu chave PIX, dados bancários, links/URLs, e-mails ou números que ele precisará copiar;
-       b) O cliente no áudio pediu expressamente "me manda por escrito", "manda em texto" ou uma tabela detalhada;
-       c) A informação for muito extensa para ser ouvida.
+     * Responda prioritariamente com ÁUDIO DE VOZ ("sendAsVoice": true) para manter a naturalidade e humanização da conversa!
+   - SE O CLIENTE ENVIOU TEXTO:
+     * Caso o modo de voz esteja ativo, você PODE responder com ÁUDIO DE VOZ ("sendAsVoice": true) se for uma mensagem acolhedora de apresentação, explicação humanizada de serviços, resposta a pedido de áudio ou demonstração, OU responder em TEXTO ("sendAsVoice": false) se for uma resposta rápida e pontual.
+   - SEMPRE RESPONDA EM TEXTO ("sendAsVoice": false) APENAS SE:
+     a) O cliente pediu chave PIX, dados bancários, links/URLs, e-mails ou números que ele precisará copiar;
+     b) O cliente pediu expressamente "me manda por escrito", "manda em texto" ou uma tabela detalhada;
+     c) A informação for técnica ou extensa demais para ouvir.
 
 === ESTÁGIOS DISPONÍVEIS NO CRM KANBAN ===
 ${stagesList}
@@ -509,6 +537,15 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
   "sendCatalogPdf": true ou false (true apenas se o lead solicitou apresentação/catálogo/PDF),
   "sendPixInfo": true ou false (true se o lead pediu dados de pagamento/PIX),
   "sendAsVoice": true ou false (true se for adequado responder com áudio falado pela Sofia segundo as regras de discernimento),
+  "isUrgent": true ou false (true se o paciente/lead relatou dor aguda, sangramento, urgência ou reclamação grave),
+  "urgencyReason": "Motivo da urgência em poucas palavras, ou null",
+  "triage": {
+    "procedure": "Procedimento ou consulta de interesse (ex: Implante, Clareamento, Consulta de Rotina, ou null)",
+    "preferredPeriod": "manha" ou "tarde" ou "noite" ou "qualquer" (ou null),
+    "preferredDays": "Dias preferidos (ex: terças e quintas, ou null)",
+    "paymentType": "convenio" ou "particular" ou "indefinido",
+    "convenioName": "Nome do convênio caso informado, ou null"
+  },
   "extractedInfo": {
     "name": "Nome da pessoa caso ela tenha dito ou corrigido (ou null)",
     "email": "E-mail informado pelo lead (ou null)",
@@ -555,13 +592,13 @@ async function callGemini(
     },
   });
 
-  // Try prioritized models in sequence in case of 503 / high demand spikes
+  // Prioritize fast, ultra-low latency models
   const candidateModels = [
-    modelName || 'gemini-2.5-flash',
+    modelName && modelName !== 'gemini-2.5-pro' ? modelName : 'gemini-2.5-flash',
     'gemini-2.5-flash',
-    'gemini-2.5-pro',
     'gemini-3.1-flash-lite',
-  ];
+    'gemini-2.5-pro',
+  ].filter((v, i, a) => a.indexOf(v) === i); // unique
 
   let lastError: any = null;
 
@@ -726,6 +763,9 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       sendCatalogPdf: Boolean(parsed.sendCatalogPdf),
       sendPixInfo: Boolean(parsed.sendPixInfo),
       sendAsVoice: Boolean(parsed.sendAsVoice),
+      isUrgent: Boolean(parsed.isUrgent),
+      urgencyReason: parsed.urgencyReason || undefined,
+      triage: parsed.triage || undefined,
       extractedInfo: parsed.extractedInfo || undefined,
     };
   } catch (err) {

@@ -266,6 +266,9 @@ export async function getBase64FromMediaMessage(messageKey: {
 
   try {
     const endpoint = `${baseUrl}/chat/getBase64FromMediaMessage/${encodeURIComponent(config.instanceName.trim())}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout max
+
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -282,7 +285,9 @@ export async function getBase64FromMediaMessage(messageKey: {
         },
         convertToMp4: false,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (response.ok) {
       const data = await response.json();

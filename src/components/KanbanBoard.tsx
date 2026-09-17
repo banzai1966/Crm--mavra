@@ -15,10 +15,15 @@ import {
   Phone,
   Layers,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  AlertTriangle,
+  Calendar,
+  Clock,
+  Download
 } from 'lucide-react';
 import { Lead, KanbanStage } from '../types';
 import { NewLeadModal } from './NewLeadModal';
+import { ResetDataModal } from './ResetDataModal';
 
 interface KanbanBoardProps {
   stages: KanbanStage[];
@@ -28,6 +33,10 @@ interface KanbanBoardProps {
   onDeleteLead: (leadId: string) => void;
   onOpenChat: (leadId: string) => void;
   onToggleAi: (leadId: string) => void;
+  onResolveUrgency?: (leadId: string) => void;
+  onClearAllLeads?: () => Promise<void> | void;
+  onRestoreDemoLeads?: () => Promise<void> | void;
+  isAdmin?: boolean;
 }
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
@@ -38,25 +47,35 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onDeleteLead,
   onOpenChat,
   onToggleAi,
+  onResolveUrgency,
+  onClearAllLeads,
+  onRestoreDemoLeads,
+  isAdmin = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
   const [targetStageForNewLead, setTargetStageForNewLead] = useState<string | undefined>();
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
 
-  // Filter leads based on search term
+  // Filter leads based on search term & urgency toggle
   const filteredLeads = leads.filter((lead) => {
+    if (filterUrgentOnly && !lead.isUrgent) return false;
     const term = searchTerm.toLowerCase();
     return (
       lead.name.toLowerCase().includes(term) ||
       lead.phone.includes(term) ||
       (lead.interest && lead.interest.toLowerCase().includes(term)) ||
-      lead.tags.some((t) => t.toLowerCase().includes(term))
+      lead.tags.some((t) => t.toLowerCase().includes(term)) ||
+      (lead.triage?.procedure && lead.triage.procedure.toLowerCase().includes(term))
     );
   });
 
   const totalValue = leads.reduce((acc, l) => acc + (l.value || 0), 0);
+  const urgentCount = leads.filter((l) => l.isUrgent).length;
+  const triageCount = leads.filter((l) => Boolean(l.triage)).length;
 
   const handleDragStart = (e: React.DragEvent, leadId: string) => {
     e.dataTransfer.setData('text/plain', leadId);
@@ -113,9 +132,65 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               )}
             </span>
           </div>
+
+          {/* Urgent Leads filter pill */}
+          <button
+            onClick={() => setFilterUrgentOnly(!filterUrgentOnly)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+              filterUrgentOnly
+                ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
+                : urgentCount > 0
+                ? 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100'
+                : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+            }`}
+            title="Filtrar apenas pacientes ou leads com urgência / dor relatada"
+          >
+            <AlertTriangle className={`w-3.5 h-3.5 ${filterUrgentOnly ? 'text-white' : urgentCount > 0 ? 'text-rose-600 animate-pulse' : 'text-slate-400'}`} />
+            <span>Urgências</span>
+            {urgentCount > 0 && (
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${filterUrgentOnly ? 'bg-white text-rose-700' : 'bg-rose-600 text-white'}`}>
+                {urgentCount}
+              </span>
+            )}
+          </button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Clear / Reset CRM Data Button (Available for Admin) */}
+          {isAdmin && (
+            leads.length > 0 ? (
+              <button
+                id="btn-kanban-clear-data"
+                onClick={() => setShowResetModal(true)}
+                className="flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                title="Zerar dados de teste para iniciar produção limpa para o cliente (Admin)"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                <span className="hidden sm:inline">Limpar Base</span>
+              </button>
+            ) : (
+              <button
+                id="btn-kanban-restore-demo"
+                onClick={() => setShowResetModal(true)}
+                className="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-2 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                title="Restaurar dados de demonstração para testar (Admin)"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                <span className="hidden sm:inline">Restaurar Demo</span>
+              </button>
+            )
+          )}
+
+          <a
+            href="/api/leads/export/csv"
+            download
+            className="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            title="Exportar base de leads em CSV / Excel"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden sm:inline">Exportar CSV</span>
+          </a>
+
           <button
             id="btn-add-lead-top"
             onClick={() => {
@@ -130,6 +205,29 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Clean Production Banner when leads === 0 */}
+      {leads.length === 0 && (
+        <div className="mb-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div>
+              <p className="font-bold text-emerald-900">CRM 100% Zerado & Pronto para Receber Clientes Reais!</p>
+              <p className="text-emerald-700 text-[11px] mt-0.5">
+                Assim que um cliente enviar mensagem no WhatsApp conectado, ele aparecerá automaticamente na coluna &quot;Novo Lead&quot;.
+              </p>
+            </div>
+          </div>
+          {isAdmin && (
+            <button
+              onClick={() => setShowResetModal(true)}
+              className="px-3 py-1.5 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold transition-all shadow-2xs shrink-0 self-start sm:self-auto cursor-pointer"
+            >
+              Restaurar Demonstração
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Kanban Stages Columns */}
       <div className="flex-1 flex gap-4 overflow-x-auto pb-4 min-h-0 items-stretch" id="kanban-columns-container">
@@ -199,9 +297,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     >
                       {/* Top row: Name & Value */}
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <h4 className="text-xs font-bold text-slate-900 line-clamp-1 group-hover:text-slate-700 transition-colors">
-                          {lead.name}
-                        </h4>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          {lead.isUrgent && (
+                            <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0" />
+                          )}
+                          <h4 className="text-xs font-bold text-slate-900 line-clamp-1 group-hover:text-slate-700 transition-colors">
+                            {lead.name}
+                          </h4>
+                        </div>
                         <span className="text-xs font-bold text-emerald-700 font-mono shrink-0">
                           {new Intl.NumberFormat('pt-BR', {
                             style: 'currency',
@@ -210,11 +313,54 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </span>
                       </div>
 
+                      {/* Urgent banner if flagged by AI */}
+                      {lead.isUrgent && (
+                        <div className="flex items-center justify-between gap-1.5 p-1.5 mb-2 bg-rose-50 border border-rose-200 rounded text-[10px] text-rose-800">
+                          <div className="flex items-center gap-1 min-w-0">
+                            <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
+                            <span className="font-bold truncate">{lead.urgencyReason || 'Urgência reportada'}</span>
+                          </div>
+                          {onResolveUrgency && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onResolveUrgency(lead.id);
+                              }}
+                              className="text-[9px] bg-rose-200/80 hover:bg-rose-300 text-rose-900 font-semibold px-1.5 py-0.5 rounded transition-colors cursor-pointer shrink-0"
+                              title="Marcar urgência como atendida"
+                            >
+                              Resolver
+                            </button>
+                          )}
+                        </div>
+                      )}
+
                       {/* Phone & interest */}
                       <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2 font-mono">
                         <Phone className="w-3 h-3 text-slate-400" />
                         <span>{lead.phone}</span>
                       </div>
+
+                      {/* Pre-Appointment Triage Card */}
+                      {lead.triage && (
+                        <div className="p-1.5 mb-2 bg-indigo-50/70 border border-indigo-200/80 rounded text-[10px] text-indigo-900 space-y-0.5">
+                          <div className="flex items-center justify-between font-bold">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-2.5 h-2.5 text-indigo-600" />
+                              <span>{lead.triage.procedure || 'Triagem Agendamento'}</span>
+                            </span>
+                            <span className={`text-[9px] px-1 rounded font-semibold ${lead.triage.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                              {lead.triage.status === 'confirmed' ? 'Confirmado' : 'A Confirmar'}
+                            </span>
+                          </div>
+                          {(lead.triage.preferredPeriod || lead.triage.preferredDays) && (
+                            <div className="flex items-center gap-1 text-[10px] text-indigo-700">
+                              <Clock className="w-2.5 h-2.5 text-indigo-500" />
+                              <span>{lead.triage.preferredPeriod ? `Período ${lead.triage.preferredPeriod}` : ''} {lead.triage.preferredDays ? `(${lead.triage.preferredDays})` : ''}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {lead.interest && (
                         <p className="text-[11px] text-slate-600 line-clamp-2 bg-slate-50 p-2 rounded border border-slate-150 mb-2">
@@ -275,6 +421,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           </button>
 
                           <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm(`Deseja excluir permanentemente o lead "${lead.name}"?`)) {
+                                onDeleteLead(lead.id);
+                              }
+                            }}
+                            className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Excluir Oportunidade"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
                             onClick={() => onOpenChat(lead.id)}
                             className="flex items-center gap-1 px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-[11px] font-semibold transition-all cursor-pointer"
                             title="Abrir Central de Chat do WhatsApp"
@@ -317,6 +476,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         stages={stages}
         initialStageId={targetStageForNewLead}
         leadToEdit={leadToEdit}
+      />
+
+      {/* Reset / Clean CRM Data Modal */}
+      <ResetDataModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        totalLeads={leads.length}
+        onClearAll={async () => {
+          if (onClearAllLeads) await onClearAllLeads();
+        }}
+        onRestoreDemo={async () => {
+          if (onRestoreDemoLeads) await onRestoreDemoLeads();
+        }}
       />
     </div>
   );

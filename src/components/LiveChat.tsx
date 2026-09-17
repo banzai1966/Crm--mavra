@@ -20,7 +20,12 @@ import {
   MessageSquare,
   FileText,
   Mic,
-  Image as ImageIcon
+  Image as ImageIcon,
+  AlertTriangle,
+  Calendar,
+  Zap,
+  CalendarCheck,
+  Trash2,
 } from 'lucide-react';
 import { Lead, ChatMessage, KanbanStage } from '../types';
 
@@ -33,6 +38,9 @@ interface LiveChatProps {
   onToggleAi: (leadId: string) => void;
   onSendManualMessage: (leadId: string, text: string, sendViaWhatsApp: boolean) => Promise<void>;
   onUpdateLeadNotes: (leadId: string, notes: string) => void;
+  onResolveUrgency?: (leadId: string) => void;
+  onConfirmTriage?: (leadId: string, dateStr: string) => Promise<void>;
+  onDeleteLead?: (leadId: string) => void;
 }
 
 export const LiveChat: React.FC<LiveChatProps> = ({
@@ -44,6 +52,9 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   onToggleAi,
   onSendManualMessage,
   onUpdateLeadNotes,
+  onResolveUrgency,
+  onConfirmTriage,
+  onDeleteLead,
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
@@ -294,6 +305,25 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   )}
                 </button>
 
+                {/* Delete lead button */}
+                {onDeleteLead && activeLead && (
+                  <button
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          `Deseja excluir permanentemente o lead "${activeLead.name}" e todas as suas mensagens?`
+                        )
+                      ) {
+                        onDeleteLead(activeLead.id);
+                      }
+                    }}
+                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 border border-slate-200 transition-colors cursor-pointer"
+                    title="Excluir este Lead"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+
                 {/* Toggle details drawer */}
                 <button
                   onClick={() => setShowDetails(!showDetails)}
@@ -463,55 +493,121 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Bar */}
-            <form
-              onSubmit={handleSendMessage}
-              className="p-3 md:p-3.5 bg-white border-t border-slate-200 flex flex-col gap-2 shrink-0 shadow-xs"
-            >
-              <div className="flex items-center justify-between text-xs px-1">
-                <label className="flex items-center gap-2 text-slate-600 cursor-pointer text-xs">
-                  <input
-                    type="checkbox"
-                    checked={sendViaWhatsApp}
-                    onChange={(e) => setSendViaWhatsApp(e.target.checked)}
-                    className="rounded bg-white border-slate-300 text-slate-900 focus:ring-0 cursor-pointer"
-                  />
-                  <span>Disparar mensagem no WhatsApp do lead via Evolution API</span>
-                </label>
-
-                {activeLead.aiPaused ? (
-                  <span className="text-[11px] text-amber-700 font-semibold flex items-center gap-1">
-                    <UserCheck className="w-3 h-3" />
-                    Atendimento Humano Ativo
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                    <Bot className="w-3 h-3" />
-                    IA responderá mensagens recebidas
-                  </span>
+              {/* Input Bar with Quick Snippets */}
+              <div className="bg-white border-t border-slate-200 flex flex-col shrink-0 shadow-xs">
+                {/* Urgent Banner in Active Chat */}
+                {activeLead.isUrgent && (
+                  <div className="bg-rose-50 border-b border-rose-200 px-4 py-2 flex items-center justify-between gap-2 text-xs text-rose-900">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 animate-pulse" />
+                      <div>
+                        <span className="font-bold">Atenção Prioritária: </span>
+                        <span>{activeLead.urgencyReason || 'Paciente reportou dor ou situação urgente'}</span>
+                      </div>
+                    </div>
+                    {onResolveUrgency && (
+                      <button
+                        type="button"
+                        onClick={() => onResolveUrgency(activeLead.id)}
+                        className="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-2xs transition-colors cursor-pointer shrink-0"
+                      >
+                        Marcar como Atendido
+                      </button>
+                    )}
+                  </div>
                 )}
-              </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  id="chat-input-message"
-                  type="text"
-                  placeholder={`Responder como atendente humano para ${activeLead.name}...`}
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-slate-400 transition-colors"
-                />
-                <button
-                  type="submit"
-                  disabled={!inputText.trim() || isSending}
-                  id="btn-send-chat"
-                  className="bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white p-2.5 rounded-lg transition-all shadow-xs cursor-pointer shrink-0"
-                  title="Enviar mensagem"
+                {/* Quick Snippets for Human Agent */}
+                <div className="px-3 pt-2 pb-1 flex items-center gap-1.5 overflow-x-auto border-b border-slate-100 text-[11px]">
+                  <span className="text-slate-400 font-semibold flex items-center gap-1 shrink-0 text-[10px]">
+                    <Zap className="w-3 h-3 text-amber-500" /> Respostas Rápidas:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setInputText(`Olá, ${activeLead.name.split(' ')[0]}! Tudo bem? Como posso te ajudar hoje?`)}
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                  >
+                    👋 Saudação
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputText(`Para realizarmos seu agendamento, qual período fica mais confortável para você: manhã (09h-12h) ou tarde (14h-18h)?`)}
+                    className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                  >
+                    🗓️ Opções de Horário
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputText(`Olá, ${activeLead.name.split(' ')[0]}! Sou a secretária da clínica. Vi que você conversou com nossa assistente virtual. Vamos confirmar o seu melhor horário agora?`)}
+                    className="bg-purple-50 hover:bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                  >
+                    👩‍💼 Assumir Atendimento (Secretária)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputText(`Confirmamos o recebimento e já reservamos o seu horário na grade! Em caso de dúvidas, estamos por aqui.`)}
+                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                  >
+                    ✅ Confirmar Horário
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputText(`Segue a nossa chave PIX oficial para ativação imediata: contato@mavra.com.br (E-mail). Assim que efetuar, nos envie o comprovante por aqui!`)}
+                    className="bg-amber-50 hover:bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                  >
+                    💰 Chave PIX
+                  </button>
+                </div>
+
+                <form
+                  onSubmit={handleSendMessage}
+                  className="p-3 md:p-3.5 flex flex-col gap-2"
                 >
-                  <Send className="w-4 h-4" />
-                </button>
+                  <div className="flex items-center justify-between text-xs px-1">
+                    <label className="flex items-center gap-2 text-slate-600 cursor-pointer text-xs">
+                      <input
+                        type="checkbox"
+                        checked={sendViaWhatsApp}
+                        onChange={(e) => setSendViaWhatsApp(e.target.checked)}
+                        className="rounded bg-white border-slate-300 text-slate-900 focus:ring-0 cursor-pointer"
+                      />
+                      <span>Disparar mensagem no WhatsApp do lead via Evolution API</span>
+                    </label>
+
+                    {activeLead.aiPaused ? (
+                      <span className="text-[11px] text-amber-700 font-semibold flex items-center gap-1">
+                        <UserCheck className="w-3 h-3" />
+                        Atendimento Humano Ativo
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                        <Bot className="w-3 h-3" />
+                        IA responderá mensagens recebidas
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="chat-input-message"
+                      type="text"
+                      placeholder={`Responder como atendente humano para ${activeLead.name}...`}
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-slate-400 transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!inputText.trim() || isSending}
+                      id="btn-send-chat"
+                      className="bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white p-2.5 rounded-lg transition-all shadow-xs cursor-pointer shrink-0"
+                      title="Enviar mensagem"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-slate-400 text-xs">
@@ -576,7 +672,88 @@ export const LiveChat: React.FC<LiveChatProps> = ({
             </div>
           </div>
 
-          {/* Tags */}
+          {/* Urgency Alert if marked */}
+          {activeLead.isUrgent && (
+            <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-900 space-y-2">
+              <div className="flex items-center gap-1.5 font-bold text-xs">
+                <AlertTriangle className="w-4 h-4 text-rose-600 animate-pulse" />
+                <span>Urgência / Dor Reportada</span>
+              </div>
+              <p className="text-[11px] text-rose-800 leading-relaxed bg-white/70 p-2 rounded border border-rose-150">
+                {activeLead.urgencyReason || 'Paciente necessita de atenção prioritária ou encaixe.'}
+              </p>
+              {onResolveUrgency && (
+                <button
+                  type="button"
+                  onClick={() => onResolveUrgency(activeLead.id)}
+                  className="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-1.5 rounded-lg shadow-2xs transition-colors cursor-pointer"
+                >
+                  Resolver e Remover Alerta
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Pre-Appointment Triage Card */}
+          {activeLead.triage && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+                  Triagem do Agendamento
+                </h3>
+                <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${activeLead.triage.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                  {activeLead.triage.status === 'confirmed' ? 'Confirmado' : 'A Confirmar'}
+                </span>
+              </div>
+
+              <div className="bg-indigo-50/70 border border-indigo-200 rounded-xl p-3 space-y-2 text-xs text-indigo-950">
+                <div>
+                  <span className="text-[10px] text-indigo-700 block font-semibold">Procedimento / Consulta</span>
+                  <span className="font-bold text-indigo-950">{activeLead.triage.procedure || 'Consulta Geral'}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div>
+                    <span className="text-[10px] text-indigo-700 block font-semibold">Período Preferido</span>
+                    <span className="font-medium capitalize">{activeLead.triage.preferredPeriod || 'A definir'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-indigo-700 block font-semibold">Dias Preferidos</span>
+                    <span className="font-medium">{activeLead.triage.preferredDays || 'Flexível'}</span>
+                  </div>
+                </div>
+
+                {activeLead.triage.paymentType && (
+                  <div className="text-[11px]">
+                    <span className="text-[10px] text-indigo-700 block font-semibold">Tipo de Pagamento</span>
+                    <span className="font-medium capitalize">
+                      {activeLead.triage.paymentType} {activeLead.triage.convenioName ? `(${activeLead.triage.convenioName})` : ''}
+                    </span>
+                  </div>
+                )}
+
+                {onConfirmTriage && activeLead.triage.status !== 'confirmed' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const datePrompt = window.prompt(
+                        'Informe a data e horário confirmado para enviar ao paciente no WhatsApp:',
+                        'Quinta-feira às 10:30'
+                      );
+                      if (datePrompt) {
+                        onConfirmTriage(activeLead.id, datePrompt);
+                      }
+                    }}
+                    className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-2 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                  >
+                    <CalendarCheck className="w-3.5 h-3.5" />
+                    <span>Confirmar e Disparar no WhatsApp</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
           <div>
             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
               Tags do Lead

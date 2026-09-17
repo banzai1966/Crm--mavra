@@ -14,6 +14,133 @@ import {
 
 const STORAGE_FILE = path.join(process.cwd(), 'mavra_data.json');
 
+export const DEFAULT_DEMO_LEADS: Lead[] = [
+  {
+    id: 'lead-1',
+    name: 'Dr. Roberto Silva',
+    phone: '5511987654321',
+    email: 'roberto.silva@clinica.com.br',
+    stageId: 'stage-3',
+    value: 12500,
+    interest: 'Plano Enterprise + Integração WhatsApp',
+    tags: ['Clínica Médica', 'Decisor', 'Alta Prioridade'],
+    notes: 'Solicitou proposta para 10 atendentes com IA conversacional.',
+    aiPaused: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+    unreadCount: 0,
+  },
+  {
+    id: 'lead-2',
+    name: 'Camila Castro',
+    phone: '5521991234567',
+    email: 'camila@castromarketing.com',
+    stageId: 'stage-2',
+    value: 4800,
+    interest: 'Agente de Atendimento 24/7',
+    tags: ['E-commerce', 'Lead Quente'],
+    notes: 'Quer automatizar respostas para 200 pedidos/dia.',
+    aiPaused: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+    unreadCount: 1,
+  },
+  {
+    id: 'lead-3',
+    name: 'Lucas Mendes',
+    phone: '5531988887777',
+    email: 'lucas@techmendes.io',
+    stageId: 'stage-1',
+    value: 2900,
+    interest: 'NEXA CRM Starter',
+    tags: ['SaaS', 'Trial'],
+    notes: 'Chegou pelo anúncio do Instagram querendo demonstração.',
+    aiPaused: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 80).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+    unreadCount: 0,
+  },
+  {
+    id: 'lead-4',
+    name: 'Mariana Rios',
+    phone: '5541999990000',
+    email: 'mariana.rios@imoveisprime.com',
+    stageId: 'stage-4',
+    value: 18000,
+    interest: 'Qualificação Imobiliária Automatizada',
+    tags: ['Imobiliária', 'Contrato Anual'],
+    notes: 'Revisando minuta contratual. IA respondeu dúvidas jurídicas com sucesso.',
+    aiPaused: true,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+    unreadCount: 0,
+  },
+  {
+    id: 'lead-5',
+    name: 'Carlos Albuquerque',
+    phone: '5581977776666',
+    email: 'carlos@albuquerquelaw.adv.br',
+    stageId: 'stage-5',
+    value: 9500,
+    interest: 'Atendimento Jurídico Pré-triagem',
+    tags: ['Advocacia', 'Cliente Ativo'],
+    notes: 'Assinou contrato trimestral com sucesso!',
+    aiPaused: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 300).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
+    unreadCount: 0,
+  },
+];
+
+export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
+  {
+    id: 'msg-1',
+    leadId: 'lead-1',
+    phone: '5511987654321',
+    sender: 'lead',
+    text: 'Olá! Vi a plataforma NEXA de vocês. Como funciona o agente de IA para WhatsApp?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
+    status: 'read',
+  },
+  {
+    id: 'msg-2',
+    leadId: 'lead-1',
+    phone: '5511987654321',
+    sender: 'ai',
+    text: 'Olá, Dr. Roberto! Que prazer falar com você. Nossa Inteligência Artificial corporativa atende diretamente no WhatsApp da sua clínica com respostas ágeis, personalizadas e integração direta ao CRM em tempo real! Qual é o tamanho da sua equipe?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 34).toISOString(),
+    status: 'read',
+  },
+  {
+    id: 'msg-3',
+    leadId: 'lead-1',
+    phone: '5511987654321',
+    sender: 'lead',
+    text: 'Temos 10 atendentes na clínica. Vocês conseguem enviar proposta para esse volume?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+    status: 'read',
+  },
+  {
+    id: 'msg-4',
+    leadId: 'lead-1',
+    phone: '5511987654321',
+    sender: 'ai',
+    text: 'Perfeito! Para 10 atendentes temos o Plano Enterprise com instâncias dedicadas e suporte prioritário. Já atualizei seu cadastro no nosso CRM para "Proposta / Apresentação". Nosso especialista Marco Duarte entrará em contato para agendar uma demonstração exclusiva!',
+    timestamp: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+    status: 'delivered',
+    stageTriggered: 'stage-3',
+  },
+  {
+    id: 'msg-5',
+    leadId: 'lead-2',
+    phone: '5521991234567',
+    sender: 'lead',
+    text: 'Boa tarde, consigo colocar catálogo de produtos em PDF para a IA ler?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    status: 'read',
+  },
+];
+
 // In-memory / persistent fallback state
 class Database {
   public stages: KanbanStage[] = [
@@ -25,132 +152,20 @@ class Database {
     { id: 'stage-6', name: 'Perdido', color: '#ef4444', order: 6 },
   ];
 
-  public leads: Lead[] = [
-    {
-      id: 'lead-1',
-      name: 'Dr. Roberto Silva',
-      phone: '5511987654321',
-      email: 'roberto.silva@clinica.com.br',
-      stageId: 'stage-3',
-      value: 12500,
-      interest: 'Plano Enterprise + Integração WhatsApp',
-      tags: ['Clínica Médica', 'Decisor', 'Alta Prioridade'],
-      notes: 'Solicitou proposta para 10 atendentes com IA conversacional.',
-      aiPaused: false,
-      lastInteraction: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-      unreadCount: 0,
-    },
-    {
-      id: 'lead-2',
-      name: 'Camila Castro',
-      phone: '5521991234567',
-      email: 'camila@castromarketing.com',
-      stageId: 'stage-2',
-      value: 4800,
-      interest: 'Agente de Atendimento 24/7',
-      tags: ['E-commerce', 'Lead Quente'],
-      notes: 'Quer automatizar respostas para 200 pedidos/dia.',
-      aiPaused: false,
-      lastInteraction: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
-      unreadCount: 1,
-    },
-    {
-      id: 'lead-3',
-      name: 'Lucas Mendes',
-      phone: '5531988887777',
-      email: 'lucas@techmendes.io',
-      stageId: 'stage-1',
-      value: 2900,
-      interest: 'MAVRA CRM Starter',
-      tags: ['SaaS', 'Trial'],
-      notes: 'Chegou pelo anúncio do Instagram querendo demonstração.',
-      aiPaused: false,
-      lastInteraction: new Date(Date.now() - 1000 * 60 * 80).toISOString(),
-      createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-      unreadCount: 0,
-    },
-    {
-      id: 'lead-4',
-      name: 'Mariana Rios',
-      phone: '5541999990000',
-      email: 'mariana.rios@imoveisprime.com',
-      stageId: 'stage-4',
-      value: 18000,
-      interest: 'Qualificação Imobiliária Automatizada',
-      tags: ['Imobiliária', 'Contrato Anual'],
-      notes: 'Revisando minuta contratual. IA respondeu dúvidas jurídicas com sucesso.',
-      aiPaused: true,
-      lastInteraction: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-      unreadCount: 0,
-    },
-    {
-      id: 'lead-5',
-      name: 'Carlos Albuquerque',
-      phone: '5581977776666',
-      email: 'carlos@albuquerquelaw.adv.br',
-      stageId: 'stage-5',
-      value: 9500,
-      interest: 'Atendimento Jurídico Pré-triagem',
-      tags: ['Advocacia', 'Cliente Ativo'],
-      notes: 'Assinou contrato trimestral com sucesso!',
-      aiPaused: false,
-      lastInteraction: new Date(Date.now() - 1000 * 60 * 300).toISOString(),
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
-      unreadCount: 0,
-    }
-  ];
+  public leads: Lead[] = JSON.parse(JSON.stringify(DEFAULT_DEMO_LEADS));
+  public messages: ChatMessage[] = JSON.parse(JSON.stringify(DEFAULT_DEMO_MESSAGES));
 
-  public messages: ChatMessage[] = [
-    {
-      id: 'msg-1',
-      leadId: 'lead-1',
-      phone: '5511987654321',
-      sender: 'lead',
-      text: 'Olá! Vi a plataforma MAVRA de vocês. Como funciona o agente de IA para WhatsApp?',
-      timestamp: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-      status: 'read',
-    },
-    {
-      id: 'msg-2',
-      leadId: 'lead-1',
-      phone: '5511987654321',
-      sender: 'ai',
-      text: 'Olá, Dr. Roberto! Que prazer falar com você. Nossa Inteligência Artificial corporativa atende diretamente no WhatsApp da sua clínica com respostas ágeis, personalizadas e integração direta ao CRM em tempo real! Qual é o tamanho da sua equipe?',
-      timestamp: new Date(Date.now() - 1000 * 60 * 34).toISOString(),
-      status: 'read',
-    },
-    {
-      id: 'msg-3',
-      leadId: 'lead-1',
-      phone: '5511987654321',
-      sender: 'lead',
-      text: 'Temos 10 atendentes na clínica. Vocês conseguem enviar proposta para esse volume?',
-      timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
-      status: 'read',
-    },
-    {
-      id: 'msg-4',
-      leadId: 'lead-1',
-      phone: '5511987654321',
-      sender: 'ai',
-      text: 'Perfeito! Para 10 atendentes temos o Plano Enterprise com instâncias dedicadas e suporte prioritário. Já atualizei seu cadastro no nosso CRM para "Proposta / Apresentação". Nosso especialista Marco Duarte entrará em contato para agendar uma demonstração exclusiva!',
-      timestamp: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
-      status: 'delivered',
-      stageTriggered: 'stage-3',
-    },
-    {
-      id: 'msg-5',
-      leadId: 'lead-2',
-      phone: '5521991234567',
-      sender: 'lead',
-      text: 'Boa tarde, consigo colocar catálogo de produtos em PDF para a IA ler?',
-      timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-      status: 'read',
-    }
-  ];
+  public clearAllLeads(): void {
+    this.leads = [];
+    this.messages = [];
+    this.saveToFile();
+  }
+
+  public restoreDemoLeads(): void {
+    this.leads = JSON.parse(JSON.stringify(DEFAULT_DEMO_LEADS));
+    this.messages = JSON.parse(JSON.stringify(DEFAULT_DEMO_MESSAGES));
+    this.saveToFile();
+  }
 
   public agentConfig: AgentConfig = {
     personaName: 'Sofia Mendes',
@@ -199,14 +214,17 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
     voiceResponseMode: 'smart_discernment',
     voiceEngine: 'native_sofia',
     voiceVoiceName: 'pt-BR-FranciscaNeural',
-    maxConsecutiveAudios: 2,
-    maxAudioChars: 220,
+    maxConsecutiveAudios: 4,
+    maxAudioChars: 450,
     googleTtsApiKey: '',
     elevenLabsApiKey: '',
     pixKey: 'marco.agduarte22@gmail.com',
     pixKeyType: 'email',
     autoFollowUpEnabled: true,
-    followUpDelayHours: 24,
+    followUpDelayHours: 4,
+    followUpNiche: 'dental',
+    followUpCustomMessage: '',
+    maxFollowUpsPerLead: 2,
   };
 
   public documents: KnowledgeDocument[] = [

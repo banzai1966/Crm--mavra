@@ -15,6 +15,7 @@ import {
   fetchAllEvolutionInstances,
 } from './server/evolution';
 import { processAiConversation, synthesizeSpeech } from './server/ai';
+import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
 import { ChatMessage } from './src/types';
 
 async function startServer() {
@@ -195,6 +196,18 @@ async function startServer() {
     res.json({ success: true });
   });
 
+  // Clear all leads and messages to start with a 100% clean CRM for production
+  app.post('/api/leads/clear-all', (req: Request, res: Response) => {
+    db.clearAllLeads();
+    res.json({ success: true, count: 0, leads: [] });
+  });
+
+  // Restore initial demo leads for presentations and testing
+  app.post('/api/leads/restore-demo', (req: Request, res: Response) => {
+    db.restoreDemoLeads();
+    res.json({ success: true, count: db.leads.length, leads: db.leads });
+  });
+
   app.put('/api/leads/:id/stage', (req: Request, res: Response) => {
     const { id } = req.params;
     const { stageId } = req.body;
@@ -238,6 +251,84 @@ async function startServer() {
     db.messages.push(systemMsg);
 
     res.json({ lead, message: systemMsg });
+  });
+
+  app.put('/api/leads/:id/resolve-urgency', (req: Request, res: Response) => {
+    const { id } = req.params;
+    const lead = db.leads.find((l) => l.id === id);
+    if (!lead) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    lead.isUrgent = false;
+    lead.tags = lead.tags.filter((t) => t !== 'URGENTE');
+    lead.notes = `${lead.notes || ''}\n✅ [URGÊNCIA ATENDIDA ${new Date().toLocaleTimeString('pt-BR')}]: Situação acolhida pela equipe humana.`;
+    db.saveToFile();
+    res.json(lead);
+  });
+
+  app.put('/api/leads/:id/confirm-triage', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { confirmedDate, message } = req.body;
+    const lead = db.leads.find((l) => l.id === id);
+    if (!lead) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    if (!lead.triage) {
+      lead.triage = { status: 'confirmed' };
+    } else {
+      lead.triage.status = 'confirmed';
+    }
+
+    const confirmText = message || `Olá, ${lead.name.split(' ')[0]}! Aqui é da equipe da clínica. Confirmamos seu agendamento com a Dra. para ${confirmedDate || 'a data solicitada'}! Qualquer dúvida antes do horário, estamos à disposição.`;
+    
+    // Send confirmation message via WhatsApp
+    await sendWhatsAppMessage(lead.phone, confirmText);
+
+    const systemMsg: ChatMessage = {
+      id: 'msg-' + Date.now() + '-triage-confirmed',
+      leadId: lead.id,
+      phone: lead.phone,
+      sender: 'agent',
+      text: `🗓️ [Agendamento Confirmado via WhatsApp]: ${confirmText}`,
+      timestamp: new Date().toISOString(),
+      status: 'delivered',
+    };
+    db.messages.push(systemMsg);
+
+    lead.notes = `${lead.notes || ''}\n[${new Date().toLocaleDateString('pt-BR')}] Agendamento confirmado para ${confirmedDate || 'horário agendado'}.`;
+    db.saveToFile();
+
+    res.json({ success: true, lead, message: systemMsg });
+  });
+
+  // Export leads as CSV
+  app.get('/api/leads/export/csv', (req: Request, res: Response) => {
+    const headers = ['ID', 'Nome', 'Telefone', 'Email', 'Etapa', 'Valor', 'Urgente', 'Motivo Urgencia', 'Triagem Procedimento', 'Triagem Periodo', 'Tags', 'Criado Em', 'Ultima Interacao'];
+    const rows = db.leads.map((l) => {
+      const stageName = db.stages.find((s) => s.id === l.stageId)?.name || l.stageId;
+      return [
+        `"${l.id}"`,
+        `"${(l.name || '').replace(/"/g, '""')}"`,
+        `"${l.phone}"`,
+        `"${(l.email || '').replace(/"/g, '""')}"`,
+        `"${stageName}"`,
+        `${l.value || 0}`,
+        `"${l.isUrgent ? 'SIM' : 'NAO'}"`,
+        `"${(l.urgencyReason || '').replace(/"/g, '""')}"`,
+        `"${(l.triage?.procedure || '').replace(/"/g, '""')}"`,
+        `"${(l.triage?.preferredPeriod || '').replace(/"/g, '""')}"`,
+        `"${(l.tags || []).join('; ')}"`,
+        `"${l.createdAt}"`,
+        `"${l.lastInteraction}"`,
+      ].join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="nexa-crm-leads-${Date.now()}.csv"`);
+    res.send(csvContent);
   });
 
   // =========================================================================
@@ -310,8 +401,8 @@ async function startServer() {
 
   // Trigger manual or background follow-up check for dormant leads
   app.post('/api/followup/run', async (req: Request, res: Response) => {
-    const executed = await runDormantLeadFollowUp();
-    res.json({ success: true, count: executed.length, leadsFollowedUp: executed });
+    const executed = await runFollowUpCycle();
+    res.json({ success: true, count: executed.sent, leadsFollowedUp: executed.logs.map(l => l.leadName) });
   });
 
   // Instant AI playground testing endpoint
@@ -521,6 +612,32 @@ async function startServer() {
   });
 
   // =========================================================================
+  // 5. AUTOMATED FOLLOW-UP API & LOGS
+  // =========================================================================
+  app.get('/api/followup/logs', (req: Request, res: Response) => {
+    res.json(followUpLogs);
+  });
+
+  app.post('/api/followup/run-now', async (req: Request, res: Response) => {
+    const result = await runFollowUpCycle();
+    res.json({
+      success: true,
+      message: `Ciclo executado com sucesso: ${result.sent} mensagens de follow-up disparadas para ${result.evaluated} leads analisados.`,
+      result,
+    });
+  });
+
+  app.post('/api/followup/preview', (req: Request, res: Response) => {
+    const { leadId, niche, customMessage } = req.body;
+    const lead = db.leads.find((l) => l.id === leadId) || db.leads[0];
+    if (!lead) {
+      return res.status(404).json({ error: 'Nenhum lead encontrado' });
+    }
+    const sampleMsg = generateFollowUpMessage(lead, niche || db.agentConfig.followUpNiche || 'dental', customMessage);
+    res.json({ previewText: sampleMsg, leadName: lead.name });
+  });
+
+  // =========================================================================
   // 6. VITE MIDDLEWARE (DEV) & STATIC SERVING (PROD)
   // =========================================================================
   if (process.env.NODE_ENV !== 'production') {
@@ -541,79 +658,9 @@ async function startServer() {
     console.log(`MAVRA Server running on http://0.0.0.0:${PORT}`);
     console.log(`Master Admin: Marco Duarte (marco.agduarte22@gmail.com)`);
 
-    // Run follow-up check periodically every 30 minutes
-    setInterval(async () => {
-      try {
-        if (db.agentConfig.autoFollowUpEnabled && db.agentConfig.isGlobalAiActive !== false) {
-          await runDormantLeadFollowUp();
-        }
-      } catch (err) {
-        console.error('[Follow-up Timer Error]:', err);
-      }
-    }, 1000 * 60 * 30);
+    // Start background automated follow-up loop
+    startFollowUpScheduler();
   });
-}
-
-/**
- * Intelligent follow-up engine: checks for leads without response for > X hours
- * and sends a friendly re-engagement message crafted in Sofia's voice.
- */
-async function runDormantLeadFollowUp(): Promise<string[]> {
-  const config = db.agentConfig;
-  const delayHours = config.followUpDelayHours || 24;
-  const thresholdMs = Date.now() - delayHours * 60 * 60 * 1000;
-  const followedUpLeadNames: string[] = [];
-
-  for (const lead of db.leads) {
-    // Skip if AI is paused for this lead or if lead is already won/lost
-    if (lead.aiPaused) continue;
-    if (lead.stageId === 'stage-5' || lead.stageId === 'stage-6') continue;
-
-    // Check last interaction timestamp
-    const lastTime = new Date(lead.lastInteraction || lead.createdAt).getTime();
-    if (lastTime < thresholdMs) {
-      // Check last message sender
-      const leadMsgs = db.messages.filter((m) => m.leadId === lead.id);
-      const lastMsg = leadMsgs[leadMsgs.length - 1];
-
-      // Only follow up if the last message was from AI or if lead stopped answering
-      if (lastMsg && lastMsg.sender !== 'lead') {
-        // Skip if already followed up recently (check last message text)
-        if (lastMsg.text.includes('passando para ver se conseguiu dar uma olhadinha') ||
-            lastMsg.text.includes('conseguiu avaliar nossa proposta')) {
-          continue;
-        }
-
-        console.log(`[Follow-Up Automático] Lead dormente identificado: ${lead.name} (${lead.phone})`);
-        
-        const followUpText = `Olá, ${lead.name.split(' ')[0]}! Tudo bem? Passando rapidinho para ver se você conseguiu dar uma olhadinha no material e se restou alguma dúvida que eu possa te esclarecer por aqui? 😊`;
-
-        // Send via WhatsApp
-        await sendWhatsAppMessage(lead.phone, followUpText);
-
-        const newMsg: ChatMessage = {
-          id: 'msg-' + Date.now() + '-followup',
-          leadId: lead.id,
-          phone: lead.phone,
-          sender: 'ai',
-          text: `🔄 [Follow-up Automático]: ${followUpText}`,
-          timestamp: new Date().toISOString(),
-          status: 'delivered',
-        };
-
-        db.messages.push(newMsg);
-        lead.lastInteraction = new Date().toISOString();
-        lead.notes = `${lead.notes || ''}\n[${new Date().toLocaleDateString('pt-BR')}] Follow-up automático de ${delayHours}h disparado por Sofia.`;
-        followedUpLeadNames.push(lead.name);
-      }
-    }
-  }
-
-  if (followedUpLeadNames.length > 0) {
-    await db.saveToFile();
-  }
-
-  return followedUpLeadNames;
 }
 
 startServer();
