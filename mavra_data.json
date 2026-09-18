@@ -83,19 +83,19 @@
       "id": "lead-1789572077772",
       "name": "Cliente Teste",
       "phone": "5511999998888",
-      "stageId": "stage-1",
+      "stageId": "stage-2",
       "value": 0,
-      "interest": "Novo contato via WhatsApp",
+      "interest": "Como funciona o NEXA CRM",
       "tags": [
         "WhatsApp",
         "Novo Lead",
         "Follow-up Enviado"
       ],
-      "notes": "Lead criado automaticamente via Evolution API v2.\n🔁 [Follow-up Automático #1]: 22:45:15",
+      "notes": "Lead criado automaticamente via Evolution API v2.\n🔁 [Follow-up Automático #1]: 22:45:15\n[18/09/2026] Movido para \"Qualificado / Interesse\" pela IA.",
       "aiPaused": false,
-      "lastInteraction": "2026-09-17T22:45:15.091Z",
+      "lastInteraction": "2026-09-18T20:16:41.011Z",
       "createdAt": "2026-09-16T15:21:17.772Z",
-      "unreadCount": 2,
+      "unreadCount": 3,
       "followUpCount": 1,
       "lastFollowUpAt": "2026-09-17T22:45:15.091Z"
     },
@@ -324,6 +324,28 @@
       "text": "Olá, Camila! Tudo bem? Passando para saber se ficou com alguma dúvida sobre os nossos tratamentos odontológicos ou se gostaria de agendar uma consulta com nossa equipe esta semana! 🦷✨",
       "timestamp": "2026-09-17T22:45:15.393Z",
       "status": "delivered"
+    },
+    {
+      "id": "msg-1789762601012-in",
+      "leadId": "lead-1789572077772",
+      "phone": "5511999998888",
+      "sender": "lead",
+      "text": "Olá Sofia, gostaria de saber como funciona o atendimento e agendar uma demonstração",
+      "timestamp": "2026-09-18T20:16:41.012Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1789762601878-ai",
+      "leadId": "lead-1789572077772",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "O NEXA CRM é uma plataforma inovadora que conecta Inteligência Artificial avançada diretamente ao WhatsApp da sua empresa! Ele atende seus clientes 24 horas por dia (por texto e áudio humanizado), responde dúvidas, qualifica potenciais compradores e organiza todas as negociações em um painel Kanban em tempo real. Quantos atendimentos você realiza por dia na sua empresa?",
+      "timestamp": "2026-09-18T20:16:41.878Z",
+      "status": "delivered",
+      "stageTriggered": "stage-2",
+      "extractedInfo": {
+        "interest": "Como funciona o NEXA CRM"
+      }
     }
   ],
   "agentConfig": {
@@ -333,7 +355,7 @@
     "salesGoal": "Descobrir as dores do lead, tirar dúvidas com base no catálogo oficial, qualificar o tamanho da operação e avançar a oportunidade no funil de vendas",
     "activeProvider": "gemini",
     "activeModel": "gemini-2.5-flash",
-    "geminiApiKey": "",
+    "geminiApiKey": "AIzaSyAaM2rf2lpAh7FM2cpWDJ7EOjSWJpcYJIY",
     "openaiApiKey": "",
     "anthropicApiKey": "",
     "knowledgeFaq": "P: Como funciona o atendimento inteligente do NEXA CRM?\nR: O NEXA CRM integra inteligência artificial avançada diretamente ao WhatsApp da sua empresa, atendendo clientes 24 horas por dia com respostas personalizadas e atualizando o CRM em tempo real.\n\nP: O que acontece se o atendente humano quiser assumir?\nR: Basta clicar no botão \"Assumir Atendimento\" na Central de Chat. A inteligência artificial pausa instantaneamente para aquele cliente e a equipe humana continua a conversa com total naturalidade.\n\nP: Como a IA sabe sobre os produtos ou serviços da empresa?\nR: O sistema possui uma base de conhecimento exclusiva alimentada com catálogos, tabela de serviços e documentos oficiais do seu negócio.\n\nP: Como funciona a garantia e suporte?\nR: Oferecemos suporte dedicado e acompanhamento completo, com implementação ágil e personalizada para a sua empresa.",
@@ -385,7 +407,7 @@
   ],
   "evolutionConfig": {
     "serverUrl": "https://api.makprojetosmake.com.br",
-    "apiKey": "b2efa885a71ee22edf72b597df1a0ce9",
+    "apiKey": "CE08ADFF7647-4B88-91A4-55E66D9A0620",
     "instanceName": "agente-ia",
     "isConnected": true,
     "state": "connected",

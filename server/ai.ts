@@ -507,13 +507,13 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
    - Se o lead enviar uma mensagem curta, confusa, ou que pareça conversa pessoal ou engano (por exemplo "oi fulano", "cadê você?", "tudo bem?", "tá podendo falar?"), responda de forma educada, acolhedora e humana.
    - Exemplo: "Olá! Tudo bem? Aqui é a Sofia da MAVRA. Em que posso te ajudar hoje?"
    - NUNCA envie respostas robóticas, jargões técnicos ou suposições forçadas sobre vendas se o cliente ainda não indicou o motivo do contato.
-9. CASO O CLIENTE DIRECIONE A CONVERSA DIRETAMENTE AO MARCO DUARTE:
-   - Responda cordialmente: "Olá! O Marco já foi avisado da sua mensagem. Gostaria de adiantar em algo enquanto ele assume o atendimento?"
+9. CASO O CLIENTE DIRECIONE A CONVERSA A UMA PESSOA ESPECÍFICA OU ATENDIMENTO HUMANO:
+   - Responda cordialmente: "Olá! Nossa equipe já foi notificada da sua mensagem. Gostaria de adiantar em algo enquanto preparamos seu atendimento?"
 10. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
    - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
 11. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO:
    - Se o lead pedir a chave PIX, dados bancários para fechar, transferir ou pagar:
-   - Responda cordialmente com a chave oficial cadastrada (${config.pixKey ? `Chave PIX (${config.pixKeyType || 'E-mail'}): ${config.pixKey}` : 'Consulte nosso especialista Marco Duarte'}) em uma mensagem limpa e fácil de copiar, definindo "sendPixInfo": true no JSON.
+   - Responda cordialmente com a chave oficial cadastrada (${config.pixKey ? `Chave PIX (${config.pixKeyType || 'E-mail'}): ${config.pixKey}` : 'Consulte nosso time comercial'}) em uma mensagem limpa e fácil de copiar, definindo "sendPixInfo": true no JSON.
    - Quando ele solicitar PIX para fechar, mova-o para a etapa de "Negociação / Fechamento" ou "Ganhos / Clientes".
 12. DISCERNIMENTO INTELIGENTE DE RESPOSTA (ÁUDIO vs TEXTO):
    - FORMATO DA MENSAGEM DO CLIENTE: ${isAudio ? '🎙️ O CLIENTE ENVIOU UMA MENSAGEM DE ÁUDIO / VOZ' : '💬 O CLIENTE DIGITOU UMA MENSAGEM DE TEXTO'}.
@@ -718,7 +718,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     lower.includes('personalizado') ||
     lower.includes('customizado')
   ) {
-    reply = 'Nosso Plano Enterprise é projetado para operações comerciais ativas com alto volume de mensagens, instâncias dedicadas de WhatsApp, IA treinada nos dados da sua empresa e suporte VIP. Gostaria que eu agendasse uma demonstração executiva com o Marco Duarte?';
+    reply = 'Nosso Plano Enterprise é projetado para operações comerciais ativas com alto volume de mensagens, instâncias dedicadas de WhatsApp, IA treinada nos dados da sua empresa e suporte VIP. Gostaria de agendar uma demonstração executiva para sua equipe?';
     suggestedStage = 'stage-3'; // Proposta
     estimatedValue = 12500;
     interest = 'Plano Enterprise';
