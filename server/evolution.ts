@@ -253,53 +253,94 @@ export async function sendWhatsAppVoiceAudio(
 /**
  * Downloads base64 audio/media directly from Evolution API v2 if not included in the webhook payload
  */
-export async function getBase64FromMediaMessage(messageKey: {
-  id?: string;
-  remoteJid?: string;
-  fromMe?: boolean;
-}): Promise<string | null> {
+export async function getBase64FromMediaMessage(
+  messagePayload: any,
+  messageKey?: { id?: string; remoteJid?: string; fromMe?: boolean }
+): Promise<string | null> {
   const config = db.evolutionConfig;
-  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  if (!baseUrl || !config.apiKey || !messageKey.id) {
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl || process.env.EVOLUTION_API_URL || 'https://api.makprojetosmake.com.br');
+  const apiKey = (config.apiKey || process.env.EVOLUTION_API_KEY || 'b2efa885a71ee22edf72b597df1a0ce9').trim();
+  const instanceName = (config.instanceName || process.env.EVOLUTION_INSTANCE || 'agente-ia').trim();
+
+  if (!baseUrl || !apiKey || !instanceName) {
+    console.warn('[Evolution API Media] Configuração incompleta para download de mídia.');
     return null;
   }
 
-  try {
-    const endpoint = `${baseUrl}/chat/getBase64FromMediaMessage/${encodeURIComponent(config.instanceName.trim())}`;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout max
-
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: config.apiKey.trim(),
-      },
-      body: JSON.stringify({
-        message: {
-          key: {
-            id: messageKey.id,
-            remoteJid: messageKey.remoteJid,
-            fromMe: messageKey.fromMe || false,
-          },
-        },
-        convertToMp4: false,
-      }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (response.ok) {
-      const data = await response.json();
-      const base64Data = data?.base64 || data?.data;
-      if (base64Data && typeof base64Data === 'string') {
-        // Strip data:audio/ogg;base64, prefix if present
-        return base64Data.replace(/^data:[^;]+;base64,/, '');
-      }
-    }
-  } catch (err: any) {
-    console.warn('[Evolution API] Não foi possível obter base64 da mídia remota:', err.message);
+  // Extract key and inner message structure
+  const key = messageKey || messagePayload?.key || messagePayload?.data?.key;
+  const msgId = key?.id || messagePayload?.id;
+  if (!msgId) {
+    console.warn('[Evolution API Media] ID da mensagem ausente para download de mídia.');
+    return null;
   }
+
+  const endpoint = `${baseUrl}/chat/getBase64FromMediaMessage/${encodeURIComponent(instanceName)}`;
+
+  // Construct message object payloads for Evolution API v2 compatibility
+  const candidatePayloads = [
+    // 1. Full Evolution v2 message structure (with crypto keys, audioMessage/imageMessage)
+    {
+      message: messagePayload?.message ? messagePayload : { key, message: messagePayload },
+      convertToMp4: false,
+    },
+    // 2. Direct message envelope
+    {
+      message: {
+        key: {
+          id: msgId,
+          remoteJid: key?.remoteJid || '',
+          fromMe: Boolean(key?.fromMe),
+        },
+        message: messagePayload?.message || messagePayload,
+      },
+      convertToMp4: false,
+    },
+    // 3. Simple key reference (if media is cached server-side)
+    {
+      message: {
+        key: {
+          id: msgId,
+          remoteJid: key?.remoteJid || '',
+          fromMe: Boolean(key?.fromMe),
+        },
+      },
+      convertToMp4: false,
+    },
+  ];
+
+  for (let i = 0; i < candidatePayloads.length; i++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: apiKey,
+        },
+        body: JSON.stringify(candidatePayloads[i]),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        const base64Data = data?.base64 || data?.data;
+        if (base64Data && typeof base64Data === 'string' && base64Data.length > 50) {
+          console.log(`[Evolution API Media] Base64 da mídia obtido com sucesso (${base64Data.length} chars) na tentativa ${i + 1}!`);
+          return base64Data.replace(/^data:[^;]+;base64,/, '');
+        }
+      } else {
+        const errText = await response.text().catch(() => '');
+        console.warn(`[Evolution API Media] Tentativa ${i + 1} falhou (HTTP ${response.status}): ${errText.slice(0, 100)}`);
+      }
+    } catch (err: any) {
+      console.warn(`[Evolution API Media] Tentativa ${i + 1} erro de conexão:`, err.message);
+    }
+  }
+
   return null;
 }
 

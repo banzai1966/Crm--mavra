@@ -592,13 +592,10 @@ async function callGemini(
     },
   });
 
-  // Prioritize fast, ultra-low latency models
+  // Prioritize fast, standard Gemini models
   const candidateModels = [
-    modelName && modelName !== 'gemini-2.5-pro' ? modelName : 'gemini-2.5-flash',
+    modelName && modelName === 'gemini-2.5-pro' ? 'gemini-2.5-pro' : 'gemini-2.5-flash',
     'gemini-2.5-flash',
-    'gemini-3.8-flash',
-    'gemini-flash-latest',
-    'gemini-3.1-flash-lite',
     'gemini-2.5-pro',
   ].filter((v, i, a) => a.indexOf(v) === i); // unique
 
@@ -629,7 +626,7 @@ async function callGemini(
         console.warn(`[Gemini Fallback] Modelo ${candidate} falhou (${err.message}). Tentando próximo modelo...`);
       }
       // Short delay before fallback attempt
-      await new Promise((r) => setTimeout(r, 400));
+      await new Promise((r) => setTimeout(r, 300));
     }
   }
 
@@ -648,7 +645,7 @@ export async function testGeminiApiKey(apiKeyToTest?: string): Promise<{ success
     apiKey: key,
     httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
   });
-  const testModels = ['gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'];
+  const testModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
   let lastErr = '';
   for (const m of testModels) {
     try {

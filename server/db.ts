@@ -14,6 +14,12 @@ import {
 
 const STORAGE_FILE = path.join(process.cwd(), 'mavra_data.json');
 
+function cleanUrl(url?: string): string {
+  if (!url) return '';
+  const match = url.match(/https?:\/\/[^\s"'<>]+/i);
+  return (match ? match[0] : url.trim()).replace(/\/+$/, '');
+}
+
 export const DEFAULT_DEMO_LEADS: Lead[] = [
   {
     id: 'lead-1',
@@ -364,6 +370,9 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
           this.agentConfig = {
             ...this.agentConfig,
             ...data.agentConfig,
+            geminiApiKey: (process.env.GEMINI_API_KEY || data.agentConfig.geminiApiKey || this.agentConfig.geminiApiKey || '').trim(),
+            openaiApiKey: (process.env.OPENAI_API_KEY || data.agentConfig.openaiApiKey || this.agentConfig.openaiApiKey || '').trim(),
+            anthropicApiKey: (process.env.ANTHROPIC_API_KEY || data.agentConfig.anthropicApiKey || this.agentConfig.anthropicApiKey || '').trim(),
           };
         }
         if (data.documents && Array.isArray(data.documents)) this.documents = data.documents;
@@ -371,6 +380,9 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
           this.evolutionConfig = {
             ...this.evolutionConfig,
             ...data.evolutionConfig,
+            serverUrl: cleanUrl(process.env.EVOLUTION_API_URL || data.evolutionConfig.serverUrl || this.evolutionConfig.serverUrl),
+            apiKey: (process.env.EVOLUTION_API_KEY || data.evolutionConfig.apiKey || this.evolutionConfig.apiKey || '').trim(),
+            instanceName: (process.env.EVOLUTION_INSTANCE || data.evolutionConfig.instanceName || this.evolutionConfig.instanceName || '').trim(),
           };
         }
         if (data.supabaseConfig) {

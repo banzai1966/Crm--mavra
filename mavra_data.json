@@ -384,12 +384,12 @@
     }
   ],
   "evolutionConfig": {
-    "serverUrl": "URL da Evolution API\thttps://api.makprojetosmake.com.br",
-    "apiKey": "CE08ADFF7647-4B88-91A4-55E66D9A0620",
+    "serverUrl": "https://api.makprojetosmake.com.br",
+    "apiKey": "b2efa885a71ee22edf72b597df1a0ce9",
     "instanceName": "agente-ia",
-    "isConnected": false,
-    "state": "disconnected",
-    "lastTestedAt": "2026-09-16T15:21:07.786Z"
+    "isConnected": true,
+    "state": "connected",
+    "lastTestedAt": "2026-09-18T12:00:00.000Z"
   },
   "supabaseConfig": {
     "url": "https://pejcssjahomczedjzqzr.supabase.co/rest/v1/",

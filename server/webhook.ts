@@ -212,10 +212,11 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     const mimeType = audioObj?.mimetype || 'audio/ogg';
 
     // If base64 was not sent in webhook payload, fetch directly from Evolution API
-    if (!base64Audio && (data?.key || body?.key)) {
-      const messageKeyToFetch = data?.key || body?.key;
-      console.log(`[Webhook] Baixando base64 do áudio diretamente da Evolution API (ID: ${messageKeyToFetch?.id})...`);
-      base64Audio = await getBase64FromMediaMessage(messageKeyToFetch);
+    if (!base64Audio) {
+      const payloadToFetch = data || body || (audioObj ? { message: { audioMessage: audioObj } } : null);
+      const keyToFetch = data?.key || body?.key;
+      console.log(`[Webhook] Baixando base64 do áudio diretamente da Evolution API (ID: ${keyToFetch?.id || 'direto'})...`);
+      base64Audio = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
     }
 
     if (base64Audio) {
@@ -253,8 +254,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     const caption = messageText.trim() || imageObj?.caption || '';
     const mimeType = imageObj?.mimetype || 'image/jpeg';
 
-    if (!base64Image && (data?.key || body?.key)) {
-      base64Image = await getBase64FromMediaMessage(data?.key || body?.key);
+    if (!base64Image) {
+      base64Image = await getBase64FromMediaMessage(data || body || imageObj, data?.key || body?.key);
     }
 
     if (base64Image) {
@@ -283,8 +284,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     const docCaption = messageText.trim() || documentObj?.caption || '';
     const docMime = documentObj?.mimetype || 'application/pdf';
 
-    if (!base64Doc && (data?.key || body?.key)) {
-      base64Doc = await getBase64FromMediaMessage(data?.key || body?.key);
+    if (!base64Doc) {
+      base64Doc = await getBase64FromMediaMessage(data || body || documentObj, data?.key || body?.key);
     }
 
     if (base64Doc) {
