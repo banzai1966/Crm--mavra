@@ -399,6 +399,20 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
     }
   }
 
+  public clearAllLeads(): void {
+    this.leads = [];
+    this.messages = [];
+    this.saveToFile();
+    console.log('[DB Storage] Todos os leads e mensagens foram limpos.');
+  }
+
+  public restoreDemoLeads(): void {
+    this.leads = [...DEFAULT_DEMO_LEADS];
+    this.messages = [...DEFAULT_DEMO_MESSAGES];
+    this.saveToFile();
+    console.log(`[DB Storage] Leads de demonstração restaurados (${this.leads.length} leads).`);
+  }
+
   public initSupabaseClient(): boolean {
     if (this.supabaseConfig.url && (this.supabaseConfig.serviceKey || this.supabaseConfig.anonKey)) {
       try {

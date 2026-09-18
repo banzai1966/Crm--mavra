@@ -737,13 +737,10 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   } else if (
     lower.includes('humano') ||
     lower.includes('atendente') ||
-    lower.includes('pessoa') ||
-    lower.includes('marco') ||
-    lower.includes('duarte') ||
     lower.includes('falar com alguém') ||
     lower.includes('suporte')
   ) {
-    reply = 'Com certeza! Já notifiquei o Marco Duarte e nossa equipe interna sobre seu contato. Em instantes ele entrará em contato com você por aqui para lhe atender pessoalmente!';
+    reply = 'Com certeza! Já notifiquei nossa equipe interna sobre seu contato. Em instantes um especialista entrará em contato com você por aqui para lhe atender pessoalmente!';
     suggestedStage = 'stage-2';
     interest = 'Solicitação de Atendimento Humano';
   } else if (

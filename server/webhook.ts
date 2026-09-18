@@ -334,11 +334,22 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   // 2. Find or create lead in CRM database
   let lead = db.leads.find((l) => l.phone === cleanPhone);
 
+  const extractedPushName =
+    data?.pushName ||
+    body?.pushName ||
+    data?.message?.pushName ||
+    body?.message?.pushName ||
+    data?.senderName ||
+    body?.senderName ||
+    data?.verifiedBizName ||
+    body?.verifiedBizName ||
+    '';
+
   if (!lead) {
     const defaultStage = db.stages[0]?.id || 'stage-1';
     lead = {
       id: 'lead-' + Date.now(),
-      name: data?.pushName || `Lead ${cleanPhone.slice(-4)}`,
+      name: extractedPushName || `Lead ${cleanPhone.slice(-4)}`,
       phone: cleanPhone,
       stageId: defaultStage,
       value: 0,
@@ -354,8 +365,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   } else {
     lead.lastInteraction = new Date().toISOString();
     lead.unreadCount = (lead.unreadCount || 0) + 1;
-    if (data?.pushName && lead.name.startsWith('Lead ')) {
-      lead.name = data.pushName;
+    if (extractedPushName && (lead.name.startsWith('Lead ') || lead.name === `Lead ${cleanPhone.slice(-4)}`)) {
+      lead.name = extractedPushName;
     }
   }
 
