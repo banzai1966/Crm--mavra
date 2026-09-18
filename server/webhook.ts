@@ -1,6 +1,7 @@
 import { db } from './db';
 import {
   processAiConversation,
+  generateRuleBasedSafetyReply,
   transcribeAudioWithGemini,
   analyzeImageWithGemini,
   analyzeDocumentWithGemini,
@@ -639,10 +640,10 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   } catch (aiErr: any) {
     console.error('[Webhook] Falha ao gerar resposta da IA:', aiErr.message);
 
-    // Friendly fallback message directly from Sofia to the customer
-    const fallbackText =
-      'Olá! Agradecemos o seu contato. Nosso especialista Marco Duarte já foi notificado sobre sua solicitação e entrará em contato com você em instantes para lhe atender com total atenção!';
-    
+    // Resposta inteligente da base de conhecimento mesmo em caso de erro da API
+    const fallbackResult = generateRuleBasedSafetyReply(messageText);
+    const fallbackText = fallbackResult.replyText;
+
     const aiFallbackMsg: ChatMessage = {
       id: 'msg-' + Date.now() + '-ai',
       leadId: lead.id,
@@ -651,6 +652,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       text: fallbackText,
       timestamp: new Date().toISOString(),
       status: 'delivered',
+      stageTriggered: fallbackResult.stageTriggered,
+      extractedInfo: fallbackResult.extractedInfo,
     };
     db.messages.push(aiFallbackMsg);
 

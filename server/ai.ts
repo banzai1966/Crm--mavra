@@ -596,6 +596,8 @@ async function callGemini(
   const candidateModels = [
     modelName && modelName !== 'gemini-2.5-pro' ? modelName : 'gemini-2.5-flash',
     'gemini-2.5-flash',
+    'gemini-3.8-flash',
+    'gemini-flash-latest',
     'gemini-3.1-flash-lite',
     'gemini-2.5-pro',
   ].filter((v, i, a) => a.indexOf(v) === i); // unique
@@ -620,41 +622,151 @@ async function callGemini(
       }
     } catch (err: any) {
       lastError = err;
-      console.warn(`[Gemini Fallback] Modelo ${candidate} falhou (${err.message}). Tentando próximo modelo...`);
+      const isLeakedKey = err.message && err.message.includes('reported as leaked');
+      if (isLeakedKey) {
+        console.error('🚨 [CRÍTICO - GEMINI API KEY] A chave de API do Gemini foi revogada pelo Google (chave vazada/bloqueada)! Por favor, gere uma nova chave gratuita em https://aistudio.google.com/apikey e atualize nas configurações.');
+      } else {
+        console.warn(`[Gemini Fallback] Modelo ${candidate} falhou (${err.message}). Tentando próximo modelo...`);
+      }
       // Short delay before fallback attempt
       await new Promise((r) => setTimeout(r, 400));
     }
   }
 
-  // If all models hit 503 or quota, provide smart contextual knowledge reply based on DB
-  console.warn('[Gemini] Todos os modelos Gemini esgotaram retries. Gerando resposta contextual de segurança...');
+  // If all models hit 503, quota, or leaked key, provide smart contextual knowledge reply based on DB
+  console.warn('[Gemini] Modelos Gemini indisponíveis. Gerando resposta contextual inteligente pela Base de Conhecimento...');
   return generateRuleBasedSafetyReply(prompt);
 }
 
-// Resposta contextual de segurança caso a rede do provedor de IA esteja temporariamente fora do ar
-function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
-  const lower = prompt.toLowerCase();
-  let reply = 'Olá! Recebi sua mensagem com sucesso. Nosso arquiteto especialista Marco Duarte já foi notificado e responderá você em instantes!';
+// Função de teste direto de chave do Gemini com retorno em tempo real
+export async function testGeminiApiKey(apiKeyToTest?: string): Promise<{ success: boolean; model?: string; message?: string; error?: string }> {
+  const key = (apiKeyToTest || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
+  if (!key) {
+    return { success: false, error: 'Nenhuma chave de API informada para teste.' };
+  }
+  const ai = new GoogleGenAI({
+    apiKey: key,
+    httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
+  });
+  const testModels = ['gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'];
+  let lastErr = '';
+  for (const m of testModels) {
+    try {
+      const res = await ai.models.generateContent({
+        model: m,
+        contents: 'Olá, confirme com uma palavra: operacional',
+      });
+      if (res.text) {
+        return { success: true, model: m, message: `Conexão bem-sucedida! O modelo ${m} respondeu: "${res.text.trim()}"` };
+      }
+    } catch (err: any) {
+      lastErr = err.message || '';
+      if (lastErr.includes('reported as leaked')) {
+        return { success: false, error: 'A chave foi BLOQUEADA/REVOGADA pelo Google (marcada como vazada). Por favor, gere uma nova chave em aistudio.google.com/apikey.' };
+      }
+      if (lastErr.includes('API_KEY_INVALID')) {
+        return { success: false, error: 'Chave de API inválida. Verifique se copiou todos os caracteres corretamente.' };
+      }
+    }
+  }
+  return { success: false, error: `Falha ao testar chave: ${lastErr || 'Sem resposta do provedor'}` };
+}
+
+// Resposta contextual de segurança caso a rede do provedor de IA ou a chave esteja temporariamente fora do ar
+export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
+  const lower = (prompt || '').toLowerCase();
+  let reply = 'Olá! Que prazer falar com você. Sou a Sofia, assistente virtual do NEXA CRM. Como posso ajudar você e sua empresa hoje?';
   let suggestedStage: string | undefined = undefined;
   let estimatedValue: number | undefined = undefined;
   let interest: string | undefined = undefined;
+  let sendAsVoice = false;
 
-  if (lower.includes('enterprise') || lower.includes('atendente') || lower.includes('empresa')) {
-    reply = 'Olá! Que excelente iniciativa. Nosso Plano Enterprise conta com atendimento multi-atendente, IA autônoma para WhatsApp e integrações sob medida. Nosso especialista Marco Duarte entrará em contato em instantes para alinhar sua proposta personalizada!';
+  // Dúvida sobre como funciona o CRM ou o que é (incluindo possíveis erros de digitação como 'vomo', 'q funciona', etc)
+  if (
+    lower.includes('funciona') ||
+    lower.includes('como') ||
+    lower.includes('vomo') ||
+    lower.includes('o que é') ||
+    lower.includes('oque é') ||
+    lower.includes('crm') ||
+    lower.includes('sistema') ||
+    lower.includes('plataforma') ||
+    lower.includes('recurso') ||
+    lower.includes('automaç') ||
+    lower.includes('inteligenc') ||
+    lower.includes('inteligênc') ||
+    lower.includes('atendimento') ||
+    lower.includes('serve')
+  ) {
+    reply = 'O NEXA CRM é uma plataforma inovadora que conecta Inteligência Artificial avançada diretamente ao WhatsApp da sua empresa! Ele atende seus clientes 24 horas por dia (por texto e áudio humanizado), responde dúvidas, qualifica potenciais compradores e organiza todas as negociações em um painel Kanban em tempo real. Quantos atendimentos você realiza por dia na sua empresa?';
+    suggestedStage = 'stage-2'; // Qualificado
+    interest = 'Como funciona o NEXA CRM';
+  } else if (
+    lower.includes('preço') ||
+    lower.includes('preco') ||
+    lower.includes('valor') ||
+    lower.includes('quanto custa') ||
+    lower.includes('plano') ||
+    lower.includes('mensalidade') ||
+    lower.includes('tabela') ||
+    lower.includes('investimento') ||
+    lower.includes('custo')
+  ) {
+    reply = 'Nossos planos iniciam com o NEXA Starter para quem quer automação rápida no WhatsApp, até o NEXA Professional e Enterprise com múltiplos atendentes, IA personalizada para o seu negócio e gestão completa de funil. Me conte: quantos atendentes utilizam o WhatsApp na sua empresa hoje?';
+    suggestedStage = 'stage-2'; // Qualificado
+    interest = 'Consulta de Preços/Planos';
+  } else if (
+    lower.includes('enterprise') ||
+    lower.includes('grande empresa') ||
+    lower.includes('personalizado') ||
+    lower.includes('customizado')
+  ) {
+    reply = 'Nosso Plano Enterprise é projetado para operações comerciais ativas com alto volume de mensagens, instâncias dedicadas de WhatsApp, IA treinada nos dados da sua empresa e suporte VIP. Gostaria que eu agendasse uma demonstração executiva com o Marco Duarte?';
     suggestedStage = 'stage-3'; // Proposta
     estimatedValue = 12500;
     interest = 'Plano Enterprise';
-  } else if (lower.includes('preço') || lower.includes('valor') || lower.includes('quanto custa') || lower.includes('plano')) {
-    reply = 'Olá! Nossos planos começam a partir de R$ 980/mês para o plano Pro até soluções Enterprise customizadas para grandes operações. O que você gostaria de automatizar no seu atendimento hoje?';
-    suggestedStage = 'stage-2'; // Qualificado
-    interest = 'Consulta de Preços/Planos';
+  } else if (
+    lower.includes('áudio') ||
+    lower.includes('audio') ||
+    lower.includes('voz') ||
+    lower.includes('falar') ||
+    lower.includes('ouvir') ||
+    lower.includes('grava')
+  ) {
+    reply = 'Com certeza! Eu consigo escutar qualquer mensagem de áudio enviada no WhatsApp e também responder com voz humana natural, tornando o atendimento muito mais ágil e acolhedor. O que você acha dessa solução para os seus clientes?';
+    suggestedStage = 'stage-2';
+    interest = 'Atendimento por Áudio e Voz';
+    sendAsVoice = true;
+  } else if (
+    lower.includes('humano') ||
+    lower.includes('atendente') ||
+    lower.includes('pessoa') ||
+    lower.includes('marco') ||
+    lower.includes('duarte') ||
+    lower.includes('falar com alguém') ||
+    lower.includes('suporte')
+  ) {
+    reply = 'Com certeza! Já notifiquei o Marco Duarte e nossa equipe interna sobre seu contato. Em instantes ele entrará em contato com você por aqui para lhe atender pessoalmente!';
+    suggestedStage = 'stage-2';
+    interest = 'Solicitação de Atendimento Humano';
+  } else if (
+    lower.includes('olá') ||
+    lower.includes('ola') ||
+    lower.includes('oi') ||
+    lower.includes('bom dia') ||
+    lower.includes('boa tarde') ||
+    lower.includes('boa noite') ||
+    lower.includes('tudo bem')
+  ) {
+    reply = 'Olá! Tudo bem? Aqui é a Sofia do NEXA CRM. Estou à disposição para tirar dúvidas sobre nossa plataforma de automação com Inteligência Artificial para WhatsApp e vendas. Em que posso te ajudar hoje?';
   }
 
   return {
     replyText: reply,
-    providerUsed: 'Sofia (Modo de Contingência Ativo)',
+    providerUsed: 'Sofia (Base de Conhecimento Ativa)',
     modelUsed: 'Knowledge Engine Fallback',
     stageTriggered: suggestedStage,
+    sendAsVoice,
     extractedInfo: {
       interest,
       value: estimatedValue,

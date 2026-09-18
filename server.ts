@@ -14,7 +14,7 @@ import {
   logoutEvolutionInstance,
   fetchAllEvolutionInstances,
 } from './server/evolution';
-import { processAiConversation, synthesizeSpeech } from './server/ai';
+import { processAiConversation, synthesizeSpeech, testGeminiApiKey } from './server/ai';
 import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
 import { ChatMessage } from './src/types';
 
@@ -397,6 +397,17 @@ async function startServer() {
     };
     db.saveToFile();
     res.json(db.agentConfig);
+  });
+
+  // Test Gemini API key live
+  app.post('/api/agent-config/test-key', async (req: Request, res: Response) => {
+    const { apiKey } = req.body;
+    try {
+      const result = await testGeminiApiKey(apiKey);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
   });
 
   // Trigger manual or background follow-up check for dormant leads

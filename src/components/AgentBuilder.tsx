@@ -26,7 +26,9 @@ import {
   Loader2,
   ExternalLink,
   Clock,
-  RefreshCw
+  RefreshCw,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider } from '../types';
 
@@ -82,6 +84,33 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [uploadFileName, setUploadFileName] = useState('');
   const [uploadContent, setUploadContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+
+  // Gemini key live test state
+  const [showGeminiKey, setShowGeminiKey] = useState(false);
+  const [isTestingKey, setIsTestingKey] = useState(false);
+  const [keyTestResult, setKeyTestResult] = useState<{ success: boolean; message?: string; error?: string } | null>(null);
+
+  const handleTestKey = async () => {
+    if (!config.geminiApiKey?.trim()) {
+      setKeyTestResult({ success: false, error: 'Por favor, cole sua chave de API do Gemini antes de testar.' });
+      return;
+    }
+    setIsTestingKey(true);
+    setKeyTestResult(null);
+    try {
+      const res = await fetch('/api/agent-config/test-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: config.geminiApiKey.trim() }),
+      });
+      const data = await res.json();
+      setKeyTestResult(data);
+    } catch (err: any) {
+      setKeyTestResult({ success: false, error: err.message || 'Erro ao comunicar com o servidor' });
+    } finally {
+      setIsTestingKey(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -473,17 +502,84 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               Chaves de API dos Provedores (Armazenadas de forma segura no backend)
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-[11px] text-slate-500 mb-1 font-medium">
-                  Google Gemini API Key
-                </label>
-                <input
-                  type="password"
-                  placeholder="Injetada automaticamente..."
-                  value={config.geminiApiKey || ''}
-                  onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
-                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 font-mono focus:outline-hidden focus:border-slate-400"
-                />
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] text-slate-700 font-semibold">
+                    Google Gemini API Key
+                  </label>
+                  <a
+                    href="https://aistudio.google.com/apikey"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[10px] text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-0.5"
+                  >
+                    Obter chave gratuita <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </div>
+                <div className="relative flex items-center">
+                  <input
+                    type={showGeminiKey ? 'text' : 'password'}
+                    placeholder="AIzaSy... (Cole sua nova chave aqui)"
+                    value={config.geminiApiKey || ''}
+                    onChange={(e) => {
+                      setConfig({ ...config, geminiApiKey: e.target.value.trim() });
+                      setKeyTestResult(null);
+                    }}
+                    className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-1.5 text-xs text-slate-800 font-mono focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowGeminiKey(!showGeminiKey)}
+                    className="absolute right-2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                    title={showGeminiKey ? 'Ocultar chave' : 'Mostrar chave'}
+                  >
+                    {showGeminiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <div className="flex items-center gap-2 pt-0.5">
+                  <button
+                    type="button"
+                    onClick={handleTestKey}
+                    disabled={isTestingKey || !config.geminiApiKey}
+                    className="text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-200 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-40"
+                  >
+                    {isTestingKey ? (
+                      <>
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <span>Validando no Google...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-3 h-3" />
+                        <span>Testar Conexão da Chave</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                {keyTestResult && (
+                  <div
+                    className={`text-[10px] p-2 rounded-lg border ${
+                      keyTestResult.success
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        : 'bg-rose-50 text-rose-800 border-rose-200'
+                    }`}
+                  >
+                    {keyTestResult.success ? (
+                      <div className="flex items-center gap-1.5 font-medium">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>{keyTestResult.message || 'Chave do Gemini 100% válida e funcionando!'}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-start gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                        <div>
+                          <b className="font-semibold block">Erro na Chave:</b>
+                          <span>{keyTestResult.error}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -1386,6 +1482,38 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               )}
             </div>
           )}
+        </div>
+
+        {/* BARRA DE AÇÃO INFERIOR - SALVAR CONFIGURAÇÕES */}
+        <div className="bg-white border-2 border-slate-900/10 rounded-2xl p-5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky bottom-4 z-20 backdrop-blur-md bg-white/95">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-slate-900 text-white shadow-xs">
+              <Save className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">Salvar Todas as Configurações do Agente</h4>
+              <p className="text-xs text-slate-500">
+                Aplica imediatamente a nova chave de API, catálogo, regras comerciais e configurações de voz.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {saveSuccess && (
+              <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 animate-fade-in">
+                <Check className="w-4 h-4 text-emerald-600" />
+                Configurações salvas com sucesso!
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              <span>{isSaving ? 'Salvando...' : 'Salvar Alterações do Agente'}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
