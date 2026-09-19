@@ -52,9 +52,9 @@
       ],
       "notes": "Lead criado automaticamente via Evolution API v2.\n[19/09/2026] Movido para \"Qualificado / Interesse\" pela IA.",
       "aiPaused": false,
-      "lastInteraction": "2026-09-19T12:47:28.964Z",
+      "lastInteraction": "2026-09-19T16:53:28.966Z",
       "createdAt": "2026-09-19T12:46:06.652Z",
-      "unreadCount": 2
+      "unreadCount": 3
     },
     {
       "id": "lead-1789821920560",
@@ -537,6 +537,27 @@
       "extractedInfo": {
         "interest": "Como funciona o NEXA CRM"
       }
+    },
+    {
+      "id": "msg-1789836808966-in",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "🎤 [Áudio Transcrito]: \"Olá! Recebi seu áudio. Em que posso te ajudar hoje?\"",
+      "timestamp": "2026-09-19T16:53:28.966Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1789836810498-ai",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "O NEXA CRM é uma plataforma inovadora que conecta Inteligência Artificial avançada diretamente ao WhatsApp da sua empresa! Ele atende seus clientes 24 horas por dia (por texto e áudio humanizado), responde dúvidas, qualifica potenciais compradores e organiza todas as negociações em um painel Kanban em tempo real. Quantos atendimentos você realiza por dia na sua empresa?",
+      "timestamp": "2026-09-19T16:53:30.498Z",
+      "status": "delivered",
+      "extractedInfo": {
+        "interest": "Como funciona o NEXA CRM"
+      }
     }
   ],
   "agentConfig": {
@@ -567,7 +588,7 @@
     "voiceEngine": "native_sofia",
     "voiceVoiceName": "pt-BR-FranciscaNeural",
     "maxConsecutiveAudios": 2,
-    "maxAudioChars": 220,
+    "maxAudioChars": 500,
     "googleTtsApiKey": "",
     "elevenLabsApiKey": "",
     "pixKey": "marco.agduarte22@gmail.com",

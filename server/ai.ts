@@ -870,7 +870,7 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       stageTriggered: parsed.suggestedStageId || undefined,
       sendCatalogPdf: Boolean(parsed.sendCatalogPdf),
       sendPixInfo: Boolean(parsed.sendPixInfo),
-      sendAsVoice: Boolean(parsed.sendAsVoice),
+      sendAsVoice: parsed.sendAsVoice !== undefined ? Boolean(parsed.sendAsVoice) : undefined,
       isUrgent: Boolean(parsed.isUrgent),
       urgencyReason: parsed.urgencyReason || undefined,
       triage: parsed.triage || undefined,

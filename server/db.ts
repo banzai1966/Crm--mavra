@@ -218,7 +218,7 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
     voiceEngine: 'native_sofia',
     voiceVoiceName: 'pt-BR-FranciscaNeural',
     maxConsecutiveAudios: 4,
-    maxAudioChars: 450,
+    maxAudioChars: 500,
     googleTtsApiKey: '',
     elevenLabsApiKey: '',
     pixKey: 'marco.agduarte22@gmail.com',

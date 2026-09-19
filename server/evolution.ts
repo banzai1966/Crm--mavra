@@ -165,14 +165,14 @@ export async function sendWhatsAppVoiceAudio(
   }
 
   try {
-    const endpoint = `${baseUrl}/message/sendWhatsAppAudio/${encodeURIComponent(config.instanceName.trim())}`;
+    const instanceName = (config.instanceName || process.env.EVOLUTION_INSTANCE || 'agente-ia').trim();
+    const endpoint = `${baseUrl}/message/sendWhatsAppAudio/${encodeURIComponent(instanceName)}`;
     
     const rawBase64 = base64OrUrl.replace(/^data:[^;]+;base64,/, '');
-    const audioData = `data:audio/mp3;base64,${rawBase64}`;
 
     console.log(`[Evolution API] Disparando áudio de voz PTT para ${cleanPhone} (${rawBase64.length} chars base64)...`);
 
-    // Attempt 1: Standard sendWhatsAppAudio with encoding: true
+    // Attempt 1: Standard sendWhatsAppAudio with raw base64 and encoding: true (WhatsApp PTT voice note)
     let response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -181,15 +181,15 @@ export async function sendWhatsAppVoiceAudio(
       },
       body: JSON.stringify({
         number: cleanPhone,
-        audio: audioData,
+        audio: rawBase64,
         delay: 500,
         encoding: true,
       }),
     });
 
-    // Attempt 2: sendWhatsAppAudio with raw base64 and encoding: true
+    // Attempt 2: sendWhatsAppAudio with raw base64 and encoding: false (in case server lacks ffmpeg)
     if (!response.ok) {
-      console.warn(`[Evolution] Tentativa 1 de áudio falhou (${response.status}). Tentando formato raw base64...`);
+      console.warn(`[Evolution] Tentativa 1 de áudio falhou (${response.status}). Tentando com encoding: false...`);
       
       response = await fetch(endpoint, {
         method: 'POST',
@@ -201,7 +201,7 @@ export async function sendWhatsAppVoiceAudio(
           number: cleanPhone,
           audio: rawBase64,
           delay: 500,
-          encoding: true,
+          encoding: false,
         }),
       });
     }
@@ -209,7 +209,7 @@ export async function sendWhatsAppVoiceAudio(
     // Attempt 3: sendMedia fallback as audio/mp3
     if (!response.ok) {
       console.warn(`[Evolution] Tentativa 2 de áudio falhou (${response.status}). Tentando via sendMedia...`);
-      const altEndpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(config.instanceName.trim())}`;
+      const altEndpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(instanceName)}`;
       const altResponse = await fetch(altEndpoint, {
         method: 'POST',
         headers: {
@@ -220,7 +220,7 @@ export async function sendWhatsAppVoiceAudio(
           number: cleanPhone,
           mediatype: 'audio',
           mimetype: 'audio/mp3',
-          media: audioData,
+          media: rawBase64,
           delay: 500,
         }),
       });

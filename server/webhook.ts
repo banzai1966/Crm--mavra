@@ -17,6 +17,8 @@ import { Lead, ChatMessage } from '../src/types';
 
 // In-memory cache for processed message IDs to prevent double processing & infinite duplicate loops
 const processedMessageIds = new Map<string, number>();
+// In-memory lock per phone to prevent concurrent processing of the same conversation
+const phoneInFlight = new Set<string>();
 
 function isDuplicateMessage(messageId?: string): boolean {
   if (!messageId) return false;
@@ -123,12 +125,22 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   if (!cleanPhone || cleanPhone.length < 8) {
     db.logWebhookEvent({
       event: eventName,
+      senderPhone: cleanPhone,
       status: 'error',
       details: `Número de telefone não identificado no payload (rawJid: ${rawJid})`,
       rawPayloadSnippet: JSON.stringify(body).slice(0, 200),
     });
     return;
   }
+
+  // Prevent concurrent webhook executions for the same contact number
+  if (phoneInFlight.has(cleanPhone)) {
+    console.log(`[Webhook] Mensagem de ${cleanPhone} já em processamento ativo. Ignorando evento concorrente.`);
+    return;
+  }
+  phoneInFlight.add(cleanPhone);
+
+  try {
 
   // Extract message content according to Evolution API v2 spec
   let messageText: string =
@@ -216,12 +228,20 @@ async function executeWebhookPipeline(body: any): Promise<void> {
 
     const mimeType = audioObj?.mimetype || 'audio/ogg';
 
-    // If base64 was not sent in webhook payload, fetch directly from Evolution API
+    // If base64 was not sent in webhook payload, fetch directly from Evolution API with brief retry
     if (!base64Audio) {
       const payloadToFetch = data || body || (audioObj ? { message: { audioMessage: audioObj } } : null);
       const keyToFetch = data?.key || body?.key;
       console.log(`[Webhook] Baixando base64 do áudio diretamente da Evolution API (ID: ${keyToFetch?.id || 'direto'})...`);
-      base64Audio = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
+
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        base64Audio = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
+        if (base64Audio) break;
+        if (attempt < 3) {
+          console.log(`[Webhook] Mídia ainda não disponível na Evolution API (tentativa ${attempt}/3). Aguardando ${attempt * 600}ms...`);
+          await new Promise((r) => setTimeout(r, attempt * 600));
+        }
+      }
     }
 
     if (base64Audio) {
@@ -232,19 +252,16 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           isAudioTranscribed = true;
           console.log(`[Webhook] Áudio de ${cleanPhone} transcrito com sucesso: "${messageText}"`);
         } else {
-          console.warn('[Webhook] Transcrição do Gemini retornou vazia.');
-          messageText = 'Olá! Recebi seu áudio. Em que posso te ajudar hoje?';
-          isAudioTranscribed = true;
+          console.warn('[Webhook] Transcrição do Gemini retornou vazia. Ignorando evento para evitar mensagem indevida.');
+          return;
         }
       } catch (err: any) {
         console.error('[Webhook] Falha ao transcrever áudio com Gemini:', err.message);
-        messageText = 'Olá! Recebi seu áudio. Como posso te auxiliar?';
-        isAudioTranscribed = true;
+        return;
       }
     } else {
-      console.warn('[Webhook] Não foi possível obter o arquivo de áudio (base64 ausente na Evolution API).');
-      messageText = 'Olá! Recebi sua mensagem de voz. Poderia me contar mais sobre como posso te ajudar?';
-      isAudioTranscribed = true;
+      console.warn('[Webhook] Não foi possível obter o arquivo de áudio (base64 ausente na Evolution API). Ignorando evento para aguardar payload completo.');
+      return;
     }
   } else if (isImageMessage) {
     // Process image with Gemini Vision AI
@@ -542,8 +559,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
         shouldSendVoice = true;
       } else if (voiceMode === 'smart_discernment') {
         if (isAudioMessage) {
-          // O cliente enviou áudio: responde em áudio por padrão (respeitando travas de tamanho e quantidade)
-          shouldSendVoice = aiResult.sendAsVoice !== false;
+          // O cliente enviou áudio: responde SEMPRE em áudio por padrão no discernimento inteligente
+          shouldSendVoice = true;
         } else {
           // Se o cliente enviou texto, a IA decide se é adequado mandar áudio (ex: sendAsVoice === true)
           // ou se o cliente pediu expressamente por áudio no texto
@@ -556,22 +573,24 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     // =========================================================================
     // TRAVAS INTELIGENTES DE ÁUDIO (Economia de tokens, clareza e anti-spam)
     // =========================================================================
-    // Trava 1: Se a resposta for longa (> maxChars), SEMPRE mandar em TEXTO
-    if (shouldSendVoice && aiResult.replyText.length > maxChars) {
-      console.log(`[Trava de Áudio] Mensagem tem ${aiResult.replyText.length} caracteres (> limite ${maxChars}). Forçando envio em TEXTO para clareza e economia.`);
+    // Trava 1: Se a resposta for excessivamente longa (> maxChars), mandar em TEXTO
+    const effectiveMaxChars = Math.max(maxChars, 450);
+    if (shouldSendVoice && aiResult.replyText.length > effectiveMaxChars) {
+      console.log(`[Trava de Áudio] Mensagem tem ${aiResult.replyText.length} caracteres (> limite ${effectiveMaxChars}). Forçando envio em TEXTO para clareza e economia.`);
       shouldSendVoice = false;
     }
 
-    // Trava 2: Se atingiu o limite de áudios seguidos (ex: 2 seguidos), alternar para TEXTO
+    // Trava 2: Se atingiu o limite de áudios seguidos (ex: 4 seguidos), alternar para TEXTO
     if (shouldSendVoice && consecutiveAudioCount >= maxConsecutive) {
       console.log(`[Trava de Áudio] Limite atingido (${consecutiveAudioCount} áudios seguidos >= ${maxConsecutive}). Alternando para TEXTO.`);
       shouldSendVoice = false;
     }
 
-    // Trava 3: Se houver PIX, links, códigos numéricos ou e-mails, SEMPRE mandar em TEXTO para cópia fácil
+    // Trava 3: Se houver PIX explícito, URLs ou e-mails, SEMPRE mandar em TEXTO para cópia fácil
     const hasTechnicalOrCopyableData =
       aiResult.sendPixInfo ||
-      /https?:\/\/|[\w.-]+@[\w.-]+\.\w+|\b\d{4,}\b/.test(aiResult.replyText);
+      /https?:\/\/|[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}/.test(aiResult.replyText) ||
+      /\b\d{10,}\b/.test(aiResult.replyText); // apenas números longos como telefones/contas/chaves com 10+ dígitos
     if (shouldSendVoice && hasTechnicalOrCopyableData) {
       console.log(`[Trava de Áudio] Conteúdo com dados copiáveis/PIX/links detectado. Forçando envio em TEXTO.`);
       shouldSendVoice = false;
@@ -690,4 +709,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     db.messages.push(adminAlertMsg);
     db.saveToFile();
   }
+} finally {
+  phoneInFlight.delete(cleanPhone);
+}
 }
