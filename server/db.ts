@@ -12,7 +12,16 @@ import {
   WebhookEventLog,
 } from '../src/types';
 
-const STORAGE_FILE = path.join(process.cwd(), 'mavra_data.json');
+function getStorageFilePath(): string {
+  if (process.env.DATA_PATH) return process.env.DATA_PATH;
+  const dockerDataDir = path.join(process.cwd(), 'data');
+  if (fs.existsSync(dockerDataDir)) {
+    return path.join(dockerDataDir, 'mavra_data.json');
+  }
+  return path.join(process.cwd(), 'mavra_data.json');
+}
+
+const STORAGE_FILE = getStorageFilePath();
 
 function cleanUrl(url?: string): string {
   if (!url) return '';
@@ -254,7 +263,7 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
 
   public evolutionConfig: EvolutionConfig = {
     serverUrl: process.env.EVOLUTION_API_URL || 'https://api.makprojetosmake.com.br',
-    apiKey: process.env.EVOLUTION_API_KEY || 'CE08ADFF7647-4B88-91A4-55E66D9A0620',
+    apiKey: process.env.EVOLUTION_API_KEY || 'b2efa885a71ee22edf72b597df1a0ce9',
     instanceName: process.env.EVOLUTION_INSTANCE || 'agente-ia',
     isConnected: false,
     state: 'disconnected',
