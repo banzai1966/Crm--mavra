@@ -28,9 +28,21 @@ import {
   Clock,
   RefreshCw,
   Eye,
-  EyeOff
+  EyeOff,
+  Wand2,
+  Building2,
+  Stethoscope,
+  Scale,
+  Sun,
+  Car,
+  HeartHandshake,
+  CheckCircle2,
+  X,
+  Layers,
+  Sparkles as SparklesIcon
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider } from '../types';
+import { AGENT_PRESETS, AgentPreset } from '../data/agentPresets';
 
 interface AgentBuilderProps {
   agentConfig: AgentConfig;
@@ -51,6 +63,30 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [activeKnowledgeTab, setActiveKnowledgeTab] = useState<'faq' | 'catalog' | 'pricing' | 'rules'>('faq');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Preset state
+  const [selectedPresetModal, setSelectedPresetModal] = useState<AgentPreset | null>(null);
+  const [presetSuccessToast, setPresetSuccessToast] = useState<string | null>(null);
+  const [presetCategoryFilter, setPresetCategoryFilter] = useState<string>('all');
+
+  const handleApplyPreset = (preset: AgentPreset) => {
+    setConfig((prev) => ({
+      ...prev,
+      personaName: preset.personaName,
+      role: preset.role,
+      toneOfVoice: preset.toneOfVoice,
+      salesGoal: preset.salesGoal,
+      followUpNiche: preset.followUpNiche,
+      followUpCustomMessage: preset.followUpCustomMessage,
+      knowledgeFaq: preset.knowledgeFaq,
+      knowledgeCatalog: preset.knowledgeCatalog,
+      knowledgePricing: preset.knowledgePricing,
+      knowledgeRules: preset.knowledgeRules,
+    }));
+    setSelectedPresetModal(null);
+    setPresetSuccessToast(`✨ Preset "${preset.name}" aplicado! Revise os campos e clique em "Salvar Alterações" no topo para gravar no servidor.`);
+    setTimeout(() => setPresetSuccessToast(null), 8000);
+  };
 
   // Synchronize internal state whenever agentConfig updates from backend
   React.useEffect(() => {
@@ -243,6 +279,23 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Banner de Preset Aplicado com Sucesso */}
+        {presetSuccessToast && (
+          <div className="bg-indigo-50 border-2 border-indigo-300 text-indigo-900 px-4 py-3 rounded-xl flex items-center justify-between gap-3 shadow-xs animate-in fade-in">
+            <div className="flex items-center gap-2.5">
+              <SparklesIcon className="w-5 h-5 text-indigo-600 shrink-0" />
+              <span className="text-xs font-semibold">{presetSuccessToast}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPresetSuccessToast(null)}
+              className="text-indigo-500 hover:text-indigo-800 p-1 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* CONTROLE MASTER: MODO TESTE (ESTILO N8N) & CHAVE GERAL DA IA */}
         <div className="bg-white border-2 border-amber-300/80 rounded-2xl p-6 shadow-sm space-y-5 bg-gradient-to-br from-amber-50/40 via-white to-white">
@@ -623,6 +676,97 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 />
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* BIBLIOTECA DE PRESETS DE NICHO EM 1 CLIQUE */}
+        <div className="bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/50 border-2 border-indigo-200/90 rounded-2xl p-6 shadow-xs space-y-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-indigo-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-2xs">
+                  <Wand2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Biblioteca de Nichos Comerciais (Presets em 1 Clique)
+                    </h3>
+                    <span className="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200">
+                      {AGENT_PRESETS.length} Segmentos Prontos
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Mude o nicho do agente instantaneamente: preenche Persona, Catálogo de Serviços, FAQ, Preços, Regras e Follow-up com dados reais de mercado.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 self-start md:self-center">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Chaves de API & Áudio 500 chars 100% blindados</span>
+            </div>
+          </div>
+
+          {/* Cards dos Nichos */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {AGENT_PRESETS.map((preset) => {
+              const isDental = preset.id === 'dental';
+              const isRealEstate = preset.id === 'real_estate';
+              const isAesthetic = preset.id === 'aesthetic';
+              const isLaw = preset.id === 'law_firm';
+              const isSolar = preset.id === 'solar_energy';
+              const isAuto = preset.id === 'auto_dealer';
+              const isSaaS = preset.id === 'nexa_crm';
+
+              return (
+                <div
+                  key={preset.id}
+                  className="bg-white border border-slate-200/90 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-300 hover:shadow-xs transition-all group"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                        {preset.category}
+                      </span>
+                      <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                        {isDental && <Stethoscope className="w-4 h-4" />}
+                        {isRealEstate && <Building2 className="w-4 h-4" />}
+                        {isAesthetic && <SparklesIcon className="w-4 h-4" />}
+                        {isLaw && <Scale className="w-4 h-4" />}
+                        {isSolar && <Sun className="w-4 h-4" />}
+                        {isAuto && <Car className="w-4 h-4" />}
+                        {isSaaS && <Bot className="w-4 h-4" />}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 group-hover:text-indigo-950 transition-colors">
+                        {preset.name}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                        {preset.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500">
+                      <span className="font-semibold text-slate-700">Atendente: {preset.personaName}</span>
+                      <span className="truncate max-w-[130px]">{preset.toneOfVoice.split(',')[0]}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPresetModal(preset)}
+                    className="mt-3.5 w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                  >
+                    <Wand2 className="w-3.5 h-3.5" />
+                    <span>Carregar este Nicho</span>
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -1517,6 +1661,86 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
             </button>
           </div>
         </div>
+
+        {/* MODAL DE CONFIRMAÇÃO & PREVIEW DO PRESET */}
+        {selectedPresetModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              {/* Modal Header */}
+              <div className="p-5 bg-gradient-to-r from-indigo-900 to-slate-900 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-white/10 rounded-lg">
+                    <Wand2 className="w-5 h-5 text-indigo-300" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">
+                      Carregar Nicho: {selectedPresetModal.name}
+                    </h3>
+                    <p className="text-[11px] text-indigo-200">
+                      Revise o que será aplicado antes de confirmar
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPresetModal(null)}
+                  className="p-1.5 text-indigo-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-5 overflow-y-auto space-y-4 text-xs text-slate-700">
+                <div className="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 space-y-2">
+                  <span className="font-bold text-indigo-950 block">O que será atualizado no formulário:</span>
+                  <ul className="space-y-1 text-[11px] text-indigo-900 list-disc list-inside">
+                    <li><b>Nome do Agente:</b> {selectedPresetModal.personaName} ({selectedPresetModal.role})</li>
+                    <li><b>Tom de Voz:</b> {selectedPresetModal.toneOfVoice}</li>
+                    <li><b>Objetivo Comercial:</b> {selectedPresetModal.salesGoal}</li>
+                    <li><b>Base de Conhecimento:</b> Perguntas Frequentes (FAQ), Catálogo Completo, Tabela de Preços e Regras de Atendimento profissionalmente formatadas para este segmento.</li>
+                    <li><b>Follow-up Automático:</b> Mensagem personalizada para resgate de leads.</li>
+                  </ul>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-2">
+                  <div className="flex items-center gap-2 text-emerald-900 font-bold">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>O que permanece 100% BLINDADO e protegido:</span>
+                  </div>
+                  <ul className="space-y-1 text-[11px] text-emerald-800 list-disc list-inside">
+                    <li>Suas Chaves de API (Gemini, OpenAI, etc.) continuam salvas.</li>
+                    <li>O limite de áudio de 500 caracteres e a voz Sofia permanecem ativos.</li>
+                    <li>A conexão com a Evolution API e o WhatsApp permanece intacta.</li>
+                  </ul>
+                </div>
+
+                <p className="text-[11px] text-slate-500 italic">
+                  * Ao clicar em "Confirmar e Aplicar", os campos do formulário serão preenchidos. Depois, basta clicar em <b>"Salvar Alterações"</b> no topo ou rodapé da tela para persistir.
+                </p>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPresetModal(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleApplyPreset(selectedPresetModal)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-colors shadow-sm"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Confirmar e Aplicar no Formulário</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

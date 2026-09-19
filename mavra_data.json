@@ -52,9 +52,9 @@
       ],
       "notes": "Lead criado automaticamente via Evolution API v2.\n[19/09/2026] Movido para \"Qualificado / Interesse\" pela IA.",
       "aiPaused": false,
-      "lastInteraction": "2026-09-19T16:53:28.966Z",
+      "lastInteraction": "2026-09-19T17:24:35.565Z",
       "createdAt": "2026-09-19T12:46:06.652Z",
-      "unreadCount": 3
+      "unreadCount": 7
     },
     {
       "id": "lead-1789821920560",
@@ -558,6 +558,84 @@
       "extractedInfo": {
         "interest": "Como funciona o NEXA CRM"
       }
+    },
+    {
+      "id": "msg-1789837954870-in",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "[Documento/PDF Anexo \"Blog - Dra Lucy o que estou fazendo.pdf\"]: Documento PDF recebido: Blog - Dra Lucy o que estou fazendo.pdf",
+      "timestamp": "2026-09-19T17:12:34.870Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1789837956357-ai",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "O NEXA CRM é uma plataforma inovadora que conecta Inteligência Artificial avançada diretamente ao WhatsApp da sua empresa! Ele atende seus clientes 24 horas por dia (por texto e áudio humanizado), responde dúvidas, qualifica potenciais compradores e organiza todas as negociações em um painel Kanban em tempo real. Quantos atendimentos você realiza por dia na sua empresa?",
+      "timestamp": "2026-09-19T17:12:36.357Z",
+      "status": "delivered",
+      "extractedInfo": {
+        "interest": "Como funciona o NEXA CRM"
+      }
+    },
+    {
+      "id": "msg-1789838000012-in",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "[Imagem Recebida]: Imagem recebida pelo WhatsApp",
+      "timestamp": "2026-09-19T17:13:20.012Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1789838001481-ai",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "O NEXA CRM é uma plataforma inovadora que conecta Inteligência Artificial avançada diretamente ao WhatsApp da sua empresa! Ele atende seus clientes 24 horas por dia (por texto e áudio humanizado), responde dúvidas, qualifica potenciais compradores e organiza todas as negociações em um painel Kanban em tempo real. Quantos atendimentos você realiza por dia na sua empresa?",
+      "timestamp": "2026-09-19T17:13:21.481Z",
+      "status": "delivered",
+      "extractedInfo": {
+        "interest": "Como funciona o NEXA CRM"
+      }
+    },
+    {
+      "id": "msg-1789838640609-in",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "[Documento/PDF Anexo \"Blog - Dra Lucy o que estou fazendo.pdf\"]: Documento PDF recebido: Blog - Dra Lucy o que estou fazendo.pdf",
+      "timestamp": "2026-09-19T17:24:00.609Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1789838642143-ai",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Recebi o seu documento aqui! Já estou analisando todas as informações com atenção para te dar um retorno completo.",
+      "timestamp": "2026-09-19T17:24:02.144Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1789838675565-in",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "[Imagem Recebida]: Imagem recebida pelo WhatsApp",
+      "timestamp": "2026-09-19T17:24:35.565Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1789838677046-ai",
+      "leadId": "lead-1789821966652",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Recebi a sua imagem com sucesso! Já estou dando uma olhadinha aqui. Em que posso te ajudar a respeito dela?",
+      "timestamp": "2026-09-19T17:24:37.046Z",
+      "status": "delivered"
     }
   ],
   "agentConfig": {
@@ -587,7 +665,7 @@
     "voiceResponseMode": "smart_discernment",
     "voiceEngine": "native_sofia",
     "voiceVoiceName": "pt-BR-FranciscaNeural",
-    "maxConsecutiveAudios": 2,
+    "maxConsecutiveAudios": 4,
     "maxAudioChars": 500,
     "googleTtsApiKey": "",
     "elevenLabsApiKey": "",

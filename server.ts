@@ -268,6 +268,29 @@ async function startServer() {
     res.json(lead);
   });
 
+  app.put('/api/leads/:id/toggle-hot', (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { hotReason } = req.body;
+    const lead = db.leads.find((l) => l.id === id);
+    if (!lead) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    lead.isHotLead = !lead.isHotLead;
+    if (lead.isHotLead) {
+      lead.hotReason = hotReason || 'Lead marcado como alta probabilidade de fechamento';
+      if (!lead.tags.includes('🔥 LEAD QUENTE')) {
+        lead.tags.unshift('🔥 LEAD QUENTE');
+      }
+      lead.notes = `${lead.notes || ''}\n🔥 [FECHAMENTO ATIVADO ${new Date().toLocaleTimeString('pt-BR')}]: ${lead.hotReason}`;
+    } else {
+      lead.tags = lead.tags.filter((t) => t !== '🔥 LEAD QUENTE' && t !== 'Lead Quente');
+      lead.notes = `${lead.notes || ''}\n🏁 [FECHAMENTO FINALIZADO ${new Date().toLocaleTimeString('pt-BR')}]: Lead atendido ou oportunidade concluída.`;
+    }
+    db.saveToFile();
+    res.json(lead);
+  });
+
   app.put('/api/leads/:id/confirm-triage', async (req: Request, res: Response) => {
     const { id } = req.params;
     const { confirmedDate, message } = req.body;

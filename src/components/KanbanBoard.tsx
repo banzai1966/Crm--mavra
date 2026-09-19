@@ -19,7 +19,9 @@ import {
   AlertTriangle,
   Calendar,
   Clock,
-  Download
+  Download,
+  Flame,
+  Zap,
 } from 'lucide-react';
 import { Lead, KanbanStage } from '../types';
 import { NewLeadModal } from './NewLeadModal';
@@ -34,6 +36,7 @@ interface KanbanBoardProps {
   onOpenChat: (leadId: string) => void;
   onToggleAi: (leadId: string) => void;
   onResolveUrgency?: (leadId: string) => void;
+  onToggleHotLead?: (leadId: string) => void;
   onClearAllLeads?: () => Promise<void> | void;
   onRestoreDemoLeads?: () => Promise<void> | void;
   isAdmin?: boolean;
@@ -48,33 +51,38 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onOpenChat,
   onToggleAi,
   onResolveUrgency,
+  onToggleHotLead,
   onClearAllLeads,
   onRestoreDemoLeads,
   isAdmin = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
+  const [filterHotOnly, setFilterHotOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
   const [targetStageForNewLead, setTargetStageForNewLead] = useState<string | undefined>();
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
 
-  // Filter leads based on search term & urgency toggle
+  // Filter leads based on search term, urgency & hot closing toggle
   const filteredLeads = leads.filter((lead) => {
     if (filterUrgentOnly && !lead.isUrgent) return false;
+    if (filterHotOnly && !lead.isHotLead) return false;
     const term = searchTerm.toLowerCase();
     return (
       lead.name.toLowerCase().includes(term) ||
       lead.phone.includes(term) ||
       (lead.interest && lead.interest.toLowerCase().includes(term)) ||
       lead.tags.some((t) => t.toLowerCase().includes(term)) ||
-      (lead.triage?.procedure && lead.triage.procedure.toLowerCase().includes(term))
+      (lead.triage?.procedure && lead.triage.procedure.toLowerCase().includes(term)) ||
+      (lead.hotReason && lead.hotReason.toLowerCase().includes(term))
     );
   });
 
   const totalValue = leads.reduce((acc, l) => acc + (l.value || 0), 0);
   const urgentCount = leads.filter((l) => l.isUrgent).length;
+  const hotCount = leads.filter((l) => l.isHotLead).length;
   const triageCount = leads.filter((l) => Boolean(l.triage)).length;
 
   const handleDragStart = (e: React.DragEvent, leadId: string) => {
@@ -135,7 +143,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
           {/* Urgent Leads filter pill */}
           <button
-            onClick={() => setFilterUrgentOnly(!filterUrgentOnly)}
+            onClick={() => {
+              setFilterUrgentOnly(!filterUrgentOnly);
+              if (!filterUrgentOnly) setFilterHotOnly(false);
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
               filterUrgentOnly
                 ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
@@ -150,6 +161,30 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             {urgentCount > 0 && (
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${filterUrgentOnly ? 'bg-white text-rose-700' : 'bg-rose-600 text-white'}`}>
                 {urgentCount}
+              </span>
+            )}
+          </button>
+
+          {/* Hot Leads / Fechamentos filter pill */}
+          <button
+            onClick={() => {
+              setFilterHotOnly(!filterHotOnly);
+              if (!filterHotOnly) setFilterUrgentOnly(false);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+              filterHotOnly
+                ? 'bg-amber-500 text-white border-amber-600 shadow-xs ring-2 ring-amber-300'
+                : hotCount > 0
+                ? 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-900 border-amber-400 hover:from-amber-100 hover:to-orange-100 ring-1 ring-amber-400/40'
+                : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+            }`}
+            title="Filtrar oportunidades quentes com pedido de PIX / fechamento / compra"
+          >
+            <Flame className={`w-3.5 h-3.5 ${filterHotOnly ? 'text-white' : hotCount > 0 ? 'text-amber-600 fill-amber-500 animate-bounce' : 'text-slate-400'}`} />
+            <span>Fechamentos 🔥</span>
+            {hotCount > 0 && (
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${filterHotOnly ? 'bg-white text-amber-800' : 'bg-amber-500 text-white'}`}>
+                {hotCount}
               </span>
             )}
           </button>
@@ -293,13 +328,22 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       id={`lead-card-${lead.id}`}
                       draggable
                       onDragStart={(e) => handleDragStart(e, lead.id)}
-                      className="bg-white hover:border-slate-300 border border-slate-200/90 p-3 rounded-lg shadow-2xs hover:shadow-xs transition-all cursor-grab active:cursor-grabbing group relative"
+                      className={`p-3 rounded-lg shadow-2xs hover:shadow-xs transition-all cursor-grab active:cursor-grabbing group relative ${
+                        lead.isHotLead
+                          ? 'bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 border-2 border-amber-400 shadow-amber-100/90 ring-2 ring-amber-400/40'
+                          : lead.isUrgent
+                          ? 'bg-white border border-rose-300 ring-1 ring-rose-200'
+                          : 'bg-white hover:border-slate-300 border border-slate-200/90'
+                      }`}
                     >
                       {/* Top row: Name & Value */}
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <div className="flex items-center gap-1.5 min-w-0">
                           {lead.isUrgent && (
                             <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0" />
+                          )}
+                          {lead.isHotLead && (
+                            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0 animate-pulse" />
                           )}
                           <h4 className="text-xs font-bold text-slate-900 line-clamp-1 group-hover:text-slate-700 transition-colors">
                             {lead.name}
@@ -312,6 +356,31 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           }).format(lead.value || 0)}
                         </span>
                       </div>
+
+                      {/* Hot Lead / Closing Request Banner */}
+                      {lead.isHotLead && (
+                        <div className="flex items-center justify-between gap-1.5 p-1.5 mb-2 bg-gradient-to-r from-amber-100/95 to-orange-100/95 border border-amber-300 rounded text-[10px] text-amber-950 font-bold shadow-2xs">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <Flame className="w-3.5 h-3.5 text-amber-600 fill-amber-500 shrink-0 animate-pulse" />
+                            <div className="truncate">
+                              <span className="uppercase tracking-tight text-amber-900 font-extrabold mr-1">Fechamento:</span>
+                              <span className="font-medium text-amber-800">{lead.hotReason || 'Pedido de PIX / Compra'}</span>
+                            </div>
+                          </div>
+                          {onToggleHotLead && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleHotLead(lead.id);
+                              }}
+                              className="text-[9px] bg-amber-200/90 hover:bg-amber-300 text-amber-950 font-semibold px-1.5 py-0.5 rounded transition-colors cursor-pointer shrink-0"
+                              title="Concluir / Desmarcar alerta de fechamento"
+                            >
+                              Concluir
+                            </button>
+                          )}
+                        </div>
+                      )}
 
                       {/* Urgent banner if flagged by AI */}
                       {lead.isUrgent && (
@@ -412,6 +481,24 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </button>
 
                         <div className="flex items-center gap-1">
+                          {/* Hot Lead manual toggle */}
+                          {onToggleHotLead && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleHotLead(lead.id);
+                              }}
+                              className={`p-1 rounded transition-colors cursor-pointer ${
+                                lead.isHotLead
+                                  ? 'text-amber-600 hover:text-amber-700 bg-amber-100 hover:bg-amber-200'
+                                  : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'
+                              }`}
+                              title={lead.isHotLead ? 'Lead Quente ativo. Clique para desmarcar.' : 'Marcar como Lead Quente / Pedido de Fechamento'}
+                            >
+                              <Flame className={`w-3.5 h-3.5 ${lead.isHotLead ? 'fill-amber-500' : ''}`} />
+                            </button>
+                          )}
+
                           <button
                             onClick={() => openEditLead(lead)}
                             className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"

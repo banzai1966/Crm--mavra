@@ -27,6 +27,8 @@ export interface Lead {
   unreadCount?: number;
   isUrgent?: boolean;
   urgencyReason?: string;
+  isHotLead?: boolean;
+  hotReason?: string;
   triage?: PreAppointmentTriage;
   lastFollowUpAt?: string;
   followUpCount?: number;

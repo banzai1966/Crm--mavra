@@ -406,9 +406,46 @@ export default function App() {
     }
   };
 
+  const handleToggleGlobalAi = async () => {
+    const updated = {
+      ...agentConfig,
+      isGlobalAiActive: agentConfig.isGlobalAiActive === false ? true : false,
+    };
+    await handleSaveAgentConfig(updated);
+  };
+
+  const handleToggleHotLead = async (leadId: string) => {
+    try {
+      const res = await fetch(`/api/leads/${leadId}/toggle-hot`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hotReason: 'Marcado pelo operador' }),
+      });
+      if (res.ok) {
+        const updatedLead = await res.json();
+        setLeads((prev) => prev.map((l) => (l.id === leadId ? updatedLead : l)));
+      } else {
+        setLeads((prev) =>
+          prev.map((l) =>
+            l.id === leadId
+              ? {
+                  ...l,
+                  isHotLead: !l.isHotLead,
+                  hotReason: !l.isHotLead ? 'Marcado manualmente' : undefined,
+                }
+              : l
+          )
+        );
+      }
+    } catch (err) {
+      console.error('Erro ao alternar status de lead quente:', err);
+    }
+  };
+
   const totalPipelineValue = leads.reduce((acc, l) => acc + (l.value || 0), 0);
   const totalUnreadCount = leads.reduce((acc, l) => acc + (l.unreadCount || 0), 0);
   const urgentCount = leads.filter((l) => l.isUrgent).length;
+  const hotCount = leads.filter((l) => l.isHotLead).length;
 
   if (isLoading) {
     return (
@@ -431,9 +468,11 @@ export default function App() {
         totalPipelineValue={totalPipelineValue}
         unreadCount={totalUnreadCount}
         urgentCount={urgentCount}
+        hotCount={hotCount}
         isAdminUnlocked={isAdminUnlocked}
         onOpenAdminAuth={() => setShowAdminAuthModal(true)}
         onLockAdmin={handleLockAdmin}
+        onToggleGlobalAi={handleToggleGlobalAi}
       />
 
       {/* Main Content Modules */}
@@ -464,6 +503,7 @@ export default function App() {
             onOpenChat={handleOpenChat}
             onToggleAi={handleToggleAi}
             onResolveUrgency={handleResolveUrgency}
+            onToggleHotLead={handleToggleHotLead}
             onClearAllLeads={handleClearAllLeads}
             onRestoreDemoLeads={handleRestoreDemoLeads}
             isAdmin={isAdminUnlocked}

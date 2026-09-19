@@ -547,6 +547,19 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       console.log(`[Webhook 🚨 URGÊNCIA DETECTADA] Lead ${lead.name} (${cleanPhone}): ${lead.urgencyReason}`);
     }
 
+    // Handle Hot Lead / Closing Request Detection (Pix, Payment, Contract, Buying intent)
+    const hotKeywordsRegex = /\b(pix|chave pix|pagamento|pagar|link de pagamento|fechar|contrato|comprar|fazer o pagamento|passa a chave|manda o pix|dados bancarios|gerar fatura|boleto)\b/i;
+    const isHotFromText = hotKeywordsRegex.test(messageText);
+    if (aiResult.isHotLead || aiResult.sendPixInfo || isHotFromText) {
+      lead.isHotLead = true;
+      lead.hotReason = aiResult.hotReason || (aiResult.sendPixInfo ? 'Solicitou chave PIX / Pagamento' : 'Demonstrou forte intenção de fechamento / compra');
+      if (!lead.tags.includes('🔥 LEAD QUENTE')) {
+        lead.tags.unshift('🔥 LEAD QUENTE');
+      }
+      lead.notes = `${lead.notes || ''}\n🔥 [LEAD QUENTE ${new Date().toLocaleTimeString('pt-BR')}]: ${lead.hotReason}`;
+      console.log(`[Webhook 🔥 LEAD QUENTE / FECHAMENTO] Lead ${lead.name} (${cleanPhone}): ${lead.hotReason}`);
+    }
+
     // Handle Pre-appointment Triage Extraction
     if (aiResult.triage && (aiResult.triage.procedure || aiResult.triage.preferredPeriod || aiResult.triage.preferredDays)) {
       lead.triage = {

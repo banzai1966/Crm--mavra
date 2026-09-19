@@ -17,6 +17,9 @@ import {
   Share2,
   Copy,
   Check,
+  Volume2,
+  VolumeX,
+  Flame,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
@@ -30,9 +33,11 @@ interface HeaderProps {
   totalPipelineValue: number;
   unreadCount: number;
   urgentCount?: number;
+  hotCount?: number;
   isAdminUnlocked?: boolean;
   onOpenAdminAuth?: () => void;
   onLockAdmin?: () => void;
+  onToggleGlobalAi?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -44,9 +49,11 @@ export const Header: React.FC<HeaderProps> = ({
   totalPipelineValue,
   unreadCount,
   urgentCount = 0,
+  hotCount = 0,
   isAdminUnlocked = false,
   onOpenAdminAuth,
   onLockAdmin,
+  onToggleGlobalAi,
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showClientLinkModal, setShowClientLinkModal] = useState(false);
@@ -187,11 +194,44 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           {/* Test Mode / Protection Badge */}
-          {agentConfig.testModeEnabled ? (
+          {agentConfig.testModeEnabled && (
             <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-300 text-amber-900 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
               <span>Modo Teste</span>
             </div>
+          )}
+
+          {/* Master Global AI Silence/Active Quick Button */}
+          {onToggleGlobalAi ? (
+            <button
+              onClick={onToggleGlobalAi}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs transition-all cursor-pointer border ${
+                agentConfig.isGlobalAiActive !== false
+                  ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
+                  : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-300 animate-pulse'
+              }`}
+              title={
+                agentConfig.isGlobalAiActive !== false
+                  ? 'IA Comercial está Ativa. Clique para silenciar a IA em todos os chats.'
+                  : 'IA Comercial está SILENCIADA (muda). Clique para reativar o atendimento automático.'
+              }
+            >
+              {agentConfig.isGlobalAiActive !== false ? (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <Bot className="w-3.5 h-3.5 text-emerald-700" />
+                  <span className="hidden sm:inline">IA Ativa</span>
+                  <span className="text-[10px] text-emerald-600 font-normal hidden md:inline">(Silenciar)</span>
+                </>
+              ) : (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                  <VolumeX className="w-3.5 h-3.5 text-rose-600" />
+                  <span className="font-bold text-rose-800">IA Silenciada</span>
+                  <span className="text-[10px] text-rose-600 font-normal hidden sm:inline">(Ligar)</span>
+                </>
+              )}
+            </button>
           ) : agentConfig.isGlobalAiActive === false ? (
             <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-300 text-rose-800 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-rose-500"></span>
@@ -248,10 +288,22 @@ export const Header: React.FC<HeaderProps> = ({
             <div
               onClick={() => setActiveTab('kanban')}
               className="flex items-center gap-1.5 bg-rose-50 border border-rose-300 text-rose-800 px-2.5 py-1 rounded-md text-xs font-bold shadow-2xs cursor-pointer hover:bg-rose-100 transition-colors animate-pulse"
-              title="Existem leads com prioridade reportada"
+              title="Existem leads com prioridade ou urgência reportada"
             >
               <span className="w-2 h-2 rounded-full bg-rose-600"></span>
               <span>{urgentCount} Urgência{urgentCount > 1 ? 's' : ''}</span>
+            </div>
+          )}
+
+          {/* Hot Closing Leads counter badge */}
+          {hotCount > 0 && (
+            <div
+              onClick={() => setActiveTab('kanban')}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-400 text-amber-900 px-2.5 py-1 rounded-md text-xs font-bold shadow-2xs cursor-pointer hover:from-amber-100 hover:to-orange-100 transition-all animate-pulse ring-1 ring-amber-400/40"
+              title="Existem oportunidades quentes pedindo fechamento / PIX / compra!"
+            >
+              <Flame className="w-3.5 h-3.5 text-amber-600 fill-amber-500 shrink-0" />
+              <span>{hotCount} Fechamento{hotCount > 1 ? 's' : ''}</span>
             </div>
           )}
 

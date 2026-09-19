@@ -16,6 +16,8 @@ export interface AIResponseResult {
   sendAsVoice?: boolean;
   isUrgent?: boolean;
   urgencyReason?: string;
+  isHotLead?: boolean;
+  hotReason?: string;
   triage?: {
     procedure?: string;
     preferredPeriod?: 'manha' | 'tarde' | 'noite' | 'qualquer';
@@ -511,10 +513,11 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
    - Responda cordialmente: "Olá! Nossa equipe já foi notificada da sua mensagem. Gostaria de adiantar em algo enquanto preparamos seu atendimento?"
 10. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
    - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
-11. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO:
-   - Se o lead pedir a chave PIX, dados bancários para fechar, transferir ou pagar:
+11. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO E DETECÇÃO DE "LEAD QUENTE / PEDIDO DE FECHAMENTO":
+   - Se o lead pedir a chave PIX, dados bancários para fechar, link de cartão, contrato, perguntar como pagar, ou disser claramente que quer fechar/comprar/assinar agora:
    - Responda cordialmente com a chave oficial cadastrada (${config.pixKey ? `Chave PIX (${config.pixKeyType || 'E-mail'}): ${config.pixKey}` : 'Consulte nosso time comercial'}) em uma mensagem limpa e fácil de copiar, definindo "sendPixInfo": true no JSON.
-   - Quando ele solicitar PIX para fechar, mova-o para a etapa de "Negociação / Fechamento" ou "Ganhos / Clientes".
+   - DEFINA OBRIGATORIAMENTE "isHotLead": true e preencha "hotReason" com a justificativa (ex: "Solicitou chave PIX para pagamento", "Pediu link de pagamento", "Confirmou que quer fechar agora", "Pediu minuta do contrato").
+   - Quando ele solicitar PIX para fechar, mova-o para a etapa de "Proposta / Apresentação", "Negociação" ou "Ganhos / Clientes".
 12. DISCERNIMENTO INTELIGENTE DE RESPOSTA (ÁUDIO vs TEXTO):
    - FORMATO DA MENSAGEM DO CLIENTE: ${isAudio ? '🎙️ O CLIENTE ENVIOU UMA MENSAGEM DE ÁUDIO / VOZ' : '💬 O CLIENTE DIGITOU UMA MENSAGEM DE TEXTO'}.
    - SE O CLIENTE ENVIOU ÁUDIO:
@@ -539,6 +542,8 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
   "sendAsVoice": true ou false (true se for adequado responder com áudio falado pela Sofia segundo as regras de discernimento),
   "isUrgent": true ou false (true se o paciente/lead relatou dor aguda, sangramento, urgência ou reclamação grave),
   "urgencyReason": "Motivo da urgência em poucas palavras, ou null",
+  "isHotLead": true ou false (true se o lead solicitou pagamento, PIX, contrato, link de cartão ou demonstrou forte intenção de fechar/comprar agora),
+  "hotReason": "Motivo do fechamento ou pedido de compra em poucas palavras (ex: 'Pediu chave PIX', 'Pediu link de pagamento', 'Quer fechar contrato agora'), ou null",
   "triage": {
     "procedure": "Procedimento ou consulta de interesse (ex: Implante, Clareamento, Consulta de Rotina, ou null)",
     "preferredPeriod": "manha" ou "tarde" ou "noite" ou "qualquer" (ou null),
