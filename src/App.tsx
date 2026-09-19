@@ -114,12 +114,23 @@ export default function App() {
 
   // Periodic polling for real-time CRM updates (when webhook receives new messages)
   useEffect(() => {
+    let pollCount = 0;
     const interval = setInterval(async () => {
       try {
         const res = await fetch('/api/leads');
         if (res.ok) {
           const freshLeads: Lead[] = await res.json();
           setLeads(freshLeads);
+        }
+
+        // Check Evolution connection status every ~5s
+        pollCount++;
+        if (pollCount % 2 === 0) {
+          const evoRes = await fetch('/api/evolution-config');
+          if (evoRes.ok) {
+            const freshEvo = await evoRes.json();
+            setEvolutionConfig(freshEvo);
+          }
         }
       } catch (err) {}
     }, 2500);

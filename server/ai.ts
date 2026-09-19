@@ -63,8 +63,8 @@ export async function transcribeAudioWithGemini(
     return '';
   }
 
-  // Candidate models: gemini-2.5-flash and gemini-2.5-pro are fully supported for audio transcription
-  const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+  // Candidate models: modern Gemini models supported for audio transcription
+  const candidateModels = ['gemini-3.5-transcribe', 'gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash'];
 
   for (const model of candidateModels) {
     try {
@@ -117,7 +117,7 @@ export async function analyzeImageWithGemini(
     ? `O usuário enviou esta imagem no WhatsApp acompanhada da seguinte legenda/pergunta: "${caption}". Descreva e interprete o conteúdo relevante da imagem (se for comprovante, documento, print de tela, foto de produto ou dúvida) para que possamos entender e responder comercialmente de forma precisa.`
     : 'O usuário enviou esta foto/imagem no WhatsApp sem texto. Descreva sucintamente o que há na imagem (se for comprovante de pagamento, documento, foto de erro, produto ou tabela) em português brasileiro para contexto de atendimento.';
 
-  const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+  const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-2.5-flash'];
 
   for (const model of candidateModels) {
     try {
@@ -175,7 +175,7 @@ Extraia e resuma em português do Brasil de forma clara e objetiva:
 3. Se for proposta, tabela ou contrato: principais termos, produtos/serviços e valores citados;
 4. Resumo do que precisa ser respondido para a assistente Sofia poder dar andamento imediato no atendimento.`;
 
-  const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+  const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-2.5-flash'];
 
   for (const model of candidateModels) {
     try {
@@ -568,7 +568,7 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
   }
 
   // Default fallback to Gemini
-  return await callGemini('gemini-2.5-flash', systemInstruction, prompt, config.geminiApiKey);
+  return await callGemini('gemini-3.8-flash', systemInstruction, prompt, config.geminiApiKey);
 }
 
 // 1. Google Gemini via @google/genai SDK with automatic retry & model fallback
@@ -592,11 +592,13 @@ async function callGemini(
     },
   });
 
-  // Prioritize fast, standard Gemini models
+  // Prioritize fast, standard Gemini Flash models (low latency, minimal cost)
   const candidateModels = [
-    modelName && modelName === 'gemini-2.5-pro' ? 'gemini-2.5-pro' : 'gemini-2.5-flash',
+    modelName || 'gemini-3.8-flash',
+    'gemini-3.8-flash',
+    'gemini-3.1-flash-lite',
+    'gemini-flash-latest',
     'gemini-2.5-flash',
-    'gemini-2.5-pro',
   ].filter((v, i, a) => a.indexOf(v) === i); // unique
 
   let lastError: any = null;
@@ -645,7 +647,7 @@ export async function testGeminiApiKey(apiKeyToTest?: string): Promise<{ success
     apiKey: key,
     httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
   });
-  const testModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+  const testModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-2.5-flash'];
   let lastErr = '';
   for (const m of testModels) {
     try {
@@ -779,7 +781,7 @@ async function callOpenAI(
   if (!apiKey) {
     // If OpenAI key is not provided, fall back to Gemini smoothly with note
     console.warn('OpenAI API Key não encontrada, usando Gemini como fallback seguro.');
-    return await callGemini('gemini-2.5-flash', systemInstruction, prompt);
+    return await callGemini('gemini-3.8-flash', systemInstruction, prompt);
   }
 
   const selectedModel = modelName || 'gpt-4o-mini';
@@ -822,7 +824,7 @@ async function callAnthropic(
   const apiKey = apiKeyOverride || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     console.warn('Anthropic API Key não encontrada, usando Gemini como fallback seguro.');
-    return await callGemini('gemini-2.5-flash', systemInstruction, prompt);
+    return await callGemini('gemini-3.8-flash', systemInstruction, prompt);
   }
 
   const selectedModel = modelName || 'claude-3-5-sonnet-20241022';

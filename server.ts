@@ -16,6 +16,7 @@ import {
 } from './server/evolution';
 import { processAiConversation, synthesizeSpeech, testGeminiApiKey } from './server/ai';
 import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
+import { startEvolutionSync } from './server/evolutionSync';
 import { ChatMessage } from './src/types';
 
 async function startServer() {
@@ -671,6 +672,9 @@ async function startServer() {
 
     // Start background automated follow-up loop
     startFollowUpScheduler();
+
+    // Start background active polling sync with Evolution API
+    startEvolutionSync();
   });
 }
 

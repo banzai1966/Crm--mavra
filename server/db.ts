@@ -170,25 +170,13 @@ class Database {
   public leads: Lead[] = JSON.parse(JSON.stringify(DEFAULT_DEMO_LEADS));
   public messages: ChatMessage[] = JSON.parse(JSON.stringify(DEFAULT_DEMO_MESSAGES));
 
-  public clearAllLeads(): void {
-    this.leads = [];
-    this.messages = [];
-    this.saveToFile();
-  }
-
-  public restoreDemoLeads(): void {
-    this.leads = JSON.parse(JSON.stringify(DEFAULT_DEMO_LEADS));
-    this.messages = JSON.parse(JSON.stringify(DEFAULT_DEMO_MESSAGES));
-    this.saveToFile();
-  }
-
   public agentConfig: AgentConfig = {
     personaName: 'Sofia Mendes',
     role: 'Especialista em Soluções Comerciais NEXA CRM',
     toneOfVoice: 'Profissional, empático, dinâmico, consultivo e focado em conversão de vendas',
     salesGoal: 'Descobrir as dores do lead, tirar dúvidas com base no catálogo oficial, qualificar o tamanho da operação e avançar a oportunidade no funil de vendas',
     activeProvider: 'gemini',
-    activeModel: 'gemini-2.5-flash',
+    activeModel: 'gemini-3.8-flash',
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',

@@ -381,7 +381,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 setConfig({
                   ...config,
                   activeProvider: 'gemini',
-                  activeModel: 'gemini-2.5-flash',
+                  activeModel: 'gemini-3.8-flash',
                 })
               }
               className={`p-4 rounded-xl border transition-all cursor-pointer relative ${
@@ -402,16 +402,18 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 )}
               </div>
               <p className="text-[11px] text-slate-500 mb-3">
-                Gemini 2.5 Flash / Pro com Function Calling nativo e ultra-baixa latência.
+                Modelos Flash 100% econômicos, ultra-rápidos e com custo quase zero no WhatsApp.
               </p>
               <select
-                value={config.activeProvider === 'gemini' ? config.activeModel : 'gemini-2.5-flash'}
+                value={config.activeProvider === 'gemini' ? config.activeModel : 'gemini-3.8-flash'}
                 onChange={(e) => setConfig({ ...config, activeModel: e.target.value })}
                 disabled={config.activeProvider !== 'gemini'}
                 className="w-full bg-white border border-slate-200 rounded text-xs text-slate-800 px-2.5 py-1.5 focus:outline-hidden"
               >
-                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recomendado)</option>
-                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Raciocínio Avançado)</option>
+                <option value="gemini-3.8-flash">Gemini 3.8 Flash (Recomendado - Mais rápido e barato)</option>
+                <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite (Ultra econômico / Super leve)</option>
+                <option value="gemini-flash-latest">Gemini Flash Latest</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
               </select>
             </div>
 

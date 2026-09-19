@@ -95,13 +95,18 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   }
 
   // Extract remoteJid (phone identifier)
-  const rawJid: string =
+  // WhatsApp Business LID mode sends remoteJid as @lid and actual phone in remoteJidAlt
+  const candidateJid =
+    (key?.remoteJidAlt && !key.remoteJidAlt.includes('@lid') ? key.remoteJidAlt : null) ||
+    (data?.remoteJidAlt && !data.remoteJidAlt.includes('@lid') ? data.remoteJidAlt : null) ||
+    (body?.remoteJidAlt && !body.remoteJidAlt.includes('@lid') ? body.remoteJidAlt : null) ||
     key?.remoteJid ||
     data?.remoteJid ||
     body?.remoteJid ||
     body?.sender ||
     data?.sender ||
     '';
+  const rawJid: string = candidateJid;
 
   // Ignore group chats if not targeted (e.g. ends with @g.us)
   if (rawJid.includes('@g.us') || rawJid.includes('@broadcast')) {
