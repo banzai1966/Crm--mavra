@@ -1033,13 +1033,13 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                     <input
                       type="number"
                       min={80}
-                      max={600}
-                      step={20}
-                      value={config.maxAudioChars ?? 220}
-                      onChange={(e) => setConfig({ ...config, maxAudioChars: Math.max(80, parseInt(e.target.value) || 220) })}
+                      max={1200}
+                      step={50}
+                      value={config.maxAudioChars && config.maxAudioChars > 220 ? config.maxAudioChars : 500}
+                      onChange={(e) => setConfig({ ...config, maxAudioChars: Math.max(80, parseInt(e.target.value) || 500) })}
                       className="w-24 bg-white border border-violet-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 font-bold focus:outline-hidden focus:border-violet-500"
                     />
-                    <span className="text-[11px] text-slate-500">caracteres (~15 a 20s)</span>
+                    <span className="text-[11px] text-slate-500">caracteres (~30 a 50s)</span>
                   </div>
                   <p className="text-[10px] text-slate-500 mt-1">
                     Respostas longas, explicações detalhadas ou especificações são priorizadas em <b>TEXTO</b> automaticamente.

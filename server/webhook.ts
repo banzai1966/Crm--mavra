@@ -253,14 +253,17 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           console.log(`[Webhook] Áudio de ${cleanPhone} transcrito com sucesso: "${messageText}"`);
         } else {
           console.warn('[Webhook] Transcrição do Gemini retornou vazia. Ignorando evento para evitar mensagem indevida.');
+          if (messageId) processedMessageIds.delete(messageId);
           return;
         }
       } catch (err: any) {
         console.error('[Webhook] Falha ao transcrever áudio com Gemini:', err.message);
+        if (messageId) processedMessageIds.delete(messageId);
         return;
       }
     } else {
-      console.warn('[Webhook] Não foi possível obter o arquivo de áudio (base64 ausente na Evolution API). Ignorando evento para aguardar payload completo.');
+      console.warn('[Webhook] Não foi possível obter o arquivo de áudio (base64 ausente na Evolution API). Ignorando evento preliminar.');
+      if (messageId) processedMessageIds.delete(messageId);
       return;
     }
   } else if (isImageMessage) {
@@ -276,8 +279,20 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     const caption = messageText.trim() || imageObj?.caption || '';
     const mimeType = imageObj?.mimetype || 'image/jpeg';
 
+    // Retry fetching media base64 from Evolution API if not present in initial webhook payload
     if (!base64Image) {
-      base64Image = await getBase64FromMediaMessage(data || body || imageObj, data?.key || body?.key);
+      const payloadToFetch = data || body || (imageObj ? { message: { imageMessage: imageObj } } : null);
+      const keyToFetch = data?.key || body?.key;
+      console.log(`[Webhook] Baixando base64 da imagem diretamente da Evolution API (ID: ${keyToFetch?.id || 'direto'})...`);
+
+      for (let attempt = 1; attempt <= 4; attempt++) {
+        base64Image = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
+        if (base64Image) break;
+        if (attempt < 4) {
+          console.log(`[Webhook] Imagem ainda não disponível na Evolution API (tentativa ${attempt}/4). Aguardando ${attempt * 700}ms...`);
+          await new Promise((r) => setTimeout(r, attempt * 700));
+        }
+      }
     }
 
     if (base64Image) {
@@ -287,10 +302,19 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           messageText = caption ? `${caption}\n[Análise Visual da Imagem]: ${analysis}` : `[Imagem Recebida]: ${analysis}`;
           isImageAnalyzed = true;
           console.log(`[Webhook] Imagem de ${cleanPhone} analisada com sucesso: "${analysis.slice(0, 60)}..."`);
+        } else {
+          messageText = caption || '[Foto/Imagem recebida pelo WhatsApp]';
         }
       } catch (err: any) {
         console.error('[Webhook] Falha ao analisar imagem com IA:', err.message);
+        messageText = caption || '[Foto/Imagem recebida pelo WhatsApp]';
       }
+    } else {
+      // If base64 is still null, this is an incomplete preliminary event from Evolution API.
+      // Do NOT send a generic reply or trigger the AI without the actual image!
+      console.warn('[Webhook] Imagem sem base64 disponível na Evolution API. Ignorando evento preliminar para evitar mensagem genérica/duplicada.');
+      if (messageId) processedMessageIds.delete(messageId);
+      return;
     }
   } else if (isDocumentMessage) {
     // Process PDF or document with Gemini Multimodal AI
@@ -306,8 +330,20 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     const docCaption = messageText.trim() || documentObj?.caption || '';
     const docMime = documentObj?.mimetype || 'application/pdf';
 
+    // Retry fetching document base64 from Evolution API if not present in initial webhook payload
     if (!base64Doc) {
-      base64Doc = await getBase64FromMediaMessage(data || body || documentObj, data?.key || body?.key);
+      const payloadToFetch = data || body || (documentObj ? { message: { documentMessage: documentObj } } : null);
+      const keyToFetch = data?.key || body?.key;
+      console.log(`[Webhook] Baixando base64 do documento/PDF diretamente da Evolution API (ID: ${keyToFetch?.id || 'direto'})...`);
+
+      for (let attempt = 1; attempt <= 4; attempt++) {
+        base64Doc = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
+        if (base64Doc) break;
+        if (attempt < 4) {
+          console.log(`[Webhook] Documento/PDF ainda não disponível na Evolution API (tentativa ${attempt}/4). Aguardando ${attempt * 700}ms...`);
+          await new Promise((r) => setTimeout(r, attempt * 700));
+        }
+      }
     }
 
     if (base64Doc) {
@@ -319,13 +355,23 @@ async function executeWebhookPipeline(body: any): Promise<void> {
             : `[Documento/PDF Anexo "${docFileName}"]: ${docAnalysis}`;
           isDocumentAnalyzed = true;
           console.log(`[Webhook] Documento "${docFileName}" de ${cleanPhone} analisado com sucesso!`);
+        } else {
+          messageText = docCaption
+            ? `${docCaption}\n[Documento PDF Recebido: ${docFileName}]`
+            : `[Documento PDF Recebido: ${docFileName}]`;
         }
       } catch (err: any) {
         console.error('[Webhook] Falha ao analisar documento/PDF com IA:', err.message);
-        messageText = docCaption || `[Documento PDF Recebido: ${docFileName}]`;
+        messageText = docCaption
+          ? `${docCaption}\n[Documento PDF Recebido: ${docFileName}]`
+          : `[Documento PDF Recebido: ${docFileName}]`;
       }
     } else {
-      messageText = docCaption || `[Documento PDF Recebido: ${docFileName}]`;
+      // If base64 is still null, this is an incomplete preliminary event from Evolution API.
+      // Do NOT send a generic reply with just the file name!
+      console.warn('[Webhook] Documento/PDF sem base64 disponível na Evolution API. Ignorando evento preliminar para evitar mensagem genérica/duplicada.');
+      if (messageId) processedMessageIds.delete(messageId);
+      return;
     }
   }
 
@@ -538,7 +584,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     // Check if voice note (PTT) is enabled
     const voiceMode = db.agentConfig.voiceResponseMode || 'smart_discernment';
     const voiceEnabled = db.agentConfig.voiceResponseEnabled !== false && voiceMode !== 'only_text';
-    const maxChars = db.agentConfig.maxAudioChars ?? 450;
+    const maxChars = db.agentConfig.maxAudioChars ?? 500;
     const maxConsecutive = db.agentConfig.maxConsecutiveAudios ?? 4;
 
     // Count consecutive audios sent recently to this lead

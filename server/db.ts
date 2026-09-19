@@ -364,9 +364,11 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
         if (data.leads && Array.isArray(data.leads)) this.leads = data.leads;
         if (data.messages && Array.isArray(data.messages)) this.messages = data.messages;
         if (data.agentConfig) {
+          const loadedMaxChars = data.agentConfig.maxAudioChars;
           this.agentConfig = {
             ...this.agentConfig,
             ...data.agentConfig,
+            maxAudioChars: (!loadedMaxChars || loadedMaxChars <= 220) ? 500 : loadedMaxChars,
             geminiApiKey: (process.env.GEMINI_API_KEY || data.agentConfig.geminiApiKey || this.agentConfig.geminiApiKey || '').trim(),
             openaiApiKey: (process.env.OPENAI_API_KEY || data.agentConfig.openaiApiKey || this.agentConfig.openaiApiKey || '').trim(),
             anthropicApiKey: (process.env.ANTHROPIC_API_KEY || data.agentConfig.anthropicApiKey || this.agentConfig.anthropicApiKey || '').trim(),

@@ -673,8 +673,34 @@ export async function testGeminiApiKey(apiKeyToTest?: string): Promise<{ success
 
 // Resposta contextual de segurança caso a rede do provedor de IA ou a chave esteja temporariamente fora do ar
 export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
-  const lower = (prompt || '').toLowerCase();
-  let reply = 'Olá! Que prazer falar com você. Sou a Sofia, assistente virtual do NEXA CRM. Como posso ajudar você e sua empresa hoje?';
+  const persona = db.agentConfig.personaName || 'Sofia';
+
+  // Isolate only the incoming user message if a full prompt envelope was provided
+  let targetText = prompt || '';
+  if (targetText.includes('NOVA MENSAGEM DO LEAD:')) {
+    targetText = targetText.split('NOVA MENSAGEM DO LEAD:').pop() || targetText;
+  }
+  const lower = targetText.toLowerCase();
+
+  // Contextual fallback for incoming documents/PDFs
+  if (lower.includes('[documento/pdf') || lower.includes('[documento pdf') || lower.includes('.pdf]') || lower.includes('.pdf')) {
+    return {
+      replyText: `Recebi o seu documento aqui! Já estou analisando todas as informações com atenção para te dar um retorno completo.`,
+      providerUsed: 'Base de Conhecimento (Regras)',
+      modelUsed: 'offline-safety-rules',
+    };
+  }
+
+  // Contextual fallback for incoming images/photos
+  if (lower.includes('[imagem recebida') || lower.includes('[análise visual') || lower.includes('[foto/imagem')) {
+    return {
+      replyText: `Recebi a sua imagem com sucesso! Já estou dando uma olhadinha aqui. Em que posso te ajudar a respeito dela?`,
+      providerUsed: 'Base de Conhecimento (Regras)',
+      modelUsed: 'offline-safety-rules',
+    };
+  }
+
+  let reply = `Olá! Que prazer falar com você. Sou a ${persona}. Como posso te ajudar hoje?`;
   let suggestedStage: string | undefined = undefined;
   let estimatedValue: number | undefined = undefined;
   let interest: string | undefined = undefined;
