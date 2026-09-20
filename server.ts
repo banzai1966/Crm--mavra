@@ -568,11 +568,11 @@ async function startServer() {
 
   // Create a new instance dynamically
   app.post('/api/evolution/create-instance', async (req: Request, res: Response) => {
-    const { instanceName } = req.body;
+    const { instanceName, webhookUrl } = req.body;
     if (!instanceName) {
       return res.status(400).json({ error: 'instanceName é obrigatório' });
     }
-    const result = await createEvolutionInstance(instanceName);
+    const result = await createEvolutionInstance(instanceName, webhookUrl);
     res.json(result);
   });
 
@@ -595,11 +595,11 @@ async function startServer() {
 
   // Automatically save the current Mavra webhook URL into the Evolution API VPS with 1 click
   app.post('/api/evolution/auto-set-webhook', async (req: Request, res: Response) => {
-    const { webhookUrl } = req.body;
+    const { webhookUrl, instanceName } = req.body;
     if (!webhookUrl) {
       return res.status(400).json({ error: 'webhookUrl é obrigatória' });
     }
-    const result = await setRemoteWebhookConfig(webhookUrl);
+    const result = await setRemoteWebhookConfig(webhookUrl, instanceName);
     res.json(result);
   });
 

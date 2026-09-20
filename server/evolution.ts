@@ -426,7 +426,7 @@ export async function fetchRemoteWebhookConfig(): Promise<{
   }
 }
 
-export async function setRemoteWebhookConfig(targetWebhookUrl: string): Promise<{
+export async function setRemoteWebhookConfig(targetWebhookUrl: string, targetInstance?: string): Promise<{
   success: boolean;
   message?: string;
   error?: string;
@@ -438,7 +438,8 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string): Promise<
   }
 
   try {
-    const cleanInstance = encodeURIComponent(config.instanceName.trim());
+    const inst = (targetInstance || config.instanceName || 'agente-ia').trim();
+    const cleanInstance = encodeURIComponent(inst);
     const endpoint = `${baseUrl}/webhook/set/${cleanInstance}`;
 
     const response = await fetch(endpoint, {
@@ -465,7 +466,7 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string): Promise<
 
     if (response.ok) {
       const data = await response.json();
-      return { success: true, message: 'Webhook gravado na Evolution API com sucesso!', error: undefined };
+      return { success: true, message: `Webhook gravado na Evolution API para ${inst} com sucesso!`, error: undefined };
     }
     const errText = await response.text();
     return { success: false, error: `HTTP ${response.status}: ${errText}` };
@@ -528,7 +529,10 @@ export async function getEvolutionQRCode(targetInstance?: string): Promise<{
 /**
  * Create a new Evolution instance directly via API
  */
-export async function createEvolutionInstance(instanceName: string): Promise<{
+export async function createEvolutionInstance(
+  instanceName: string,
+  webhookUrl?: string
+): Promise<{
   success: boolean;
   data?: any;
   error?: string;
@@ -546,22 +550,42 @@ export async function createEvolutionInstance(instanceName: string): Promise<{
 
   try {
     const endpoint = `${baseUrl}/instance/create`;
+    const bodyPayload: any = {
+      instanceName: cleanName,
+      token: config.apiKey.trim(),
+      qrcode: true,
+      integration: 'WHATSAPP-BAILEYS',
+    };
+
+    if (webhookUrl && webhookUrl.trim()) {
+      bodyPayload.webhook = {
+        enabled: true,
+        url: webhookUrl.trim(),
+        byEvents: false,
+        base64: true,
+        events: ['MESSAGES_UPSERT', 'MESSAGES_UPDATE', 'SEND_MESSAGE', 'CONNECTION_UPDATE'],
+      };
+    }
+
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         apikey: config.apiKey.trim(),
       },
-      body: JSON.stringify({
-        instanceName: cleanName,
-        token: config.apiKey.trim(),
-        qrcode: true,
-        integration: 'WHATSAPP-BAILEYS',
-      }),
+      body: JSON.stringify(bodyPayload),
     });
 
     const data = await response.json().catch(() => ({}));
     if (response.ok || response.status === 201 || (data?.message && data.message.includes('already in use'))) {
+      // If a webhook URL was provided, also ensure webhook is explicitly configured on the instance
+      if (webhookUrl && webhookUrl.trim()) {
+        try {
+          await setRemoteWebhookConfig(webhookUrl.trim(), cleanName);
+        } catch (wbErr) {
+          console.warn('[CreateInstance] Falha ao registrar webhook imediato:', wbErr);
+        }
+      }
       return { success: true, data };
     }
 

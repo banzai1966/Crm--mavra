@@ -237,15 +237,15 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
     if (!clientInputName.trim()) return;
     const clean = clientInputName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
     setIsCreatingOnVps(true);
-    setCreateFeedback('Criando instância na Evolution API da sua VPS...');
+    setCreateFeedback('Criando instância e registrando Webhook na VPS...');
+    const currentWebhookUrl = `${window.location.origin}/api/webhook`;
     try {
-      // Create instance on VPS via API
-      const res = await fetch('/api/evolution/create-instance', {
+      // Create instance on VPS via API with webhook auto-configured
+      await fetch('/api/evolution/create-instance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instanceName: clean }),
+        body: JSON.stringify({ instanceName: clean, webhookUrl: currentWebhookUrl }),
       });
-      const data = await res.json();
       setCustomInstanceName(clean);
       handleSelectInstance(clean);
       setShowEditClientModal(false);

@@ -29,15 +29,34 @@ export async function pollEvolutionMessages(): Promise<void> {
   if (isSyncRunning) return;
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const instance = (config.instanceName || 'agente-ia').trim();
+  const currentInstance = (config.instanceName || 'agente-ia').trim();
   const apiKey = (config.apiKey || '').trim();
 
   // If dummy or missing, skip
-  if (!baseUrl || !apiKey || !instance || baseUrl.includes('seuservidor.com')) {
+  if (!baseUrl || !apiKey || !currentInstance || baseUrl.includes('seuservidor.com')) {
     return;
   }
 
+  // Poll current instance first, and check known instances if configured
+  const candidateInstances = new Set<string>();
+  candidateInstances.add(currentInstance);
+  if (currentInstance !== 'agente-ia') {
+    candidateInstances.add('agente-ia');
+  }
+
   isSyncRunning = true;
+  try {
+    for (const instance of candidateInstances) {
+      await pollSingleInstance(baseUrl, apiKey, instance);
+    }
+  } catch (err: any) {
+    // Suppress network jitter errors
+  } finally {
+    isSyncRunning = false;
+  }
+}
+
+async function pollSingleInstance(baseUrl: string, apiKey: string, instance: string): Promise<void> {
   try {
     const endpoint = `${baseUrl}/chat/findMessages/${encodeURIComponent(instance)}`;
     const response = await fetch(endpoint, {
@@ -48,7 +67,7 @@ export async function pollEvolutionMessages(): Promise<void> {
       },
       body: JSON.stringify({
         page: 1,
-        offset: 15,
+        offset: 20,
       }),
     });
 
@@ -60,12 +79,14 @@ export async function pollEvolutionMessages(): Promise<void> {
     const records = json?.messages?.records || [];
     const nowSec = Math.floor(Date.now() / 1000);
 
-    // On the very first boot check, mark all historical messages as already processed
-    // so we never spam contacts with retroactive replies from hours or days ago
+    // On the very first boot check, mark historical messages (>10 min old) as already processed
+    // so we never spam contacts with retroactive replies from hours or days ago,
+    // but still allow recent unread messages (<10 min) to be captured immediately
     if (isInitialBoot) {
       isInitialBoot = false;
       for (const record of records) {
-        if (record?.key?.id) {
+        const msgTimestamp = record?.messageTimestamp || 0;
+        if (record?.key?.id && (nowSec - msgTimestamp > 600)) {
           processedExternalMessageIds.add(record.key.id);
         }
       }
@@ -80,9 +101,9 @@ export async function pollEvolutionMessages(): Promise<void> {
       const msgId = record.key?.id;
       if (!msgId || processedExternalMessageIds.has(msgId)) continue;
 
-      // Ignore messages older than 2 minutes
+      // Ignore messages older than 10 minutes (allows catching messages during VPS reboot or deployment)
       const msgTimestamp = record.messageTimestamp || 0;
-      if (msgTimestamp > 0 && nowSec - msgTimestamp > 120) {
+      if (msgTimestamp > 0 && nowSec - msgTimestamp > 600) {
         processedExternalMessageIds.add(msgId);
         continue;
       }
@@ -105,7 +126,7 @@ export async function pollEvolutionMessages(): Promise<void> {
       }
       lastReplyTimestampPerPhone.set(phoneId, nowMs);
 
-      console.log(`[Evolution Live Sync] Nova mensagem capturada da VPS: "${record.pushName || ''}" (${msgId})`);
+      console.log(`[Evolution Live Sync] Nova mensagem capturada da VPS (${instance}): "${record.pushName || ''}" (${msgId})`);
 
       // Dispatch to full AI & CRM webhook processing pipeline
       handleIncomingWebhook({
@@ -115,8 +136,6 @@ export async function pollEvolutionMessages(): Promise<void> {
       });
     }
   } catch (err: any) {
-    // Suppress network jitter errors
-  } finally {
-    isSyncRunning = false;
+    // Suppress individual instance failure
   }
 }

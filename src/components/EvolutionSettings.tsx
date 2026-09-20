@@ -215,10 +215,11 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     setCreateFeedback(null);
     try {
       const clean = newInstanceName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+      const currentWebhookUrl = `${window.location.origin}/api/webhook`;
       const res = await fetch('/api/evolution/create-instance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instanceName: clean }),
+        body: JSON.stringify({ instanceName: clean, webhookUrl: currentWebhookUrl }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
