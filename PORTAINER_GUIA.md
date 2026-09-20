@@ -13,19 +13,31 @@ Identificamos os 3 motivos técnicos exatos:
 
 ---
 
-## 2. Docker Compose para o Portainer (Stack)
+## 2. Como Rodar no Portainer / Docker
 
-Copie e cole este código diretamente na aba **Stacks -> Add Stack** no seu Portainer:
+Você pode subir de duas formas simples:
 
+### Opção A: Pelo Terminal da VPS (Recomendada via Docker Compose)
+Basta clonar/baixar o projeto na VPS e executar:
+```bash
+docker compose up -d --build
+```
+Isso compilará o build de produção ultra-rápido e subirá o container na porta `3000`.
+
+### Opção B: Stack no Portainer (Usando a imagem construída localmente)
+1. No terminal da VPS, construa a imagem do CRM na pasta do projeto:
+```bash
+docker build -t nexa-crm:latest .
+```
+2. No Portainer em **Stacks -> Add Stack**, utilize:
 ```yaml
 version: '3.8'
 
 services:
   nexa-crm:
-    image: node:20-alpine
+    image: nexa-crm:latest
     container_name: nexa-crm
     restart: always
-    working_dir: /app
     ports:
       - "3000:3000"
     environment:

@@ -713,6 +713,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {AGENT_PRESETS.map((preset) => {
               const isDental = preset.id === 'dental';
+              const isMedical = preset.id === 'medical';
               const isRealEstate = preset.id === 'real_estate';
               const isAesthetic = preset.id === 'aesthetic';
               const isLaw = preset.id === 'law_firm';
@@ -728,16 +729,20 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
-                        {preset.category}
+                        {preset.category || 'Nicho'}
                       </span>
                       <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
                         {isDental && <Stethoscope className="w-4 h-4" />}
+                        {isMedical && <HeartHandshake className="w-4 h-4" />}
                         {isRealEstate && <Building2 className="w-4 h-4" />}
                         {isAesthetic && <SparklesIcon className="w-4 h-4" />}
                         {isLaw && <Scale className="w-4 h-4" />}
                         {isSolar && <Sun className="w-4 h-4" />}
                         {isAuto && <Car className="w-4 h-4" />}
                         {isSaaS && <Bot className="w-4 h-4" />}
+                        {!isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && (
+                          <SparklesIcon className="w-4 h-4" />
+                        )}
                       </div>
                     </div>
 
@@ -751,8 +756,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                     </div>
 
                     <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500">
-                      <span className="font-semibold text-slate-700">Atendente: {preset.personaName}</span>
-                      <span className="truncate max-w-[130px]">{preset.toneOfVoice.split(',')[0]}</span>
+                      <span className="font-semibold text-slate-700">Atendente: {preset.personaName || 'Sofia'}</span>
+                      <span className="truncate max-w-[130px]">{preset.toneOfVoice ? preset.toneOfVoice.split(',')[0] : ''}</span>
                     </div>
                   </div>
 
@@ -1695,9 +1700,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div className="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 space-y-2">
                   <span className="font-bold text-indigo-950 block">O que será atualizado no formulário:</span>
                   <ul className="space-y-1 text-[11px] text-indigo-900 list-disc list-inside">
-                    <li><b>Nome do Agente:</b> {selectedPresetModal.personaName} ({selectedPresetModal.role})</li>
-                    <li><b>Tom de Voz:</b> {selectedPresetModal.toneOfVoice}</li>
-                    <li><b>Objetivo Comercial:</b> {selectedPresetModal.salesGoal}</li>
+                    <li><b>Nome do Agente:</b> {selectedPresetModal.personaName || 'Sofia'} ({selectedPresetModal.role || 'Atendente'})</li>
+                    <li><b>Tom de Voz:</b> {selectedPresetModal.toneOfVoice || 'Profissional e acolhedor'}</li>
+                    <li><b>Objetivo Comercial:</b> {selectedPresetModal.salesGoal || 'Qualificar e agendar'}</li>
                     <li><b>Base de Conhecimento:</b> Perguntas Frequentes (FAQ), Catálogo Completo, Tabela de Preços e Regras de Atendimento profissionalmente formatadas para este segmento.</li>
                     <li><b>Follow-up Automático:</b> Mensagem personalizada para resgate de leads.</li>
                   </ul>

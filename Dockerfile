@@ -25,9 +25,6 @@ RUN npm ci --only=production
 
 # Copy compiled build output from builder stage
 COPY --from=builder /app/dist ./dist
-# Copy default database file
-COPY --from=builder /app/mavra_data.json ./mavra_data.json
-
 # Directory for persistent data volume
 RUN mkdir -p /app/data
 
