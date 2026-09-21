@@ -256,8 +256,22 @@ export async function sendWhatsAppVoiceAudio(
 
     console.log(`[Evolution API (${targetInstance})] Disparando áudio de voz PTT para ${cleanPhone} (${rawBase64.length} chars base64)...`);
 
+    // Helper for fetch with strict 7s timeout to prevent thread blocking
+    const fetchWithTimeout = async (url: string, opts: RequestInit, timeoutMs = 7000) => {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetch(url, { ...opts, signal: controller.signal });
+        clearTimeout(id);
+        return res;
+      } catch (err: any) {
+        clearTimeout(id);
+        throw err;
+      }
+    };
+
     // Attempt 1: Standard sendWhatsAppAudio with raw base64 and encoding: true (WhatsApp PTT voice note)
-    let response = await fetch(endpoint, {
+    let response = await fetchWithTimeout(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -272,7 +286,7 @@ export async function sendWhatsAppVoiceAudio(
     });
 
     if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
-      response = await fetch(endpoint, {
+      response = await fetchWithTimeout(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', apikey: MASTER_EVOLUTION_KEY },
         body: JSON.stringify({ number: cleanPhone, audio: rawBase64, delay: 800, encoding: true }),
@@ -287,7 +301,7 @@ export async function sendWhatsAppVoiceAudio(
     if (!response.ok) {
       console.warn(`[Evolution (${targetInstance})] Tentativa 1 de áudio falhou (${response.status}). Tentando com encoding: false...`);
       
-      response = await fetch(endpoint, {
+      response = await fetchWithTimeout(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -306,7 +320,7 @@ export async function sendWhatsAppVoiceAudio(
     if (!response.ok) {
       console.warn(`[Evolution (${targetInstance})] Tentativa 2 de áudio falhou (${response.status}). Tentando via sendMedia...`);
       const altEndpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(targetInstance)}`;
-      const altResponse = await fetch(altEndpoint, {
+      const altResponse = await fetchWithTimeout(altEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -351,12 +365,13 @@ export async function sendWhatsAppVoiceAudio(
  */
 export async function getBase64FromMediaMessage(
   messagePayload: any,
-  messageKey?: { id?: string; remoteJid?: string; fromMe?: boolean }
+  messageKey?: { id?: string; remoteJid?: string; fromMe?: boolean },
+  instanceNameOverride?: string
 ): Promise<string | null> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl || process.env.EVOLUTION_API_URL || 'https://api.makprojetosmake.com.br');
-  const apiKey = (config.apiKey || process.env.EVOLUTION_API_KEY || 'b2efa885a71ee22edf72b597df1a0ce9').trim();
-  const instanceName = (config.instanceName || process.env.EVOLUTION_INSTANCE || 'agente-ia').trim();
+  const apiKey = getEvolutionApiKey();
+  const instanceName = normalizeInstanceName(instanceNameOverride || config.instanceName || 'dra-lucy-murata');
 
   if (!baseUrl || !apiKey || !instanceName) {
     console.warn('[Evolution API Media] Configuração incompleta para download de mídia.');
@@ -375,12 +390,7 @@ export async function getBase64FromMediaMessage(
 
   // Construct message object payloads for Evolution API v2 compatibility
   const candidatePayloads = [
-    // 1. Full Evolution v2 message structure (with crypto keys, audioMessage/imageMessage)
-    {
-      message: messagePayload?.message ? messagePayload : { key, message: messagePayload },
-      convertToMp4: false,
-    },
-    // 2. Direct message envelope
+    // 1. Direct message envelope with full message or audio object
     {
       message: {
         key: {
@@ -392,7 +402,7 @@ export async function getBase64FromMediaMessage(
       },
       convertToMp4: false,
     },
-    // 3. Simple key reference (if media is cached server-side)
+    // 2. Simple key reference (if media is cached server-side in Evolution)
     {
       message: {
         key: {
@@ -408,7 +418,7 @@ export async function getBase64FromMediaMessage(
   for (let i = 0; i < candidatePayloads.length; i++) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 3500); // 3.5s timeout per attempt
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -425,15 +435,15 @@ export async function getBase64FromMediaMessage(
         const data = await response.json();
         const base64Data = data?.base64 || data?.data;
         if (base64Data && typeof base64Data === 'string' && base64Data.length > 50) {
-          console.log(`[Evolution API Media] Base64 da mídia obtido com sucesso (${base64Data.length} chars) na tentativa ${i + 1}!`);
+          console.log(`[Evolution API Media (${instanceName})] Base64 obtido com sucesso (${base64Data.length} chars) na tentativa ${i + 1}!`);
           return base64Data.replace(/^data:[^;]+;base64,/, '');
         }
       } else {
         const errText = await response.text().catch(() => '');
-        console.warn(`[Evolution API Media] Tentativa ${i + 1} falhou (HTTP ${response.status}): ${errText.slice(0, 100)}`);
+        console.warn(`[Evolution API Media (${instanceName})] Tentativa ${i + 1} falhou (HTTP ${response.status}): ${errText.slice(0, 80)}`);
       }
     } catch (err: any) {
-      console.warn(`[Evolution API Media] Tentativa ${i + 1} erro de conexão:`, err.message);
+      console.warn(`[Evolution API Media (${instanceName})] Tentativa ${i + 1} conexão/timeout:`, err.message);
     }
   }
 
@@ -577,8 +587,6 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string, targetIns
           base64: true,
           events: [
             'MESSAGES_UPSERT',
-            'MESSAGES_UPDATE',
-            'SEND_MESSAGE',
             'CONNECTION_UPDATE',
           ],
         },
@@ -600,8 +608,6 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string, targetIns
             base64: true,
             events: [
               'MESSAGES_UPSERT',
-              'MESSAGES_UPDATE',
-              'SEND_MESSAGE',
               'CONNECTION_UPDATE',
             ],
           },

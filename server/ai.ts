@@ -66,11 +66,12 @@ export async function transcribeAudioWithGemini(
   }
 
   // Candidate models: modern Gemini models supported for audio transcription
-  const candidateModels = ['gemini-3.5-transcribe', 'gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash'];
+  const candidateModels = ['gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.5-transcribe'];
 
   for (const model of candidateModels) {
     try {
-      const response = await ai.models.generateContent({
+      // 8s timeout per model attempt to prevent hangs
+      const generatePromise = ai.models.generateContent({
         model: model,
         contents: [
           {
@@ -89,6 +90,11 @@ export async function transcribeAudioWithGemini(
         ],
       });
 
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`Timeout de 8s no modelo ${model}`)), 8000)
+      );
+
+      const response = await Promise.race([generatePromise, timeoutPromise]);
       const transcription = response.text?.trim();
       if (transcription) {
         return transcription;
@@ -256,6 +262,7 @@ function splitTextIntoSentences(text: string, maxChunkLen: number = 180): string
  * 100% Free, zero configuration or OAuth2 needed.
  */
 export async function generateNeuralSpeech(cleanSpeechText: string, voiceName?: string): Promise<string | null> {
+  const tmpFile = path.join(os.tmpdir(), `sofia-neural-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.mp3`);
   try {
     const selectedVoice = voiceName?.startsWith('pt-BR-') ? voiceName : 'pt-BR-FranciscaNeural';
     const tts = new EdgeTTS({
@@ -263,15 +270,26 @@ export async function generateNeuralSpeech(cleanSpeechText: string, voiceName?: 
       lang: 'pt-BR',
       outputFormat: 'audio-24khz-48kbitrate-mono-mp3'
     });
-    const tmpFile = path.join(os.tmpdir(), `sofia-neural-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.mp3`);
-    await tts.ttsPromise(cleanSpeechText, tmpFile);
+    
+    // Strict 5-second timeout on speech generation
+    const ttsPromise = tts.ttsPromise(cleanSpeechText, tmpFile);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout de 5000ms excedido no EdgeTTS')), 5000)
+    );
+
+    await Promise.race([ttsPromise, timeoutPromise]);
+
     if (fs.existsSync(tmpFile)) {
       const buffer = fs.readFileSync(tmpFile);
-      fs.unlinkSync(tmpFile);
+      try { fs.unlinkSync(tmpFile); } catch {}
       return buffer.toString('base64');
     }
   } catch (err: any) {
-    console.warn('[Neural TTS Engine] Erro ao sintetizar áudio neural:', err.message);
+    console.warn('[Neural TTS Engine] Erro ou timeout ao sintetizar áudio neural:', err.message);
+  } finally {
+    if (fs.existsSync(tmpFile)) {
+      try { fs.unlinkSync(tmpFile); } catch {}
+    }
   }
   return null;
 }

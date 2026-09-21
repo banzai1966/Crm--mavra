@@ -17,6 +17,8 @@ import { Lead, ChatMessage } from '../src/types';
 
 // In-memory cache for processed message IDs to prevent double processing & infinite duplicate loops
 const processedMessageIds = new Map<string, number>();
+// In-memory debounce cache (phone + text hash -> timestamp) to prevent duplicate webhook dispatches
+const recentMessageFingerprints = new Map<string, number>();
 // In-memory lock per phone to prevent concurrent processing of the same conversation
 const phoneInFlight = new Set<string>();
 
@@ -24,10 +26,10 @@ function isDuplicateMessage(messageId?: string): boolean {
   if (!messageId) return false;
   const now = Date.now();
 
-  // Garbage collect entries older than 3 minutes
-  if (processedMessageIds.size > 200) {
+  // Garbage collect entries older than 5 minutes
+  if (processedMessageIds.size > 250) {
     for (const [id, time] of processedMessageIds.entries()) {
-      if (now - time > 180000) {
+      if (now - time > 300000) {
         processedMessageIds.delete(id);
       }
     }
@@ -38,6 +40,30 @@ function isDuplicateMessage(messageId?: string): boolean {
   }
 
   processedMessageIds.set(messageId, now);
+  return false;
+}
+
+function isDuplicateContent(phone: string, text: string): boolean {
+  if (!phone || !text) return false;
+  const now = Date.now();
+
+  // Garbage collect entries older than 30 seconds
+  if (recentMessageFingerprints.size > 200) {
+    for (const [key, time] of recentMessageFingerprints.entries()) {
+      if (now - time > 30000) {
+        recentMessageFingerprints.delete(key);
+      }
+    }
+  }
+
+  const normalized = `${phone}:${text.trim().toLowerCase().slice(0, 100)}`;
+  const lastTime = recentMessageFingerprints.get(normalized);
+  if (lastTime && now - lastTime < 10000) {
+    // Exact same message from same phone received within 10 seconds (webhook duplicate)
+    return true;
+  }
+
+  recentMessageFingerprints.set(normalized, now);
   return false;
 }
 
@@ -56,23 +82,28 @@ export function handleIncomingWebhook(body: any): void {
 async function executeWebhookPipeline(body: any): Promise<void> {
   if (!body) return;
 
-  const eventName = (body.event || body.type || 'webhook').toLowerCase();
+  const rawEvent = (body.event || body.type || 'webhook').toString().toLowerCase();
+  const normalizedEvent = rawEvent.replace(/[._]/g, '.');
 
-  // Only ignore pure presence, contacts sync, status updates, or receipt confirmations
+  // Strictly ignore status updates, acks, sending confirmations, presence updates, and connection pings
   if (
-    eventName === 'presence.update' ||
-    eventName === 'chats.update' ||
-    eventName === 'contacts.update' ||
-    eventName === 'messages.update' ||
-    eventName === 'message.update' ||
-    eventName === 'message.ack' ||
-    eventName === 'send.message'
+    normalizedEvent === 'messages.update' ||
+    normalizedEvent === 'message.update' ||
+    normalizedEvent === 'message.ack' ||
+    normalizedEvent === 'send.message' ||
+    normalizedEvent === 'presence.update' ||
+    normalizedEvent === 'chats.update' ||
+    normalizedEvent === 'contacts.update' ||
+    normalizedEvent === 'connection.update' ||
+    normalizedEvent === 'qrcode.updated'
   ) {
     return;
   }
 
   // 1. Detect and parse Evolution API v2 event payload
-  const data = body.data || body;
+  const rawData = body.data || body;
+  const data = Array.isArray(rawData) ? rawData[0] : rawData;
+  if (!data) return;
 
   // Key details
   const key = data?.key || body?.key;
@@ -81,7 +112,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   // Ignore outbound messages from the bot/instance to prevent echo loops
   if (isFromMe) {
     db.logWebhookEvent({
-      event: eventName,
+      event: rawEvent,
       status: 'ignored_from_me',
       details: 'Mensagem enviada pelo próprio bot/instância (fromMe=true)',
       rawPayloadSnippet: JSON.stringify(body).slice(0, 150),
@@ -90,7 +121,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   }
 
   // Check and discard duplicate events sent by Evolution API retries
-  const messageId = key?.id || data?.id || body?.id;
+  const messageId = key?.id || data?.id || body?.id || data?.messageId;
   if (messageId && isDuplicateMessage(messageId)) {
     console.log(`[Webhook] Evento duplicado ignorado (ID: ${messageId})`);
     return;
@@ -113,7 +144,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   // Ignore group chats if not targeted (e.g. ends with @g.us)
   if (rawJid.includes('@g.us') || rawJid.includes('@broadcast')) {
     db.logWebhookEvent({
-      event: eventName,
+      event: rawEvent,
       status: 'ignored_group',
       details: `Mensagem de grupo ignorada: ${rawJid}`,
     });
@@ -124,7 +155,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   const cleanPhone = rawJid.replace(/@.*$/, '').replace(/\D/g, '');
   if (!cleanPhone || cleanPhone.length < 8) {
     db.logWebhookEvent({
-      event: eventName,
+      event: rawEvent,
       senderPhone: cleanPhone,
       status: 'error',
       details: `Número de telefone não identificado no payload (rawJid: ${rawJid})`,
@@ -247,14 +278,13 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     if (!base64Audio) {
       const payloadToFetch = data || body || (audioObj ? { message: { audioMessage: audioObj } } : null);
       const keyToFetch = data?.key || body?.key;
-      console.log(`[Webhook] Baixando base64 do áudio diretamente da Evolution API (ID: ${keyToFetch?.id || 'direto'})...`);
+      console.log(`[Webhook] Baixando base64 do áudio da Evolution API (${incomingInstance}, ID: ${keyToFetch?.id || 'direto'})...`);
 
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        base64Audio = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        base64Audio = await getBase64FromMediaMessage(payloadToFetch, keyToFetch, incomingInstance);
         if (base64Audio) break;
-        if (attempt < 3) {
-          console.log(`[Webhook] Mídia ainda não disponível na Evolution API (tentativa ${attempt}/3). Aguardando ${attempt * 600}ms...`);
-          await new Promise((r) => setTimeout(r, attempt * 600));
+        if (attempt < 2) {
+          await new Promise((r) => setTimeout(r, 600));
         }
       }
     }
@@ -267,19 +297,19 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           isAudioTranscribed = true;
           console.log(`[Webhook] Áudio de ${cleanPhone} transcrito com sucesso: "${messageText}"`);
         } else {
-          console.warn('[Webhook] Transcrição do Gemini retornou vazia. Ignorando evento para evitar mensagem indevida.');
-          if (messageId) processedMessageIds.delete(messageId);
-          return;
+          console.warn('[Webhook] Transcrição do áudio retornou vazia. Ativando acolhimento amigável para áudio.');
+          messageText = 'Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.';
+          isAudioTranscribed = true;
         }
       } catch (err: any) {
         console.error('[Webhook] Falha ao transcrever áudio com Gemini:', err.message);
-        if (messageId) processedMessageIds.delete(messageId);
-        return;
+        messageText = 'Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.';
+        isAudioTranscribed = true;
       }
     } else {
-      console.warn('[Webhook] Não foi possível obter o arquivo de áudio (base64 ausente na Evolution API). Ignorando evento preliminar.');
-      if (messageId) processedMessageIds.delete(messageId);
-      return;
+      console.warn('[Webhook] Arquivo de áudio não disponível na Evolution API. Ativando acolhimento cordial.');
+      messageText = 'Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.';
+      isAudioTranscribed = true;
     }
   } else if (isImageMessage) {
     // Process image with Gemini Vision AI
@@ -392,7 +422,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
 
   if (!messageText.trim()) {
     db.logWebhookEvent({
-      event: eventName,
+      event: rawEvent,
       senderPhone: cleanPhone,
       status: 'no_text',
       details: isAudioMessage
@@ -403,11 +433,17 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     return;
   }
 
+  // Deduplication check by content: if the exact same message from this phone arrived in <10s, discard
+  if (isDuplicateContent(cleanPhone, messageText)) {
+    console.log(`[Webhook] Mensagem duplicada de ${cleanPhone} ignorada pelo filtro anti-duplicação (<10s): "${messageText.slice(0, 40)}"`);
+    return;
+  }
+
   console.log(`[Webhook] Mensagem recebida de ${cleanPhone}: "${messageText.slice(0, 50)}..."`);
 
   // Log successful reception
   db.logWebhookEvent({
-    event: eventName,
+    event: rawEvent,
     senderPhone: cleanPhone,
     messageText: messageText.trim(),
     status: 'processed',
@@ -479,7 +515,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   if (db.agentConfig.isGlobalAiActive === false) {
     console.log(`[Webhook] IA Global DESLIGADA no painel. Ignorando resposta automática para ${cleanPhone}.`);
     db.logWebhookEvent({
-      event: eventName,
+      event: rawEvent,
       senderPhone: cleanPhone,
       status: 'ignored_from_me',
       details: 'IA Global desativada pelo administrador. Mensagem salva apenas para histórico.',
@@ -499,7 +535,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     if (!isAuthorized) {
       console.log(`[Webhook] MODO TESTE ATIVO: Número ${cleanPhone} não está na lista autorizada (${whitelist.join(', ')}). Ignorando silenciosamente.`);
       db.logWebhookEvent({
-        event: eventName,
+        event: rawEvent,
         senderPhone: cleanPhone,
         status: 'ignored_from_me',
         details: `Modo de Teste ativo: Número ${cleanPhone} ignorado para proteger contatos pessoais.`,
