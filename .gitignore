@@ -1,6 +1,6 @@
 node_modules/
 build/
-dist/
+# dist included for fast deployment without container memory crash
 coverage/
 .DS_Store
 *.log
