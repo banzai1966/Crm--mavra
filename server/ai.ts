@@ -602,7 +602,7 @@ async function callGemini(
   prompt: string,
   apiKeyOverride?: string
 ): Promise<AIResponseResult> {
-  const apiKey = apiKeyOverride || process.env.GEMINI_API_KEY;
+  const apiKey = (apiKeyOverride || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
   if (!apiKey) {
     throw new Error('Chave de API do Gemini (GEMINI_API_KEY) não configurada.');
   }
@@ -747,8 +747,31 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   let sendAsVoice = false;
 
   if (isLucyOrDental) {
-    // Odontologia Integrativa Dra. Lucy Murata Logic
+    // Odontologia Integrativa Dra. Lucy Murata Logic (Objetiva, calorosa e sucinta)
     if (
+      lower.includes('não foi possível transcrever') ||
+      lower.includes('nao foi possivel transcrever') ||
+      lower.includes('[áudio recebido') ||
+      lower.includes('[audio recebido')
+    ) {
+      reply = 'Olá! Recebi seu áudio aqui no consultório, mas não consegui escutar com nitidez por aqui. Você poderia me mandar uma mensagem de texto ou me dizer rapidinho o que precisa? Assim já te respondo na hora!';
+      sendAsVoice = false;
+    } else if (
+      lower.includes('endereço') ||
+      lower.includes('endereco') ||
+      lower.includes('onde fica') ||
+      lower.includes('onde é') ||
+      lower.includes('onde e') ||
+      lower.includes('localização') ||
+      lower.includes('localizacao') ||
+      lower.includes('como chegar') ||
+      lower.includes('mall') ||
+      lower.includes('euroville')
+    ) {
+      reply = 'Nosso consultório fica no Euroville Mall (Torre II, Sala 103), na Praça Maastricht, 200 - Jardim São José, aqui em Bragança Paulista/SP. O acesso é bem fácil e conta com estacionamento. Gostaria de agendar um horário para sua consulta de avaliação?';
+      suggestedStage = 'stage-2';
+      interest = 'Endereço e Localização';
+    } else if (
       lower.includes('smart') ||
       lower.includes('amálgama') ||
       lower.includes('amalgama') ||
@@ -758,7 +781,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('troca de obturação') ||
       lower.includes('restauração preta')
     ) {
-      reply = 'Sim! A Dra. Lucy Murata é especialista em Odontologia Integrativa e segue rigorosamente o Protocolo SMART da IAOMT para remoção segura de amálgama: ambiente protegido com oxigênio medicinal, aspiração potente e barreiras de proteção para sua total segurança biológica. Gostaria de agendar sua Consulta de Avaliação Integrativa para planejar a remoção?';
+      reply = 'A Dra. Lucy Murata é especialista e segue rigorosamente o Protocolo SMART para remoção segura de amálgama, com isolamento absoluto e proteção biológica contra mercúrio. Gostaria de agendar sua avaliação para planejarmos a remoção?';
       suggestedStage = 'stage-2';
       interest = 'Remoção Segura de Amálgama (Protocolo SMART)';
       estimatedValue = 1800;
@@ -769,7 +792,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('cerâmica') ||
       lower.includes('ceramica')
     ) {
-      reply = 'Trabalhamos com implantes de cerâmica pura zircônia, que são 100% biocompatíveis, livres de metais e com estética impecável similar ao dente natural! A Dra. Lucy faz o planejamento 3D digital computadorizado. Deseja agendar sua avaliação para avaliarmos seu caso?';
+      reply = 'Trabalhamos com implantes de cerâmica pura zircônia: 100% biocompatíveis, livres de metais e com estética impecável similar ao dente natural. Quer agendar uma avaliação com a Dra. Lucy para examinarmos seu caso?';
       suggestedStage = 'stage-2';
       interest = 'Implantes de Cerâmica Pura Zircônia';
       estimatedValue = 6500;
@@ -783,7 +806,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('inchado') ||
       lower.includes('sangr')
     ) {
-      reply = 'Sinto muito por esse desconforto! Já marquei seu caso como PRIORITÁRIO aqui no consultório da Dra. Lucy Murata para verificar um encaixe de urgência na agenda com a equipe. Você está sentindo dor intensa neste momento?';
+      reply = 'Sinto muito por esse desconforto! Já marquei seu atendimento como PRIORITÁRIO aqui no consultório para verificar um encaixe de urgência com a equipe. Você está com dor intensa neste momento?';
       suggestedStage = 'stage-1';
       interest = 'Urgência / Encaixe Prioritário';
     } else if (
@@ -798,23 +821,21 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('convenio') ||
       lower.includes('plano')
     ) {
-      reply = 'Nossos atendimentos são exclusivamente particulares, garantindo tempo dedicado e biomateriais de padrão internacional. Conforme as normas éticas do CFO e porque cada organismo é biologicamente único, os valores são definidos na Consulta de Avaliação Integrativa após a análise clínica da Dra. Lucy. Quer que eu veja os horários disponíveis para você?';
+      reply = 'Nossos atendimentos são personalizados e particulares. Por isso, os valores são passados na consulta de avaliação após uma análise clínica individual da Dra. Lucy. Quer que eu veja os horários disponíveis para você?';
       suggestedStage = 'stage-2';
       interest = 'Consulta de Avaliação Integrativa';
       estimatedValue = 450;
     } else if (
       lower.includes('funciona') ||
-      lower.includes('como') ||
+      lower.includes('como é') ||
+      lower.includes('como e') ||
       lower.includes('o que é') ||
       lower.includes('oque é') ||
       lower.includes('integrativa') ||
       lower.includes('biológica') ||
-      lower.includes('biologica') ||
-      lower.includes('onde fica') ||
-      lower.includes('endereço') ||
-      lower.includes('endereco')
+      lower.includes('biologica')
     ) {
-      reply = 'A Odontologia Integrativa da Dra. Lucy Murata cuida do sorriso em conexão direta com a saúde sistêmica de todo o corpo, unindo tecnologia digital (escaneamento 3D) à remoção de toxinas e biomateriais puros. Nosso consultório fica no Euroville Mall em Bragança Paulista. Gostaria de agendar sua avaliação inicial?';
+      reply = 'A Odontologia Integrativa cuida da saúde bucal em sintonia com todo o organismo, utilizando biomateriais puros e tecnologia digital 3D. Gostaria de agendar sua avaliação com a Dra. Lucy?';
       suggestedStage = 'stage-2';
       interest = 'Como Funciona a Odontologia Integrativa';
     } else if (
@@ -823,7 +844,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('voz') ||
       lower.includes('ouvir')
     ) {
-      reply = 'Com certeza! Pode me enviar áudios tranquilamente, eu escuto perfeitamente e também posso te responder por voz para tornar tudo mais prático para você. Como posso te orientar sobre seu tratamento hoje?';
+      reply = 'Com certeza! Pode me enviar áudios tranquilamente, eu escuto perfeitamente e também posso te responder por voz para agilizar. Como posso te ajudar hoje?';
       sendAsVoice = true;
     } else if (
       lower.includes('humano') ||
@@ -834,7 +855,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('recepcao') ||
       lower.includes('falar com alguém')
     ) {
-      reply = 'Com certeza! Já notifiquei nossa recepção aqui no consultório da Dra. Lucy Murata. Em instantes nossa secretária entrará em contato para confirmar sua consulta ou tirar suas dúvidas!';
+      reply = 'Com certeza! Já avisei nossa recepção aqui no consultório da Dra. Lucy Murata e em instantes nossa secretária entrará em contato para te atender!';
       suggestedStage = 'stage-2';
       interest = 'Solicitação de Atendimento com a Secretária';
     } else if (
@@ -846,7 +867,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('boa noite') ||
       lower.includes('tudo bem')
     ) {
-      reply = 'Olá! Tudo bem? Aqui é a Sofia, secretária e coordenadora de atendimento da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨';
+      reply = 'Olá! Tudo bem? Sou a Sofia, secretária da Dra. Lucy Murata aqui no consultório em Bragança Paulista. Como posso te ajudar hoje? 😊';
     }
   } else {
     // Dynamic Generic Safety Fallback (using configured persona & role, NEVER mentioning NEXA CRM)

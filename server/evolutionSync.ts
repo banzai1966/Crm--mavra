@@ -1,5 +1,5 @@
 import { db } from './db';
-import { handleIncomingWebhook } from './webhook';
+import { handleIncomingWebhook, isDuplicateMessage, isWebhookActive } from './webhook';
 import { sanitizeEvolutionUrl } from './evolution';
 
 let isSyncRunning = false;
@@ -10,23 +10,31 @@ const lastReplyTimestampPerPhone = new Map<string, number>();
 
 /**
  * Active bidirectional Live Sync with Evolution API.
- * This guarantees real-time message reception and automatic responses
- * even in environments where incoming webhooks are blocked by firewalls or auth cookies (such as Cloud Run / AI Studio).
+ * This acts as a reliable fallback in environments where incoming webhooks are blocked.
+ * When incoming webhooks are active and flowing normally, this polling automatically yields
+ * to prevent double-processing and duplicate responses.
  */
 export function startEvolutionSync(): void {
   if (syncIntervalTimer) return;
 
-  console.log('[Evolution Live Sync] Iniciando sincronização ativa com a VPS Evolution API (intervalo: 2.5s)...');
+  console.log('[Evolution Live Sync] Iniciando monitoramento sincronizado com a VPS Evolution API...');
 
   // Initial immediate poll
   setTimeout(pollEvolutionMessages, 1500);
 
-  // Poll every 2.5 seconds
-  syncIntervalTimer = setInterval(pollEvolutionMessages, 2500);
+  // Poll every 3.5 seconds
+  syncIntervalTimer = setInterval(pollEvolutionMessages, 3500);
 }
 
 export async function pollEvolutionMessages(): Promise<void> {
   if (isSyncRunning) return;
+
+  // If webhooks are actively receiving messages from Evolution API, yield polling completely
+  // to avoid dual processing, race conditions, and duplicate replies.
+  if (isWebhookActive()) {
+    return;
+  }
+
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
   const currentInstance = (config.instanceName || 'agente-ia').trim();
@@ -88,6 +96,7 @@ async function pollSingleInstance(baseUrl: string, apiKey: string, instance: str
         const msgTimestamp = record?.messageTimestamp || 0;
         if (record?.key?.id && (nowSec - msgTimestamp > 600)) {
           processedExternalMessageIds.add(record.key.id);
+          isDuplicateMessage(record.key.id);
         }
       }
       return;
@@ -99,7 +108,12 @@ async function pollSingleInstance(baseUrl: string, apiKey: string, instance: str
     for (const record of sortedRecords) {
       if (!record || record.key?.fromMe === true) continue;
       const msgId = record.key?.id;
-      if (!msgId || processedExternalMessageIds.has(msgId)) continue;
+      if (!msgId) continue;
+
+      // Check both local set AND shared global deduplicator
+      if (processedExternalMessageIds.has(msgId) || isDuplicateMessage(msgId)) {
+        continue;
+      }
 
       // Ignore messages older than 10 minutes (allows catching messages during VPS reboot or deployment)
       const msgTimestamp = record.messageTimestamp || 0;

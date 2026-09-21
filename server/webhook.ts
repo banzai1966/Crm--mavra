@@ -22,7 +22,13 @@ const recentMessageFingerprints = new Map<string, number>();
 // In-memory lock per phone to prevent concurrent processing of the same conversation
 const phoneInFlight = new Set<string>();
 
-function isDuplicateMessage(messageId?: string): boolean {
+let lastWebhookTimestamp = 0;
+
+export function isWebhookActive(): boolean {
+  return Date.now() - lastWebhookTimestamp < 60000;
+}
+
+export function isDuplicateMessage(messageId?: string): boolean {
   if (!messageId) return false;
   const now = Date.now();
 
@@ -101,6 +107,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   }
 
   // 1. Detect and parse Evolution API v2 event payload
+  lastWebhookTimestamp = Date.now();
   const rawData = body.data || body;
   const data = Array.isArray(rawData) ? rawData[0] : rawData;
   if (!data) return;
@@ -297,19 +304,19 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           isAudioTranscribed = true;
           console.log(`[Webhook] Áudio de ${cleanPhone} transcrito com sucesso: "${messageText}"`);
         } else {
-          console.warn('[Webhook] Transcrição do áudio retornou vazia. Ativando acolhimento amigável para áudio.');
-          messageText = 'Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.';
-          isAudioTranscribed = true;
+          console.warn('[Webhook] Transcrição do áudio retornou vazia. Solicitando mensagem em texto com cordialidade.');
+          messageText = '[Áudio recebido, mas não foi possível transcrever]';
+          isAudioTranscribed = false;
         }
       } catch (err: any) {
         console.error('[Webhook] Falha ao transcrever áudio com Gemini:', err.message);
-        messageText = 'Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.';
-        isAudioTranscribed = true;
+        messageText = '[Áudio recebido, mas não foi possível transcrever]';
+        isAudioTranscribed = false;
       }
     } else {
-      console.warn('[Webhook] Arquivo de áudio não disponível na Evolution API. Ativando acolhimento cordial.');
-      messageText = 'Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.';
-      isAudioTranscribed = true;
+      console.warn('[Webhook] Arquivo de áudio não disponível na Evolution API. Solicitando mensagem em texto.');
+      messageText = '[Áudio recebido, mas não foi possível transcrever]';
+      isAudioTranscribed = false;
     }
   } else if (isImageMessage) {
     // Process image with Gemini Vision AI
@@ -666,11 +673,11 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     let shouldSendVoice = false;
     if (voiceEnabled) {
       if (voiceMode === 'always_audio') {
-        shouldSendVoice = true;
+        shouldSendVoice = isAudioTranscribed === true;
       } else if (voiceMode === 'smart_discernment') {
         if (isAudioMessage) {
-          // O cliente enviou áudio: responde SEMPRE em áudio por padrão no discernimento inteligente
-          shouldSendVoice = true;
+          // Se o áudio foi transcrito com sucesso, responde em áudio; caso contrário, responde em texto cordial
+          shouldSendVoice = isAudioTranscribed === true;
         } else {
           // Se o cliente enviou texto, a IA decide se é adequado mandar áudio (ex: sendAsVoice === true)
           // ou se o cliente pediu expressamente por áudio no texto
@@ -678,6 +685,10 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           shouldSendVoice = requestedVoiceInText || aiResult.sendAsVoice === true;
         }
       }
+    }
+
+    if (messageText.includes('[Áudio recebido, mas não foi possível transcrever]')) {
+      shouldSendVoice = false;
     }
 
     // =========================================================================
