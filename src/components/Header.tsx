@@ -279,6 +279,27 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
+            {/* Gerador de Link do Cliente */}
+            {isAdminUnlocked && (
+              <button
+                onClick={handleCopyClientUrl}
+                className="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                title="Abrir gerador e copiar link 100% limpo para o cliente"
+              >
+                {copiedLink ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-700 font-bold">Link Copiado!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Link do Cliente</span>
+                  </>
+                )}
+              </button>
+            )}
+
             {isAdminUnlocked && (
               <button
                 onClick={onLockAdmin}
