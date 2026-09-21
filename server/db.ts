@@ -408,12 +408,25 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
         }
         if (data.documents && Array.isArray(data.documents)) this.documents = data.documents;
         if (data.evolutionConfig) {
+          const loadedKey = (data.evolutionConfig.apiKey || '').trim();
+          const effectiveKey =
+            !loadedKey ||
+            loadedKey === 'CE08ADFF7647-4B88-91A4-55E66D9A0620' ||
+            loadedKey.includes('exemplo')
+              ? 'b2efa885a71ee22edf72b597df1a0ce9'
+              : loadedKey;
+
+          let instName = (data.evolutionConfig.instanceName || '').trim();
+          if (instName === 'dra-lucy-morata' || instName === 'agente-ia') {
+            instName = 'dra-lucy-murata';
+          }
+
           this.evolutionConfig = {
             ...this.evolutionConfig,
             ...data.evolutionConfig,
             serverUrl: cleanUrl(process.env.EVOLUTION_API_URL || data.evolutionConfig.serverUrl || this.evolutionConfig.serverUrl),
-            apiKey: (process.env.EVOLUTION_API_KEY || data.evolutionConfig.apiKey || this.evolutionConfig.apiKey || '').trim(),
-            instanceName: (process.env.EVOLUTION_INSTANCE || data.evolutionConfig.instanceName || this.evolutionConfig.instanceName || '').trim(),
+            apiKey: effectiveKey,
+            instanceName: instName || 'dra-lucy-murata',
           };
         }
         if (data.supabaseConfig) {

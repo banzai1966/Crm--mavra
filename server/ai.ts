@@ -480,15 +480,16 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
 === DIRETRIZES E REGRAS DE ATENDIMENTO NO WHATSAPP (MUITO IMPORTANTE) ===
 1. Responda SEMPRE em mensagens CURTAS, DINÂMICAS e NATURAIS (máximo de 2 a 3 frases por resposta).
 2. NUNCA envie blocos gigantes de texto. Seja caloroso, direto ao ponto e termine sempre com UMA pergunta amigável para continuar a conversa.
-3. SIGILO DE TECNOLOGIA E INFRAESTRUTURA:
+3. SIGILO DE TECNOLOGIA E IDENTIDADE HUMANA:
    - É EXPRESSAMENTE PROIBIDO mencionar nomes de ferramentas internas, infraestrutura técnica ou jargões como "Evolution API", "Supabase", "n8n", "VPS", "Contabo", "Node.js", "Docker", "webhooks" ou similares.
-   - Quando questionada sobre a tecnologia do atendimento, apresente a solução como: "uma Inteligência Artificial corporativa de última geração, desenvolvida exclusivamente para atendimento humano, ágil e personalizado da nossa empresa".
+   - NUNCA mencione "NEXA CRM", "MAVRA" ou diga que você é um robô/sistema. Você é humana: a secretária, assistente e coordenadora de atendimento dedicada da Dra. Lucy Murata.
+   - Apresente-se sempre como: "${config.personaName}, secretária e assistente de atendimento da clínica da Dra. Lucy Murata".
 4. AGENDAMENTOS, INFORMAÇÕES BÁSICAS E TRANSIÇÃO PARA A SECRETÁRIA/RECEPÇÃO:
    - Se o lead/paciente demonstrar interesse em marcar consulta, saber valores ou procedimentos:
    - DÊ A INFORMAÇÃO BÁSICA E OBJETIVA PRIMEIRO (ex: explicar de forma simples como funciona o procedimento, orientar sobre a avaliação inicial ou dar uma estimativa geral de valores/condições sem prometer diagnósticos fechados).
    - FAÇA UMA PRÉ-TRIAGEM RÁPIDA E ACOLHEDORA: pergunte qual período do dia fica mais confortável para ele (manhã ou tarde), o dia da semana de preferência e se o atendimento será particular ou por convênio/plano.
-   - TRANSIÇÃO SUAVE PARA A SECRETÁRIA HUMANA: explique com gentileza que você já registrou todas as preferências dele no sistema e que a nossa secretária / recepcionista entrará em contato em seguida para confirmar o horário exato na agenda e reservar o encaixe com o doutor(a).
-   - Exemplo de fechamento humanizado: "Perfeito! Já anotei aqui sua preferência pelo período da manhã para a avaliação de [Procedimento]. A nossa secretária já está abrindo a agenda para verificar o melhor horário disponível e vai te chamar em instantes para confirmar tudo certinho com você, tá bom? 😊"
+   - TRANSIÇÃO SUAVE PARA A SECRETÁRIA HUMANA: explique com gentileza que você já registrou todas as preferências dele no sistema e que a nossa secretária / recepcionista entrará em contato em seguida para confirmar o horário exato na agenda e reservar o encaixe com a Dra. Lucy.
+   - Exemplo de fechamento humanizado: "Perfeito! Já anotei aqui sua preferência para a avaliação com a Dra. Lucy Murata. A nossa secretária já está verificando o melhor horário disponível na agenda e vai te chamar em instantes para confirmar tudo certinho com você, tá bom? 😊"
    - Preencha o objeto "triage" no JSON de saída com os dados coletados (procedure, preferredPeriod, preferredDays, paymentType, convenioName).
    - Mova o lead para a etapa adequada ("Qualificado / Interesse" ou "Proposta / Apresentação").
 
@@ -507,10 +508,10 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
 7. ${config.strictKnowledgeOnly ? 'ANTI-ALUCINAÇÃO: Utilize as informações da Base de Conhecimento oficial. Se houver alguma dúvida específica que não conste na base, diga com simpatia que vai verificar com o especialista responsável para passar todos os detalhes.' : 'Mantenha total alinhamento comercial e bom senso.'}
 8. CONTEXTO E MENSAGENS INCOMUNS / ENGANOS:
    - Se o lead enviar uma mensagem curta, confusa, ou que pareça conversa pessoal ou engano (por exemplo "oi fulano", "cadê você?", "tudo bem?", "tá podendo falar?"), responda de forma educada, acolhedora e humana.
-   - Exemplo: "Olá! Tudo bem? Aqui é a Sofia da MAVRA. Em que posso te ajudar hoje?"
-   - NUNCA envie respostas robóticas, jargões técnicos ou suposições forçadas sobre vendas se o cliente ainda não indicou o motivo do contato.
+   - Exemplo: "Olá! Tudo bem? Aqui é a Sofia, secretária da Dra. Lucy Murata. Em que posso te ajudar hoje?"
+   - NUNCA envie respostas robóticas, jargões técnicos ou suposições forçadas se o cliente ainda não indicou o motivo do contato.
 9. CASO O CLIENTE DIRECIONE A CONVERSA A UMA PESSOA ESPECÍFICA OU ATENDIMENTO HUMANO:
-   - Responda cordialmente: "Olá! Nossa equipe já foi notificada da sua mensagem. Gostaria de adiantar em algo enquanto preparamos seu atendimento?"
+   - Responda cordialmente: "Olá! Nossa equipe já foi notificada da sua mensagem. Gostaria de adiantar em algo enquanto organizamos seu atendimento?"
 10. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
    - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
 11. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO E DETECÇÃO DE "LEAD QUENTE / PEDIDO DE FECHAMENTO":
@@ -705,87 +706,163 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     };
   }
 
-  let reply = `Olá! Que prazer falar com você. Sou a ${persona}. Como posso te ajudar hoje?`;
+  const config = db.agentConfig;
+  const lowerRole = (config.role || '').toLowerCase();
+  const lowerPersona = (config.personaName || '').toLowerCase();
+  const isLucyOrDental = 
+    lowerRole.includes('lucy') || 
+    lowerRole.includes('odonto') || 
+    lowerRole.includes('dent') || 
+    lowerRole.includes('biológica') || 
+    lowerRole.includes('biologica') || 
+    lowerRole.includes('clínica') || 
+    lowerRole.includes('clinica') || 
+    lowerPersona.includes('sofia');
+
+  let reply = isLucyOrDental
+    ? `Olá! Tudo bem? Aqui é a ${persona}, secretária e assistente da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨`
+    : `Olá! Que prazer falar com você. Sou a ${persona}, ${config.role || 'assistente de atendimento'}. Como posso te ajudar hoje?`;
+
   let suggestedStage: string | undefined = undefined;
   let estimatedValue: number | undefined = undefined;
   let interest: string | undefined = undefined;
   let sendAsVoice = false;
 
-  // Dúvida sobre como funciona o CRM ou o que é (incluindo possíveis erros de digitação como 'vomo', 'q funciona', etc)
-  if (
-    lower.includes('funciona') ||
-    lower.includes('como') ||
-    lower.includes('vomo') ||
-    lower.includes('o que é') ||
-    lower.includes('oque é') ||
-    lower.includes('crm') ||
-    lower.includes('sistema') ||
-    lower.includes('plataforma') ||
-    lower.includes('recurso') ||
-    lower.includes('automaç') ||
-    lower.includes('inteligenc') ||
-    lower.includes('inteligênc') ||
-    lower.includes('atendimento') ||
-    lower.includes('serve')
-  ) {
-    reply = 'O NEXA CRM é uma plataforma inovadora que conecta Inteligência Artificial avançada diretamente ao WhatsApp da sua empresa! Ele atende seus clientes 24 horas por dia (por texto e áudio humanizado), responde dúvidas, qualifica potenciais compradores e organiza todas as negociações em um painel Kanban em tempo real. Quantos atendimentos você realiza por dia na sua empresa?';
-    suggestedStage = 'stage-2'; // Qualificado
-    interest = 'Como funciona o NEXA CRM';
-  } else if (
-    lower.includes('preço') ||
-    lower.includes('preco') ||
-    lower.includes('valor') ||
-    lower.includes('quanto custa') ||
-    lower.includes('plano') ||
-    lower.includes('mensalidade') ||
-    lower.includes('tabela') ||
-    lower.includes('investimento') ||
-    lower.includes('custo')
-  ) {
-    reply = 'Nossos planos iniciam com o NEXA Starter para quem quer automação rápida no WhatsApp, até o NEXA Professional e Enterprise com múltiplos atendentes, IA personalizada para o seu negócio e gestão completa de funil. Me conte: quantos atendentes utilizam o WhatsApp na sua empresa hoje?';
-    suggestedStage = 'stage-2'; // Qualificado
-    interest = 'Consulta de Preços/Planos';
-  } else if (
-    lower.includes('enterprise') ||
-    lower.includes('grande empresa') ||
-    lower.includes('personalizado') ||
-    lower.includes('customizado')
-  ) {
-    reply = 'Nosso Plano Enterprise é projetado para operações comerciais ativas com alto volume de mensagens, instâncias dedicadas de WhatsApp, IA treinada nos dados da sua empresa e suporte VIP. Gostaria de agendar uma demonstração executiva para sua equipe?';
-    suggestedStage = 'stage-3'; // Proposta
-    estimatedValue = 12500;
-    interest = 'Plano Enterprise';
-  } else if (
-    lower.includes('áudio') ||
-    lower.includes('audio') ||
-    lower.includes('voz') ||
-    lower.includes('falar') ||
-    lower.includes('ouvir') ||
-    lower.includes('grava')
-  ) {
-    reply = 'Com certeza! Eu consigo escutar qualquer mensagem de áudio enviada no WhatsApp e também responder com voz humana natural, tornando o atendimento muito mais ágil e acolhedor. O que você acha dessa solução para os seus clientes?';
-    suggestedStage = 'stage-2';
-    interest = 'Atendimento por Áudio e Voz';
-    sendAsVoice = true;
-  } else if (
-    lower.includes('humano') ||
-    lower.includes('atendente') ||
-    lower.includes('falar com alguém') ||
-    lower.includes('suporte')
-  ) {
-    reply = 'Com certeza! Já notifiquei nossa equipe interna sobre seu contato. Em instantes um especialista entrará em contato com você por aqui para lhe atender pessoalmente!';
-    suggestedStage = 'stage-2';
-    interest = 'Solicitação de Atendimento Humano';
-  } else if (
-    lower.includes('olá') ||
-    lower.includes('ola') ||
-    lower.includes('oi') ||
-    lower.includes('bom dia') ||
-    lower.includes('boa tarde') ||
-    lower.includes('boa noite') ||
-    lower.includes('tudo bem')
-  ) {
-    reply = 'Olá! Tudo bem? Aqui é a Sofia do NEXA CRM. Estou à disposição para tirar dúvidas sobre nossa plataforma de automação com Inteligência Artificial para WhatsApp e vendas. Em que posso te ajudar hoje?';
+  if (isLucyOrDental) {
+    // Odontologia Integrativa Dra. Lucy Murata Logic
+    if (
+      lower.includes('smart') ||
+      lower.includes('amálgama') ||
+      lower.includes('amalgama') ||
+      lower.includes('mercúrio') ||
+      lower.includes('mercurio') ||
+      lower.includes('metal') ||
+      lower.includes('troca de obturação') ||
+      lower.includes('restauração preta')
+    ) {
+      reply = 'Sim! A Dra. Lucy Murata é especialista em Odontologia Integrativa e segue rigorosamente o Protocolo SMART da IAOMT para remoção segura de amálgama: ambiente protegido com oxigênio medicinal, aspiração potente e barreiras de proteção para sua total segurança biológica. Gostaria de agendar sua Consulta de Avaliação Integrativa para planejar a remoção?';
+      suggestedStage = 'stage-2';
+      interest = 'Remoção Segura de Amálgama (Protocolo SMART)';
+      estimatedValue = 1800;
+    } else if (
+      lower.includes('zircônia') ||
+      lower.includes('zirconia') ||
+      lower.includes('implante') ||
+      lower.includes('cerâmica') ||
+      lower.includes('ceramica')
+    ) {
+      reply = 'Trabalhamos com implantes de cerâmica pura zircônia, que são 100% biocompatíveis, livres de metais e com estética impecável similar ao dente natural! A Dra. Lucy faz o planejamento 3D digital computadorizado. Deseja agendar sua avaliação para avaliarmos seu caso?';
+      suggestedStage = 'stage-2';
+      interest = 'Implantes de Cerâmica Pura Zircônia';
+      estimatedValue = 6500;
+    } else if (
+      lower.includes('dor') ||
+      lower.includes('urgênc') ||
+      lower.includes('urgenc') ||
+      lower.includes('emergênc') ||
+      lower.includes('quebr') ||
+      lower.includes('doendo') ||
+      lower.includes('inchado') ||
+      lower.includes('sangr')
+    ) {
+      reply = 'Sinto muito por esse desconforto! Já marquei seu caso como PRIORITÁRIO aqui no consultório da Dra. Lucy Murata para verificar um encaixe de urgência na agenda com a equipe. Você está sentindo dor intensa neste momento?';
+      suggestedStage = 'stage-1';
+      interest = 'Urgência / Encaixe Prioritário';
+    } else if (
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('valor') ||
+      lower.includes('quanto custa') ||
+      lower.includes('tabela') ||
+      lower.includes('investimento') ||
+      lower.includes('custo') ||
+      lower.includes('convênio') ||
+      lower.includes('convenio') ||
+      lower.includes('plano')
+    ) {
+      reply = 'Nossos atendimentos são exclusivamente particulares, garantindo tempo dedicado e biomateriais de padrão internacional. Conforme as normas éticas do CFO e porque cada organismo é biologicamente único, os valores são definidos na Consulta de Avaliação Integrativa após a análise clínica da Dra. Lucy. Quer que eu veja os horários disponíveis para você?';
+      suggestedStage = 'stage-2';
+      interest = 'Consulta de Avaliação Integrativa';
+      estimatedValue = 450;
+    } else if (
+      lower.includes('funciona') ||
+      lower.includes('como') ||
+      lower.includes('o que é') ||
+      lower.includes('oque é') ||
+      lower.includes('integrativa') ||
+      lower.includes('biológica') ||
+      lower.includes('biologica') ||
+      lower.includes('onde fica') ||
+      lower.includes('endereço') ||
+      lower.includes('endereco')
+    ) {
+      reply = 'A Odontologia Integrativa da Dra. Lucy Murata cuida do sorriso em conexão direta com a saúde sistêmica de todo o corpo, unindo tecnologia digital (escaneamento 3D) à remoção de toxinas e biomateriais puros. Nosso consultório fica no Euroville Mall em Bragança Paulista. Gostaria de agendar sua avaliação inicial?';
+      suggestedStage = 'stage-2';
+      interest = 'Como Funciona a Odontologia Integrativa';
+    } else if (
+      lower.includes('áudio') ||
+      lower.includes('audio') ||
+      lower.includes('voz') ||
+      lower.includes('ouvir')
+    ) {
+      reply = 'Com certeza! Pode me enviar áudios tranquilamente, eu escuto perfeitamente e também posso te responder por voz para tornar tudo mais prático para você. Como posso te orientar sobre seu tratamento hoje?';
+      sendAsVoice = true;
+    } else if (
+      lower.includes('humano') ||
+      lower.includes('atendente') ||
+      lower.includes('secretária') ||
+      lower.includes('secretaria') ||
+      lower.includes('recepção') ||
+      lower.includes('recepcao') ||
+      lower.includes('falar com alguém')
+    ) {
+      reply = 'Com certeza! Já notifiquei nossa recepção aqui no consultório da Dra. Lucy Murata. Em instantes nossa secretária entrará em contato para confirmar sua consulta ou tirar suas dúvidas!';
+      suggestedStage = 'stage-2';
+      interest = 'Solicitação de Atendimento com a Secretária';
+    } else if (
+      lower.includes('olá') ||
+      lower.includes('ola') ||
+      lower.includes('oi') ||
+      lower.includes('bom dia') ||
+      lower.includes('boa tarde') ||
+      lower.includes('boa noite') ||
+      lower.includes('tudo bem')
+    ) {
+      reply = 'Olá! Tudo bem? Aqui é a Sofia, secretária e coordenadora de atendimento da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨';
+    }
+  } else {
+    // Dynamic Generic Safety Fallback (using configured persona & role, NEVER mentioning NEXA CRM)
+    if (
+      lower.includes('funciona') ||
+      lower.includes('como') ||
+      lower.includes('o que é') ||
+      lower.includes('oque é') ||
+      lower.includes('atendimento')
+    ) {
+      reply = `Nosso atendimento é especializado e conduzido por ${config.personaName}, com foco total em tirar dúvidas, acolher suas necessidades e organizar seu agendamento de forma rápida. Em que posso te orientar hoje?`;
+      suggestedStage = 'stage-2';
+      interest = 'Dúvidas sobre o Atendimento';
+    } else if (
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('valor') ||
+      lower.includes('quanto custa') ||
+      lower.includes('tabela')
+    ) {
+      reply = `Para te passar os valores e condições detalhadas com toda a precisão, fazemos uma avaliação inicial das suas necessidades. Gostaria de agendar uma conversa ou receber nossa proposta?`;
+      suggestedStage = 'stage-2';
+      interest = 'Consulta de Valores';
+    } else if (
+      lower.includes('humano') ||
+      lower.includes('atendente') ||
+      lower.includes('falar com alguém')
+    ) {
+      reply = 'Com certeza! Já notifiquei nossa equipe interna sobre seu contato. Em instantes nossa equipe entrará em contato para lhe atender pessoalmente!';
+      suggestedStage = 'stage-2';
+      interest = 'Solicitação de Atendimento Humano';
+    } else {
+      reply = `Olá! Tudo bem? Sou a ${persona}, ${config.role || 'assistente de atendimento'}. Em que posso te ajudar hoje?`;
+    }
   }
 
   return {

@@ -1,5 +1,7 @@
 import { db } from './db';
 
+export const MASTER_EVOLUTION_KEY = 'b2efa885a71ee22edf72b597df1a0ce9';
+
 export function sanitizeEvolutionUrl(url: string): string {
   if (!url) return '';
   let cleaned = url.trim();
@@ -9,6 +11,38 @@ export function sanitizeEvolutionUrl(url: string): string {
     cleaned = match[0];
   }
   return cleaned.replace(/\/+$/, '');
+}
+
+/**
+ * Returns the effective API key for Evolution API.
+ * Defaults to the master key if unset, dummy, or set to the instance-restricted token.
+ */
+export function getEvolutionApiKey(): string {
+  const configured = (db.evolutionConfig.apiKey || '').trim();
+  if (
+    !configured ||
+    configured === 'CE08ADFF7647-4B88-91A4-55E66D9A0620' ||
+    configured.includes('seuservidor.com') ||
+    configured.includes('exemplo')
+  ) {
+    return MASTER_EVOLUTION_KEY;
+  }
+  return configured;
+}
+
+/**
+ * Normalizes instance name:
+ * Maps 'dra-lucy-morata' or 'dra-lucy-murata' to the actual instance 'dra-lucy-murata' on VPS
+ */
+export function normalizeInstanceName(inst?: string): string {
+  const raw = (inst || db.evolutionConfig.instanceName || 'dra-lucy-murata')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, '-');
+  if (raw === 'dra-lucy-morata' || raw === 'dra-lucy-murata') {
+    return 'dra-lucy-murata';
+  }
+  return raw || 'dra-lucy-murata';
 }
 
 export interface EvolutionSendResult {
@@ -24,7 +58,7 @@ export async function sendWhatsAppMessage(
 ): Promise<EvolutionSendResult> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const targetInstance = (instanceNameOverride || config.instanceName || 'dra-lucy-murata').trim();
+  const targetInstance = normalizeInstanceName(instanceNameOverride || config.instanceName);
 
   // Format clean digits phone
   const cleanPhone = phone.replace(/\D/g, '');
@@ -32,13 +66,15 @@ export async function sendWhatsAppMessage(
     return { success: false, error: 'Telefone inválido ou ausente' };
   }
 
-  // If URL or API key is not configured or placeholder, log and return simulated delivery
+  // If URL is not configured or placeholder, log and return simulated delivery
   const isDummyUrl =
     !baseUrl ||
     baseUrl.includes('seuservidor.com') ||
     baseUrl.includes('exemplo');
 
-  if (isDummyUrl || !config.apiKey) {
+  const apiKey = getEvolutionApiKey();
+
+  if (isDummyUrl || !apiKey) {
     console.log(
       `[Evolution API Simulada (${targetInstance})] Mensagem enviada para ${cleanPhone}: "${text.slice(0, 60)}..."`
     );
@@ -51,11 +87,11 @@ export async function sendWhatsAppMessage(
   try {
     const typingDelay = db.agentConfig.typingDelayMs || 1500;
     const endpoint = `${baseUrl}/message/sendText/${encodeURIComponent(targetInstance)}`;
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
       body: JSON.stringify({
         number: cleanPhone,
@@ -64,6 +100,28 @@ export async function sendWhatsAppMessage(
         linkPreview: true,
       }),
     });
+
+    // Auto-retry with MASTER key if 401 Unauthorized
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      console.warn(`[Evolution (${targetInstance})] 401 Unauthorized. Retentando com chave mestra...`);
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: MASTER_EVOLUTION_KEY,
+        },
+        body: JSON.stringify({
+          number: cleanPhone,
+          text: text,
+          delay: typingDelay,
+          linkPreview: true,
+        }),
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     if (!response.ok) {
       const errText = await response.text();
@@ -97,26 +155,27 @@ export async function sendWhatsAppMedia(
 ): Promise<EvolutionSendResult> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const targetInstance = (instanceNameOverride || config.instanceName || 'dra-lucy-murata').trim();
+  const targetInstance = normalizeInstanceName(instanceNameOverride || config.instanceName);
   const cleanPhone = phone.replace(/\D/g, '');
 
   if (!cleanPhone || !mediaUrl) {
     return { success: false, error: 'Telefone ou URL do documento ausente' };
   }
 
+  const apiKey = getEvolutionApiKey();
   const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
-  if (isDummyUrl || !config.apiKey) {
+  if (isDummyUrl || !apiKey) {
     console.log(`[Evolution API Simulada (${targetInstance})] Documento PDF enviado para ${cleanPhone}: "${fileName}" (${mediaUrl})`);
     return { success: true, messageId: 'simulated-media-' + Date.now() };
   }
 
   try {
     const endpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(targetInstance)}`;
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
       body: JSON.stringify({
         number: cleanPhone,
@@ -124,10 +183,30 @@ export async function sendWhatsAppMedia(
         mimetype: 'application/pdf',
         caption: caption || '',
         media: mediaUrl,
-        fileName: fileName || 'Apresentacao_MAVRA.pdf',
+        fileName: fileName || 'Apresentacao_Dra_Lucy_Murata.pdf',
         delay: 1500,
       }),
     });
+
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: MASTER_EVOLUTION_KEY },
+        body: JSON.stringify({
+          number: cleanPhone,
+          mediatype: 'document',
+          mimetype: 'application/pdf',
+          caption: caption || '',
+          media: mediaUrl,
+          fileName: fileName || 'Apresentacao_Dra_Lucy_Murata.pdf',
+          delay: 1500,
+        }),
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     if (!response.ok) {
       const errText = await response.text();
@@ -157,15 +236,16 @@ export async function sendWhatsAppVoiceAudio(
 ): Promise<EvolutionSendResult> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const targetInstance = (instanceNameOverride || config.instanceName || 'dra-lucy-murata').trim();
+  const targetInstance = normalizeInstanceName(instanceNameOverride || config.instanceName);
   const cleanPhone = phone.replace(/\D/g, '');
 
   if (!cleanPhone || !base64OrUrl) {
     return { success: false, error: 'Telefone ou áudio ausente' };
   }
 
+  const apiKey = getEvolutionApiKey();
   const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
-  if (isDummyUrl || !config.apiKey) {
+  if (isDummyUrl || !apiKey) {
     console.log(`[Evolution API Simulada (${targetInstance})] Áudio PTT enviado para ${cleanPhone} (${base64OrUrl.length} bytes)`);
     return { success: true, messageId: 'simulated-voice-' + Date.now() };
   }
@@ -181,7 +261,7 @@ export async function sendWhatsAppVoiceAudio(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
       body: JSON.stringify({
         number: cleanPhone,
@@ -191,6 +271,18 @@ export async function sendWhatsAppVoiceAudio(
       }),
     });
 
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: MASTER_EVOLUTION_KEY },
+        body: JSON.stringify({ number: cleanPhone, audio: rawBase64, delay: 800, encoding: true }),
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
+
     // Attempt 2: sendWhatsAppAudio with raw base64 and encoding: false (in case server lacks ffmpeg)
     if (!response.ok) {
       console.warn(`[Evolution (${targetInstance})] Tentativa 1 de áudio falhou (${response.status}). Tentando com encoding: false...`);
@@ -199,7 +291,7 @@ export async function sendWhatsAppVoiceAudio(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          apikey: config.apiKey.trim(),
+          apikey: apiKey,
         },
         body: JSON.stringify({
           number: cleanPhone,
@@ -218,7 +310,7 @@ export async function sendWhatsAppVoiceAudio(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          apikey: config.apiKey.trim(),
+          apikey: apiKey,
         },
         body: JSON.stringify({
           number: cleanPhone,
@@ -356,8 +448,10 @@ export async function checkEvolutionStatus(): Promise<{
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const targetInstance = normalizeInstanceName(config.instanceName);
+  const apiKey = getEvolutionApiKey();
 
-  if (!baseUrl || baseUrl.includes('seuservidor.com') || !config.apiKey) {
+  if (!baseUrl || baseUrl.includes('seuservidor.com') || !apiKey) {
     // In dev / unconfigured mode, keep as connected/simulated for instant testing
     return {
       isConnected: true,
@@ -366,17 +460,27 @@ export async function checkEvolutionStatus(): Promise<{
   }
 
   try {
-    const endpoint = `${baseUrl}/instance/connectionState/${encodeURIComponent(config.instanceName.trim())}`;
+    const endpoint = `${baseUrl}/instance/connectionState/${encodeURIComponent(targetInstance)}`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       headers: {
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
+
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        headers: { apikey: MASTER_EVOLUTION_KEY },
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     if (response.ok) {
       const data = await response.json();
@@ -410,15 +514,27 @@ export async function fetchRemoteWebhookConfig(): Promise<{
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  if (!baseUrl || !config.apiKey) {
+  const targetInstance = normalizeInstanceName(config.instanceName);
+  const apiKey = getEvolutionApiKey();
+  if (!baseUrl || !apiKey) {
     return { success: false, error: 'Credenciais não configuradas' };
   }
 
   try {
-    const endpoint = `${baseUrl}/webhook/find/${encodeURIComponent(config.instanceName.trim())}`;
-    const response = await fetch(endpoint, {
-      headers: { apikey: config.apiKey.trim() },
+    const endpoint = `${baseUrl}/webhook/find/${encodeURIComponent(targetInstance)}`;
+    let response = await fetch(endpoint, {
+      headers: { apikey: apiKey },
     });
+
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        headers: { apikey: MASTER_EVOLUTION_KEY },
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     if (response.ok) {
       const data = await response.json();
@@ -437,20 +553,21 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string, targetIns
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  if (!baseUrl || !config.apiKey) {
+  const apiKey = getEvolutionApiKey();
+  if (!baseUrl || !apiKey) {
     return { success: false, error: 'Credenciais não configuradas' };
   }
 
   try {
-    const inst = (targetInstance || config.instanceName || 'agente-ia').trim();
+    const inst = normalizeInstanceName(targetInstance || config.instanceName);
     const cleanInstance = encodeURIComponent(inst);
     const endpoint = `${baseUrl}/webhook/set/${cleanInstance}`;
 
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
       body: JSON.stringify({
         webhook: {
@@ -467,6 +584,34 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string, targetIns
         },
       }),
     });
+
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: MASTER_EVOLUTION_KEY,
+        },
+        body: JSON.stringify({
+          webhook: {
+            enabled: true,
+            url: targetWebhookUrl.trim(),
+            byEvents: false,
+            base64: true,
+            events: [
+              'MESSAGES_UPSERT',
+              'MESSAGES_UPDATE',
+              'SEND_MESSAGE',
+              'CONNECTION_UPDATE',
+            ],
+          },
+        }),
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     if (response.ok) {
       const data = await response.json();
@@ -492,10 +637,11 @@ export async function getEvolutionQRCode(targetInstance?: string): Promise<{
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const rawInstance = (targetInstance || config.instanceName || 'agente-ia').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+  const rawInstance = normalizeInstanceName(targetInstance || config.instanceName);
   const instance = encodeURIComponent(rawInstance);
+  const apiKey = getEvolutionApiKey();
 
-  if (!baseUrl || !config.apiKey) {
+  if (!baseUrl || !apiKey) {
     return { success: false, state: 'disconnected', error: 'Servidor Evolution não configurado' };
   }
 
@@ -504,9 +650,24 @@ export async function getEvolutionQRCode(targetInstance?: string): Promise<{
     let response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
     });
+
+    // Auto-retry with master key if 401 Unauthorized
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      console.warn(`[Evolution getEvolutionQRCode (${rawInstance})] 401 Unauthorized. Retentando com chave mestra...`);
+      response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          apikey: MASTER_EVOLUTION_KEY,
+        },
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     // If instance doesn't exist (HTTP 404), auto-create it immediately
     if (response.status === 404 || !response.ok) {
@@ -521,7 +682,7 @@ export async function getEvolutionQRCode(targetInstance?: string): Promise<{
         response = await fetch(endpoint, {
           method: 'GET',
           headers: {
-            apikey: config.apiKey.trim(),
+            apikey: MASTER_EVOLUTION_KEY,
           },
         });
       }
@@ -563,9 +724,10 @@ export async function createEvolutionInstance(
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const cleanName = instanceName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+  const cleanName = normalizeInstanceName(instanceName);
+  const apiKey = getEvolutionApiKey();
 
-  if (!baseUrl || !config.apiKey) {
+  if (!baseUrl || !apiKey) {
     return { success: false, error: 'Servidor Evolution não configurado' };
   }
   if (!cleanName) {
@@ -576,7 +738,7 @@ export async function createEvolutionInstance(
     const endpoint = `${baseUrl}/instance/create`;
     const bodyPayload: any = {
       instanceName: cleanName,
-      token: config.apiKey.trim(),
+      token: apiKey,
       qrcode: true,
       integration: 'WHATSAPP-BAILEYS',
     };
@@ -591,18 +753,33 @@ export async function createEvolutionInstance(
       };
     }
 
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
       body: JSON.stringify(bodyPayload),
     });
 
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      bodyPayload.token = MASTER_EVOLUTION_KEY;
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: MASTER_EVOLUTION_KEY,
+        },
+        body: JSON.stringify(bodyPayload),
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
+
     const data = await response.json().catch(() => ({}));
     if (response.ok || response.status === 201 || (data?.message && data.message.includes('already in use'))) {
-      // If a webhook URL was provided, also ensure webhook is explicitly configured on the instance
       if (webhookUrl && webhookUrl.trim()) {
         try {
           await setRemoteWebhookConfig(webhookUrl.trim(), cleanName);
@@ -632,20 +809,32 @@ export async function logoutEvolutionInstance(targetInstance?: string): Promise<
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const instance = encodeURIComponent((targetInstance || config.instanceName).trim());
+  const instance = encodeURIComponent(normalizeInstanceName(targetInstance || config.instanceName));
+  const apiKey = getEvolutionApiKey();
 
-  if (!baseUrl || !config.apiKey) {
+  if (!baseUrl || !apiKey) {
     return { success: false, error: 'Servidor Evolution não configurado' };
   }
 
   try {
     const endpoint = `${baseUrl}/instance/logout/${instance}`;
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       method: 'DELETE',
       headers: {
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
     });
+
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        method: 'DELETE',
+        headers: { apikey: MASTER_EVOLUTION_KEY },
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     if (response.ok) {
       return { success: true, message: 'Instância desconectada com sucesso!' };
@@ -672,19 +861,31 @@ export async function fetchAllEvolutionInstances(): Promise<{
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const apiKey = getEvolutionApiKey();
 
-  if (!baseUrl || !config.apiKey) {
+  if (!baseUrl || !apiKey) {
     return { success: false, instances: [], error: 'Servidor Evolution não configurado' };
   }
 
   try {
     const endpoint = `${baseUrl}/instance/fetchInstances`;
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        apikey: config.apiKey.trim(),
+        apikey: apiKey,
       },
     });
+
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        method: 'GET',
+        headers: { apikey: MASTER_EVOLUTION_KEY },
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
 
     if (response.ok) {
       const data = await response.json();

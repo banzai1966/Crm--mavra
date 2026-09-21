@@ -13,6 +13,8 @@ import {
   createEvolutionInstance,
   logoutEvolutionInstance,
   fetchAllEvolutionInstances,
+  normalizeInstanceName,
+  MASTER_EVOLUTION_KEY,
 } from './server/evolution';
 import { processAiConversation, synthesizeSpeech, testGeminiApiKey } from './server/ai';
 import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
@@ -421,6 +423,59 @@ async function startServer() {
     };
     db.saveToFile();
     res.json(db.agentConfig);
+  });
+
+  // Apply niche preset + auto-provision and connect Evolution instance
+  app.post('/api/agent/apply-niche', async (req: Request, res: Response) => {
+    try {
+      const { preset, evolutionInstanceName } = req.body;
+      if (preset) {
+        db.agentConfig = {
+          ...db.agentConfig,
+          ...preset,
+        };
+      }
+
+      const targetInstance = normalizeInstanceName(evolutionInstanceName || 'dra-lucy-murata');
+      db.evolutionConfig.serverUrl = 'https://api.makprojetosmake.com.br';
+      db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+      db.evolutionConfig.instanceName = targetInstance;
+
+      // Auto-register webhook on Evolution API
+      const webhookUrl = 'https://crm.makprojetosmake.com.br/api/webhook';
+      try {
+        await setRemoteWebhookConfig(webhookUrl, targetInstance);
+      } catch (e) {
+        console.warn('[ApplyNiche] Aviso ao configurar webhook:', e);
+      }
+
+      // Check QR Code / connection status
+      const qrStatus: { success: boolean; state: string; qrcode?: string; pairingCode?: string } =
+        await getEvolutionQRCode(targetInstance).catch(() => ({
+          success: false,
+          state: 'close',
+        }));
+      db.evolutionConfig.state = (qrStatus.state || 'close') as any;
+      db.evolutionConfig.isConnected = qrStatus.state === 'open';
+      if (qrStatus.qrcode) {
+        db.evolutionConfig.qrcode = qrStatus.qrcode;
+      }
+
+      db.saveToFile();
+
+      res.json({
+        success: true,
+        message: `Nicho ${preset?.personaName || 'Dra. Lucy Murata'} carregado com sucesso! Instância '${targetInstance}' integrada no Evolution.`,
+        instanceName: targetInstance,
+        agentConfig: db.agentConfig,
+        evolutionConfig: db.evolutionConfig,
+        qrcode: qrStatus.qrcode,
+        pairingCode: qrStatus.pairingCode,
+        state: qrStatus.state,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
   });
 
   // Test Gemini API key live

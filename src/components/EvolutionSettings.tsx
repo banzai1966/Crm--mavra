@@ -102,13 +102,15 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   };
 
   // Quick preset helper
-  const handleApplyMarcoInstance = () => {
-    setConfig({
+  const handleApplyDraLucyInstance = () => {
+    const updated = {
       ...config,
       serverUrl: 'https://api.makprojetosmake.com.br',
-      apiKey: 'CE08ADFF7647-4B88-91A4-55E66D9A0620',
-      instanceName: 'agente-ia',
-    });
+      apiKey: 'b2efa885a71ee22edf72b597df1a0ce9',
+      instanceName: 'dra-lucy-murata',
+    };
+    setConfig(updated);
+    onSaveConfig(updated);
   };
 
   // Instant QR Code & Multiple Instance Management State
@@ -117,7 +119,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   const [qrPairingCode, setQrPairingCode] = useState<string | null>(null);
   const [qrStatusText, setQrStatusText] = useState<string>('Carregando QR Code...');
   const [isQrLoading, setIsQrLoading] = useState(false);
-  const [selectedInstanceTab, setSelectedInstanceTab] = useState<'agente-ia' | 'demo-ao-vivo' | 'custom'>('agente-ia');
+  const [selectedInstanceTab, setSelectedInstanceTab] = useState<'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'custom'>('dra-lucy-murata');
   const [newInstanceName, setNewInstanceName] = useState('');
   const [customInstanceInput, setCustomInstanceInput] = useState('');
   const [isCreatingInstance, setIsCreatingInstance] = useState(false);
@@ -148,9 +150,9 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
   // Function to load live QR Code from backend
   const loadQrCode = async (instanceToLoad?: string) => {
-    const targetInst = instanceToLoad || config.instanceName;
+    const targetInst = (instanceToLoad || config.instanceName || 'dra-lucy-murata').trim();
     setIsQrLoading(true);
-    setQrStatusText('Solicitando QR Code na VPS...');
+    setQrStatusText('Consultando instância na VPS Evolution...');
     try {
       const res = await fetch(`/api/evolution/qrcode?instance=${encodeURIComponent(targetInst)}`);
       const data = await res.json();
@@ -158,19 +160,28 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
         if (data.qrcode) {
           setQrCodeData(data.qrcode);
           setQrPairingCode(data.pairingCode || null);
-          setQrStatusText('Aguardando leitura do QR Code pelo celular...');
+          setQrStatusText('Aguardando leitura do QR Code pelo WhatsApp...');
         } else if (data.state === 'open' || data.state === 'connected') {
           setQrCodeData(null);
           setQrStatusText('✅ WhatsApp já está conectado nesta instância!');
-        } else {
+        } else if (data.state === 'connecting') {
           setQrCodeData(null);
-          setQrStatusText(`Status da instância: ${data.state}`);
+          setQrStatusText('🔄 Conectando ao WhatsApp... Aguarde alguns instantes.');
+        } else {
+          // Status like 'close' or 'disconnected'
+          setQrCodeData(null);
+          setQrStatusText(`Instância ativa (${data.state || 'close'}). Clique em "Atualizar QR Code" para gerar nova chave de pareamento.`);
         }
       } else {
-        setQrStatusText(data.error || 'Não foi possível obter o QR Code');
+        if (data.state === 'close' || data.state === 'connecting') {
+          setQrCodeData(null);
+          setQrStatusText('Instância ativa na VPS. Clique no botão abaixo para gerar o QR Code.');
+        } else {
+          setQrStatusText(data.error || 'Aguardando inicialização da sessão.');
+        }
       }
     } catch (err: any) {
-      setQrStatusText('Erro ao buscar QR Code: ' + err.message);
+      setQrStatusText('Aguardando inicialização: ' + err.message);
     } finally {
       setIsQrLoading(false);
     }
@@ -191,16 +202,17 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   }, [showQrModal, config.instanceName]);
 
   // Handle Switch Instance Tab
-  const handleSelectInstanceTab = (inst: 'agente-ia' | 'demo-ao-vivo' | 'custom', customName?: string) => {
+  const handleSelectInstanceTab = (inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'custom', customName?: string) => {
     setSelectedInstanceTab(inst);
-    let targetName = 'agente-ia';
+    let targetName = 'dra-lucy-murata';
+    if (inst === 'agente-ia') targetName = 'agente-ia';
     if (inst === 'demo-ao-vivo') targetName = 'demo-ao-vivo';
     if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
 
     const updated = {
       ...config,
       serverUrl: 'https://api.makprojetosmake.com.br',
-      apiKey: 'CE08ADFF7647-4B88-91A4-55E66D9A0620',
+      apiKey: config.apiKey && config.apiKey.length > 20 ? config.apiKey : 'b2efa885a71ee22edf72b597df1a0ce9',
       instanceName: targetName,
     };
     setConfig(updated);
@@ -458,7 +470,30 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Tab 1: Instância Oficial Marco Duarte */}
+            {/* Tab 1: Instância Dra. Lucy Murata */}
+            <div
+              onClick={() => handleSelectInstanceTab('dra-lucy-murata')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'dra-lucy-murata'
+                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900">Dra. Lucy Murata</span>
+                {config.instanceName === 'dra-lucy-murata' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-indigo-700">dra-lucy-murata</strong>
+              </p>
+              <span className="inline-block text-[10px] text-emerald-800 font-semibold bg-emerald-100/70 px-2 py-0.5 rounded mt-2">
+                Odontologia Integrativa (Ativa)
+              </span>
+            </div>
+
+            {/* Tab 2: Instância Marco Duarte (Oficial) */}
             <div
               onClick={() => handleSelectInstanceTab('agente-ia')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
@@ -477,56 +512,33 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                 Instância: <strong className="text-slate-700">agente-ia</strong>
               </p>
               <span className="inline-block text-[10px] text-indigo-700 font-semibold bg-indigo-100/70 px-2 py-0.5 rounded mt-2">
-                Número Comercial Principal
+                Número Comercial
               </span>
             </div>
 
-            {/* Tab 2: Instância Curinga para Demonstrações / Dra. Lúcia */}
-            <div
-              onClick={() => handleSelectInstanceTab('demo-ao-vivo')}
-              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                config.instanceName === 'demo-ao-vivo'
-                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
-                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900">Demonstração ao Vivo</span>
-                {config.instanceName === 'demo-ao-vivo' && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                )}
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1 font-mono">
-                Instância: <strong className="text-slate-700">demo-ao-vivo</strong>
-              </p>
-              <span className="inline-block text-[10px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded mt-2">
-                Curinga (Clientes / Dra. Lúcia)
-              </span>
-            </div>
-
-            {/* Tab 3: Personalizada / Criar Nova */}
+            {/* Tab 3: Outro Cliente / Personalizada */}
             <div
               onClick={() => {
-                const target = customInstanceInput.trim() || (config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' ? config.instanceName : 'cliente-novo');
+                const target = customInstanceInput.trim() || (config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' ? config.instanceName : 'demo-ao-vivo');
                 handleSelectInstanceTab('custom', target);
               }}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo'
+                config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia'
                   ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
                   : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900">Outro Cliente / Personalizada</span>
-                {config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' && (
+                <span className="text-xs font-bold text-slate-900">Outra Instância / Demo</span>
+                {config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' && (
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-500 mt-1 font-mono">
-                Instância: <strong className="text-indigo-700">{config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' ? config.instanceName : 'Clique para ativar'}</strong>
+                Instância: <strong className="text-indigo-700">{config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' ? config.instanceName : 'demo-ao-vivo'}</strong>
               </p>
-              <span className="inline-block text-[10px] text-indigo-800 font-semibold bg-indigo-100/70 px-2 py-0.5 rounded mt-2">
-                {config.instanceName !== 'agente-ia' && config.instanceName !== 'demo-ao-vivo' ? 'Instância Ativada' : 'Ativar Instância de Cliente'}
+              <span className="inline-block text-[10px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded mt-2">
+                {config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' ? 'Instância Ativa' : 'Clique para alternar'}
               </span>
             </div>
           </div>
@@ -701,13 +713,13 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={handleApplyMarcoInstance}
-                id="btn-apply-marco-instance"
+                onClick={handleApplyDraLucyInstance}
+                id="btn-apply-dra-lucy-instance"
                 className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 transition-colors cursor-pointer"
-                title="Preencher com os dados da instância agente-ia detectada"
+                title="Preencher com os dados da instância dra-lucy-murata"
               >
                 <Sparkles className="w-3.5 h-3.5 text-slate-700" />
-                <span>Usar Dados da Instância agente-ia</span>
+                <span>Usar Dados Dra. Lucy Murata</span>
               </button>
 
               <button
@@ -1195,7 +1207,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                       Aguardando leitura pelo aplicativo do seu celular...
                     </p>
                   </div>
-                ) : (
+                ) : (qrStatusText.includes('conectado') || qrStatusText.includes('Conectado') || config.isConnected) ? (
                   <div className="flex flex-col items-center gap-2 py-6">
                     <CheckCircle2 className="w-12 h-12 text-emerald-600" />
                     <p className="text-sm font-bold text-slate-900">
@@ -1204,6 +1216,27 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                     <p className="text-xs text-slate-500 max-w-xs">
                       A instância <strong>{config.instanceName}</strong> está ativa e recebendo mensagens.
                     </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3 py-6 text-center max-w-xs">
+                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-full">
+                      <Radio className="w-8 h-8" />
+                    </div>
+                    <p className="text-sm font-bold text-slate-900">
+                      Instância Ativa na VPS Evolution
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      {qrStatusText}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => loadQrCode(config.instanceName)}
+                      disabled={isQrLoading}
+                      className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-2 shadow-xs cursor-pointer"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isQrLoading ? 'animate-spin' : ''}`} />
+                      <span>Gerar / Atualizar QR Code</span>
+                    </button>
                   </div>
                 )}
 

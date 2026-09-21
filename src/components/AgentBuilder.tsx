@@ -436,9 +436,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [presetSuccessToast, setPresetSuccessToast] = useState<string | null>(null);
   const [presetCategoryFilter, setPresetCategoryFilter] = useState<string>('all');
 
-  const handleApplyPreset = (preset: AgentPreset) => {
-    setConfig((prev) => ({
-      ...prev,
+  const handleApplyPreset = async (preset: AgentPreset) => {
+    const updatedConfig: AgentConfig = {
+      ...config,
       personaName: preset.personaName,
       role: preset.role,
       toneOfVoice: preset.toneOfVoice,
@@ -449,9 +449,33 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
-    }));
+    };
+    setConfig(updatedConfig);
     setSelectedPresetModal(null);
-    setPresetSuccessToast(`✨ Preset "${preset.name}" aplicado! Revise os campos e clique em "Salvar Alterações" no topo para gravar no servidor.`);
+    setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
+
+    try {
+      const res = await fetch('/api/agent/apply-niche', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          preset: updatedConfig,
+          evolutionInstanceName: 'dra-lucy-murata',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPresetSuccessToast(`✨ Nicho "${preset.name}" carregado e salvo! Instância WhatsApp "dra-lucy-murata" configurada com sucesso.`);
+        await onSaveConfig(data.agentConfig || updatedConfig);
+      } else {
+        await onSaveConfig(updatedConfig);
+        setPresetSuccessToast(`✨ Nicho "${preset.name}" aplicado e salvo com sucesso!`);
+      }
+    } catch (err) {
+      await onSaveConfig(updatedConfig);
+      setPresetSuccessToast(`✨ Nicho "${preset.name}" aplicado e salvo com sucesso!`);
+    }
+
     setTimeout(() => setPresetSuccessToast(null), 8000);
   };
 
