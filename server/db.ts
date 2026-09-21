@@ -173,39 +173,67 @@ class Database {
   public messages: ChatMessage[] = JSON.parse(JSON.stringify(DEFAULT_DEMO_MESSAGES));
 
   public agentConfig: AgentConfig = {
-    personaName: 'Sofia Mendes',
-    role: 'Especialista em Soluções Comerciais NEXA CRM',
-    toneOfVoice: 'Profissional, empático, dinâmico, consultivo e focado em conversão de vendas',
-    salesGoal: 'Descobrir as dores do lead, tirar dúvidas com base no catálogo oficial, qualificar o tamanho da operação e avançar a oportunidade no funil de vendas',
+    personaName: 'Sofia',
+    role: 'Coordenadora de Atendimento e Triagem Integrativa da Clínica Dra. Lucy Murata',
+    toneOfVoice: 'Altamente refinado, acolhedor, empático, científico, sereno e focado na saúde sistêmica e integrativa',
+    salesGoal: 'Compreender a necessidade ou queixa biofuncional do paciente, acolher com autoridade e agendar a Consulta de Avaliação Integrativa no consultório do Euroville Mall.',
     activeProvider: 'gemini',
     activeModel: 'gemini-3.8-flash',
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
-    knowledgeFaq: `P: Como funciona o atendimento inteligente do NEXA CRM?
-R: O NEXA CRM integra inteligência artificial avançada diretamente ao WhatsApp da sua empresa, atendendo clientes 24 horas por dia com respostas personalizadas e atualizando o CRM em tempo real.
+    knowledgeFaq: `PERGUNTAS FREQUENTES (ODONTOLOGIA INTEGRATIVA & BIOLÓGICA - DRA. LUCY MURATA):
 
-P: O que acontece se o atendente humano quiser assumir?
-R: Basta clicar no botão "Assumir Atendimento" na Central de Chat. A inteligência artificial pausa instantaneamente para aquele cliente e a equipe humana continua a conversa com total naturalidade.
+P: O que é a Odontologia Integrativa e Biológica?
+R: É a prática odontológica que enxerga o ser humano de forma holística e sistêmica. Compreendemos que cada dente, tecido e material utilizado na cavidade bucal interage diretamente com os órgãos, meridianos, imunidade e saúde celular do organismo como um todo.
 
-P: Como a IA sabe sobre os produtos ou serviços da empresa?
-R: O sistema possui uma base de conhecimento exclusiva alimentada com catálogos, tabela de serviços e documentos oficiais do seu negócio.
+P: Vocês informam valores ou orçamentos por WhatsApp?
+R: Não passamos orçamentos sem consulta prévia. Na odontologia biológica de alta performance e conforme as normas éticas do CFO, cada organismo é biologicamente único. A Dra. Lucy Murata realiza uma Consulta de Avaliação Integrativa completa (com análise clínica, histórico de saúde e tecnologia de escaneamento 3D) para estruturar um plano de tratamento preciso, personalizado e biocompatível para o seu caso.
 
-P: Como funciona a garantia e suporte?
-R: Oferecemos suporte dedicado e acompanhamento completo, com implementação ágil e personalizada para a sua empresa.`,
-    knowledgeCatalog: `SOLUÇÕES DISPONÍVEIS:
-1. NEXA Starter: Ideal para empresas em crescimento, com atendimento automatizado inteligente no WhatsApp e CRM visual integrado.
-2. NEXA Professional: Para equipes comerciais ativas, com múltiplos números de atendimento, qualificação avançada de clientes e movimentação automática de funil.
-3. NEXA Enterprise: Solução corporativa de alta performance, com personalização completa de regras de negócio, suporte prioritário e capacidade ilimitada de atendimentos.`,
-    knowledgePricing: `CONDIÇÕES COMERCIAIS E FORMAS DE PAGAMENTO:
-- Pagamento facilitado via PIX ou Cartão de Crédito em até 12x.
-- Implantação e treinamento assistido para sua equipe.
-- Planos flexíveis conforme a necessidade da sua empresa.`,
-    knowledgeRules: `REGRAS DE CONDUTA E DIRETRIZES:
-1. Jamais cite nomes de ferramentas de tecnologia de bastidores (Evolution, Supabase, etc). Refira-se à solução como nossa Inteligência Artificial Comercial proprietária.
-2. Seja sempre ágil, cordial e transmita autoridade e acolhimento.
-3. Responda em no máximo 2 a 3 frases curtas e objetivas, com quebras de linha limpas.
-4. Conduza o lead para agendamento de uma demonstração ou consulta, perguntando qual dia ou horário é mais conveniente para ele.`,
+P: O que é a Remoção Segura de Amálgama (Protocolo SMART)?
+R: O amálgama contém mercúrio, um metal pesado altamente tóxico que libera vapores contínuos. A Dra. Lucy Murata é membro da IAOMT (International Academy of Oral Medicine and Toxicology - EUA) e segue rigorosamente o protocolo internacional SMART: isolamento absoluto, aspiração de alta potência com filtros específicos, paramentação de proteção e suplementação/desintoxicação biológica para garantir que nem o paciente nem a equipe inalem vapores de mercúrio durante o procedimento.
+
+P: Como funcionam os Implantes de Zircônia (Metal-Free)?
+R: São implantes cerâmicos totalmente livres de metais, biocompatíveis e com coloração branca natural semelhante à raiz do dente. Não geram correntes galvânicas, reduzem drasticamente o risco de inflamações peri-implantares e preservam a harmonia bioenergética do corpo.
+
+P: Onde fica localizado o consultório da Dra. Lucy Murata?
+R: O consultório está situado em Bragança Paulista/SP, no Euroville Mall (Torre II - Praça Maastricht, 200 - Sala 103, Jardim São José), em um ambiente tranquilo, seguro e de fácil acesso com estacionamento.
+
+P: A clínica atende convênios?
+R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedicado, materiais biológicos de padrão internacional e atendimento sem pressa. Fornecemos nota fiscal e relatórios detalhados caso o paciente deseje solicitar reembolso junto ao seu plano de saúde.`,
+    knowledgeCatalog: `TRATAMENTOS & ESPECIALIDADES - DRA. LUCY MURATA:
+
+1. Bio-Odontologia & Desintoxicação:
+- Remoção Segura de Restaurações de Amálgama (Protocolo SMART - IAOMT EUA).
+- Substituição por resinas biocompatíveis de última geração e cerâmicas puras (livres de bisfenol A e metais pesados).
+- Terapia Neural, Biorressonância e Práticas Integrativas aplicadas à odontologia.
+
+2. Implantodontia Cerâmica (Metal-Free):
+- Implantes Dentários de Zircônia (Cerâmica pura de alto desempenho, biocompatibilidade total e integração tecidual superior).
+- Reabilitação Oral Funcional e Biológica para restauração da mastigação e equilíbrio neuromuscular.
+
+3. Tecnologia & Diagnóstico Digital:
+- Escaneamento Intraoral 3D de alta precisão (conforto máximo sem moldagens com massinha).
+- Planejamento estético e funcional com previsibilidade biomimética.
+
+4. Prótese & Estética Biomimética:
+- Coroas, facetas e lentes de contato em cerâmica pura que mimetizam perfeitamente o esmalte dental natural.
+- Preservação máxima da estrutura biológica do dente.`,
+    knowledgePricing: `POLÍTICA DE ATENDIMENTO & INVESTIMENTO:
+
+- Princípio de Transparência & Ética: Não praticamos valores tabelados por mensagem. O investimento definitivo depende da avaliação clínica individualizada realizada pela Dra. Lucy Murata.
+- Consulta de Avaliação Integrativa: Compreende anamnese detalhada do histórico de saúde sistêmica do paciente, exame clínico minucioso da saúde bucal e análise com tecnologias digitais para traçar o mapa bio-odontológico.
+- Condições de Pagamento: A clínica oferece opções flexíveis para viabilizar o plano de tratamento completo (parcelamento no cartão de crédito ou condições diferenciadas à vista via PIX). A secretária detalha todas as opções confortavelmente após o plano apresentado pela doutora.`,
+    knowledgeRules: `DIRETRIZES FUNDAMENTAIS DE ATENDIMENTO (DRA. LUCY MURATA):
+
+1. NUNCA dê orçamentos ou valores pelo WhatsApp. Explique que na odontologia integrativa cada ser humano tem particularidades biológicas únicas e que a conduta ética e segura começa na Consulta de Avaliação Integrativa.
+2. Posicionamento de Autoridade & Acolhimento: A Dra. Lucy Murata é Mestre em Bioodontologia e membro da conceituada IAOMT dos EUA. Transmita essa excelência técnica com palavras gentis, seguras e acolhedoras.
+3. Roteiro de Triagem:
+   - Passo 1: Ouça e compreenda a queixa ou objetivo do paciente (ex: quer trocar restaurações escuras com segurança? precisa de implantes sem metal? busca alívio de queixas funcionais?).
+   - Passo 2: Valide a preocupação do paciente com empatia e explique resumidamente a abordagem biológica.
+   - Passo 3: Pergunte se o paciente prefere atendimento pela manhã ou tarde e quais dias da semana são mais convenientes.
+   - Passo 4: Transfira com cordialidade para a recepção/secretária da clínica confirmar o melhor horário na agenda no Euroville Mall.
+4. Jamais cite nomes de tecnologias internas (Evolution API, Gemini, robô, IA). A Sofia é a assistente e coordenadora humana e atenciosa do consultório da Dra. Lucy Murata.`,
     strictKnowledgeOnly: true,
     autoTriggerCRMStages: true,
     isGlobalAiActive: true,
@@ -214,7 +242,7 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
     autoTranscribeAudio: true,
     typingDelayMs: 1500,
     catalogPdfUrl: '',
-    catalogPdfName: 'Apresentacao_Oficial_NEXA_CRM.pdf',
+    catalogPdfName: 'Apresentacao_Dra_Lucy_Murata.pdf',
     voiceResponseEnabled: true,
     voiceResponseMode: 'smart_discernment',
     voiceEngine: 'native_sofia',
@@ -228,7 +256,7 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
     autoFollowUpEnabled: true,
     followUpDelayHours: 4,
     followUpNiche: 'dental',
-    followUpCustomMessage: '',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨',
     maxFollowUpsPerLead: 2,
   };
 
@@ -254,7 +282,7 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
   public evolutionConfig: EvolutionConfig = {
     serverUrl: process.env.EVOLUTION_API_URL || 'https://api.makprojetosmake.com.br',
     apiKey: process.env.EVOLUTION_API_KEY || 'b2efa885a71ee22edf72b597df1a0ce9',
-    instanceName: process.env.EVOLUTION_INSTANCE || 'agente-ia',
+    instanceName: process.env.EVOLUTION_INSTANCE || 'dra-lucy-murata',
     isConnected: false,
     state: 'disconnected',
     lastTestedAt: new Date().toISOString(),
@@ -367,9 +395,11 @@ R: Oferecemos suporte dedicado e acompanhamento completo, com implementação á
         if (data.messages && Array.isArray(data.messages)) this.messages = data.messages;
         if (data.agentConfig) {
           const loadedMaxChars = data.agentConfig.maxAudioChars;
+          const isLegacyNexa = typeof data.agentConfig.role === 'string' && data.agentConfig.role.includes('NEXA CRM');
+          
           this.agentConfig = {
             ...this.agentConfig,
-            ...data.agentConfig,
+            ...(isLegacyNexa ? {} : data.agentConfig),
             maxAudioChars: (!loadedMaxChars || loadedMaxChars <= 220) ? 500 : loadedMaxChars,
             geminiApiKey: (process.env.GEMINI_API_KEY || data.agentConfig.geminiApiKey || this.agentConfig.geminiApiKey || '').trim(),
             openaiApiKey: (process.env.OPENAI_API_KEY || data.agentConfig.openaiApiKey || this.agentConfig.openaiApiKey || '').trim(),

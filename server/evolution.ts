@@ -19,10 +19,12 @@ export interface EvolutionSendResult {
 
 export async function sendWhatsAppMessage(
   phone: string,
-  text: string
+  text: string,
+  instanceNameOverride?: string
 ): Promise<EvolutionSendResult> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const targetInstance = (instanceNameOverride || config.instanceName || 'dra-lucy-murata').trim();
 
   // Format clean digits phone
   const cleanPhone = phone.replace(/\D/g, '');
@@ -38,7 +40,7 @@ export async function sendWhatsAppMessage(
 
   if (isDummyUrl || !config.apiKey) {
     console.log(
-      `[Evolution API Simulada] Mensagem enviada para ${cleanPhone}: "${text.slice(0, 60)}..."`
+      `[Evolution API Simulada (${targetInstance})] Mensagem enviada para ${cleanPhone}: "${text.slice(0, 60)}..."`
     );
     return {
       success: true,
@@ -48,7 +50,7 @@ export async function sendWhatsAppMessage(
 
   try {
     const typingDelay = db.agentConfig.typingDelayMs || 1500;
-    const endpoint = `${baseUrl}/message/sendText/${encodeURIComponent(config.instanceName.trim())}`;
+    const endpoint = `${baseUrl}/message/sendText/${encodeURIComponent(targetInstance)}`;
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -65,10 +67,10 @@ export async function sendWhatsAppMessage(
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error(`Evolution API HTTP ${response.status}:`, errText);
+      console.error(`Evolution API (${targetInstance}) HTTP ${response.status}:`, errText);
       return {
         success: false,
-        error: `Evolution API HTTP ${response.status}: ${errText.slice(0, 100)}`,
+        error: `Evolution API (${targetInstance}) HTTP ${response.status}: ${errText.slice(0, 100)}`,
       };
     }
 
@@ -78,7 +80,7 @@ export async function sendWhatsAppMessage(
       messageId: data?.key?.id || data?.id || 'msg-' + Date.now(),
     };
   } catch (err: any) {
-    console.error('Falha ao conectar na Evolution API:', err.message);
+    console.error(`Falha ao conectar na Evolution API (${targetInstance}):`, err.message);
     return {
       success: false,
       error: err.message,
@@ -90,10 +92,12 @@ export async function sendWhatsAppMedia(
   phone: string,
   mediaUrl: string,
   fileName: string,
-  caption?: string
+  caption?: string,
+  instanceNameOverride?: string
 ): Promise<EvolutionSendResult> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const targetInstance = (instanceNameOverride || config.instanceName || 'dra-lucy-murata').trim();
   const cleanPhone = phone.replace(/\D/g, '');
 
   if (!cleanPhone || !mediaUrl) {
@@ -102,12 +106,12 @@ export async function sendWhatsAppMedia(
 
   const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
   if (isDummyUrl || !config.apiKey) {
-    console.log(`[Evolution API Simulada] Documento PDF enviado para ${cleanPhone}: "${fileName}" (${mediaUrl})`);
+    console.log(`[Evolution API Simulada (${targetInstance})] Documento PDF enviado para ${cleanPhone}: "${fileName}" (${mediaUrl})`);
     return { success: true, messageId: 'simulated-media-' + Date.now() };
   }
 
   try {
-    const endpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(config.instanceName.trim())}`;
+    const endpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(targetInstance)}`;
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -127,7 +131,7 @@ export async function sendWhatsAppMedia(
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error(`Evolution sendMedia HTTP ${response.status}:`, errText);
+      console.error(`Evolution sendMedia (${targetInstance}) HTTP ${response.status}:`, errText);
       return { success: false, error: `Evolution sendMedia HTTP ${response.status}` };
     }
 
@@ -137,7 +141,7 @@ export async function sendWhatsAppMedia(
       messageId: data?.key?.id || data?.id || 'media-' + Date.now(),
     };
   } catch (err: any) {
-    console.error('Falha ao enviar documento na Evolution API:', err.message);
+    console.error(`Falha ao enviar documento na Evolution API (${targetInstance}):`, err.message);
     return { success: false, error: err.message };
   }
 }
@@ -148,10 +152,12 @@ export async function sendWhatsAppMedia(
  */
 export async function sendWhatsAppVoiceAudio(
   phone: string,
-  base64OrUrl: string
+  base64OrUrl: string,
+  instanceNameOverride?: string
 ): Promise<EvolutionSendResult> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const targetInstance = (instanceNameOverride || config.instanceName || 'dra-lucy-murata').trim();
   const cleanPhone = phone.replace(/\D/g, '');
 
   if (!cleanPhone || !base64OrUrl) {
@@ -160,17 +166,15 @@ export async function sendWhatsAppVoiceAudio(
 
   const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
   if (isDummyUrl || !config.apiKey) {
-    console.log(`[Evolution API Simulada] Áudio de voz (PTT) enviado para ${cleanPhone} (${base64OrUrl.slice(0, 30)}...)`);
+    console.log(`[Evolution API Simulada (${targetInstance})] Áudio PTT enviado para ${cleanPhone} (${base64OrUrl.length} bytes)`);
     return { success: true, messageId: 'simulated-voice-' + Date.now() };
   }
 
   try {
-    const instanceName = (config.instanceName || process.env.EVOLUTION_INSTANCE || 'agente-ia').trim();
-    const endpoint = `${baseUrl}/message/sendWhatsAppAudio/${encodeURIComponent(instanceName)}`;
-    
-    const rawBase64 = base64OrUrl.replace(/^data:[^;]+;base64,/, '');
+    const rawBase64 = base64OrUrl.replace(/^data:[^;]+;base64,/, '').trim();
+    const endpoint = `${baseUrl}/message/sendWhatsAppAudio/${encodeURIComponent(targetInstance)}`;
 
-    console.log(`[Evolution API] Disparando áudio de voz PTT para ${cleanPhone} (${rawBase64.length} chars base64)...`);
+    console.log(`[Evolution API (${targetInstance})] Disparando áudio de voz PTT para ${cleanPhone} (${rawBase64.length} chars base64)...`);
 
     // Attempt 1: Standard sendWhatsAppAudio with raw base64 and encoding: true (WhatsApp PTT voice note)
     let response = await fetch(endpoint, {
@@ -182,14 +186,14 @@ export async function sendWhatsAppVoiceAudio(
       body: JSON.stringify({
         number: cleanPhone,
         audio: rawBase64,
-        delay: 500,
+        delay: 800,
         encoding: true,
       }),
     });
 
     // Attempt 2: sendWhatsAppAudio with raw base64 and encoding: false (in case server lacks ffmpeg)
     if (!response.ok) {
-      console.warn(`[Evolution] Tentativa 1 de áudio falhou (${response.status}). Tentando com encoding: false...`);
+      console.warn(`[Evolution (${targetInstance})] Tentativa 1 de áudio falhou (${response.status}). Tentando com encoding: false...`);
       
       response = await fetch(endpoint, {
         method: 'POST',
@@ -200,7 +204,7 @@ export async function sendWhatsAppVoiceAudio(
         body: JSON.stringify({
           number: cleanPhone,
           audio: rawBase64,
-          delay: 500,
+          delay: 800,
           encoding: false,
         }),
       });
@@ -208,8 +212,8 @@ export async function sendWhatsAppVoiceAudio(
 
     // Attempt 3: sendMedia fallback as audio/mp3
     if (!response.ok) {
-      console.warn(`[Evolution] Tentativa 2 de áudio falhou (${response.status}). Tentando via sendMedia...`);
-      const altEndpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(instanceName)}`;
+      console.warn(`[Evolution (${targetInstance})] Tentativa 2 de áudio falhou (${response.status}). Tentando via sendMedia...`);
+      const altEndpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(targetInstance)}`;
       const altResponse = await fetch(altEndpoint, {
         method: 'POST',
         headers: {
@@ -221,13 +225,13 @@ export async function sendWhatsAppVoiceAudio(
           mediatype: 'audio',
           mimetype: 'audio/mp3',
           media: rawBase64,
-          delay: 500,
+          delay: 800,
         }),
       });
 
       if (altResponse.ok) {
         const altData = await altResponse.json();
-        console.log(`[Evolution API] Áudio enviado com sucesso via sendMedia para ${cleanPhone}!`);
+        console.log(`[Evolution API (${targetInstance})] Áudio enviado com sucesso via sendMedia para ${cleanPhone}!`);
         return {
           success: true,
           messageId: altData?.key?.id || altData?.id || 'voice-' + Date.now(),
@@ -235,8 +239,8 @@ export async function sendWhatsAppVoiceAudio(
       }
 
       const errText = await response.text();
-      console.warn(`Evolution sendWhatsAppAudio HTTP ${response.status}:`, errText);
-      return { success: false, error: `Evolution sendWhatsAppAudio HTTP ${response.status}: ${errText.slice(0, 100)}` };
+      console.warn(`Evolution sendWhatsAppAudio (${targetInstance}) HTTP ${response.status}:`, errText);
+      return { success: false, error: `Evolution sendWhatsAppAudio (${targetInstance}) HTTP ${response.status}: ${errText.slice(0, 100)}` };
     }
 
     const data = await response.json();
@@ -245,7 +249,7 @@ export async function sendWhatsAppVoiceAudio(
       messageId: data?.key?.id || data?.id || 'voice-' + Date.now(),
     };
   } catch (err: any) {
-    console.warn('Falha ao enviar áudio na Evolution API:', err.message);
+    console.warn(`Falha ao enviar áudio na Evolution API (${targetInstance}):`, err.message);
     return { success: false, error: err.message };
   }
 }
@@ -488,7 +492,8 @@ export async function getEvolutionQRCode(targetInstance?: string): Promise<{
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const instance = encodeURIComponent((targetInstance || config.instanceName).trim());
+  const rawInstance = (targetInstance || config.instanceName || 'agente-ia').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+  const instance = encodeURIComponent(rawInstance);
 
   if (!baseUrl || !config.apiKey) {
     return { success: false, state: 'disconnected', error: 'Servidor Evolution não configurado' };
@@ -496,12 +501,31 @@ export async function getEvolutionQRCode(targetInstance?: string): Promise<{
 
   try {
     const endpoint = `${baseUrl}/instance/connect/${instance}`;
-    const response = await fetch(endpoint, {
+    let response = await fetch(endpoint, {
       method: 'GET',
       headers: {
         apikey: config.apiKey.trim(),
       },
     });
+
+    // If instance doesn't exist (HTTP 404), auto-create it immediately
+    if (response.status === 404 || !response.ok) {
+      const errPeek = await response.clone().text().catch(() => '');
+      if (response.status === 404 || errPeek.toLowerCase().includes('not exist')) {
+        console.log(`[Evolution Auto-Provision] Instância ${rawInstance} não existe. Criando automaticamente...`);
+        const webhookUrl = `https://crm.makprojetosmake.com.br/api/webhook`;
+        await createEvolutionInstance(rawInstance, webhookUrl);
+        
+        // Wait 800ms and retry connecting
+        await new Promise((r) => setTimeout(r, 800));
+        response = await fetch(endpoint, {
+          method: 'GET',
+          headers: {
+            apikey: config.apiKey.trim(),
+          },
+        });
+      }
+    }
 
     if (response.ok) {
       const data = await response.json();

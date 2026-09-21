@@ -133,6 +133,21 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     return;
   }
 
+  // Extract instance name from webhook payload
+  const incomingInstance = (
+    body?.instance ||
+    data?.instance ||
+    body?.instanceName ||
+    data?.instanceName ||
+    db.evolutionConfig.instanceName ||
+    'dra-lucy-murata'
+  ).trim();
+
+  // Keep evolutionConfig instance in sync with active traffic
+  if (incomingInstance && db.evolutionConfig.instanceName !== incomingInstance) {
+    db.evolutionConfig.instanceName = incomingInstance;
+  }
+
   // Prevent concurrent webhook executions for the same contact number
   if (phoneInFlight.has(cleanPhone)) {
     console.log(`[Webhook] Mensagem de ${cleanPhone} já em processamento ativo. Ignorando evento concorrente.`);
@@ -668,28 +683,28 @@ async function executeWebhookPipeline(body: any): Promise<void> {
         });
 
         if (speechRes.success && speechRes.audioBase64) {
-          const voiceSendResult = await sendWhatsAppVoiceAudio(cleanPhone, speechRes.audioBase64);
+          const voiceSendResult = await sendWhatsAppVoiceAudio(cleanPhone, speechRes.audioBase64, incomingInstance);
           if (voiceSendResult.success) {
             aiMsg.text = `🎙️ [Áudio de Voz Enviado]: "${aiResult.replyText}"`;
             aiMsg.status = 'delivered';
           } else {
             console.warn('[Webhook] Envio de áudio na Evolution não teve sucesso. Disparando texto como garantia:', voiceSendResult.error);
-            await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+            await sendWhatsAppMessage(cleanPhone, aiResult.replyText, incomingInstance);
             aiMsg.status = 'delivered';
           }
         } else {
           // Fallback to text if speech synthesis fails
           console.warn('[Webhook] Falha ao sintetizar áudio, enviando texto:', speechRes.error);
-          await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+          await sendWhatsAppMessage(cleanPhone, aiResult.replyText, incomingInstance);
           aiMsg.status = 'delivered';
         }
       } catch (voiceErr: any) {
         console.warn('[Webhook] Erro no envio de áudio, caindo para texto:', voiceErr.message);
-        await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+        await sendWhatsAppMessage(cleanPhone, aiResult.replyText, incomingInstance);
         aiMsg.status = 'delivered';
       }
     } else {
-      await sendWhatsAppMessage(cleanPhone, aiResult.replyText);
+      await sendWhatsAppMessage(cleanPhone, aiResult.replyText, incomingInstance);
       aiMsg.status = 'delivered';
     }
 
@@ -697,12 +712,13 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     if (aiResult.sendCatalogPdf && db.agentConfig.catalogPdfUrl) {
       console.log(`[Webhook] Enviando PDF de apresentação para ${cleanPhone}...`);
       const pdfUrl = db.agentConfig.catalogPdfUrl;
-      const pdfName = db.agentConfig.catalogPdfName || 'Apresentacao_Oficial_NEXA_CRM.pdf';
+      const pdfName = db.agentConfig.catalogPdfName || 'Apresentacao_Dra_Lucy_Murata.pdf';
       await sendWhatsAppMedia(
         cleanPhone,
         pdfUrl,
         pdfName,
-        'Segue em anexo nossa apresentação oficial em PDF com todos os detalhes!'
+        'Segue em anexo nossa apresentação oficial em PDF com todos os detalhes!',
+        incomingInstance
       );
       db.messages.push({
         id: 'msg-' + Date.now() + '-pdf',
@@ -718,8 +734,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     // 11. If the lead requested PIX information, send copy-paste key box
     if (aiResult.sendPixInfo && db.agentConfig.pixKey) {
       console.log(`[Webhook] Enviando chave PIX oficial para ${cleanPhone}...`);
-      const pixMessage = `💳 *Chave PIX Oficial NEXA CRM:*\n\`${db.agentConfig.pixKey}\`\n(Tipo: ${db.agentConfig.pixKeyType || 'E-mail'})\n\nAssim que efetuar o pagamento, basta me enviar o comprovante por aqui que já daremos andamento na sua ativação! ✨`;
-      await sendWhatsAppMessage(cleanPhone, pixMessage);
+      const pixMessage = `💳 *Chave PIX Oficial (${db.agentConfig.pixKeyType || 'E-mail'}):*\n\`${db.agentConfig.pixKey}\`\n\nAssim que efetuar o pagamento, basta me enviar o comprovante por aqui! ✨`;
+      await sendWhatsAppMessage(cleanPhone, pixMessage, incomingInstance);
       db.messages.push({
         id: 'msg-' + Date.now() + '-pix',
         leadId: lead.id,
@@ -753,7 +769,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     db.messages.push(aiFallbackMsg);
 
     // Send fallback to WhatsApp
-    await sendWhatsAppMessage(cleanPhone, fallbackText);
+    await sendWhatsAppMessage(cleanPhone, fallbackText, incomingInstance);
 
     // Alert for admin only in internal notes
     const adminAlertMsg: ChatMessage = {
