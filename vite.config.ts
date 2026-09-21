@@ -12,7 +12,7 @@ export default defineConfig(() => {
       },
     },
     server: {
-      allowedHosts: true,
+      allowedHosts: ['crm.makprojetosmake.com.br', '.makprojetosmake.com.br', 'localhost'],
       host: '0.0.0.0',
       port: 3000,
       hmr: process.env.DISABLE_HMR !== 'true',

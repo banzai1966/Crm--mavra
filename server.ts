@@ -679,7 +679,7 @@ async function startServer() {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        allowedHosts: true,
+        allowedHosts: ['crm.makprojetosmake.com.br', '.makprojetosmake.com.br', 'localhost'],
       },
       appType: 'spa',
     });
