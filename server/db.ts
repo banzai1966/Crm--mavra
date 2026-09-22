@@ -29,6 +29,14 @@ function cleanUrl(url?: string): string {
   return (match ? match[0] : url.trim()).replace(/\/+$/, '');
 }
 
+function cleanSupabaseUrl(url?: string): string {
+  if (!url) return '';
+  const match = url.match(/https?:\/\/[^\s"'<>]+/i);
+  let cleaned = (match ? match[0] : url.trim()).replace(/\/+$/, '');
+  cleaned = cleaned.replace(/\/rest\/v1\/?$/i, '');
+  return cleaned;
+}
+
 export const DEFAULT_DEMO_LEADS: Lead[] = [
   {
     id: 'lead-1',
@@ -458,11 +466,20 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
   }
 
   public initSupabaseClient(): boolean {
-    if (this.supabaseConfig.url && (this.supabaseConfig.serviceKey || this.supabaseConfig.anonKey)) {
+    const rawUrl = this.supabaseConfig.url || process.env.SUPABASE_URL || '';
+    const cleanedUrl = cleanSupabaseUrl(rawUrl);
+    const key = (this.supabaseConfig.serviceKey || process.env.SUPABASE_SERVICE_ROLE_KEY || this.supabaseConfig.anonKey || process.env.SUPABASE_ANON_KEY || '').trim();
+
+    if (cleanedUrl && key) {
       try {
-        const key = this.supabaseConfig.serviceKey || this.supabaseConfig.anonKey;
-        this.supabaseClient = createClient(this.supabaseConfig.url, key);
+        this.supabaseConfig.url = cleanedUrl;
+        this.supabaseClient = createClient(cleanedUrl, key);
         this.supabaseConfig.isConnected = true;
+        console.log(`[Supabase] Conectado com sucesso ao banco na nuvem: ${cleanedUrl}`);
+        // Tentar carregar leads existentes do Supabase
+        this.loadFromSupabase().catch((err) => {
+          console.warn('[Supabase] Aviso ao tentar carregar registros iniciais:', err.message);
+        });
         return true;
       } catch (err) {
         console.error('Failed to initialize Supabase client:', err);
@@ -474,6 +491,51 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     this.supabaseConfig.isConnected = false;
     this.supabaseClient = null;
     return false;
+  }
+
+  public async loadFromSupabase(): Promise<void> {
+    if (!this.supabaseClient) return;
+    try {
+      const { data: dbLeads, error: leadsErr } = await this.supabaseClient.from('leads').select('*').order('last_interaction', { ascending: false });
+      if (!leadsErr && dbLeads && dbLeads.length > 0) {
+        this.leads = dbLeads.map((row: any) => ({
+          id: row.id,
+          name: row.name,
+          phone: row.phone,
+          email: row.email || '',
+          stageId: row.stage_id || 'stage-1',
+          value: Number(row.value) || 0,
+          interest: row.interest || '',
+          tags: row.tags || [],
+          notes: row.notes || '',
+          aiPaused: Boolean(row.ai_paused),
+          isHotLead: Boolean(row.is_hot_lead),
+          hotReason: row.hot_reason || '',
+          lastInteraction: row.last_interaction || new Date().toISOString(),
+          createdAt: row.created_at || new Date().toISOString(),
+          unreadCount: row.unread_count || 0,
+        }));
+        console.log(`[Supabase] ${this.leads.length} leads restaurados diretamente da nuvem.`);
+      }
+
+      const { data: dbMessages, error: msgErr } = await this.supabaseClient.from('mensagens_chat').select('*').order('created_at', { ascending: true });
+      if (!msgErr && dbMessages && dbMessages.length > 0) {
+        this.messages = dbMessages.map((m: any) => ({
+          id: m.id,
+          leadId: m.lead_id,
+          phone: m.phone,
+          sender: m.sender,
+          text: m.text,
+          status: m.status || 'read',
+          stageTriggered: m.stage_triggered,
+          extractedInfo: m.extracted_info,
+          timestamp: m.created_at,
+        }));
+        console.log(`[Supabase] ${this.messages.length} mensagens de chat restauradas da nuvem.`);
+      }
+    } catch (err: any) {
+      console.warn('[Supabase Sync] Não foi possível carregar do Supabase (tabelas ainda não criadas):', err.message);
+    }
   }
 
   public getSupabaseClient(): SupabaseClient | null {
