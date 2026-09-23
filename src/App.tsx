@@ -27,7 +27,7 @@ export default function App() {
 
   const [agentConfig, setAgentConfig] = useState<AgentConfig>({
     personaName: 'Sofia Mendes',
-    role: 'Especialista em Soluções Comerciais MAVRA',
+    role: 'Especialista em Soluções Comerciais NEXA',
     toneOfVoice: 'Profissional, empático, consultivo e focado em conversão',
     salesGoal: 'Qualificar leads, tirar dúvidas pelo catálogo e conduzir fechamento',
     activeProvider: 'gemini',
@@ -451,7 +451,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 space-y-3">
         <div className="w-9 h-9 border-3 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs font-mono tracking-wider text-slate-600">Carregando plataforma MAVRA CRM...</p>
+        <p className="text-xs font-mono tracking-wider text-slate-600">Carregando plataforma NEXA CRM...</p>
       </div>
     );
   }
@@ -523,6 +523,7 @@ export default function App() {
             onResolveUrgency={handleResolveUrgency}
             onConfirmTriage={handleConfirmTriage}
             onDeleteLead={handleDeleteLead}
+            personaName={agentConfig?.personaName || 'Sofia'}
           />
         )}
 

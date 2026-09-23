@@ -41,6 +41,7 @@ interface LiveChatProps {
   onResolveUrgency?: (leadId: string) => void;
   onConfirmTriage?: (leadId: string, dateStr: string) => Promise<void>;
   onDeleteLead?: (leadId: string) => void;
+  personaName?: string;
 }
 
 export const LiveChat: React.FC<LiveChatProps> = ({
@@ -55,6 +56,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   onResolveUrgency,
   onConfirmTriage,
   onDeleteLead,
+  personaName = 'Sofia',
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
@@ -395,23 +397,9 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                             </span>
                           )}
                           {isAi && (
-                            <span className="flex items-center gap-1 text-emerald-800">
+                            <span className="flex items-center gap-1.5 text-emerald-800 font-semibold">
                               <Sparkles className="w-3 h-3 text-emerald-700" />
-                              <span>Sofia (IA Autônoma MAVRA)</span>
-                              {msg.modelUsed && (
-                                <span
-                                  className={`text-[9px] font-mono font-medium px-1.5 py-0.2 rounded ml-1 ${
-                                    msg.modelUsed.includes('fallback') || msg.modelUsed.includes('offline') || msg.modelUsed.includes('rules')
-                                      ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                                  }`}
-                                  title={`Processado por: ${msg.providerUsed || 'IA'} (${msg.modelUsed})`}
-                                >
-                                  {msg.modelUsed.includes('fallback') || msg.modelUsed.includes('offline') || msg.modelUsed.includes('rules')
-                                    ? '🛡️ Modo Contingência'
-                                    : `⚡ ${msg.modelUsed}`}
-                                </span>
-                              )}
+                              <span>{personaName || 'Sofia'}</span>
                             </span>
                           )}
                           {isAgent && (
@@ -566,7 +554,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setInputText(`Segue a nossa chave PIX oficial para ativação imediata: contato@mavra.com.br (E-mail). Assim que efetuar, nos envie o comprovante por aqui!`)}
+                    onClick={() => setInputText(`Segue a nossa chave PIX oficial para confirmação do agendamento: financeiro@consultorio.com.br (Chave E-mail). Assim que efetuar, nos envie o comprovante por aqui!`)}
                     className="bg-amber-50 hover:bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
                   >
                     💰 Chave PIX

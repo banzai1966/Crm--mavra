@@ -584,7 +584,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     setVoiceTestError(null);
     setVoiceTestSuccess(null);
     try {
-      const textToSynthesize = customText || 'Olá! Aqui é a Sofia da MAVRA. Seja muito bem-vindo! Como posso ajudar a impulsionar as suas vendas e o seu atendimento hoje?';
+      const textToSynthesize = customText || 'Olá! Aqui é a Sofia da nossa equipe de atendimento. Seja muito bem-vindo! Como posso ajudar você hoje?';
       const keyToSend = config.voiceEngine === 'elevenlabs' 
         ? config.elevenLabsApiKey 
         : (config.googleTtsApiKey || config.geminiApiKey);
@@ -1317,7 +1317,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   type="text"
                   value={config.catalogPdfName || ''}
                   onChange={(e) => setConfig({ ...config, catalogPdfName: e.target.value })}
-                  placeholder="Ex: Apresentacao_Institucional_MAVRA.pdf"
+                  placeholder="Ex: Apresentacao_Institucional_NEXA.pdf"
                   className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-slate-400"
                 />
               </div>

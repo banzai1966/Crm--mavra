@@ -15,10 +15,17 @@ import {
 function getStorageFilePath(): string {
   if (process.env.DATA_PATH) return process.env.DATA_PATH;
   const dockerDataDir = path.join(process.cwd(), 'data');
-  if (fs.existsSync(dockerDataDir)) {
-    return path.join(dockerDataDir, 'mavra_data.json');
-  }
-  return path.join(process.cwd(), 'mavra_data.json');
+  const targetDir = fs.existsSync(dockerDataDir) ? dockerDataDir : process.cwd();
+
+  // If nexa_data.json already exists, use it
+  const nexaPath = path.join(targetDir, 'nexa_data.json');
+  if (fs.existsSync(nexaPath)) return nexaPath;
+
+  // If legacy file exists from previous deployment, use it to avoid data loss
+  const legacyPath = path.join(targetDir, 'mavra_data.json');
+  if (fs.existsSync(legacyPath)) return legacyPath;
+
+  return nexaPath;
 }
 
 const STORAGE_FILE = getStorageFilePath();
@@ -271,10 +278,10 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
   public documents: KnowledgeDocument[] = [
     {
       id: 'doc-1',
-      name: 'Guia_Institucional_MAVRA.txt',
+      name: 'Guia_Institucional_NEXA.txt',
       type: 'txt',
       size: 1520,
-      contentText: 'Apresentação Institucional MAVRA: Solução corporativa de atendimento inteligente e gestão de relacionamento com clientes no WhatsApp. Utilizamos Inteligência Artificial proprietária de última geração treinada exclusivamente para qualificação ágil de clientes e conversão comercial.',
+      contentText: 'Apresentação Institucional NEXA CRM: Solução corporativa de atendimento inteligente e gestão de relacionamento com clientes no WhatsApp. Utilizamos Inteligência Artificial de última geração treinada exclusivamente para qualificação ágil de clientes e conversão comercial.',
       uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     },
     {
@@ -282,7 +289,7 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
       name: 'SLA_e_Qualidade_de_Atendimento.txt',
       type: 'txt',
       size: 1200,
-      contentText: 'Padrão de Atendimento MAVRA: Disponibilidade contínua 24/7, privacidade e conformidade rigorosa com a LGPD, garantindo respostas rápidas, acolhedoras e personalizadas para cada lead.',
+      contentText: 'Padrão de Atendimento NEXA CRM: Disponibilidade contínua 24/7, privacidade e conformidade rigorosa com a LGPD, garantindo respostas rápidas, acolhedoras e personalizadas para cada lead.',
       uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
     }
   ];
@@ -553,7 +560,7 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
   // Generate Supabase SQL Script
   public getSupabaseMigrationSQL(): string {
     return `-- ===================================================
--- MAVRA - CRM Conversacional Autônomo
+-- NEXA CRM - Conversacional Autônomo
 -- Script de Migração Oficial para Supabase
 -- Criador & Administrador: Marco Duarte (marco.agduarte22@gmail.com)
 -- ===================================================

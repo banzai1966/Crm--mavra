@@ -341,7 +341,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
       if (res.ok && data.success) {
         setAutoConfigFeedback({
           type: 'success',
-          message: 'Webhook gravado com sucesso na VPS Evolution! A instância agente-ia agora enviará todas as mensagens diretamente ao Mavra CRM.',
+          message: 'Webhook gravado com sucesso na VPS Evolution! A instância agora enviará todas as mensagens diretamente ao NEXA CRM.',
         });
       } else {
         setAutoConfigFeedback({
@@ -827,7 +827,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
           {saveSuccess && (
             <div className="flex items-center gap-2 text-xs text-emerald-800 font-semibold bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <span>Configurações da Evolution API salvas e ativadas com sucesso no MAVRA.</span>
+              <span>Configurações da Evolution API salvas e ativadas com sucesso no NEXA CRM.</span>
             </div>
           )}
         </form>
@@ -1061,7 +1061,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
           </div>
 
           <p className="text-xs text-slate-600">
-            Veja exatamente o que a sua Evolution API está enviando para o Mavra. Quando você mandar uma mensagem do WhatsApp, uma nova linha aparecerá aqui instantaneamente!
+            Veja exatamente o que a sua Evolution API está enviando para o NEXA CRM. Quando você mandar uma mensagem do WhatsApp, uma nova linha aparecerá aqui instantaneamente!
           </p>
 
           {webhookLogs.length === 0 ? (
