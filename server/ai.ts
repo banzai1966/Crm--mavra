@@ -687,6 +687,12 @@ export async function testGeminiApiKey(apiKeyToTest?: string): Promise<{ success
       if (lastErr.includes('reported as leaked')) {
         return { success: false, error: 'A chave foi BLOQUEADA/REVOGADA pelo Google (marcada como vazada). Por favor, gere uma nova chave em aistudio.google.com/apikey.' };
       }
+      if (lastErr.includes('API_KEY_SERVICE_BLOCKED')) {
+        return { success: false, error: 'Esta chave possui restrições e o serviço do Gemini (Generative Language API) está BLOQUEADO no Google Cloud. Por favor, crie uma chave livre em https://aistudio.google.com/apikey.' };
+      }
+      if (lastErr.includes('ACCESS_TOKEN_TYPE_UNSUPPORTED') || lastErr.includes('Expected OAuth 2')) {
+        return { success: false, error: 'Esta chave (iniciada em "AQ.") foi gerada com restrição de OAuth/Service no Google Cloud e não é aceita pela API do Gemini. Gere uma chave em https://aistudio.google.com/apikey.' };
+      }
       if (lastErr.includes('API_KEY_INVALID')) {
         return { success: false, error: 'Chave de API inválida. Verifique se copiou todos os caracteres corretamente.' };
       }
