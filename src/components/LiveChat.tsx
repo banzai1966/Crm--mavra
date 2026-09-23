@@ -398,6 +398,20 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                             <span className="flex items-center gap-1 text-emerald-800">
                               <Sparkles className="w-3 h-3 text-emerald-700" />
                               <span>Sofia (IA Autônoma MAVRA)</span>
+                              {msg.modelUsed && (
+                                <span
+                                  className={`text-[9px] font-mono font-medium px-1.5 py-0.2 rounded ml-1 ${
+                                    msg.modelUsed.includes('fallback') || msg.modelUsed.includes('offline') || msg.modelUsed.includes('rules')
+                                      ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                  }`}
+                                  title={`Processado por: ${msg.providerUsed || 'IA'} (${msg.modelUsed})`}
+                                >
+                                  {msg.modelUsed.includes('fallback') || msg.modelUsed.includes('offline') || msg.modelUsed.includes('rules')
+                                    ? '🛡️ Modo Contingência'
+                                    : `⚡ ${msg.modelUsed}`}
+                                </span>
+                              )}
                             </span>
                           )}
                           {isAgent && (

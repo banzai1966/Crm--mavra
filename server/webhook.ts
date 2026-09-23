@@ -648,6 +648,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       status: 'sent',
       stageTriggered,
       extractedInfo: aiResult.extractedInfo,
+      providerUsed: aiResult.providerUsed,
+      modelUsed: aiResult.modelUsed,
     };
     db.messages.push(aiMsg);
 

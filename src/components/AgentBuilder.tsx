@@ -525,13 +525,22 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     setIsTestingKey(true);
     setKeyTestResult(null);
     try {
+      const cleanKey = config.geminiApiKey.trim();
       const res = await fetch('/api/agent-config/test-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: config.geminiApiKey.trim() }),
+        body: JSON.stringify({ apiKey: cleanKey }),
       });
       const data = await res.json();
       setKeyTestResult(data);
+      if (data.success) {
+        // Automatically save key directly to backend so it immediately becomes active for WhatsApp
+        await onSaveConfig({ ...config, geminiApiKey: cleanKey });
+        setKeyTestResult({
+          success: true,
+          message: `${data.message || 'Chave validada com sucesso!'} ✅ Gravada e ativa no servidor!`,
+        });
+      }
     } catch (err: any) {
       setKeyTestResult({ success: false, error: err.message || 'Erro ao comunicar com o servidor' });
     } finally {
@@ -965,11 +974,16 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div className="relative flex items-center">
                   <input
                     type={showGeminiKey ? 'text' : 'password'}
-                    placeholder="AIzaSy... (Cole sua nova chave aqui)"
+                    placeholder="Cole sua chave aqui (AQ... ou AIzaSy...)"
                     value={config.geminiApiKey || ''}
                     onChange={(e) => {
                       setConfig({ ...config, geminiApiKey: e.target.value.trim() });
                       setKeyTestResult(null);
+                    }}
+                    onBlur={() => {
+                      if (config.geminiApiKey?.trim()) {
+                        onSaveConfig({ ...config, geminiApiKey: config.geminiApiKey.trim() });
+                      }
                     }}
                     className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-1.5 text-xs text-slate-800 font-mono focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   />

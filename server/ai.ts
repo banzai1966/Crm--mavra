@@ -66,7 +66,7 @@ export async function transcribeAudioWithGemini(
   }
 
   // Candidate models: modern Gemini models supported for audio transcription
-  const candidateModels = ['gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.5-transcribe'];
+  const candidateModels = ['gemini-3.8-flash', 'gemini-3.5-transcribe', 'gemini-flash-latest', 'gemini-3.1-flash-lite'];
 
   for (const model of candidateModels) {
     try {
@@ -738,8 +738,8 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     lowerPersona.includes('sofia');
 
   let reply = isLucyOrDental
-    ? `Olá! Tudo bem? Aqui é a ${persona}, secretária e assistente da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨`
-    : `Olá! Que prazer falar com você. Sou a ${persona}, ${config.role || 'assistente de atendimento'}. Como posso te ajudar hoje?`;
+    ? `Perfeito! Estou à disposição para tirar qualquer dúvida e organizar seu agendamento com a Dra. Lucy aqui no consultório do Euroville Mall. Em que posso te orientar?`
+    : `Perfeito! Estou à disposição para tirar suas dúvidas e dar andamento ao seu atendimento. Como posso te orientar?`;
 
   let suggestedStage: string | undefined = undefined;
   let estimatedValue: number | undefined = undefined;
@@ -747,7 +747,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   let sendAsVoice = false;
 
   if (isLucyOrDental) {
-    // Odontologia Integrativa Dra. Lucy Murata Logic (Objetiva, calorosa e sucinta)
+    // Odontologia Integrativa Dra. Lucy Murata Logic (Objetiva, calorosa, humana e contextual)
     if (
       lower.includes('não foi possível transcrever') ||
       lower.includes('nao foi possivel transcrever') ||
@@ -756,6 +756,52 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     ) {
       reply = 'Olá! Recebi seu áudio aqui no consultório, mas não consegui escutar com nitidez por aqui. Você poderia me mandar uma mensagem de texto ou me dizer rapidinho o que precisa? Assim já te respondo na hora!';
       sendAsVoice = false;
+    } else if (
+      lower.includes('agend') ||
+      lower.includes('marcar') ||
+      lower.includes('horário') ||
+      lower.includes('horario') ||
+      lower.includes('vaga') ||
+      lower.includes('como podemos agendar') ||
+      lower.includes('como agendar') ||
+      lower.includes('quando posso') ||
+      lower.includes('marcar consulta') ||
+      lower.includes('marcar avaliação') ||
+      lower.includes('marcar avaliacao')
+    ) {
+      reply = 'Que ótimo! Para organizarmos sua Consulta de Avaliação com a Dra. Lucy aqui no Euroville Mall, você prefere atendimento pela manhã ou no período da tarde? E quais dias da semana costumam ser melhores para você?';
+      suggestedStage = 'stage-3';
+      interest = 'Agendamento de Consulta de Avaliação';
+      estimatedValue = 450;
+    } else if (
+      lower.includes('manhã') ||
+      lower.includes('manha') ||
+      lower.includes('tarde') ||
+      lower.includes('segunda') ||
+      lower.includes('terça') ||
+      lower.includes('terca') ||
+      lower.includes('quarta') ||
+      lower.includes('quinta') ||
+      lower.includes('sexta') ||
+      lower.includes('sábado') ||
+      lower.includes('sabado')
+    ) {
+      reply = 'Perfeito! Já registrei sua preferência de dia e período. Vou consultar a agenda da Dra. Lucy aqui no consultório do Euroville Mall e a nossa recepção já te confirma as opções exatas de horário, combinado?';
+      suggestedStage = 'stage-3';
+      interest = 'Preferência de Horário/Dia para Avaliação';
+    } else if (
+      lower.trim() === 'sim' ||
+      lower.startsWith('sim ') ||
+      lower.includes('quero sim') ||
+      lower.includes('pode ser') ||
+      lower.includes('com certeza') ||
+      lower.includes('vamos sim') ||
+      lower.includes('claro') ||
+      lower.includes('por favor')
+    ) {
+      reply = 'Maravilha! Você prefere atendimento pela manhã ou no período da tarde? E quais dias da semana costumam ficar mais confortáveis na sua rotina para vir ao consultório no Euroville Mall?';
+      suggestedStage = 'stage-3';
+      interest = 'Confirmação de Agendamento';
     } else if (
       lower.includes('endereço') ||
       lower.includes('endereco') ||
@@ -868,6 +914,9 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('tudo bem')
     ) {
       reply = 'Olá! Tudo bem? Sou a Sofia, secretária da Dra. Lucy Murata aqui no consultório em Bragança Paulista. Como posso te ajudar hoje? 😊';
+    } else {
+      reply = 'Perfeito! Estou à disposição para tirar qualquer dúvida e organizar sua avaliação com a Dra. Lucy aqui no consultório do Euroville Mall. Em que mais posso te orientar?';
+      suggestedStage = 'stage-2';
     }
   } else {
     // Dynamic Generic Safety Fallback (using configured persona & role, NEVER mentioning NEXA CRM)

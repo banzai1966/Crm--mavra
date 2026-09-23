@@ -390,7 +390,12 @@ export async function getBase64FromMediaMessage(
 
   // Construct message object payloads for Evolution API v2 compatibility
   const candidatePayloads = [
-    // 1. Direct message envelope with full message or audio object
+    // 1. Direct whole message payload from webhook
+    {
+      message: messagePayload?.message ? messagePayload : { key: { id: msgId, remoteJid: key?.remoteJid || '', fromMe: Boolean(key?.fromMe) }, message: messagePayload },
+      convertToMp4: false,
+    },
+    // 2. Direct message envelope with inner message object
     {
       message: {
         key: {
@@ -402,7 +407,7 @@ export async function getBase64FromMediaMessage(
       },
       convertToMp4: false,
     },
-    // 2. Simple key reference (if media is cached server-side in Evolution)
+    // 3. Simple key reference (if media is cached server-side in Evolution)
     {
       message: {
         key: {
@@ -410,6 +415,13 @@ export async function getBase64FromMediaMessage(
           remoteJid: key?.remoteJid || '',
           fromMe: Boolean(key?.fromMe),
         },
+      },
+      convertToMp4: false,
+    },
+    // 4. Flat ID reference
+    {
+      message: {
+        id: msgId,
       },
       convertToMp4: false,
     },

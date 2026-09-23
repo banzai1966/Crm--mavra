@@ -57,6 +57,8 @@ export interface ChatMessage {
     interest?: string;
     value?: number;
   };
+  providerUsed?: string;
+  modelUsed?: string;
 }
 
 export interface KnowledgeDocument {
