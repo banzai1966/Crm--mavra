@@ -187,7 +187,7 @@ class Database {
     salesGoal: 'Compreender a necessidade ou queixa biofuncional do paciente, acolher com autoridade e agendar a Consulta de Avaliação Integrativa no consultório do Euroville Mall.',
     activeProvider: 'gemini',
     activeModel: 'gemini-3.8-flash',
-    geminiApiKey: process.env.GEMINI_API_KEY || '',
+    geminiApiKey: (process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('p80qfADWas1aX40qx1TMkUmwGf6kg') && !process.env.GEMINI_API_KEY.startsWith('AQ.Ab8RN6J')) ? process.env.GEMINI_API_KEY : '',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
     knowledgeFaq: `PERGUNTAS FREQUENTES (ODONTOLOGIA INTEGRATIVA & BIOLÓGICA - DRA. LUCY MURATA):
@@ -409,9 +409,17 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
             ...this.agentConfig,
             ...(isLegacyNexa ? {} : data.agentConfig),
             maxAudioChars: (!loadedMaxChars || loadedMaxChars <= 220) ? 500 : loadedMaxChars,
-            geminiApiKey: (process.env.GEMINI_API_KEY || data.agentConfig.geminiApiKey || this.agentConfig.geminiApiKey || '').trim(),
-            openaiApiKey: (process.env.OPENAI_API_KEY || data.agentConfig.openaiApiKey || this.agentConfig.openaiApiKey || '').trim(),
-            anthropicApiKey: (process.env.ANTHROPIC_API_KEY || data.agentConfig.anthropicApiKey || this.agentConfig.anthropicApiKey || '').trim(),
+            geminiApiKey: (() => {
+              const savedKey = (data.agentConfig.geminiApiKey || '').trim();
+              const envKey = (process.env.GEMINI_API_KEY || '').trim();
+              // Ignore the old known blocked key from early deployments
+              const isOldBlocked = (k: string) => k.includes('p80qfADWas1aX40qx1TMkUmwGf6kg') || k.startsWith('AQ.Ab8RN6J');
+              if (savedKey && !isOldBlocked(savedKey)) return savedKey;
+              if (envKey && !isOldBlocked(envKey)) return envKey;
+              return savedKey || envKey || (this.agentConfig.geminiApiKey || '').trim();
+            })(),
+            openaiApiKey: ((data.agentConfig.openaiApiKey || '').trim() || (process.env.OPENAI_API_KEY || '').trim() || this.agentConfig.openaiApiKey || '').trim(),
+            anthropicApiKey: ((data.agentConfig.anthropicApiKey || '').trim() || (process.env.ANTHROPIC_API_KEY || '').trim() || this.agentConfig.anthropicApiKey || '').trim(),
           };
         }
         if (data.documents && Array.isArray(data.documents)) this.documents = data.documents;
