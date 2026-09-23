@@ -27,6 +27,15 @@ import {
   Edit2,
   Plus,
   UserCheck,
+  Eye,
+  MessageSquare,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
+  Flame,
+  Volume2,
+  Sparkle,
+  ArrowRight,
 } from 'lucide-react';
 import { Lead, KanbanStage, AgentConfig, EvolutionConfig, BusinessNiche } from '../types';
 import { ResetDataModal } from './ResetDataModal';
@@ -222,6 +231,10 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   const [isCreatingOnVps, setIsCreatingOnVps] = useState(false);
   const [createFeedback, setCreateFeedback] = useState<string | null>(null);
 
+  // Executive Guide & Onboarding state
+  const [showExecutiveGuide, setShowExecutiveGuide] = useState(true);
+  const [modalTab, setModalTab] = useState<'qr' | 'crm_flow' | 'benefits'>('qr');
+
   const handleSelectInstance = (targetInstance: string) => {
     if (onUpdateEvolutionConfig) {
       const updated: EvolutionConfig = {
@@ -375,6 +388,22 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             </div>
           )}
 
+          {/* Guia Executivo: Como Funciona, Conectar & O Que Esperar */}
+          <button
+            id="btn-toggle-executive-guide"
+            onClick={() => setShowExecutiveGuide(!showExecutiveGuide)}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer border ${
+              showExecutiveGuide
+                ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-700 shadow-xs'
+                : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
+            }`}
+            title="Guia Executivo: Como Funciona, Como Conectar e O que Esperar"
+          >
+            <Sparkle className={`w-3.5 h-3.5 ${showExecutiveGuide ? 'text-amber-300 animate-spin' : 'text-indigo-600'}`} />
+            <span>{showExecutiveGuide ? 'Ocultar Guia' : '✨ Como Funciona o Atendimento IA'}</span>
+            {showExecutiveGuide ? <ChevronUp className="w-3.5 h-3.5 ml-0.5" /> : <ChevronDown className="w-3.5 h-3.5 ml-0.5" />}
+          </button>
+
           {/* Discreet WhatsApp Connection Button */}
           <button
             id="btn-dashboard-connect-whatsapp"
@@ -524,7 +553,201 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         </div>
       </div>
 
-      {/* Main Grid: Funnel Breakdown + Urgent Action List */}
+      {/* Premium Onboarding & Experience Showcase: "Como Funciona, Como Conectar & O Que Esperar" */}
+      {showExecutiveGuide && (
+        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-indigo-500/20 relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
+          {/* Subtle glow / background flair */}
+          <div className="absolute -right-20 -top-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Header of the guide */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-white/10 gap-4 relative z-10">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold tracking-wide">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                SISTEMA OPERACIONAL ATIVO • WHATSAPP & GEMINI 3.8
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                Experiência do Atendimento com IA: Como Funciona & O Que Esperar
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                Guia prático para a sua equipe: como conectar o WhatsApp da empresa em 30 segundos, acompanhar os pacientes no CRM em tempo real e os resultados comerciais que você pode esperar.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                onClick={handleOpenQrModal}
+                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl transition-all shadow-md hover:shadow-emerald-500/20 flex items-center gap-2 cursor-pointer"
+              >
+                <Smartphone className="w-4 h-4" />
+                <span>{evolutionConfig.isConnected || isConnectedLive ? 'Ver Conexão WhatsApp' : 'Escanear QR Code'}</span>
+              </button>
+              <button
+                onClick={() => setShowExecutiveGuide(false)}
+                className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                title="Minimizar guia"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* 3 Interactive Pillars / Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-6 relative z-10">
+            {/* Pilar 1: Como se Conecta */}
+            <div className="bg-white/5 border border-white/10 hover:border-emerald-500/40 rounded-2xl p-5 backdrop-blur-xs transition-all flex flex-col justify-between group">
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-black text-sm">
+                    1
+                  </div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                    30 Segundos
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Smartphone className="w-4 h-4 text-emerald-400" />
+                    Como se Conecta
+                  </h3>
+                  <p className="text-[11px] text-emerald-400/90 font-medium">Fácil como conectar no WhatsApp Web</p>
+                </div>
+                <div className="space-y-2 text-xs text-slate-300 leading-relaxed pt-1">
+                  <div className="flex items-start gap-2">
+                    <span className="w-4 h-4 rounded-full bg-white/10 text-white font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                    <span>Abra o <strong>WhatsApp</strong> no celular da clínica/empresa.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="w-4 h-4 rounded-full bg-white/10 text-white font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                    <span>Toque nos 3 pontinhos (ou Ajustes) e vá em <strong>Aparelhos Conectados</strong>.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="w-4 h-4 rounded-full bg-white/10 text-white font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                    <span>Toque em <strong>Conectar um aparelho</strong> e aponte a câmera para o QR Code aqui na tela.</span>
+                  </div>
+                </div>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-[11px] text-emerald-200 leading-relaxed">
+                  🛡️ <strong>Zero aplicativo para instalar:</strong> Não precisa baixar nada no celular. A Sofia assume o atendimento direto na nuvem com total segurança e criptografia ponta a ponta.
+                </div>
+              </div>
+
+              <div className="pt-4 mt-3 border-t border-white/10">
+                <button
+                  onClick={handleOpenQrModal}
+                  className="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <QrCode className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{evolutionConfig.isConnected || isConnectedLive ? 'Ver Status da Conexão' : 'Abrir QR Code Agora'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Pilar 2: Como Acompanha no CRM */}
+            <div className="bg-white/5 border border-white/10 hover:border-indigo-500/40 rounded-2xl p-5 backdrop-blur-xs transition-all flex flex-col justify-between group">
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-black text-sm">
+                    2
+                  </div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                    Controle Total
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-indigo-400" />
+                    Como Acompanhar no CRM
+                  </h3>
+                  <p className="text-[11px] text-indigo-400/90 font-medium">Visibilidade em tempo real para toda a equipe</p>
+                </div>
+                <div className="space-y-2.5 text-xs text-slate-300 leading-relaxed pt-1">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                    <span><strong>Kanban Automático:</strong> Cada cliente que manda mensagem vira um cartão no funil e avança de estágio sozinho conforme demonstra interesse.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                    <span><strong>Ficha de Triagem Pronta:</strong> A IA já anota procedimento, turno preferido (manhã/tarde), dia da semana e forma de pagamento.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                    <span><strong>Intervenção Humana:</strong> Na Central de Chat, você clica em <em>"Assumir Atendimento"</em> e conversa manualmente se preferir.</span>
+                  </div>
+                </div>
+                <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-[11px] text-indigo-200 leading-relaxed">
+                  👥 <strong>Portal da Cliente:</strong> A doutora ou secretária usa o link exclusivo (<em>?modo=cliente</em>) para ver tudo sem perigo de alterar chaves ou configurações técnicas.
+                </div>
+              </div>
+
+              <div className="pt-4 mt-3 border-t border-white/10 grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => onNavigateToTab('kanban')}
+                  className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 px-2 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>Ver Kanban</span>
+                  <ArrowRight className="w-3 h-3 text-indigo-400" />
+                </button>
+                <button
+                  onClick={() => onNavigateToTab('chat')}
+                  className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 px-2 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <MessageSquare className="w-3 h-3 text-indigo-400" />
+                  <span>Chat ao Vivo</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Pilar 3: O Que Esperar */}
+            <div className="bg-white/5 border border-white/10 hover:border-amber-500/40 rounded-2xl p-5 backdrop-blur-xs transition-all flex flex-col justify-between group">
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center font-black text-sm">
+                    3
+                  </div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                    Efeito UAU
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    O Que Esperar
+                  </h3>
+                  <p className="text-[11px] text-amber-400/90 font-medium">Resultados práticos no dia a dia</p>
+                </div>
+                <div className="space-y-2.5 text-xs text-slate-300 leading-relaxed pt-1">
+                  <div className="flex items-start gap-2">
+                    <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                    <span><strong>Atendimento 24/7 em &lt;10s:</strong> Ninguém fica sem resposta à noite, fins de semana ou feriados. A clínica nunca dorme.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Volume2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                    <span><strong>Áudios com Voz Humana:</strong> Se o cliente mandar áudio, a Sofia ouve com atenção e responde com áudio caloroso e empático.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                    <span><strong>Anti-Vácuo Automático:</strong> Se o paciente parar de responder no meio da conversa, o sistema resgata após 4h com gentileza.</span>
+                  </div>
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-[11px] text-amber-200 leading-relaxed">
+                  📈 <strong>Mais Consultas Fechadas:</strong> Ao responder na hora e recuperar contatos frios, a taxa de agendamento chega a triplicar!
+                </div>
+              </div>
+
+              <div className="pt-4 mt-3 border-t border-white/10">
+                <div className="flex items-center justify-between text-[11px] text-slate-300 font-mono">
+                  <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Sofia com Gemini 3.8
+                  </span>
+                  <span className="text-slate-400">Zero Erros / 100% Blindado</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Funnel Distribution (2 cols) */}
         <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
@@ -644,122 +867,279 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               </button>
             </div>
 
-            {/* Modal Body: QR Code Display */}
-            <div className="py-4 flex flex-col items-center justify-center space-y-4">
-              {/* Quick instance switcher inside modal (Full controls for Admin, clean label for Client) */}
-              {isAdmin ? (
-                <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
-                      Instância Selecionada (Admin):
-                    </span>
-                    <span className="text-[11px] font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
-                      {evolutionConfig.instanceName || 'agente-ia'}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleSelectInstance('agente-ia')}
-                      className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
-                        evolutionConfig.instanceName === 'agente-ia'
-                          ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      Marco Duarte
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectInstance('demo-ao-vivo')}
-                      className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
-                        evolutionConfig.instanceName === 'demo-ao-vivo'
-                          ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      Demo ao Vivo
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectInstance(customInstanceName.trim() || 'dra-lucy-murata')}
-                      className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
-                        evolutionConfig.instanceName !== 'agente-ia' && evolutionConfig.instanceName !== 'demo-ao-vivo'
-                          ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      Dra. Lucy
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 flex items-center justify-between text-xs text-emerald-800">
-                  <span className="font-medium">Canal de Atendimento do Consultório</span>
-                  <span className="font-bold bg-white px-2 py-0.5 rounded border border-emerald-200 text-emerald-700 text-[11px]">
-                    Pronto para Conexão
-                  </span>
-                </div>
-              )}
+            {/* Modal Tabs */}
+            <div className="flex border-b border-slate-100 bg-slate-100/80 p-1 rounded-xl mt-3">
+              <button
+                type="button"
+                onClick={() => setModalTab('qr')}
+                className={`flex-1 text-xs font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  modalTab === 'qr'
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+                <span>1. QR Code</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('crm_flow')}
+                className={`flex-1 text-xs font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  modalTab === 'crm_flow'
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5 text-indigo-600" />
+                <span>2. Ver no CRM</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('benefits')}
+                className={`flex-1 text-xs font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  modalTab === 'benefits'
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>3. O Que Esperar</span>
+              </button>
+            </div>
 
-              {isQrLoading && !qrCodeData ? (
-                <div className="w-64 h-64 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 space-y-3">
-                  <RefreshCw className="w-8 h-8 animate-spin text-indigo-600" />
-                  <p className="text-xs font-semibold">{qrStatusText}</p>
-                </div>
-              ) : isConnectedLive ? (
-                <div className="w-64 h-64 bg-emerald-50/70 border border-emerald-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-3">
-                  <div className="w-14 h-14 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs">
-                    <Check className="w-8 h-8" />
+            {/* Modal Body: QR Tab */}
+            {modalTab === 'qr' && (
+              <div className="py-4 flex flex-col items-center justify-center space-y-4">
+                {/* Quick instance switcher inside modal (Full controls for Admin, clean label for Client) */}
+                {isAdmin ? (
+                  <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+                        Instância Selecionada (Admin):
+                      </span>
+                      <span className="text-[11px] font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                        {evolutionConfig.instanceName || 'agente-ia'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectInstance('agente-ia')}
+                        className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
+                          evolutionConfig.instanceName === 'agente-ia'
+                            ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        Marco Duarte
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectInstance('demo-ao-vivo')}
+                        className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
+                          evolutionConfig.instanceName === 'demo-ao-vivo'
+                            ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        Demo ao Vivo
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectInstance(customInstanceName.trim() || 'dra-lucy-murata')}
+                        className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
+                          evolutionConfig.instanceName !== 'agente-ia' && evolutionConfig.instanceName !== 'demo-ao-vivo'
+                            ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        Dra. Lucy
+                      </button>
+                    </div>
                   </div>
-                  <h4 className="font-bold text-emerald-900 text-base">WhatsApp Conectado!</h4>
-                  <p className="text-xs text-emerald-700">
-                    O Agente de IA já está pronto e atendendo as mensagens recebidas.
+                ) : (
+                  <div className="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 flex items-center justify-between text-xs text-emerald-800">
+                    <span className="font-medium">Canal de Atendimento do Consultório</span>
+                    <span className="font-bold bg-white px-2 py-0.5 rounded border border-emerald-200 text-emerald-700 text-[11px]">
+                      Pronto para Conexão
+                    </span>
+                  </div>
+                )}
+
+                {isQrLoading && !qrCodeData ? (
+                  <div className="w-64 h-64 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 space-y-3">
+                    <RefreshCw className="w-8 h-8 animate-spin text-indigo-600" />
+                    <p className="text-xs font-semibold">{qrStatusText}</p>
+                  </div>
+                ) : isConnectedLive ? (
+                  <div className="w-64 h-64 bg-emerald-50/70 border border-emerald-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-3">
+                    <div className="w-14 h-14 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+                      <Check className="w-8 h-8" />
+                    </div>
+                    <h4 className="font-bold text-emerald-900 text-base">WhatsApp Conectado!</h4>
+                    <p className="text-xs text-emerald-700">
+                      O Agente de IA já está pronto e atendendo as mensagens recebidas em tempo real.
+                    </p>
+                  </div>
+                ) : qrCodeData ? (
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="p-3 bg-white border-2 border-slate-900 rounded-2xl shadow-md">
+                      <img
+                        src={qrCodeData.startsWith('data:') ? qrCodeData : `data:image/png;base64,${qrCodeData}`}
+                        alt="WhatsApp QR Code"
+                        className="w-56 h-56 object-contain rounded-lg"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium bg-slate-100 px-3 py-1 rounded-full">
+                      <RefreshCw className="w-3 h-3 animate-spin text-slate-500" />
+                      <span>Atualiza automaticamente a cada 5s</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-64 h-64 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-500 text-center p-4 space-y-2">
+                    <QrCode className="w-10 h-10 text-slate-400" />
+                    <p className="text-xs font-semibold">{qrStatusText}</p>
+                    <button
+                      onClick={fetchDashboardQrCode}
+                      className="mt-2 text-xs font-bold text-indigo-600 hover:underline cursor-pointer flex items-center gap-1"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Tentar Novamente
+                    </button>
+                  </div>
+                )}
+
+                {/* Instructions step by step for the client */}
+                <div className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-xs space-y-2 text-slate-600">
+                  <p className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    Passo a passo rápido:
+                  </p>
+                  <ol className="list-decimal list-inside space-y-1 text-slate-600 text-[11px] leading-relaxed">
+                    <li>Abra o <strong>WhatsApp</strong> no celular comercial</li>
+                    <li>Acesse <strong>Aparelhos Conectados</strong> (Ajustes ou 3 pontinhos)</li>
+                    <li>Toque em <strong>Conectar um aparelho</strong></li>
+                    <li>Aponte a câmera para o QR Code acima</li>
+                  </ol>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Body: How to view in CRM Tab */}
+            {modalTab === 'crm_flow' && (
+              <div className="py-4 space-y-3.5 text-xs text-slate-600">
+                <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-indigo-900 font-bold text-sm">
+                    <Eye className="w-4 h-4 text-indigo-600" />
+                    Como o atendimento aparece no CRM:
+                  </div>
+                  <p className="text-[11px] text-indigo-800 leading-relaxed">
+                    Assim que o WhatsApp é conectado, você e sua equipe têm visibilidade total e instantânea de cada interação:
                   </p>
                 </div>
-              ) : qrCodeData ? (
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="p-3 bg-white border-2 border-slate-900 rounded-2xl shadow-md">
-                    <img
-                      src={qrCodeData.startsWith('data:') ? qrCodeData : `data:image/png;base64,${qrCodeData}`}
-                      alt="WhatsApp QR Code"
-                      className="w-56 h-56 object-contain rounded-lg"
-                      referrerPolicy="no-referrer"
-                    />
+
+                <div className="space-y-2.5">
+                  <div className="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-xl border border-slate-200/70">
+                    <div className="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg shrink-0 mt-0.5">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-slate-900 block text-xs">1. Cartões no Kanban em Tempo Real</strong>
+                      <span className="text-[11px] text-slate-500">Cada novo contato que manda mensagem vira um lead e avança de estágio sozinho (Novo Lead ➔ Qualificado ➔ Proposta ➔ Fechado).</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium bg-slate-100 px-3 py-1 rounded-full">
-                    <RefreshCw className="w-3 h-3 animate-spin text-slate-500" />
-                    <span>Atualiza automaticamente a cada 5s</span>
+
+                  <div className="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-xl border border-slate-200/70">
+                    <div className="p-1.5 bg-violet-100 text-violet-700 rounded-lg shrink-0 mt-0.5">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-slate-900 block text-xs">2. Triagem Completa do Agendamento</strong>
+                      <span className="text-[11px] text-slate-500">A IA anota procedimento de interesse, turno (manhã/tarde), dia preferido e forma de pagamento na ficha do lead.</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-xl border border-slate-200/70">
+                    <div className="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg shrink-0 mt-0.5">
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-slate-900 block text-xs">3. Central de Chat ao Vivo & Intervenção</strong>
+                      <span className="text-[11px] text-slate-500">Leia a conversa ao vivo e, se desejar falar com o paciente pessoalmente, clique em <em>"Assumir Atendimento"</em> para pausar a IA na hora.</span>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <div className="w-64 h-64 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-500 text-center p-4 space-y-2">
-                  <QrCode className="w-10 h-10 text-slate-400" />
-                  <p className="text-xs font-semibold">{qrStatusText}</p>
+
+                <div className="pt-2 flex gap-2">
                   <button
-                    onClick={fetchDashboardQrCode}
-                    className="mt-2 text-xs font-bold text-indigo-600 hover:underline cursor-pointer flex items-center gap-1"
+                    onClick={() => {
+                      setShowQrModal(false);
+                      onNavigateToTab('kanban');
+                    }}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-center cursor-pointer transition-colors"
                   >
-                    <RefreshCw className="w-3 h-3" />
-                    Tentar Novamente
+                    Ver Funil Kanban
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowQrModal(false);
+                      onNavigateToTab('chat');
+                    }}
+                    className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-center cursor-pointer transition-colors"
+                  >
+                    Abrir Central de Chat
                   </button>
                 </div>
-              )}
-
-              {/* Instructions step by step for the client */}
-              <div className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-xs space-y-2 text-slate-600">
-                <p className="font-bold text-slate-800 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  Como conectar pelo celular do cliente:
-                </p>
-                <ol className="list-decimal list-inside space-y-1 text-slate-600 text-[11px] leading-relaxed">
-                  <li>Abra o <strong>WhatsApp</strong> no celular comercial</li>
-                  <li>Acesse <strong>Aparelhos Conectados</strong> (nos 3 pontinhos ou Ajustes)</li>
-                  <li>Toque em <strong>Conectar um aparelho</strong></li>
-                  <li>Aponte a câmera para o QR Code acima</li>
-                </ol>
               </div>
-            </div>
+            )}
+
+            {/* Modal Body: What to expect Tab */}
+            {modalTab === 'benefits' && (
+              <div className="py-4 space-y-3 text-xs text-slate-600">
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1.5">
+                  <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    O que esperar do Atendimento com IA:
+                  </div>
+                  <p className="text-[11px] text-amber-800 leading-relaxed">
+                    Mais conversões, resposta imediata e experiência humanizada para os seus clientes:
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                    <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg shrink-0">
+                      <Zap className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-slate-900 block text-xs">Resposta em Menos de 10 Segundos</strong>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">Atendimento ininterrupto 24 horas por dia, fins de semana e feriados. Nenhum lead esfria ou busca o concorrente.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                    <div className="p-2 bg-amber-100 text-amber-700 rounded-lg shrink-0">
+                      <Volume2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-slate-900 block text-xs">Voz Neural Humanizada em Áudio</strong>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">Se o paciente mandar áudio pelo WhatsApp, a Sofia responde com áudio falado natural com entonação de secretária dedicada.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                    <div className="p-2 bg-sky-100 text-sky-700 rounded-lg shrink-0">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-slate-900 block text-xs">Anti-Vácuo & Remarketing Automático</strong>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">Se o paciente sumir no meio do agendamento, o sistema resgata o contato 4 horas depois de forma cordial e amigável.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Modal Footer */}
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
