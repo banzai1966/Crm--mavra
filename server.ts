@@ -14,6 +14,7 @@ import {
   logoutEvolutionInstance,
   fetchAllEvolutionInstances,
   normalizeInstanceName,
+  fetchEvolutionContacts,
   MASTER_EVOLUTION_KEY,
 } from './server/evolution';
 import { processAiConversation, synthesizeSpeech, testGeminiApiKey } from './server/ai';
@@ -209,6 +210,133 @@ async function startServer() {
   app.post('/api/leads/restore-demo', (req: Request, res: Response) => {
     db.restoreDemoLeads();
     res.json({ success: true, count: db.leads.length, leads: db.leads });
+  });
+
+  // Bulk import leads from CSV / spreadsheet / manual list
+  app.post('/api/leads/import-bulk', (req: Request, res: Response) => {
+    const { contacts, targetStageId, addTag } = req.body;
+    if (!Array.isArray(contacts) || contacts.length === 0) {
+      return res.status(400).json({ error: 'Lista de contatos inválida ou vazia.' });
+    }
+
+    const defaultStage = targetStageId || db.stages.find((s) => s.id === 'stage-base')?.id || db.stages[0]?.id || 'stage-1';
+    const tagToApply = addTag || 'Base Antiga';
+    let importedCount = 0;
+    let skippedCount = 0;
+
+    for (const c of contacts) {
+      if (!c || !c.phone) {
+        skippedCount++;
+        continue;
+      }
+
+      const cleanPhone = c.phone.toString().replace(/\D/g, '');
+      if (cleanPhone.length < 8) {
+        skippedCount++;
+        continue;
+      }
+
+      const existingIndex = db.leads.findIndex((l) => l.phone === cleanPhone);
+      if (existingIndex !== -1) {
+        // Update tags if not already present
+        if (tagToApply && !db.leads[existingIndex].tags.includes(tagToApply)) {
+          db.leads[existingIndex].tags.push(tagToApply);
+        }
+        if (c.name && (db.leads[existingIndex].name.startsWith('Paciente ') || db.leads[existingIndex].name.startsWith('Lead '))) {
+          db.leads[existingIndex].name = c.name;
+        }
+        skippedCount++;
+      } else {
+        const newLead = {
+          id: 'lead-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+          name: c.name || `Paciente ${cleanPhone.slice(-4)}`,
+          phone: cleanPhone,
+          email: c.email || '',
+          stageId: defaultStage,
+          value: Number(c.value) || 0,
+          interest: c.interest || 'Importado para Reativação',
+          tags: [tagToApply, 'Importado'],
+          notes: c.notes || `Paciente importado em ${new Date().toLocaleDateString('pt-BR')} para reativação.`,
+          aiPaused: false,
+          lastInteraction: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          unreadCount: 0,
+        };
+        db.leads.unshift(newLead);
+        importedCount++;
+      }
+    }
+
+    db.saveToFile();
+    console.log(`[CRM Bulk Import] ${importedCount} leads importados com sucesso (${skippedCount} já existentes/ignorados).`);
+    res.json({
+      success: true,
+      importedCount,
+      skippedCount,
+      totalLeads: db.leads.length,
+      leads: db.leads,
+    });
+  });
+
+  // Direct sync with WhatsApp connected on Evolution API
+  app.post('/api/evolution/sync-contacts', async (req: Request, res: Response) => {
+    const { targetStageId, tag, instanceName } = req.body;
+    const targetStage = targetStageId || db.stages.find((s) => s.id === 'stage-base')?.id || db.stages[0]?.id || 'stage-1';
+    const tagToApply = tag || 'Base Antiga';
+
+    try {
+      const result = await fetchEvolutionContacts(instanceName);
+      if (!result.success) {
+        return res.status(400).json({ success: false, error: result.error });
+      }
+
+      let importedCount = 0;
+      let alreadyExistingCount = 0;
+
+      for (const contact of result.contacts) {
+        const existing = db.leads.find((l) => l.phone === contact.phone);
+        if (existing) {
+          alreadyExistingCount++;
+          if (tagToApply && !existing.tags.includes(tagToApply)) {
+            existing.tags.push(tagToApply);
+          }
+          if (contact.name && (existing.name.startsWith('Paciente ') || existing.name.startsWith('Lead '))) {
+            existing.name = contact.name;
+          }
+        } else {
+          const newLead = {
+            id: 'lead-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+            name: contact.name || `Paciente ${contact.phone.slice(-4)}`,
+            phone: contact.phone,
+            stageId: targetStage,
+            value: 0,
+            interest: 'Histórico WhatsApp / Reativação',
+            tags: [tagToApply, 'WhatsApp'],
+            notes: `Contato sincronizado da agenda do WhatsApp (${contact.pushName || 'WhatsApp'}) em ${new Date().toLocaleDateString('pt-BR')}.`,
+            aiPaused: false,
+            lastInteraction: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            unreadCount: 0,
+          };
+          db.leads.unshift(newLead);
+          importedCount++;
+        }
+      }
+
+      db.saveToFile();
+      console.log(`[WhatsApp Sync] Sincronização concluída: ${importedCount} novos leads adicionados, ${alreadyExistingCount} já cadastrados.`);
+
+      res.json({
+        success: true,
+        totalFound: result.contacts.length,
+        importedCount,
+        alreadyExistingCount,
+        totalLeads: db.leads.length,
+      });
+    } catch (err: any) {
+      console.error('[WhatsApp Sync Error]:', err);
+      res.status(500).json({ success: false, error: err.message });
+    }
   });
 
   app.put('/api/leads/:id/stage', (req: Request, res: Response) => {

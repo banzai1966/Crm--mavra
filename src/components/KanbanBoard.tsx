@@ -22,10 +22,13 @@ import {
   Download,
   Flame,
   Zap,
+  Database,
+  Upload,
 } from 'lucide-react';
-import { Lead, KanbanStage } from '../types';
+import { Lead, KanbanStage, EvolutionConfig } from '../types';
 import { NewLeadModal } from './NewLeadModal';
 import { ResetDataModal } from './ResetDataModal';
+import { ImportLeadsModal } from './ImportLeadsModal';
 
 interface KanbanBoardProps {
   stages: KanbanStage[];
@@ -39,6 +42,8 @@ interface KanbanBoardProps {
   onToggleHotLead?: (leadId: string) => void;
   onClearAllLeads?: () => Promise<void> | void;
   onRestoreDemoLeads?: () => Promise<void> | void;
+  onRefreshLeads?: () => Promise<void> | void;
+  evolutionConfig?: EvolutionConfig;
   isAdmin?: boolean;
 }
 
@@ -54,6 +59,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onToggleHotLead,
   onClearAllLeads,
   onRestoreDemoLeads,
+  onRefreshLeads,
+  evolutionConfig = { serverUrl: '', apiKey: '', instanceName: 'dra-lucy-murata', isConnected: false, state: 'disconnected' },
   isAdmin = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,6 +68,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [filterHotOnly, setFilterHotOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
   const [targetStageForNewLead, setTargetStageForNewLead] = useState<string | undefined>();
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
@@ -215,6 +223,16 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               </button>
             )
           )}
+
+          <button
+            id="btn-import-base"
+            onClick={() => setShowImportModal(true)}
+            className="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-2 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            title="Importar lista de pacientes antigos ou sincronizar histórico do WhatsApp para reativação"
+          >
+            <Database className="w-3.5 h-3.5 text-indigo-600" />
+            <span className="hidden sm:inline">Importar / Sincronizar Base</span>
+          </button>
 
           <a
             href="/api/leads/export/csv"
@@ -575,6 +593,17 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         }}
         onRestoreDemo={async () => {
           if (onRestoreDemoLeads) await onRestoreDemoLeads();
+        }}
+      />
+
+      {/* Import & WhatsApp Contacts Sync Modal */}
+      <ImportLeadsModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        stages={stages}
+        evolutionConfig={evolutionConfig}
+        onImportSuccess={async () => {
+          if (onRefreshLeads) await onRefreshLeads();
         }}
       />
     </div>

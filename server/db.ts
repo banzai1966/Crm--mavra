@@ -176,6 +176,7 @@ export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
 // In-memory / persistent fallback state
 class Database {
   public stages: KanbanStage[] = [
+    { id: 'stage-base', name: 'Base Antiga / Reativação', color: '#6366f1', order: 0 },
     { id: 'stage-1', name: 'Novo Lead', color: '#3b82f6', order: 1, isDefault: true },
     { id: 'stage-2', name: 'Qualificado / Interesse', color: '#f59e0b', order: 2 },
     { id: 'stage-3', name: 'Proposta / Apresentação', color: '#8b5cf6', order: 3 },
@@ -405,7 +406,17 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
       if (fs.existsSync(STORAGE_FILE)) {
         const raw = fs.readFileSync(STORAGE_FILE, 'utf-8');
         const data = JSON.parse(raw);
-        if (data.stages && Array.isArray(data.stages)) this.stages = data.stages;
+        if (data.stages && Array.isArray(data.stages)) {
+          const hasBaseStage = data.stages.some((s: any) => s.id === 'stage-base' || s.name?.toLowerCase().includes('reativação') || s.name?.toLowerCase().includes('base antiga'));
+          if (!hasBaseStage) {
+            this.stages = [
+              { id: 'stage-base', name: 'Base Antiga / Reativação', color: '#6366f1', order: 0 },
+              ...data.stages,
+            ];
+          } else {
+            this.stages = data.stages;
+          }
+        }
         if (data.leads && Array.isArray(data.leads)) this.leads = data.leads;
         if (data.messages && Array.isArray(data.messages)) this.messages = data.messages;
         if (data.agentConfig) {

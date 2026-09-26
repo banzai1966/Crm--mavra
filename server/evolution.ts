@@ -928,3 +928,107 @@ export async function fetchAllEvolutionInstances(): Promise<{
   }
 }
 
+export interface ExtractedWhatsAppContact {
+  phone: string;
+  name: string;
+  pushName?: string;
+  profilePicUrl?: string;
+}
+
+/**
+ * Fetches contacts and active chats from Evolution API instance
+ */
+export async function fetchEvolutionContacts(instanceOverride?: string): Promise<{
+  success: boolean;
+  contacts: ExtractedWhatsAppContact[];
+  error?: string;
+}> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const targetInstance = normalizeInstanceName(instanceOverride || config.instanceName);
+  const apiKey = getEvolutionApiKey();
+
+  if (!baseUrl || !apiKey) {
+    return { success: false, contacts: [], error: 'Servidor Evolution não configurado' };
+  }
+
+  const contactsMap = new Map<string, ExtractedWhatsAppContact>();
+
+  // Helper to extract phone and format
+  const addCandidate = (rawJid: string, name?: string, pushName?: string, picUrl?: string) => {
+    if (!rawJid) return;
+    if (rawJid.includes('@g.us') || rawJid.includes('@broadcast') || rawJid.includes('status@')) {
+      return; // Ignore groups and status
+    }
+    const cleanPhone = rawJid.replace(/@.*$/, '').replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length < 8) return;
+
+    // Prefer meaningful name over raw number
+    const finalName = (name || pushName || '').trim() || `Paciente ${cleanPhone.slice(-4)}`;
+
+    if (!contactsMap.has(cleanPhone)) {
+      contactsMap.set(cleanPhone, {
+        phone: cleanPhone,
+        name: finalName,
+        pushName: pushName || name,
+        profilePicUrl: picUrl,
+      });
+    } else {
+      const existing = contactsMap.get(cleanPhone)!;
+      if (finalName && (existing.name.startsWith('Paciente ') || existing.name === cleanPhone)) {
+        existing.name = finalName;
+      }
+    }
+  };
+
+  try {
+    // 1. Try /chat/findContacts
+    try {
+      const endpoint = `${baseUrl}/chat/findContacts/${encodeURIComponent(targetInstance)}`;
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: apiKey },
+        body: JSON.stringify({ where: {} }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const records = Array.isArray(data) ? data : (data?.contacts || data?.records || []);
+        for (const r of records) {
+          const jid = r?.id || r?.jid || r?.remoteJid;
+          const name = r?.name || r?.formattedName || r?.verifiedName || r?.pushName;
+          addCandidate(jid, name, r?.pushName, r?.profilePictureUrl);
+        }
+      }
+    } catch (e) {
+      // fallback
+    }
+
+    // 2. Try /chat/findChats
+    try {
+      const endpoint = `${baseUrl}/chat/findChats/${encodeURIComponent(targetInstance)}`;
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: apiKey },
+        body: JSON.stringify({}),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const records = Array.isArray(data) ? data : (data?.chats || data?.records || []);
+        for (const r of records) {
+          const jid = r?.id || r?.jid || r?.remoteJid;
+          const name = r?.name || r?.formattedName || r?.pushName;
+          addCandidate(jid, name, r?.pushName, r?.profilePictureUrl);
+        }
+      }
+    } catch (e) {
+      // fallback
+    }
+
+    const contacts = Array.from(contactsMap.values());
+    return { success: true, contacts };
+  } catch (err: any) {
+    return { success: false, contacts: [], error: err.message };
+  }
+}
+
+

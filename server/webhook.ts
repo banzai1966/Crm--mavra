@@ -577,6 +577,18 @@ async function executeWebhookPipeline(body: any): Promise<void> {
         stageTriggered = targetStage.id;
         lead.notes = `${lead.notes || ''}\n[${new Date().toLocaleDateString('pt-BR')}] Movido para "${targetStage.name}" pela IA.`;
       }
+    } else if (lead.stageId === 'stage-base' || lead.stageId === 'stage-reativacao' || lead.tags.includes('Base Antiga') || lead.tags.includes('Reativação')) {
+      // Se o lead estava na base de reativação e respondeu, avança automaticamente para Qualificado / Interesse
+      const qualifiedStage = db.stages.find((s) => s.id === 'stage-2') || db.stages[1] || db.stages[0];
+      if (qualifiedStage && qualifiedStage.id !== lead.stageId) {
+        lead.stageId = qualifiedStage.id;
+        stageTriggered = qualifiedStage.id;
+        if (!lead.tags.includes('Reativado com Sucesso')) {
+          lead.tags.push('Reativado com Sucesso');
+        }
+        lead.notes = `${lead.notes || ''}\n🔄 [REATIVAÇÃO DE BASE ${new Date().toLocaleTimeString('pt-BR')}]: Paciente inativo respondeu e avançou para "${qualifiedStage.name}"!`;
+        console.log(`[Webhook 🔄 REATIVAÇÃO DE BASE SUCESSO] ${lead.name} (${cleanPhone}) respondeu e avançou para ${qualifiedStage.name}!`);
+      }
     }
 
     if (aiResult.extractedInfo) {

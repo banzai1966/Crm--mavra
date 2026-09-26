@@ -506,6 +506,8 @@ export default function App() {
             onToggleHotLead={handleToggleHotLead}
             onClearAllLeads={handleClearAllLeads}
             onRestoreDemoLeads={handleRestoreDemoLeads}
+            onRefreshLeads={loadAllData}
+            evolutionConfig={evolutionConfig}
             isAdmin={isAdminUnlocked}
           />
         )}

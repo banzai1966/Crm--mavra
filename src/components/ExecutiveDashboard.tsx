@@ -211,6 +211,31 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   const wonValue = wonLeads.reduce((acc, l) => acc + (l.value || 0), 0);
   const conversionRate = totalLeads > 0 ? ((wonLeads.length / totalLeads) * 100).toFixed(1) : '0.0';
 
+  // Base Antiga & Reativação metrics
+  const baseAntigaLeads = leads.filter(
+    (l) =>
+      l.stageId === 'stage-base' ||
+      l.stageId === 'stage-reativacao' ||
+      l.tags.includes('Base Antiga') ||
+      l.tags.includes('Reativação')
+  );
+  const reactivatedLeads = leads.filter(
+    (l) =>
+      (l.tags.includes('Base Antiga') ||
+        l.tags.includes('Reativação') ||
+        l.tags.includes('Reativado com Sucesso') ||
+        l.notes?.toLowerCase().includes('reativação') ||
+        l.notes?.toLowerCase().includes('reativado')) &&
+      l.stageId !== 'stage-base' &&
+      l.stageId !== 'stage-reativacao' &&
+      l.stageId !== 'stage-6'
+  );
+  const reactivatedRevenue = reactivatedLeads.reduce((acc, l) => acc + (l.value || 0), 0);
+  const reactivatedRate =
+    baseAntigaLeads.length > 0
+      ? ((reactivatedLeads.length / baseAntigaLeads.length) * 100).toFixed(1)
+      : '0.0';
+
   // State for discreet Quick QR Modal
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
@@ -553,7 +578,62 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         </div>
       </div>
 
-      {/* Premium Onboarding & Experience Showcase: "Como Funciona, Como Conectar & O Que Esperar" */}
+      {/* Reativação de Base de Pacientes Inativos KPI Highlight */}
+      <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 flex items-center justify-center shrink-0 shadow-inner">
+            <Sparkles className="w-6 h-6 text-indigo-400" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                Campanha de Resgate
+              </span>
+              <h3 className="text-sm font-bold text-white tracking-tight">
+                Reativação de Base & Pacientes Inativos
+              </h3>
+            </div>
+            <p className="text-xs text-slate-300 mt-1">
+              Pacientes antigos resgatados da planilha ou agenda do WhatsApp através da abordagem humanizada da Sofia.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 sm:gap-6 shrink-0 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
+          <div className="text-center sm:text-left">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Na Fila de Resgate</span>
+            <span className="text-base font-extrabold text-indigo-300 font-mono">
+              {baseAntigaLeads.length} pacientes
+            </span>
+          </div>
+
+          <div className="h-8 w-px bg-white/10" />
+
+          <div className="text-center sm:text-left">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Resgatados / Ativos</span>
+            <span className="text-base font-extrabold text-emerald-400 font-mono">
+              {reactivatedLeads.length} ({reactivatedRate}%)
+            </span>
+          </div>
+
+          <div className="h-8 w-px bg-white/10" />
+
+          <div className="text-center sm:text-left">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Receita Resgatada</span>
+            <span className="text-base font-extrabold text-amber-300 font-mono">
+              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(reactivatedRevenue)}
+            </span>
+          </div>
+
+          <button
+            onClick={() => onNavigateToTab('kanban')}
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+          >
+            <span>Ver Base</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
       {showExecutiveGuide && (
         <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-indigo-500/20 relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
           {/* Subtle glow / background flair */}
