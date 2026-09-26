@@ -162,12 +162,12 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Navigation Tabs & Header Actions */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0" id="main-navigation">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 w-full md:w-auto">
+          <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none -mx-4 px-4 md:mx-0 md:px-0 w-auto" id="main-navigation">
             <button
               id="nav-tab-dashboard"
               onClick={() => setActiveTab('dashboard')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === 'dashboard'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -180,7 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="nav-tab-kanban"
               onClick={() => setActiveTab('kanban')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === 'kanban'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -198,7 +198,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="nav-tab-chat"
               onClick={() => setActiveTab('chat')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer relative whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer relative whitespace-nowrap shrink-0 ${
                 activeTab === 'chat'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -219,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   id="nav-tab-agent"
                   onClick={() => setActiveTab('agent')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     activeTab === 'agent'
                       ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -232,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   id="nav-tab-evolution"
                   onClick={() => setActiveTab('evolution')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     activeTab === 'evolution'
                       ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -245,7 +245,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   id="nav-tab-supabase"
                   onClick={() => setActiveTab('supabase')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     activeTab === 'supabase'
                       ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -259,7 +259,7 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Clean Top Action Buttons (IA toggle & Admin) */}
-          <div className="hidden md:flex items-center gap-2 pl-2 border-l border-slate-200">
+          <div className="flex items-center gap-2 pt-1 md:pt-0 md:pl-2 md:border-l border-slate-200 shrink-0">
             {onToggleGlobalAi && (
               <button
                 onClick={onToggleGlobalAi}

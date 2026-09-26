@@ -39,7 +39,9 @@ import {
   CheckCircle2,
   X,
   Layers,
-  Sparkles as SparklesIcon
+  Sparkles as SparklesIcon,
+  Moon,
+  Calendar,
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider } from '../types';
 
@@ -815,6 +817,181 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               </p>
             </div>
           </div>
+        </div>
+
+        {/* ESCALA DE HORÁRIOS & MODO PLANTÃO AUTOMÁTICO (SECRETÁRIA DE DIA / IA À NOITE) */}
+        <div className="bg-white border-2 border-indigo-200 rounded-2xl p-6 shadow-sm space-y-5 bg-gradient-to-br from-indigo-50/30 via-white to-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-2xs">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  Escala de Horários & Modo Plantão Automático
+                  <span className="text-[10px] bg-indigo-100 text-indigo-900 font-bold px-2 py-0.5 rounded border border-indigo-300">
+                    Sem esquecer de ligar/desligar
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Ideal para clínicas e empresas com secretária durante o dia: a IA assume sozinha à noite e fins de semana no automático!
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="toggle-schedule-enabled"
+                  checked={config.operatingScheduleEnabled || false}
+                  onChange={(e) => handleQuickToggle({ operatingScheduleEnabled: e.target.checked })}
+                  className="sr-only peer"
+                />
+                <div className="w-10 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+              <span className="text-xs font-bold text-slate-800">
+                {config.operatingScheduleEnabled ? 'Escala Automática Ativa' : '24h Contínuo (Padrão)'}
+              </span>
+            </div>
+          </div>
+
+          {config.operatingScheduleEnabled ? (
+            <div className="space-y-4 animate-in fade-in duration-200">
+              {/* Seleção do Modo de Escala */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div
+                  onClick={() => setConfig({ ...config, operatingScheduleMode: 'outside_hours_only' })}
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                    (config.operatingScheduleMode || 'outside_hours_only') === 'outside_hours_only'
+                      ? 'bg-indigo-50/80 border-indigo-600 shadow-2xs'
+                      : 'bg-white border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Moon className="w-4 h-4 text-indigo-700" />
+                    <span className="text-xs font-bold text-slate-900">
+                      Modo Plantão Noturno & Fins de Semana (Recomendado)
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    <b>De dia:</b> Sua secretária/equipe atende os clientes e a IA fica em silêncio. <br />
+                    <b>À noite e Finais de Semana:</b> A IA Sofia entra em ação <b>100% no automático</b> para não perder nenhum lead!
+                  </p>
+                </div>
+
+                <div
+                  onClick={() => setConfig({ ...config, operatingScheduleMode: 'business_hours_only' })}
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                    config.operatingScheduleMode === 'business_hours_only'
+                      ? 'bg-indigo-50/80 border-indigo-600 shadow-2xs'
+                      : 'bg-white border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Sun className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs font-bold text-slate-900">
+                      Apenas Horário Comercial
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    A IA responde exclusivamente dentro do horário de expediente definido. Fora do horário, as mensagens aguardam o dia seguinte.
+                  </p>
+                </div>
+              </div>
+
+              {/* Configuração de Horários e Dias da Semana */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-indigo-600" />
+                    Horário do Expediente Humano (Secretária)
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <span className="text-[10px] text-slate-500 font-semibold block mb-1">Início:</span>
+                      <input
+                        type="time"
+                        value={config.businessHoursStart || '08:00'}
+                        onChange={(e) => setConfig({ ...config, businessHoursStart: e.target.value })}
+                        className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:border-indigo-500"
+                      />
+                    </div>
+                    <span className="text-slate-400 font-bold text-xs mt-4">até</span>
+                    <div className="flex-1">
+                      <span className="text-[10px] text-slate-500 font-semibold block mb-1">Término:</span>
+                      <input
+                        type="time"
+                        value={config.businessHoursEnd || '18:00'}
+                        onChange={(e) => setConfig({ ...config, businessHoursEnd: e.target.value })}
+                        className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:border-indigo-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+                    Dias de Expediente da Equipe Humana:
+                  </label>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {[
+                      { id: 1, label: 'Seg' },
+                      { id: 2, label: 'Ter' },
+                      { id: 3, label: 'Qua' },
+                      { id: 4, label: 'Qui' },
+                      { id: 5, label: 'Sex' },
+                      { id: 6, label: 'Sáb' },
+                      { id: 0, label: 'Dom' },
+                    ].map((day) => {
+                      const currentDays = config.businessDays || [1, 2, 3, 4, 5];
+                      const isSelected = currentDays.includes(day.id);
+                      return (
+                        <button
+                          key={day.id}
+                          type="button"
+                          onClick={() => {
+                            const updated = isSelected
+                              ? currentDays.filter((d) => d !== day.id)
+                              : [...currentDays, day.id];
+                            setConfig({ ...config, businessDays: updated });
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'bg-indigo-600 text-white shadow-2xs'
+                              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          {day.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1.5">
+                    Dias desmarcados são considerados folga/fim de semana (a IA Sofia atende 24h nesses dias).
+                  </p>
+                </div>
+              </div>
+
+              {/* Status ao Vivo */}
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>
+                    <b>Automação Ativa:</b> Você <b>não precisa</b> lembrar de ligar ou desligar nada. A transição entre secretária humana e IA acontece de forma 100% automática todos os dias.
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2 text-xs text-slate-600">
+              <Sparkles className="w-4 h-4 text-slate-500 shrink-0" />
+              <span>
+                Atualmente a IA está operando em <b>Modo 24/7 Contínuo</b>. Caso queira que ela atue apenas como plantonista fora do expediente comercial, basta ativar a chave acima!
+              </span>
+            </div>
+          )}
         </div>
 
         {/* 1. SELETOR MULTI-PROVEDOR DE IA */}

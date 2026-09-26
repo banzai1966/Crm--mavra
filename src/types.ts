@@ -119,6 +119,12 @@ export interface AgentConfig {
   followUpNiche?: BusinessNiche;
   followUpCustomMessage?: string;
   maxFollowUpsPerLead?: number;
+  operatingScheduleEnabled?: boolean;
+  operatingScheduleMode?: 'always_24_7' | 'outside_hours_only' | 'business_hours_only';
+  businessHoursStart?: string;
+  businessHoursEnd?: string;
+  businessDays?: number[];
+  outsideHoursNotice?: string;
 }
 
 export interface EvolutionConfig {

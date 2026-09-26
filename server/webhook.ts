@@ -73,6 +73,60 @@ function isDuplicateContent(phone: string, text: string): boolean {
   return false;
 }
 
+export function isWithinBusinessHours(config: any): boolean {
+  try {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Sao_Paulo',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: false,
+      weekday: 'short',
+    }).formatToParts(now);
+
+    let hour = 0;
+    let minute = 0;
+    let weekdayStr = 'Mon';
+    for (const part of parts) {
+      if (part.type === 'hour') hour = parseInt(part.value, 10);
+      if (part.type === 'minute') minute = parseInt(part.value, 10);
+      if (part.type === 'weekday') weekdayStr = part.value;
+    }
+
+    const weekdayMap: Record<string, number> = {
+      Sun: 0,
+      Mon: 1,
+      Tue: 2,
+      Wed: 3,
+      Thu: 4,
+      Fri: 5,
+      Sat: 6,
+    };
+    const dayOfWeek = weekdayMap[weekdayStr] ?? now.getDay();
+
+    const allowedDays: number[] = config.businessDays && Array.isArray(config.businessDays) && config.businessDays.length > 0
+      ? config.businessDays
+      : [1, 2, 3, 4, 5]; // Segunda a Sexta por padrão
+
+    if (!allowedDays.includes(dayOfWeek)) {
+      return false; // Fora dos dias úteis (fim de semana ou folga)
+    }
+
+    const startStr = config.businessHoursStart || '08:00';
+    const endStr = config.businessHoursEnd || '18:00';
+    const [startH, startM] = startStr.split(':').map((v: string) => parseInt(v, 10) || 0);
+    const [endH, endM] = endStr.split(':').map((v: string) => parseInt(v, 10) || 0);
+
+    const currentMinutes = hour * 60 + minute;
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+
+    return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  } catch (e) {
+    return true;
+  }
+}
+
 export function handleIncomingWebhook(body: any): void {
   // CRITICAL: We execute the entire pipeline inside setImmediate / background async queue
   // so the caller function in server.ts has already returned HTTP 200 within <5ms.
@@ -555,6 +609,28 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   if (lead.aiPaused) {
     console.log(`[Webhook] Atendimento humano ativo para ${lead.name} (${cleanPhone}). IA pausada.`);
     return;
+  }
+
+  // 4d. Check Automatic Operating Schedule (Escala de Horários & Modo Fora de Expediente)
+  if (db.agentConfig.operatingScheduleEnabled) {
+    const isBusinessHours = isWithinBusinessHours(db.agentConfig);
+    const scheduleMode = db.agentConfig.operatingScheduleMode || 'outside_hours_only';
+
+    if (scheduleMode === 'outside_hours_only' && isBusinessHours) {
+      console.log(`[Webhook] HORÁRIO COMERCIAL ATIVO (Equipe Humana no Expediente): IA pausada automaticamente para ${cleanPhone} até o fim do expediente.`);
+      db.logWebhookEvent({
+        event: rawEvent,
+        senderPhone: cleanPhone,
+        status: 'ignored_from_me',
+        details: 'Horário comercial ativo: atendimento realizado pela equipe humana / secretária. IA entrará automaticamente no plantão fora de expediente.',
+      });
+      return;
+    }
+
+    if (scheduleMode === 'business_hours_only' && !isBusinessHours) {
+      console.log(`[Webhook] FORA DO HORÁRIO COMERCIAL: Modo restrito ao expediente comercial. IA não responderá à noite.`);
+      return;
+    }
   }
 
   // 5. Query chat history for this lead

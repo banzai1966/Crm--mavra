@@ -26,6 +26,9 @@ import {
   Zap,
   CalendarCheck,
   Trash2,
+  ArrowLeft,
+  X,
+  Info,
 } from 'lucide-react';
 import { Lead, ChatMessage, KanbanStage } from '../types';
 
@@ -62,7 +65,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   const [inputText, setInputText] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [sendViaWhatsApp, setSendViaWhatsApp] = useState(true);
-  const [showDetails, setShowDetails] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
+  const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
@@ -146,9 +150,13 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   const activeStage = stages.find((s) => s.id === activeLead?.stageId);
 
   return (
-    <div className="flex-1 flex min-h-0 bg-slate-100 overflow-hidden" id="live-chat-module">
+    <div className="flex-1 flex min-h-0 bg-slate-100 overflow-hidden relative" id="live-chat-module">
       {/* 1. LEFT SIDEBAR: Conversation List */}
-      <div className="w-80 md:w-96 border-r border-slate-200 bg-white flex flex-col shrink-0">
+      <div
+        className={`w-full md:w-80 lg:w-96 border-r border-slate-200 bg-white flex flex-col shrink-0 ${
+          mobileView === 'list' ? 'flex' : 'hidden md:flex'
+        }`}
+      >
         {/* Search header */}
         <div className="p-3 border-b border-slate-200 bg-slate-50/70">
           <div className="relative">
@@ -174,7 +182,10 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               <button
                 key={lead.id}
                 id={`chat-item-${lead.id}`}
-                onClick={() => onSelectLead(lead.id)}
+                onClick={() => {
+                  onSelectLead(lead.id);
+                  setMobileView('chat');
+                }}
                 className={`w-full p-3.5 text-left flex items-start gap-3 transition-colors cursor-pointer ${
                   isSelected
                     ? 'bg-slate-100/90 border-l-4 border-slate-900'
@@ -205,7 +216,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   <div className="flex items-center justify-between gap-1">
                     {/* Stage badge */}
                     <span
-                      className="text-[10px] px-1.5 py-0.5 rounded font-semibold truncate max-w-[140px]"
+                      className="text-[10px] px-1.5 py-0.5 rounded font-semibold truncate max-w-[130px]"
                       style={{
                         backgroundColor: `${stage?.color}15`,
                         color: stage?.color,
@@ -244,22 +255,36 @@ export const LiveChat: React.FC<LiveChatProps> = ({
       </div>
 
       {/* 2. MAIN CHAT AREA (WhatsApp Web Style) */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+      <div
+        className={`flex-1 flex flex-col min-w-0 bg-slate-50 ${
+          mobileView === 'chat' ? 'flex' : 'hidden md:flex'
+        }`}
+      >
         {activeLead ? (
           <>
             {/* Chat Room Top Bar */}
-            <div className="px-5 py-2.5 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0 shadow-2xs">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
+            <div className="px-3 md:px-5 py-2.5 border-b border-slate-200 bg-white flex items-center justify-between gap-2 shrink-0 shadow-2xs">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                {/* Back button on mobile */}
+                <button
+                  type="button"
+                  onClick={() => setMobileView('list')}
+                  className="md:hidden p-1.5 -ml-1 rounded-lg hover:bg-slate-100 text-slate-700 cursor-pointer shrink-0"
+                  title="Voltar para lista de conversas"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+
+                <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
                   {activeLead.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900 truncate">
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <h3 className="text-xs md:text-sm font-bold text-slate-900 truncate">
                       {activeLead.name}
                     </h3>
                     <span
-                      className="text-[10px] px-2 py-0.2 rounded font-medium shrink-0"
+                      className="text-[9px] md:text-[10px] px-1.5 py-0.2 rounded font-medium shrink-0 truncate max-w-[90px] md:max-w-none"
                       style={{
                         backgroundColor: `${activeStage?.color}15`,
                         color: activeStage?.color,
@@ -269,21 +294,21 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                       {activeStage?.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
-                    <span>{activeLead.phone}</span>
-                    <span>•</span>
-                    <span className="text-emerald-700 font-medium">Evolution API v2</span>
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
+                    <span className="truncate">{activeLead.phone}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="text-emerald-700 font-medium hidden sm:inline">Evolution API v2</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons: Pause/Resume AI & Stage Change */}
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
                 {/* Takeover toggle */}
                 <button
                   id="btn-toggle-ai-takeover"
                   onClick={() => onToggleAi(activeLead.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer border ${
+                  className={`flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1.5 rounded-lg text-[11px] md:text-xs font-bold transition-all shadow-2xs cursor-pointer border ${
                     activeLead.aiPaused
                       ? 'bg-amber-500 hover:bg-amber-400 text-white border-amber-600'
                       : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-700'
@@ -296,13 +321,15 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                 >
                   {activeLead.aiPaused ? (
                     <>
-                      <UserCheck className="w-3.5 h-3.5" />
-                      <span>Atendimento Humano (IA Pausada)</span>
+                      <UserCheck className="w-3.5 h-3.5 shrink-0" />
+                      <span className="hidden sm:inline">Atendimento Humano (IA Pausada)</span>
+                      <span className="sm:hidden">Humano</span>
                     </>
                   ) : (
                     <>
-                      <Bot className="w-3.5 h-3.5" />
-                      <span>Assumir Atendimento (Pausar IA)</span>
+                      <Bot className="w-3.5 h-3.5 shrink-0" />
+                      <span className="hidden sm:inline">Assumir Atendimento (Pausar IA)</span>
+                      <span className="sm:hidden">Assumir</span>
                     </>
                   )}
                 </button>
@@ -317,6 +344,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                         )
                       ) {
                         onDeleteLead(activeLead.id);
+                        setMobileView('list');
                       }
                     }}
                     className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 border border-slate-200 transition-colors cursor-pointer"
@@ -619,174 +647,233 @@ export const LiveChat: React.FC<LiveChatProps> = ({
       </div>
 
       {/* 3. RIGHT DRAWER: Lead Details & Quick CRM Controls */}
+      {/* Desktop sidebar */}
       {showDetails && activeLead && (
-        <div className="w-80 border-l border-slate-200 bg-white p-4 overflow-y-auto flex flex-col gap-4 shrink-0">
-          <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Detalhes da Oportunidade
-            </h3>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2.5">
-              <div>
-                <span className="text-[11px] text-slate-400 block">Lead / Empresa</span>
-                <span className="text-xs font-bold text-slate-900">{activeLead.name}</span>
-              </div>
+        <div className="hidden lg:flex w-80 border-l border-slate-200 bg-white p-4 overflow-y-auto flex-col gap-4 shrink-0">
+          <DetailsContent
+            activeLead={activeLead}
+            stages={stages}
+            onMoveLead={onMoveLead}
+            onResolveUrgency={onResolveUrgency}
+            onConfirmTriage={onConfirmTriage}
+            onUpdateLeadNotes={onUpdateLeadNotes}
+          />
+        </div>
+      )}
 
-              <div>
-                <span className="text-[11px] text-slate-400 block">WhatsApp</span>
-                <span className="text-xs font-mono text-slate-900 font-semibold">
-                  {activeLead.phone}
-                </span>
-              </div>
-
-              {activeLead.email && (
-                <div>
-                  <span className="text-[11px] text-slate-400 block">E-mail</span>
-                  <span className="text-xs text-slate-700">{activeLead.email}</span>
-                </div>
-              )}
-
-              <div>
-                <span className="text-[11px] text-slate-400 block">Valor Estimado</span>
-                <span className="text-xs font-mono font-bold text-emerald-700">
-                  {new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(activeLead.value || 0)}
-                </span>
-              </div>
-
-              <div>
-                <span className="text-[11px] text-slate-400 block mb-1">
-                  Estágio no Funil
-                </span>
-                <select
-                  value={activeLead.stageId}
-                  onChange={(e) => onMoveLead(activeLead.id, e.target.value)}
-                  className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-hidden"
-                >
-                  {stages.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {/* Mobile slide-over modal drawer */}
+      {showDetails && activeLead && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end lg:hidden animate-in fade-in duration-150">
+          <div className="w-full max-w-sm bg-white h-full p-4 overflow-y-auto flex flex-col gap-4 shadow-2xl animate-in slide-in-from-right duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-bold text-slate-900">Detalhes da Oportunidade</h3>
+              <button
+                type="button"
+                onClick={() => setShowDetails(false)}
+                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-          </div>
-
-          {/* Urgency Alert if marked */}
-          {activeLead.isUrgent && (
-            <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-900 space-y-2">
-              <div className="flex items-center gap-1.5 font-bold text-xs">
-                <AlertTriangle className="w-4 h-4 text-rose-600 animate-pulse" />
-                <span>Urgência / Dor Reportada</span>
-              </div>
-              <p className="text-[11px] text-rose-800 leading-relaxed bg-white/70 p-2 rounded border border-rose-150">
-                {activeLead.urgencyReason || 'Paciente necessita de atenção prioritária ou encaixe.'}
-              </p>
-              {onResolveUrgency && (
-                <button
-                  type="button"
-                  onClick={() => onResolveUrgency(activeLead.id)}
-                  className="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-1.5 rounded-lg shadow-2xs transition-colors cursor-pointer"
-                >
-                  Resolver e Remover Alerta
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Pre-Appointment Triage Card */}
-          {activeLead.triage && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-indigo-600" />
-                  Triagem do Agendamento
-                </h3>
-                <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${activeLead.triage.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                  {activeLead.triage.status === 'confirmed' ? 'Confirmado' : 'A Confirmar'}
-                </span>
-              </div>
-
-              <div className="bg-indigo-50/70 border border-indigo-200 rounded-xl p-3 space-y-2 text-xs text-indigo-950">
-                <div>
-                  <span className="text-[10px] text-indigo-700 block font-semibold">Procedimento / Consulta</span>
-                  <span className="font-bold text-indigo-950">{activeLead.triage.procedure || 'Consulta Geral'}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-[11px]">
-                  <div>
-                    <span className="text-[10px] text-indigo-700 block font-semibold">Período Preferido</span>
-                    <span className="font-medium capitalize">{activeLead.triage.preferredPeriod || 'A definir'}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-indigo-700 block font-semibold">Dias Preferidos</span>
-                    <span className="font-medium">{activeLead.triage.preferredDays || 'Flexível'}</span>
-                  </div>
-                </div>
-
-                {activeLead.triage.paymentType && (
-                  <div className="text-[11px]">
-                    <span className="text-[10px] text-indigo-700 block font-semibold">Tipo de Pagamento</span>
-                    <span className="font-medium capitalize">
-                      {activeLead.triage.paymentType} {activeLead.triage.convenioName ? `(${activeLead.triage.convenioName})` : ''}
-                    </span>
-                  </div>
-                )}
-
-                {onConfirmTriage && activeLead.triage.status !== 'confirmed' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const datePrompt = window.prompt(
-                        'Informe a data e horário confirmado para enviar ao paciente no WhatsApp:',
-                        'Quinta-feira às 10:30'
-                      );
-                      if (datePrompt) {
-                        onConfirmTriage(activeLead.id, datePrompt);
-                      }
-                    }}
-                    className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-2 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
-                  >
-                    <CalendarCheck className="w-3.5 h-3.5" />
-                    <span>Confirmar e Disparar no WhatsApp</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-          <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Tags do Lead
-            </h3>
-            <div className="flex flex-wrap gap-1.5">
-              {activeLead.tags.map((tag, idx) => (
-                <span
-                  key={idx}
-                  className="text-[10px] bg-slate-100 border border-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div className="flex-1 flex flex-col">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Anotações Internas
-            </h3>
-            <textarea
-              rows={6}
-              value={activeLead.notes || ''}
-              onChange={(e) => onUpdateLeadNotes(activeLead.id, e.target.value)}
-              placeholder="Adicione observações sobre a negociação..."
-              className="w-full flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-slate-400 resize-none"
+            <DetailsContent
+              activeLead={activeLead}
+              stages={stages}
+              onMoveLead={onMoveLead}
+              onResolveUrgency={onResolveUrgency}
+              onConfirmTriage={onConfirmTriage}
+              onUpdateLeadNotes={onUpdateLeadNotes}
             />
           </div>
         </div>
       )}
     </div>
+  );
+};
+
+// Reusable Details Content Component
+interface DetailsContentProps {
+  activeLead: Lead;
+  stages: KanbanStage[];
+  onMoveLead: (leadId: string, stageId: string) => void;
+  onResolveUrgency?: (leadId: string) => void;
+  onConfirmTriage?: (leadId: string, dateStr: string) => Promise<void>;
+  onUpdateLeadNotes: (leadId: string, notes: string) => void;
+}
+
+const DetailsContent: React.FC<DetailsContentProps> = ({
+  activeLead,
+  stages,
+  onMoveLead,
+  onResolveUrgency,
+  onConfirmTriage,
+  onUpdateLeadNotes,
+}) => {
+  return (
+    <>
+      <div>
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+          Detalhes da Oportunidade
+        </h3>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+          <div>
+            <span className="text-[11px] text-slate-400 block">Lead / Empresa</span>
+            <span className="text-xs font-bold text-slate-900">{activeLead.name}</span>
+          </div>
+
+          <div>
+            <span className="text-[11px] text-slate-400 block">WhatsApp</span>
+            <span className="text-xs font-mono text-slate-900 font-semibold">
+              {activeLead.phone}
+            </span>
+          </div>
+
+          {activeLead.email && (
+            <div>
+              <span className="text-[11px] text-slate-400 block">E-mail</span>
+              <span className="text-xs text-slate-700">{activeLead.email}</span>
+            </div>
+          )}
+
+          <div>
+            <span className="text-[11px] text-slate-400 block">Valor Estimado</span>
+            <span className="text-xs font-mono font-bold text-emerald-700">
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(activeLead.value || 0)}
+            </span>
+          </div>
+
+          <div>
+            <span className="text-[11px] text-slate-400 block mb-1">
+              Estágio no Funil
+            </span>
+            <select
+              value={activeLead.stageId}
+              onChange={(e) => onMoveLead(activeLead.id, e.target.value)}
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-hidden"
+            >
+              {stages.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Urgency Alert if marked */}
+      {activeLead.isUrgent && (
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-900 space-y-2">
+          <div className="flex items-center gap-1.5 font-bold text-xs">
+            <AlertTriangle className="w-4 h-4 text-rose-600 animate-pulse" />
+            <span>Urgência / Dor Reportada</span>
+          </div>
+          <p className="text-[11px] text-rose-800 leading-relaxed bg-white/70 p-2 rounded border border-rose-150">
+            {activeLead.urgencyReason || 'Paciente necessita de atenção prioritária ou encaixe.'}
+          </p>
+          {onResolveUrgency && (
+            <button
+              type="button"
+              onClick={() => onResolveUrgency(activeLead.id)}
+              className="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-1.5 rounded-lg shadow-2xs transition-colors cursor-pointer"
+            >
+              Resolver e Remover Alerta
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Pre-Appointment Triage Card */}
+      {activeLead.triage && (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+              Triagem do Agendamento
+            </h3>
+            <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${activeLead.triage.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+              {activeLead.triage.status === 'confirmed' ? 'Confirmado' : 'A Confirmar'}
+            </span>
+          </div>
+
+          <div className="bg-indigo-50/70 border border-indigo-200 rounded-xl p-3 space-y-2 text-xs text-indigo-950">
+            <div>
+              <span className="text-[10px] text-indigo-700 block font-semibold">Procedimento / Consulta</span>
+              <span className="font-bold text-indigo-950">{activeLead.triage.procedure || 'Consulta Geral'}</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div>
+                <span className="text-[10px] text-indigo-700 block font-semibold">Período Preferido</span>
+                <span className="font-medium capitalize">{activeLead.triage.preferredPeriod || 'A definir'}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-indigo-700 block font-semibold">Dias Preferidos</span>
+                <span className="font-medium">{activeLead.triage.preferredDays || 'Flexível'}</span>
+              </div>
+            </div>
+
+            {activeLead.triage.paymentType && (
+              <div className="text-[11px]">
+                <span className="text-[10px] text-indigo-700 block font-semibold">Tipo de Pagamento</span>
+                <span className="font-medium capitalize">
+                  {activeLead.triage.paymentType} {activeLead.triage.convenioName ? `(${activeLead.triage.convenioName})` : ''}
+                </span>
+              </div>
+            )}
+
+            {onConfirmTriage && activeLead.triage.status !== 'confirmed' && (
+              <button
+                type="button"
+                onClick={() => {
+                  const datePrompt = window.prompt(
+                    'Informe a data e horário confirmado para enviar ao paciente no WhatsApp:',
+                    'Quinta-feira às 10:30'
+                  );
+                  if (datePrompt) {
+                    onConfirmTriage(activeLead.id, datePrompt);
+                  }
+                }}
+                className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-2 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+              >
+                <CalendarCheck className="w-3.5 h-3.5" />
+                <span>Confirmar e Disparar no WhatsApp</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      <div>
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+          Tags do Lead
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {activeLead.tags.map((tag, idx) => (
+            <span
+              key={idx}
+              className="text-[10px] bg-slate-100 border border-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Notes */}
+      <div className="flex-1 flex flex-col min-h-[140px]">
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+          Anotações Internas
+        </h3>
+        <textarea
+          rows={5}
+          value={activeLead.notes || ''}
+          onChange={(e) => onUpdateLeadNotes(activeLead.id, e.target.value)}
+          placeholder="Adicione observações sobre a negociação..."
+          className="w-full flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-slate-400 resize-none"
+        />
+      </div>
+    </>
   );
 };
