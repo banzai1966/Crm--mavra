@@ -5,6 +5,9 @@ import { db } from './server/db';
 import { handleIncomingWebhook } from './server/webhook';
 import {
   sendWhatsAppMessage,
+  sendWhatsAppMedia,
+  sendWhatsAppImage,
+  sendWhatsAppVoiceAudio,
   checkEvolutionStatus,
   fetchRemoteWebhookConfig,
   setRemoteWebhookConfig,
@@ -534,6 +537,69 @@ async function startServer() {
       }
     }
 
+    res.status(201).json(newMsg);
+  });
+
+  app.post('/api/chat/send-media', async (req: Request, res: Response) => {
+    const { leadId, mediaType, data, fileName, caption, sendViaWhatsApp } = req.body;
+    if (!leadId || !mediaType || !data) {
+      return res.status(400).json({ error: 'leadId, mediaType e data são obrigatórios' });
+    }
+
+    const lead = db.leads.find((l) => l.id === leadId);
+    if (!lead) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    let messageText = caption || '';
+    if (mediaType === 'pdf') {
+      messageText = `📄 [Documento / PDF]: ${fileName || 'Documento.pdf'}${caption ? ' - ' + caption : ''}`;
+    } else if (mediaType === 'image') {
+      messageText = `📷 [Foto]: ${caption || 'Imagem enviada'}`;
+    } else if (mediaType === 'audio') {
+      messageText = `🎙️ [Áudio de Voz]: ${caption || 'Mensagem de voz gravada'}`;
+    }
+
+    const newMsg: ChatMessage = {
+      id: 'msg-' + Date.now() + '-agent',
+      leadId: lead.id,
+      phone: lead.phone,
+      sender: 'agent',
+      text: messageText,
+      mediaUrl: data,
+      mediaType: mediaType,
+      fileName: fileName,
+      timestamp: new Date().toISOString(),
+      status: 'sent',
+    };
+
+    db.messages.push(newMsg);
+    lead.lastInteraction = new Date().toISOString();
+
+    // Optionally dispatch via Evolution API
+    if (sendViaWhatsApp !== false) {
+      try {
+        if (mediaType === 'pdf') {
+          const docRes = await sendWhatsAppMedia(
+            lead.phone,
+            data,
+            fileName || 'documento.pdf',
+            caption
+          );
+          if (docRes.success) newMsg.status = 'delivered';
+        } else if (mediaType === 'image') {
+          const imgRes = await sendWhatsAppImage(lead.phone, data, caption);
+          if (imgRes.success) newMsg.status = 'delivered';
+        } else if (mediaType === 'audio') {
+          const audRes = await sendWhatsAppVoiceAudio(lead.phone, data);
+          if (audRes.success) newMsg.status = 'delivered';
+        }
+      } catch (e: any) {
+        console.error('[Evolution API Media Dispatch Error]:', e);
+      }
+    }
+
+    db.saveToFile();
     res.status(201).json(newMsg);
   });
 

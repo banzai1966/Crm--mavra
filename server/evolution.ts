@@ -226,6 +226,84 @@ export async function sendWhatsAppMedia(
 }
 
 /**
+ * Sends a real WhatsApp Image (JPEG / PNG / WebP)
+ * Accepts base64 image or public URL
+ */
+export async function sendWhatsAppImage(
+  phone: string,
+  mediaUrlOrBase64: string,
+  caption?: string,
+  instanceNameOverride?: string
+): Promise<EvolutionSendResult> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const targetInstance = normalizeInstanceName(instanceNameOverride || config.instanceName);
+  const cleanPhone = phone.replace(/\D/g, '');
+
+  if (!cleanPhone || !mediaUrlOrBase64) {
+    return { success: false, error: 'Telefone ou imagem ausente' };
+  }
+
+  const apiKey = getEvolutionApiKey();
+  const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
+  if (isDummyUrl || !apiKey) {
+    console.log(`[Evolution API Simulada (${targetInstance})] Foto/Imagem enviada para ${cleanPhone}`);
+    return { success: true, messageId: 'simulated-image-' + Date.now() };
+  }
+
+  try {
+    const endpoint = `${baseUrl}/message/sendMedia/${encodeURIComponent(targetInstance)}`;
+    const isBase64 = mediaUrlOrBase64.startsWith('data:') || (!mediaUrlOrBase64.startsWith('http://') && !mediaUrlOrBase64.startsWith('https://'));
+    const media = isBase64 ? mediaUrlOrBase64.replace(/^data:[^;]+;base64,/, '').trim() : mediaUrlOrBase64;
+
+    const payload = {
+      number: cleanPhone,
+      mediatype: 'image',
+      mimetype: 'image/jpeg',
+      caption: caption || '',
+      media: media,
+      delay: 1200,
+    };
+
+    let response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: apiKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: MASTER_EVOLUTION_KEY },
+        body: JSON.stringify(payload),
+      });
+      if (response.ok) {
+        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+        db.saveToFile();
+      }
+    }
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`Evolution sendMedia image (${targetInstance}) HTTP ${response.status}:`, errText);
+      return { success: false, error: `Evolution sendMedia HTTP ${response.status}` };
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      messageId: data?.key?.id || data?.id || 'image-' + Date.now(),
+    };
+  } catch (err: any) {
+    console.error(`Falha ao enviar imagem na Evolution API (${targetInstance}):`, err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
  * Sends a real WhatsApp Voice Note (PTT / Blue Microphone Waveform)
  * Accepts base64 audio (MP3/OGG) or public URL
  */

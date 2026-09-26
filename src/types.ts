@@ -51,6 +51,9 @@ export interface ChatMessage {
   timestamp: string;
   status: 'sent' | 'delivered' | 'read' | 'pending';
   stageTriggered?: string;
+  mediaUrl?: string;
+  mediaType?: 'pdf' | 'image' | 'audio';
+  fileName?: string;
   extractedInfo?: {
     name?: string;
     email?: string;

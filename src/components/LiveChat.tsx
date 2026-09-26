@@ -29,6 +29,15 @@ import {
   ArrowLeft,
   X,
   Info,
+  Paperclip,
+  Smile,
+  FileUp,
+  Square,
+  Play,
+  Pause,
+  Download,
+  ExternalLink,
+  ChevronUp,
 } from 'lucide-react';
 import { Lead, ChatMessage, KanbanStage } from '../types';
 
@@ -46,6 +55,13 @@ interface LiveChatProps {
   onDeleteLead?: (leadId: string) => void;
   personaName?: string;
 }
+
+const COMMON_EMOJIS = [
+  '👋', '😊', '👍', '🙏', '💙', '✨',
+  '🩺', '💊', '🏥', '🦷', '📅', '🕒',
+  '📍', '💰', '💳', '📝', '📞', '🤝',
+  '✅', '⭐', '❤️', '🙌', '🔔', '💬',
+];
 
 export const LiveChat: React.FC<LiveChatProps> = ({
   leads,
@@ -70,7 +86,41 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
+  // Attachment & Emoji state
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showQuickReplies, setShowQuickReplies] = useState(false);
+
+  // Audio Recording State
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<any>(null);
+
+  // Media upload preview modal state
+  const [mediaModal, setMediaModal] = useState<{
+    isOpen: boolean;
+    type: 'pdf' | 'image';
+    fileName: string;
+    fileBase64: string;
+    caption: string;
+  }>({
+    isOpen: false,
+    type: 'image',
+    fileName: '',
+    fileBase64: '',
+    caption: '',
+  });
+
+  // Audio Playback State
+  const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
+
+  const fileInputPdfRef = useRef<HTMLInputElement>(null);
+  const fileInputImageRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const activeLead = leads.find((l) => l.id === selectedLeadId) || leads[0];
 
@@ -122,12 +172,16 @@ export const LiveChat: React.FC<LiveChatProps> = ({
     return () => clearInterval(interval);
   }, [activeLead?.id]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle standard text message sending
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!inputText.trim() || !activeLead || isSending) return;
 
     const text = inputText.trim();
     setInputText('');
+    setShowEmojiPicker(false);
+    setShowAttachMenu(false);
+    setShowQuickReplies(false);
     setIsSending(true);
 
     try {
@@ -136,6 +190,195 @@ export const LiveChat: React.FC<LiveChatProps> = ({
     } finally {
       setIsSending(false);
     }
+  };
+
+  // Handle File Input selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'pdf' | 'image') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setMediaModal({
+        isOpen: true,
+        type,
+        fileName: file.name,
+        fileBase64: base64,
+        caption: '',
+      });
+      setShowAttachMenu(false);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  // Send selected PDF / Image
+  const handleSendMediaModal = async () => {
+    if (!activeLead || !mediaModal.fileBase64 || isSending) return;
+    setIsSending(true);
+
+    try {
+      const res = await fetch('/api/chat/send-media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: activeLead.id,
+          mediaType: mediaModal.type,
+          data: mediaModal.fileBase64,
+          fileName: mediaModal.fileName,
+          caption: mediaModal.caption,
+          sendViaWhatsApp,
+        }),
+      });
+
+      if (res.ok) {
+        setMediaModal({ isOpen: false, type: 'image', fileName: '', fileBase64: '', caption: '' });
+        await fetchMessages(activeLead.id);
+      }
+    } catch (err) {
+      console.error('Erro ao enviar mídia:', err);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Quick PDF Preset sender (e.g., Tabela de Procedimentos)
+  const handleSendPresetPdf = async () => {
+    if (!activeLead || isSending) return;
+    setIsSending(true);
+    setShowAttachMenu(false);
+
+    try {
+      const res = await fetch('/api/chat/send-media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: activeLead.id,
+          mediaType: 'pdf',
+          data: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          fileName: 'Tabela_de_Procedimentos_Dra_Lucy_Murata.pdf',
+          caption: 'Segue em anexo a nossa Tabela de Procedimentos e Orientações Oficiais da Clínica.',
+          sendViaWhatsApp,
+        }),
+      });
+      if (res.ok) {
+        await fetchMessages(activeLead.id);
+      }
+    } catch (err) {
+      console.error('Erro ao enviar PDF:', err);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Start Real Audio Recording
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+        // Stop all audio tracks
+        stream.getTracks().forEach((track) => track.stop());
+
+        if (audioChunksRef.current.length === 0) return;
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64Audio = reader.result as string;
+          if (activeLead && base64Audio) {
+            setIsSending(true);
+            try {
+              await fetch('/api/chat/send-media', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  leadId: activeLead.id,
+                  mediaType: 'audio',
+                  data: base64Audio,
+                  caption: `Áudio de voz (${recordingSeconds}s)`,
+                  sendViaWhatsApp,
+                }),
+              });
+              await fetchMessages(activeLead.id);
+            } catch (err) {
+              console.error('Erro ao enviar áudio:', err);
+            } finally {
+              setIsSending(false);
+            }
+          }
+        };
+        reader.readAsDataURL(audioBlob);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingSeconds(0);
+
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds((prev) => prev + 1);
+      }, 1000);
+    } catch (err) {
+      console.error('Não foi possível acessar o microfone:', err);
+      alert('Permissão de microfone negada ou indisponível no navegador.');
+    }
+  };
+
+  // Stop and send audio recording
+  const stopAndSendRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      clearInterval(recordingTimerRef.current);
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  // Cancel audio recording without sending
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      clearInterval(recordingTimerRef.current);
+      audioChunksRef.current = [];
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setRecordingSeconds(0);
+    }
+  };
+
+  // Toggle Audio Playback in Chat Bubbles
+  const handleToggleAudioPlay = (msgId: string, audioUrl?: string) => {
+    if (playingAudioId === msgId) {
+      audioPlayerRef.current?.pause();
+      setPlayingAudioId(null);
+    } else {
+      if (audioUrl) {
+        if (!audioPlayerRef.current) {
+          audioPlayerRef.current = new Audio(audioUrl);
+        } else {
+          audioPlayerRef.current.src = audioUrl;
+        }
+        audioPlayerRef.current.play();
+        setPlayingAudioId(msgId);
+        audioPlayerRef.current.onended = () => {
+          setPlayingAudioId(null);
+        };
+      }
+    }
+  };
+
+  const handleInsertEmoji = (emoji: string) => {
+    setInputText((prev) => prev + emoji);
+    inputRef.current?.focus();
   };
 
   const filteredLeads = leads.filter((l) => {
@@ -151,6 +394,22 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
   return (
     <div className="flex-1 flex min-h-0 bg-slate-100 overflow-hidden relative" id="live-chat-module">
+      {/* Hidden File Inputs */}
+      <input
+        type="file"
+        ref={fileInputPdfRef}
+        accept="application/pdf,.doc,.docx,.txt"
+        className="hidden"
+        onChange={(e) => handleFileChange(e, 'pdf')}
+      />
+      <input
+        type="file"
+        ref={fileInputImageRef}
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => handleFileChange(e, 'image')}
+      />
+
       {/* 1. LEFT SIDEBAR: Conversation List */}
       <div
         className={`w-full md:w-80 lg:w-96 border-r border-slate-200 bg-white flex flex-col shrink-0 ${
@@ -256,14 +515,14 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
       {/* 2. MAIN CHAT AREA (WhatsApp Web Style) */}
       <div
-        className={`flex-1 flex flex-col min-w-0 bg-slate-50 ${
+        className={`flex-1 flex flex-col min-w-0 bg-[#efeae2] relative ${
           mobileView === 'chat' ? 'flex' : 'hidden md:flex'
         }`}
       >
         {activeLead ? (
           <>
             {/* Chat Room Top Bar */}
-            <div className="px-3 md:px-5 py-2.5 border-b border-slate-200 bg-white flex items-center justify-between gap-2 shrink-0 shadow-2xs">
+            <div className="px-3 md:px-5 py-2.5 border-b border-slate-200 bg-white flex items-center justify-between gap-2 shrink-0 shadow-2xs z-10">
               <div className="flex items-center gap-2 md:gap-3 min-w-0">
                 {/* Back button on mobile */}
                 <button
@@ -297,68 +556,50 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
                     <span className="truncate">{activeLead.phone}</span>
                     <span className="hidden sm:inline">•</span>
-                    <span className="text-emerald-700 font-medium hidden sm:inline">Evolution API v2</span>
+                    <span className="text-emerald-700 font-medium hidden sm:inline">WhatsApp Conectado</span>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons: Pause/Resume AI & Stage Change */}
-              <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
-                {/* Takeover toggle */}
+              {/* Action buttons on header */}
+              <div className="flex items-center gap-1.5 md:gap-2">
                 <button
-                  id="btn-toggle-ai-takeover"
+                  type="button"
+                  id="btn-toggle-ai-chat"
                   onClick={() => onToggleAi(activeLead.id)}
-                  className={`flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1.5 rounded-lg text-[11px] md:text-xs font-bold transition-all shadow-2xs cursor-pointer border ${
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
                     activeLead.aiPaused
-                      ? 'bg-amber-500 hover:bg-amber-400 text-white border-amber-600'
-                      : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-700'
+                      ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                   }`}
                   title={
                     activeLead.aiPaused
-                      ? 'Atendimento Humano está ativo. Clique para reativar a IA.'
-                      : 'IA está respondendo automaticamente. Clique para assumir o atendimento humano.'
+                      ? 'Clique para devolver o controle para a IA'
+                      : 'Clique para assumir a conversa (pausar IA)'
                   }
                 >
                   {activeLead.aiPaused ? (
                     <>
-                      <UserCheck className="w-3.5 h-3.5 shrink-0" />
-                      <span className="hidden sm:inline">Atendimento Humano (IA Pausada)</span>
+                      <UserCheck className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Assumido (IA Pausada)</span>
                       <span className="sm:hidden">Humano</span>
                     </>
                   ) : (
                     <>
-                      <Bot className="w-3.5 h-3.5 shrink-0" />
-                      <span className="hidden sm:inline">Assumir Atendimento (Pausar IA)</span>
-                      <span className="sm:hidden">Assumir</span>
+                      <Bot className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">IA Ativa</span>
+                      <span className="sm:hidden">IA</span>
                     </>
                   )}
                 </button>
 
-                {/* Delete lead button */}
-                {onDeleteLead && activeLead && (
-                  <button
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          `Deseja excluir permanentemente o lead "${activeLead.name}" e todas as suas mensagens?`
-                        )
-                      ) {
-                        onDeleteLead(activeLead.id);
-                        setMobileView('list');
-                      }
-                    }}
-                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 border border-slate-200 transition-colors cursor-pointer"
-                    title="Excluir este Lead"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-
-                {/* Toggle details drawer */}
                 <button
+                  type="button"
                   onClick={() => setShowDetails(!showDetails)}
-                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer"
-                  title="Ver Detalhes do Lead"
+                  className={`p-1.5 rounded-lg border border-slate-200 transition-colors cursor-pointer ${
+                    showDetails ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-100 text-slate-700'
+                  }`}
+                  title="Ver detalhes do lead"
                 >
                   {showDetails ? (
                     <PanelRightClose className="w-4 h-4" />
@@ -369,22 +610,24 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               </div>
             </div>
 
-            {/* Messages Thread */}
+            {/* Chat Messages Feed with WhatsApp Doodle Background */}
             <div
-              className="flex-1 p-4 md:p-6 overflow-y-auto space-y-3 bg-[#f0f2f5]"
-              id="chat-messages-thread"
+              className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3"
+              style={{
+                backgroundImage: 'radial-gradient(rgba(0,0,0,0.03) 1px, transparent 0)',
+                backgroundSize: '16px 16px',
+              }}
             >
               {isLoadingMessages ? (
                 <div className="flex items-center justify-center h-full text-slate-400 text-xs">
-                  Carregando mensagens do WhatsApp...
+                  Carregando histórico do WhatsApp...
                 </div>
               ) : messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center text-slate-500 space-y-2">
-                  <MessageSquare className="w-8 h-8 text-slate-400" />
-                  <p className="text-xs">Nenhuma mensagem registrada ainda para este lead.</p>
-                  <p className="text-[11px] text-slate-400">
-                    Envie uma mensagem abaixo ou use o Simulador do WhatsApp.
-                  </p>
+                <div className="flex flex-col items-center justify-center h-full text-slate-400 text-xs space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center">
+                    <MessageSquare className="w-6 h-6 text-slate-400" />
+                  </div>
+                  <p>Nenhuma mensagem trocada ainda com este lead.</p>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -396,7 +639,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   if (isSystem) {
                     return (
                       <div key={msg.id} className="flex justify-center my-2">
-                        <span className="bg-white text-slate-600 text-[11px] px-3 py-1 rounded-full border border-slate-200 font-mono shadow-2xs">
+                        <span className="bg-slate-200/90 text-slate-700 text-[11px] px-3 py-1 rounded-full shadow-2xs border border-slate-300">
                           {msg.text}
                         </span>
                       </div>
@@ -409,7 +652,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                       className={`flex ${isLead ? 'justify-start' : 'justify-end'} group`}
                     >
                       <div
-                        className={`max-w-[75%] rounded-2xl p-3 shadow-xs relative ${
+                        className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-3 shadow-xs relative ${
                           isLead
                             ? 'bg-white text-slate-900 rounded-tl-xs border border-slate-200'
                             : isAi
@@ -438,50 +681,101 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                           )}
                         </div>
 
-                        {/* Message text */}
-                        {msg.text.startsWith('📄 [Documento') ? (
-                          <div className="space-y-1.5">
-                            <div className="flex items-center gap-1.5 p-2 bg-slate-100/90 rounded-lg text-slate-800 border border-slate-200">
-                              <FileText className="w-4 h-4 text-emerald-700 shrink-0" />
-                              <span className="font-semibold text-xs truncate">
-                                {msg.text.split(']:')[0].replace('📄 [', '').replace(']', '')}
-                              </span>
-                            </div>
-                            <p className="text-xs leading-relaxed whitespace-pre-wrap">
-                              {msg.text.includes(']:') ? msg.text.split(']:')[1]?.trim() : msg.text}
-                            </p>
-                          </div>
-                        ) : msg.text.startsWith('🎙️ [Áudio') || msg.text.startsWith('🎤 [Áudio') ? (
-                          <div className="space-y-1.5">
-                            <div className="flex items-center gap-2 p-2 bg-purple-50/90 rounded-lg text-purple-900 border border-purple-200">
-                              <Mic className="w-4 h-4 text-purple-700 shrink-0" />
-                              <div className="flex-1 flex items-center gap-0.5">
-                                <span className="h-2 w-0.5 bg-purple-500 rounded-full"></span>
-                                <span className="h-3 w-0.5 bg-purple-600 rounded-full"></span>
-                                <span className="h-4 w-0.5 bg-purple-700 rounded-full"></span>
-                                <span className="h-2 w-0.5 bg-purple-500 rounded-full"></span>
-                                <span className="h-3.5 w-0.5 bg-purple-600 rounded-full"></span>
-                                <span className="h-2 w-0.5 bg-purple-400 rounded-full"></span>
+                        {/* PDF / Document Bubble */}
+                        {msg.mediaType === 'pdf' || msg.text.startsWith('📄 [') ? (
+                          <div className="space-y-2">
+                            <div className={`flex items-center gap-2.5 p-2.5 rounded-xl border ${
+                              isAgent ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white/90 border-slate-200 text-slate-900'
+                            }`}>
+                              <div className="w-9 h-9 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                                <FileText className="w-5 h-5" />
                               </div>
-                              <span className="text-[10px] font-bold text-purple-800">
-                                {msg.text.startsWith('🎙️') ? 'Voz Sofia Enviada' : 'Áudio Recebido'}
-                              </span>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-xs font-bold truncate block">
+                                  {msg.fileName || msg.text.split(']:')[0]?.replace('📄 [', '').replace(']', '') || 'Documento.pdf'}
+                                </span>
+                                <span className="text-[10px] text-slate-400">Documento PDF Oficial</span>
+                              </div>
+                              {msg.mediaUrl && (
+                                <a
+                                  href={msg.mediaUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  download={msg.fileName || 'documento.pdf'}
+                                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 shrink-0"
+                                  title="Baixar PDF"
+                                >
+                                  <Download className="w-4 h-4" />
+                                </a>
+                              )}
                             </div>
-                            <p className="text-xs leading-relaxed whitespace-pre-wrap italic">
-                              {msg.text.replace(/^[🎙️🎤]\s*\[[^\]]+\]:\s*/, '')}
-                            </p>
+                            {msg.text.includes(']:') && (
+                              <p className="text-xs leading-relaxed whitespace-pre-wrap">
+                                {msg.text.split(']:')[1]?.trim()}
+                              </p>
+                            )}
                           </div>
-                        ) : msg.text.startsWith('📷 [Foto') ? (
+                        ) : msg.mediaType === 'image' || msg.text.startsWith('📷 [Foto') ? (
+                          /* Image Bubble */
                           <div className="space-y-1.5">
-                            <div className="flex items-center gap-1.5 p-2 bg-amber-50/90 rounded-lg text-amber-900 border border-amber-200">
-                              <ImageIcon className="w-4 h-4 text-amber-700 shrink-0" />
-                              <span className="text-xs font-semibold">Foto / Imagem WhatsApp</span>
-                            </div>
+                            {msg.mediaUrl && (
+                              <div className="rounded-lg overflow-hidden border border-black/10 max-w-sm">
+                                <img
+                                  src={msg.mediaUrl}
+                                  alt="Imagem enviada"
+                                  className="w-full h-auto object-cover max-h-60 rounded-lg cursor-pointer hover:opacity-95"
+                                  onClick={() => window.open(msg.mediaUrl, '_blank')}
+                                />
+                              </div>
+                            )}
+                            {!msg.mediaUrl && (
+                              <div className="flex items-center gap-1.5 p-2 bg-amber-50/90 rounded-lg text-amber-900 border border-amber-200">
+                                <ImageIcon className="w-4 h-4 text-amber-700 shrink-0" />
+                                <span className="text-xs font-semibold">Foto / Imagem WhatsApp</span>
+                              </div>
+                            )}
                             <p className="text-xs leading-relaxed whitespace-pre-wrap">
                               {msg.text.replace(/^📷\s*\[[^\]]+\]:\s*/, '')}
                             </p>
                           </div>
+                        ) : msg.mediaType === 'audio' || msg.text.startsWith('🎙️ [Áudio') || msg.text.startsWith('🎤 [Áudio') ? (
+                          /* Audio Bubble */
+                          <div className="space-y-1.5">
+                            <div className={`flex items-center gap-2.5 p-2.5 rounded-xl border ${
+                              isAgent ? 'bg-slate-800 border-slate-700' : 'bg-purple-50/90 border-purple-200'
+                            }`}>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleAudioPlay(msg.id, msg.mediaUrl)}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 cursor-pointer ${
+                                  playingAudioId === msg.id ? 'bg-purple-700 animate-pulse' : 'bg-purple-600 hover:bg-purple-700'
+                                }`}
+                              >
+                                {playingAudioId === msg.id ? (
+                                  <Pause className="w-4 h-4" />
+                                ) : (
+                                  <Play className="w-4 h-4 ml-0.5" />
+                                )}
+                              </button>
+                              <div className="flex-1 flex items-center gap-1">
+                                <span className="h-2 w-0.5 bg-purple-500 rounded-full"></span>
+                                <span className="h-4 w-0.5 bg-purple-600 rounded-full"></span>
+                                <span className="h-6 w-0.5 bg-purple-700 rounded-full"></span>
+                                <span className="h-3 w-0.5 bg-purple-500 rounded-full"></span>
+                                <span className="h-5 w-0.5 bg-purple-600 rounded-full"></span>
+                                <span className="h-2 w-0.5 bg-purple-400 rounded-full"></span>
+                                <span className="h-4 w-0.5 bg-purple-600 rounded-full"></span>
+                              </div>
+                              <span className={`text-[10px] font-bold ${isAgent ? 'text-purple-300' : 'text-purple-900'}`}>
+                                {msg.text.startsWith('🎙️') ? 'Áudio PTT' : 'Áudio Recebido'}
+                              </span>
+                            </div>
+                            <p className="text-xs leading-relaxed whitespace-pre-wrap italic opacity-90">
+                              {msg.text.replace(/^[🎙️🎤]\s*\[[^\]]+\]:\s*/, '')}
+                            </p>
+                          </div>
                         ) : (
+                          /* Standard Text Message */
                           <p className="text-xs leading-relaxed whitespace-pre-wrap">
                             {msg.text}
                           </p>
@@ -523,121 +817,297 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               <div ref={messagesEndRef} />
             </div>
 
-              {/* Input Bar with Quick Snippets */}
-              <div className="bg-white border-t border-slate-200 flex flex-col shrink-0 shadow-xs">
-                {/* Urgent Banner in Active Chat */}
-                {activeLead.isUrgent && (
-                  <div className="bg-rose-50 border-b border-rose-200 px-4 py-2 flex items-center justify-between gap-2 text-xs text-rose-900">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 animate-pulse" />
-                      <div>
-                        <span className="font-bold">Atenção Prioritária: </span>
-                        <span>{activeLead.urgencyReason || 'Paciente reportou dor ou situação urgente'}</span>
-                      </div>
+            {/* 3. WHATSAPP WEB STYLE BOTTOM BAR */}
+            <div className="bg-[#f0f2f5] border-t border-slate-200 flex flex-col shrink-0 relative z-20">
+              
+              {/* Urgent Banner in Active Chat */}
+              {activeLead.isUrgent && (
+                <div className="bg-rose-50 border-b border-rose-200 px-4 py-2 flex items-center justify-between gap-2 text-xs text-rose-900">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 animate-pulse" />
+                    <div>
+                      <span className="font-bold">Atenção Prioritária: </span>
+                      <span>{activeLead.urgencyReason || 'Paciente reportou dor ou urgência'}</span>
                     </div>
-                    {onResolveUrgency && (
-                      <button
-                        type="button"
-                        onClick={() => onResolveUrgency(activeLead.id)}
-                        className="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-2xs transition-colors cursor-pointer shrink-0"
-                      >
-                        Marcar como Atendido
-                      </button>
-                    )}
                   </div>
-                )}
+                  {onResolveUrgency && (
+                    <button
+                      type="button"
+                      onClick={() => onResolveUrgency(activeLead.id)}
+                      className="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-2xs transition-colors cursor-pointer shrink-0"
+                    >
+                      Marcar como Atendido
+                    </button>
+                  )}
+                </div>
+              )}
 
-                {/* Quick Snippets for Human Agent */}
-                <div className="px-3 pt-2 pb-1 flex items-center gap-1.5 overflow-x-auto border-b border-slate-100 text-[11px]">
+              {/* ATTACHMENT POPUP MENU (📎 Clips) */}
+              {showAttachMenu && (
+                <div className="absolute bottom-16 left-3 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 w-72 flex flex-col gap-1.5 animate-in slide-in-from-bottom-3 duration-150 z-50">
+                  <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 border-b border-slate-100 flex items-center justify-between">
+                    <span>Anexar no WhatsApp</span>
+                    <button type="button" onClick={() => setShowAttachMenu(false)} className="text-slate-400 hover:text-slate-600">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* 📄 Documento / PDF */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputPdfRef.current?.click()}
+                    className="flex items-center gap-3 p-2.5 hover:bg-slate-50 rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 block">Documento / PDF</span>
+                      <span className="text-[10px] text-slate-400">Enviar arquivo PDF ou texto</span>
+                    </div>
+                  </button>
+
+                  {/* 🖼️ Fotos e Imagens */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputImageRef.current?.click()}
+                    className="flex items-center gap-3 p-2.5 hover:bg-slate-50 rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
+                      <ImageIcon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 block">Fotos e Vídeos</span>
+                      <span className="text-[10px] text-slate-400">Enviar imagem ou exame</span>
+                    </div>
+                  </button>
+
+                  {/* 📑 Enviar Tabela de Preços Pré-configurada */}
+                  <button
+                    type="button"
+                    onClick={handleSendPresetPdf}
+                    className="flex items-center gap-3 p-2.5 hover:bg-purple-50 rounded-xl transition-colors text-left cursor-pointer border-t border-slate-100"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 shadow-2xs">
+                      <Zap className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-purple-900 block">Tabela da Clínica (PDF)</span>
+                      <span className="text-[10px] text-purple-600">Disparo com 1 toque</span>
+                    </div>
+                  </button>
+                </div>
+              )}
+
+              {/* EMOJI PICKER POPUP (😊) */}
+              {showEmojiPicker && (
+                <div className="absolute bottom-16 left-12 bg-white rounded-2xl shadow-xl border border-slate-200 p-3 w-64 animate-in slide-in-from-bottom-3 duration-150 z-50">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 text-[11px] font-bold text-slate-400">
+                    <span>Emojis Rápidos</span>
+                    <button type="button" onClick={() => setShowEmojiPicker(false)} className="text-slate-400 hover:text-slate-600">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-6 gap-2 text-lg">
+                    {COMMON_EMOJIS.map((emoji, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleInsertEmoji(emoji)}
+                        className="p-1.5 hover:bg-slate-100 rounded-lg text-center cursor-pointer transition-transform hover:scale-125"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* QUICK REPLIES BAR (Collapsible) */}
+              {showQuickReplies && (
+                <div className="px-3 py-2 bg-white border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto text-[11px] animate-in slide-in-from-top-2 duration-150">
                   <span className="text-slate-400 font-semibold flex items-center gap-1 shrink-0 text-[10px]">
                     <Zap className="w-3 h-3 text-amber-500" /> Respostas Rápidas:
                   </span>
                   <button
                     type="button"
                     onClick={() => setInputText(`Olá, ${activeLead.name.split(' ')[0]}! Tudo bem? Como posso te ajudar hoje?`)}
-                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer shrink-0"
                   >
                     👋 Saudação
                   </button>
                   <button
                     type="button"
                     onClick={() => setInputText(`Para realizarmos seu agendamento, qual período fica mais confortável para você: manhã (09h-12h) ou tarde (14h-18h)?`)}
-                    className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                    className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer shrink-0"
                   >
                     🗓️ Opções de Horário
                   </button>
                   <button
                     type="button"
                     onClick={() => setInputText(`Olá, ${activeLead.name.split(' ')[0]}! Sou a secretária da clínica. Vi que você conversou com nossa assistente virtual. Vamos confirmar o seu melhor horário agora?`)}
-                    className="bg-purple-50 hover:bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                    className="bg-purple-50 hover:bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer shrink-0"
                   >
-                    👩‍💼 Assumir Atendimento (Secretária)
+                    👩‍💼 Assumir Atendimento
                   </button>
                   <button
                     type="button"
                     onClick={() => setInputText(`Confirmamos o recebimento e já reservamos o seu horário na grade! Em caso de dúvidas, estamos por aqui.`)}
-                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer shrink-0"
                   >
                     ✅ Confirmar Horário
                   </button>
                   <button
                     type="button"
                     onClick={() => setInputText(`Segue a nossa chave PIX oficial para confirmação do agendamento: financeiro@consultorio.com.br (Chave E-mail). Assim que efetuar, nos envie o comprovante por aqui!`)}
-                    className="bg-amber-50 hover:bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+                    className="bg-amber-50 hover:bg-amber-100 text-amber-800 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer shrink-0"
                   >
                     💰 Chave PIX
                   </button>
                 </div>
+              )}
 
-                <form
-                  onSubmit={handleSendMessage}
-                  className="p-3 md:p-3.5 flex flex-col gap-2"
-                >
-                  <div className="flex items-center justify-between text-xs px-1">
-                    <label className="flex items-center gap-2 text-slate-600 cursor-pointer text-xs">
-                      <input
-                        type="checkbox"
-                        checked={sendViaWhatsApp}
-                        onChange={(e) => setSendViaWhatsApp(e.target.checked)}
-                        className="rounded bg-white border-slate-300 text-slate-900 focus:ring-0 cursor-pointer"
-                      />
-                      <span>Disparar mensagem no WhatsApp do lead via Evolution API</span>
-                    </label>
-
-                    {activeLead.aiPaused ? (
-                      <span className="text-[11px] text-amber-700 font-semibold flex items-center gap-1">
-                        <UserCheck className="w-3 h-3" />
-                        Atendimento Humano Ativo
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                        <Bot className="w-3 h-3" />
-                        IA responderá mensagens recebidas
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
+              {/* Status Indicator / Human takeover bar */}
+              <div className="px-3 pt-1.5 pb-0.5 flex items-center justify-between text-[11px] text-slate-500">
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
                     <input
-                      id="chat-input-message"
-                      type="text"
-                      placeholder={`Responder como atendente humano para ${activeLead.name}...`}
-                      value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
-                      className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-slate-400 transition-colors"
+                      type="checkbox"
+                      checked={sendViaWhatsApp}
+                      onChange={(e) => setSendViaWhatsApp(e.target.checked)}
+                      className="rounded text-slate-900 focus:ring-0 cursor-pointer"
                     />
-                    <button
-                      type="submit"
-                      disabled={!inputText.trim() || isSending}
-                      id="btn-send-chat"
-                      className="bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white p-2.5 rounded-lg transition-all shadow-xs cursor-pointer shrink-0"
-                      title="Enviar mensagem"
-                    >
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </div>
-                </form>
+                    <span className="text-[11px] font-medium">Disparar no WhatsApp Real</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowQuickReplies(!showQuickReplies)}
+                    className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 cursor-pointer"
+                  >
+                    <Zap className="w-3 h-3" />
+                    <span>{showQuickReplies ? 'Ocultar Atalhos' : 'Ver Atalhos'}</span>
+                  </button>
+                </div>
+
+                {activeLead.aiPaused ? (
+                  <span className="text-[10px] text-amber-700 font-semibold flex items-center gap-1">
+                    <UserCheck className="w-3 h-3" />
+                    Humano Ativo
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+                    <Bot className="w-3 h-3" />
+                    IA Automática Ativa
+                  </span>
+                )}
               </div>
+
+              {/* THE NATIVE WHATSAPP WEB INPUT ROW */}
+              <div className="p-2 md:p-3 flex items-center gap-1.5 md:gap-2">
+                {isRecording ? (
+                  /* Audio Recording in Progress Bar */
+                  <div className="flex-1 bg-white border border-rose-300 rounded-full px-4 py-2 flex items-center justify-between shadow-2xs">
+                    <div className="flex items-center gap-2 text-rose-600 text-xs font-bold">
+                      <span className="w-3 h-3 rounded-full bg-rose-600 animate-ping"></span>
+                      <span>Gravando áudio: {String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:{String(recordingSeconds % 60).padStart(2, '0')}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={cancelRecording}
+                        className="p-1.5 rounded-full hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                        title="Cancelar gravação"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={stopAndSendRecording}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-full shadow-xs transition-colors cursor-pointer flex items-center justify-center"
+                        title="Enviar áudio"
+                      >
+                        <Send className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Standard WhatsApp Web Input Controls */
+                  <>
+                    {/* 📎 Attachment Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAttachMenu(!showAttachMenu);
+                        setShowEmojiPicker(false);
+                      }}
+                      className={`p-2 rounded-full hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer shrink-0 ${
+                        showAttachMenu ? 'bg-slate-200 text-slate-900' : ''
+                      }`}
+                      title="Anexar Documento, Foto ou Tabela"
+                    >
+                      <Paperclip className="w-5 h-5 rotate-45" />
+                    </button>
+
+                    {/* 😊 Emoji Picker Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowEmojiPicker(!showEmojiPicker);
+                        setShowAttachMenu(false);
+                      }}
+                      className={`p-2 rounded-full hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer shrink-0 ${
+                        showEmojiPicker ? 'bg-slate-200 text-slate-900' : ''
+                      }`}
+                      title="Emojis"
+                    >
+                      <Smile className="w-5 h-5" />
+                    </button>
+
+                    {/* Message Input Pill */}
+                    <form
+                      onSubmit={handleSendMessage}
+                      className="flex-1 flex items-center"
+                    >
+                      <input
+                        ref={inputRef}
+                        id="chat-input-message"
+                        type="text"
+                        placeholder="Digite uma mensagem"
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        className="w-full bg-white border border-slate-300 focus:border-slate-400 rounded-lg md:rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden shadow-2xs transition-colors"
+                      />
+                    </form>
+
+                    {/* 🎙️ Microphone OR ✈️ Send Button */}
+                    {inputText.trim() ? (
+                      <button
+                        type="button"
+                        onClick={handleSendMessage}
+                        disabled={isSending}
+                        id="btn-send-chat"
+                        className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white p-2.5 rounded-full transition-all shadow-xs cursor-pointer shrink-0 flex items-center justify-center"
+                        title="Enviar mensagem"
+                      >
+                        <Send className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={startRecording}
+                        disabled={isSending}
+                        id="btn-record-audio"
+                        className="p-2.5 rounded-full hover:bg-slate-200 text-slate-600 hover:text-emerald-700 transition-colors cursor-pointer shrink-0"
+                        title="Gravar mensagem de voz"
+                      >
+                        <Mic className="w-5 h-5" />
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-slate-400 text-xs">
@@ -645,6 +1115,89 @@ export const LiveChat: React.FC<LiveChatProps> = ({
           </div>
         )}
       </div>
+
+      {/* MODAL: Media Preview Before Sending (PDF or Image) */}
+      {mediaModal.isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                {mediaModal.type === 'pdf' ? (
+                  <>
+                    <FileText className="w-4 h-4 text-rose-600" />
+                    <span>Enviar Documento PDF</span>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="w-4 h-4 text-emerald-600" />
+                    <span>Enviar Imagem</span>
+                  </>
+                )}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setMediaModal({ ...mediaModal, isOpen: false })}
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Preview Box */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center">
+              {mediaModal.type === 'image' ? (
+                <img
+                  src={mediaModal.fileBase64}
+                  alt="Preview"
+                  className="max-h-56 rounded-lg object-contain"
+                />
+              ) : (
+                <div className="text-center py-4 space-y-2">
+                  <div className="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+                    <FileText className="w-6 h-6" />
+                  </div>
+                  <p className="text-xs font-bold text-slate-800">{mediaModal.fileName}</p>
+                  <p className="text-[11px] text-slate-400">Pronto para envio no WhatsApp</p>
+                </div>
+              )}
+            </div>
+
+            {/* Optional Caption */}
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">
+                Legenda (Opcional):
+              </label>
+              <input
+                type="text"
+                placeholder="Adicione uma mensagem junto com o arquivo..."
+                value={mediaModal.caption}
+                onChange={(e) => setMediaModal({ ...mediaModal, caption: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setMediaModal({ ...mediaModal, isOpen: false })}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleSendMediaModal}
+                disabled={isSending}
+                className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>{isSending ? 'Enviando...' : 'Enviar no WhatsApp'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 3. RIGHT DRAWER: Lead Details & Quick CRM Controls */}
       {/* Desktop sidebar */}
