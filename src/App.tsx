@@ -60,6 +60,12 @@ export default function App() {
 
   // Admin Mestre state (defaults to true if unlocked in localStorage, or false for clean client mode)
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('modo') || params.has('cliente') || params.has('client')) {
+        return false;
+      }
+    }
     return localStorage.getItem('nexa_admin_unlocked') === 'true';
   });
   const [showAdminAuthModal, setShowAdminAuthModal] = useState(false);

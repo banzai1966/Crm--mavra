@@ -10,6 +10,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - TZ=America/Sao_Paulo
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - EVOLUTION_API_URL=${EVOLUTION_API_URL:-https://api.makprojetosmake.com.br}
       - EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-b2efa885a71ee22edf72b597df1a0ce9}

@@ -164,10 +164,10 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={handleOpenInExternalBrowser}
               className="flex items-center gap-1 bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-900 border border-amber-300 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer shadow-2xs"
-              title="Abrir no Google Chrome"
+              title="Abrir no navegador externo (Safari / Chrome)"
             >
               <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
-              <span>Chrome</span>
+              <span>{typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'Safari' : 'Navegador'}</span>
             </button>
 
             {onToggleGlobalAi && (

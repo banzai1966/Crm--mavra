@@ -469,9 +469,39 @@ export async function processAiConversation(
     .map((m) => `${m.sender.toUpperCase()}: ${m.text}`)
     .join('\n');
 
+  // Exact current date and time in Brasília (America/Sao_Paulo)
+  const nowInBrazil = new Date();
+  const brazilDateFull = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    dateStyle: 'full',
+  }).format(nowInBrazil);
+
+  const brazilTimeShort = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(nowInBrazil);
+
+  const brazilIsoDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(nowInBrazil);
+
   const systemInstruction = `Você é ${config.personaName}, atuando como ${config.role}.
 Seu tom de voz é: ${config.toneOfVoice}.
 Seu objetivo comercial primordial é: ${config.salesGoal}.
+
+=== CONTEXTO TEMPORAL & FUSO HORÁRIO DE BRASÍLIA (AMERICA/SAO_PAULO) ===
+- DATA ATUAL NO BRASIL: ${brazilDateFull} (Data ISO: ${brazilIsoDate}).
+- HORA ATUAL EM BRASÍLIA: ${brazilTimeShort} (Horário Oficial de Brasília, GMT-3).
+- REGRA CRÍTICA PARA AGENDAMENTOS, DIAS E HORÁRIOS:
+  * Todo o atendimento, agendamento de consultas e prazos seguem estritamente o Horário Oficial de Brasília (America/Sao_Paulo).
+  * Quando o lead disser "hoje", refere-se rigorosamente a ${brazilDateFull}.
+  * Quando disser "amanhã", calcule a partir do dia de hoje (${brazilIsoDate}).
+  * Bancos de dados internacionais (como Supabase) frequentemente operam em UTC (GMT+0) e mudam de dia às 21h do Brasil. NUNCA cometa esse erro: mantenha todas as datas, triagens e anotações firmemente ancoradas na data do Brasil (${brazilDateFull})!
 
 O lead com quem você está conversando é:
 - Nome atual no CRM: ${lead.name}
