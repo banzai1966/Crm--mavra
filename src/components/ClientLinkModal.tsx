@@ -139,6 +139,15 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({ isOpen, onClos
             </div>
           </div>
 
+          {/* Mobile WhatsApp In-App Tip */}
+          <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5 text-[11px] text-amber-900 leading-snug">
+            <Smartphone className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold block">Importante ao enviar no WhatsApp:</span>
+              Quando o seu cliente ou secretária tocar no link recebido no WhatsApp, oriente a abrir no <strong>Google Chrome</strong> ou <strong>Firefox</strong> (tocando nos 3 pontinhos ⋮ do WhatsApp e em "Abrir no Navegador"). O visualizador interno do WhatsApp costuma limitar o anexo de arquivos da galeria e câmera. Nos navegadores reais, fotos, PDFs e áudios funcionam 100%!
+            </div>
+          </div>
+
           {/* Comparison Cards: What client sees vs What is hidden */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             {/* What is visible */}

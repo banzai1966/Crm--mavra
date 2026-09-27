@@ -38,6 +38,8 @@ import {
   Download,
   ExternalLink,
   ChevronUp,
+  Smartphone,
+  Copy,
 } from 'lucide-react';
 import { Lead, ChatMessage, KanbanStage } from '../types';
 
@@ -112,6 +114,45 @@ export const LiveChat: React.FC<LiveChatProps> = ({
     fileBase64: '',
     caption: '',
   });
+
+  // WhatsApp in-app browser detection
+  const [dismissWhatsAppNotice, setDismissWhatsAppNotice] = useState(false);
+  const [copiedLinkNotice, setCopiedLinkNotice] = useState(false);
+  const isWhatsAppWebView =
+    typeof navigator !== 'undefined' &&
+    /WhatsApp|FB_IAB|FBAN|FBAV/i.test(navigator.userAgent || '');
+
+  const handleOpenInExternalBrowser = () => {
+    try {
+      const fullUrl = window.location.href.replace(/^https?:\/\//, '');
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        // Direct Chrome intent with fallback
+        window.location.href = `intent://${fullUrl}#Intent;scheme=https;package=com.android.chrome;end;`;
+      } else {
+        window.open(window.location.href, '_system');
+      }
+    } catch {
+      window.open(window.location.href, '_blank');
+    }
+  };
+
+  const handleCopyCleanUrl = () => {
+    try {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedLinkNotice(true);
+      setTimeout(() => setCopiedLinkNotice(false), 3000);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = window.location.href;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopiedLinkNotice(true);
+      setTimeout(() => setCopiedLinkNotice(false), 3000);
+    }
+  };
 
   // Audio Playback State
   const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
@@ -610,6 +651,52 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               </div>
             </div>
 
+            {/* WhatsApp In-App Browser Warning Banner */}
+            {isWhatsAppWebView && !dismissWhatsAppNotice && (
+              <div className="bg-amber-50 border-b border-amber-200 p-2.5 sm:px-4 text-[11px] text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0 animate-in fade-in duration-150">
+                <div className="flex items-start sm:items-center gap-2">
+                  <Smartphone className="w-4 h-4 text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
+                  <div>
+                    <span className="font-bold block sm:inline">Navegador do WhatsApp detectado: </span>
+                    <span className="text-amber-900">
+                      O WhatsApp bloqueia anexos de fotos e PDFs da memória do celular. Abra no navegador real para liberar 100%:
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleOpenInExternalBrowser}
+                    className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold px-2.5 py-1 rounded-lg text-[11px] flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                    title="Abrir no Google Chrome"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Abrir no Chrome</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyCleanUrl}
+                    className="bg-white hover:bg-amber-100/70 border border-amber-300 text-amber-900 font-semibold px-2 py-1 rounded-lg text-[11px] flex items-center gap-1 transition-colors cursor-pointer"
+                    title="Copiar endereço do link"
+                  >
+                    <Copy className="w-3 h-3 text-amber-700" />
+                    <span>{copiedLinkNotice ? 'Copiado!' : 'Copiar Link'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setDismissWhatsAppNotice(true)}
+                    className="p-1 rounded text-amber-700 hover:text-amber-900 hover:bg-amber-100 cursor-pointer"
+                    title="Fechar aviso"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Chat Messages Feed with WhatsApp Doodle Background */}
             <div
               className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3"
@@ -856,14 +943,32 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                     </button>
                   </div>
 
-                  {/* 📄 Documento / PDF (NATIVE LABEL FOR MOBILE COMPATIBILITY) */}
-                  <label className="flex items-center gap-3 p-3 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors text-left cursor-pointer border border-transparent hover:border-slate-100 select-none">
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.txt,application/pdf"
-                      className="sr-only"
-                      onChange={(e) => handleFileChange(e, 'pdf')}
-                    />
+                  {/* Hidden Native File Inputs with direct refs and IDs */}
+                  <input
+                    ref={fileInputPdfRef}
+                    id="file-input-pdf-native"
+                    type="file"
+                    accept=".pdf,application/pdf,.doc,.docx,.txt"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, 'pdf')}
+                  />
+                  <input
+                    ref={fileInputImageRef}
+                    id="file-input-image-native"
+                    type="file"
+                    accept="image/*,video/*"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, 'image')}
+                  />
+
+                  {/* 📄 Documento / PDF */}
+                  <label
+                    htmlFor="file-input-pdf-native"
+                    onClick={() => {
+                      fileInputPdfRef.current?.click();
+                    }}
+                    className="flex items-center gap-3 p-3 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors text-left cursor-pointer border border-transparent hover:border-slate-100 select-none"
+                  >
                     <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
                       <FileText className="w-5 h-5" />
                     </div>
@@ -873,14 +978,14 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                     </div>
                   </label>
 
-                  {/* 🖼️ Fotos e Vídeos (NATIVE LABEL FOR MOBILE COMPATIBILITY) */}
-                  <label className="flex items-center gap-3 p-3 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors text-left cursor-pointer border border-transparent hover:border-slate-100 select-none">
-                    <input
-                      type="file"
-                      accept="image/*,video/*"
-                      className="sr-only"
-                      onChange={(e) => handleFileChange(e, 'image')}
-                    />
+                  {/* 🖼️ Fotos e Vídeos */}
+                  <label
+                    htmlFor="file-input-image-native"
+                    onClick={() => {
+                      fileInputImageRef.current?.click();
+                    }}
+                    className="flex items-center gap-3 p-3 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors text-left cursor-pointer border border-transparent hover:border-slate-100 select-none"
+                  >
                     <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
                       <ImageIcon className="w-5 h-5" />
                     </div>
