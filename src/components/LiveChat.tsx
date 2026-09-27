@@ -844,51 +844,59 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
               {/* ATTACHMENT POPUP MENU (📎 Clips) */}
               {showAttachMenu && (
-                <div className="absolute bottom-16 left-3 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 w-72 flex flex-col gap-1.5 animate-in slide-in-from-bottom-3 duration-150 z-50">
+                <div className="absolute bottom-16 left-2 sm:left-3 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2 w-[calc(100vw-24px)] max-w-xs sm:w-72 flex flex-col gap-1.5 animate-in slide-in-from-bottom-3 duration-150 z-50">
                   <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 border-b border-slate-100 flex items-center justify-between">
                     <span>Anexar no WhatsApp</span>
-                    <button type="button" onClick={() => setShowAttachMenu(false)} className="text-slate-400 hover:text-slate-600">
-                      <X className="w-3.5 h-3.5" />
+                    <button
+                      type="button"
+                      onClick={() => setShowAttachMenu(false)}
+                      className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  {/* 📄 Documento / PDF */}
-                  <button
-                    type="button"
-                    onClick={() => fileInputPdfRef.current?.click()}
-                    className="flex items-center gap-3 p-2.5 hover:bg-slate-50 rounded-xl transition-colors text-left cursor-pointer"
-                  >
-                    <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
+                  {/* 📄 Documento / PDF (NATIVE LABEL FOR MOBILE COMPATIBILITY) */}
+                  <label className="flex items-center gap-3 p-3 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors text-left cursor-pointer border border-transparent hover:border-slate-100 select-none">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt,application/pdf"
+                      className="sr-only"
+                      onChange={(e) => handleFileChange(e, 'pdf')}
+                    />
+                    <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
                       <FileText className="w-5 h-5" />
                     </div>
                     <div>
                       <span className="text-xs font-bold text-slate-800 block">Documento / PDF</span>
-                      <span className="text-[10px] text-slate-400">Enviar arquivo PDF ou texto</span>
+                      <span className="text-[10px] text-slate-400">PDF, exames, receitas ou contratos</span>
                     </div>
-                  </button>
+                  </label>
 
-                  {/* 🖼️ Fotos e Imagens */}
-                  <button
-                    type="button"
-                    onClick={() => fileInputImageRef.current?.click()}
-                    className="flex items-center gap-3 p-2.5 hover:bg-slate-50 rounded-xl transition-colors text-left cursor-pointer"
-                  >
-                    <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
+                  {/* 🖼️ Fotos e Vídeos (NATIVE LABEL FOR MOBILE COMPATIBILITY) */}
+                  <label className="flex items-center gap-3 p-3 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors text-left cursor-pointer border border-transparent hover:border-slate-100 select-none">
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      className="sr-only"
+                      onChange={(e) => handleFileChange(e, 'image')}
+                    />
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
                       <ImageIcon className="w-5 h-5" />
                     </div>
                     <div>
                       <span className="text-xs font-bold text-slate-800 block">Fotos e Vídeos</span>
-                      <span className="text-[10px] text-slate-400">Enviar imagem ou exame</span>
+                      <span className="text-[10px] text-slate-400">Galeria, câmera ou fotos de exames</span>
                     </div>
-                  </button>
+                  </label>
 
                   {/* 📑 Enviar Tabela de Preços Pré-configurada */}
                   <button
                     type="button"
                     onClick={handleSendPresetPdf}
-                    className="flex items-center gap-3 p-2.5 hover:bg-purple-50 rounded-xl transition-colors text-left cursor-pointer border-t border-slate-100"
+                    className="flex items-center gap-3 p-3 hover:bg-purple-50 active:bg-purple-100 rounded-xl transition-colors text-left cursor-pointer border-t border-slate-100 select-none"
                   >
-                    <div className="w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 shadow-2xs">
+                    <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 shadow-2xs">
                       <Zap className="w-5 h-5" />
                     </div>
                     <div>
@@ -901,11 +909,15 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
               {/* EMOJI PICKER POPUP (😊) */}
               {showEmojiPicker && (
-                <div className="absolute bottom-16 left-12 bg-white rounded-2xl shadow-xl border border-slate-200 p-3 w-64 animate-in slide-in-from-bottom-3 duration-150 z-50">
+                <div className="absolute bottom-16 left-2 sm:left-12 bg-white rounded-2xl shadow-2xl border border-slate-200 p-3 w-[calc(100vw-24px)] max-w-xs sm:w-64 animate-in slide-in-from-bottom-3 duration-150 z-50">
                   <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 text-[11px] font-bold text-slate-400">
                     <span>Emojis Rápidos</span>
-                    <button type="button" onClick={() => setShowEmojiPicker(false)} className="text-slate-400 hover:text-slate-600">
-                      <X className="w-3.5 h-3.5" />
+                    <button
+                      type="button"
+                      onClick={() => setShowEmojiPicker(false)}
+                      className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                   <div className="grid grid-cols-6 gap-2 text-lg">
@@ -914,7 +926,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                         key={idx}
                         type="button"
                         onClick={() => handleInsertEmoji(emoji)}
-                        className="p-1.5 hover:bg-slate-100 rounded-lg text-center cursor-pointer transition-transform hover:scale-125"
+                        className="p-2 hover:bg-slate-100 active:bg-slate-200 rounded-lg text-center cursor-pointer transition-transform hover:scale-125 select-none"
                       >
                         {emoji}
                       </button>
