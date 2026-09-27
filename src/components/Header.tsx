@@ -20,6 +20,7 @@ import {
   Volume2,
   VolumeX,
   Flame,
+  ExternalLink,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
@@ -109,6 +110,20 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const handleOpenInExternalBrowser = () => {
+    try {
+      const fullUrl = window.location.href.replace(/^https?:\/\//, '');
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        window.location.href = `intent://${fullUrl}#Intent;scheme=https;package=com.android.chrome;end;`;
+      } else {
+        window.open(window.location.href, '_system');
+      }
+    } catch {
+      window.open(window.location.href, '_blank');
+    }
+  };
+
   // Provider badge styling
   const providerLabel = {
     gemini: 'Google Gemini',
@@ -144,7 +159,17 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Quick status on mobile / compact */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-1.5 md:hidden">
+            <button
+              type="button"
+              onClick={handleOpenInExternalBrowser}
+              className="flex items-center gap-1 bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-900 border border-amber-300 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer shadow-2xs"
+              title="Abrir no Google Chrome"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
+              <span>Chrome</span>
+            </button>
+
             {onToggleGlobalAi && (
               <button
                 onClick={onToggleGlobalAi}
