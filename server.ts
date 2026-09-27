@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
-import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import { db } from './server/db';
 import { handleIncomingWebhook } from './server/webhook';
@@ -934,26 +933,6 @@ async function startServer() {
       appType: 'spa',
     });
     app.use(vite.middlewares);
-
-    // Guaranteed SPA fallback for any route in development mode
-    app.use('*', async (req: Request, res: Response, next) => {
-      if (req.originalUrl.startsWith('/api')) {
-        return next();
-      }
-      try {
-        const url = req.originalUrl;
-        const indexPath = path.resolve(process.cwd(), 'index.html');
-        if (fs.existsSync(indexPath)) {
-          const rawTemplate = await fs.promises.readFile(indexPath, 'utf-8');
-          const html = await vite.transformIndexHtml(url, rawTemplate);
-          res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
-        } else {
-          next();
-        }
-      } catch (err) {
-        next(err);
-      }
-    });
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
