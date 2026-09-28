@@ -136,26 +136,19 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Main Header & Nav Tabs */}
       <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex items-center justify-between md:justify-start gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <button
               type="button"
               onClick={handleLogoSecretClick}
-              className="w-9 h-9 rounded-lg bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center shadow-xs text-white font-black text-lg tracking-wider border border-indigo-700 cursor-pointer transition-colors focus:outline-none"
-              title="NEXA CRM"
+              className="cursor-pointer focus:outline-none flex items-center group transition-transform active:scale-95"
+              title="NEXA CRM (Clique 3x para Acesso Restrito)"
             >
-              N
+              <img
+                src="/logo.png"
+                alt="NEXA CRM"
+                className="h-7 md:h-7.5 w-auto max-w-[130px] object-contain transition-opacity group-hover:opacity-85"
+              />
             </button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-slate-900 tracking-tight">NEXA CRM</h1>
-                <span className="bg-indigo-50 text-indigo-700 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-indigo-200">
-                  Conversacional Autônomo
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500">
-                WhatsApp Nativo via Evolution API v2 • Multi-IA • Base Dinâmica
-              </p>
-            </div>
           </div>
 
           {/* Quick status on mobile / compact */}
