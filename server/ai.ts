@@ -257,6 +257,35 @@ function splitTextIntoSentences(text: string, maxChunkLen: number = 180): string
 }
 
 /**
+ * Sanitizes text specifically for speech audio generation:
+ * - Completely strips all real emojis and pictographs (so TTS never pronounces 'estrelinhas', 'rosto sorridente', 'dente', etc.)
+ * - Preserves numbers, dates, times, currencies, and Portuguese accents (á, é, í, ó, ú, ç, ã, õ, etc.)
+ * - Strips WhatsApp markdown (*bold*, _italic_, ~strike~, `code`, #headers)
+ * - Converts URLs to natural conversational phrase
+ */
+export function sanitizeTextForSpeech(rawText: string): string {
+  if (!rawText) return '';
+  return rawText
+    // 1. Substitui links web por frase falada amigável
+    .replace(/https?:\/\/\S+/gi, 'o link que vou te enviar')
+    // 2. Remove tags HTML ou XML se houver
+    .replace(/<[^>]*>/g, '')
+    // 3. Remove TODOS os emojis reais e pictogramas (sem tocar em dígitos 0-9 para preservar horários e valores)
+    .replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\u200d\ufe0f\u200b\u200e\u200f\u2600-\u26ff\u2700-\u27bf]/gu, '')
+    // 4. Remove caracteres de formatação de markdown do WhatsApp
+    .replace(/[*_#`~><|•]/g, ' ')
+    // 5. Remove traços de lista soltos no início de linhas
+    .replace(/(^|\n)\s*[-–—]\s+/g, '$1 ')
+    // 6. Normaliza pontuações repetidas
+    .replace(/[.]{2,}/g, '.')
+    .replace(/[!]{2,}/g, '!')
+    .replace(/[?]{2,}/g, '?')
+    // 7. Normaliza múltiplos espaços em branco e quebras de linha
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
  * Ultra-realistic Neural Brazilian Portuguese speech generator powered by Microsoft Azure Neural voices (Edge TTS).
  * Sounds completely human, natural, conversational, with proper pauses, breathing, and zero robotic tone.
  * 100% Free, zero configuration or OAuth2 needed.
@@ -264,6 +293,9 @@ function splitTextIntoSentences(text: string, maxChunkLen: number = 180): string
 export async function generateNeuralSpeech(cleanSpeechText: string, voiceName?: string): Promise<string | null> {
   const tmpFile = path.join(os.tmpdir(), `sofia-neural-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.mp3`);
   try {
+    const speechText = sanitizeTextForSpeech(cleanSpeechText);
+    if (!speechText) return null;
+
     const selectedVoice = voiceName?.startsWith('pt-BR-') ? voiceName : 'pt-BR-FranciscaNeural';
     const tts = new EdgeTTS({
       voice: selectedVoice,
@@ -272,7 +304,7 @@ export async function generateNeuralSpeech(cleanSpeechText: string, voiceName?: 
     });
     
     // Strict 5-second timeout on speech generation
-    const ttsPromise = tts.ttsPromise(cleanSpeechText, tmpFile);
+    const ttsPromise = tts.ttsPromise(speechText, tmpFile);
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Timeout de 5000ms excedido no EdgeTTS')), 5000)
     );
@@ -306,14 +338,11 @@ export async function synthesizeSpeech(
     engine?: 'native_sofia' | 'google_cloud_tts' | 'elevenlabs';
   }
 ): Promise<{ success: boolean; audioBase64?: string; error?: string; engineUsed?: string; notice?: string }> {
-  // Sanitize text: remove URLs and markdown so speech sounds 100% human and natural
-  const cleanSpeechText = textToSpeak
-    .replace(/https?:\/\/\S+/gi, 'o link que vou te mandar por mensagem')
-    .replace(/[*_#`~]/g, '')
-    .trim();
+  // Sanitize text: remove emojis, markdown, and symbols so speech sounds 100% human without reading emoji names
+  const cleanSpeechText = sanitizeTextForSpeech(textToSpeak);
 
   if (!cleanSpeechText) {
-    return { success: false, error: 'Texto para fala vazio' };
+    return { success: false, error: 'Texto para fala vazio após sanitização' };
   }
 
   const engine = options?.engine || db.agentConfig.voiceEngine || 'native_sofia';
@@ -577,6 +606,10 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
      a) O cliente pediu chave PIX, dados bancários, links/URLs, e-mails ou números que ele precisará copiar;
      b) O cliente pediu expressamente "me manda por escrito", "manda em texto" ou uma tabela detalhada;
      c) A informação for técnica ou extensa demais para ouvir.
+   - REGRA DE OURO PARA ÁUDIO ("sendAsVoice": true):
+     * Ao responder em áudio falado, converse como uma pessoa real gravando um áudio pelo WhatsApp!
+     * NUNCA use emojis no texto quando responder em áudio (evitando que o sintetizador de voz soletre o nome dos emojis como 'estrelinhas' ou 'rosto sorridente').
+     * NUNCA use asteriscos (*) ou marcadores mecânicos de lista. Diga frases fluidas e acolhedoras.
 
 === ESTÁGIOS DISPONÍVEIS NO CRM KANBAN ===
 ${stagesList}
