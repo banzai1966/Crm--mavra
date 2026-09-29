@@ -24,11 +24,13 @@ import {
   Zap,
   Database,
   Upload,
+  Send,
 } from 'lucide-react';
 import { Lead, KanbanStage, EvolutionConfig } from '../types';
 import { NewLeadModal } from './NewLeadModal';
 import { ResetDataModal } from './ResetDataModal';
 import { ImportLeadsModal } from './ImportLeadsModal';
+import { ReactivationCampaignModal } from './ReactivationCampaignModal';
 
 interface KanbanBoardProps {
   stages: KanbanStage[];
@@ -69,9 +71,15 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showCampaignModal, setShowCampaignModal] = useState(false);
   const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
   const [targetStageForNewLead, setTargetStageForNewLead] = useState<string | undefined>();
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
+
+  // Base Antiga leads eligible for reactivation campaigns
+  const baseLeads = leads.filter(
+    (l) => l.stageId === 'stage-base' || l.stageId === 'stage-reativacao' || l.tags.includes('Base Antiga') || l.tags.includes('Reativação')
+  );
 
   // Filter leads based on search term, urgency & hot closing toggle
   const filteredLeads = leads.filter((lead) => {
@@ -234,6 +242,18 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <span className="hidden sm:inline">Importar / Sincronizar Base</span>
           </button>
 
+          {baseLeads.length > 0 && (
+            <button
+              id="btn-reactivate-campaign-top"
+              onClick={() => setShowCampaignModal(true)}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer"
+              title="Disparar campanha de reativação segura para pacientes da base antiga"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Disparar Reativação ({baseLeads.length})</span>
+            </button>
+          )}
+
           <a
             href="/api/leads/export/csv"
             download
@@ -329,6 +349,23 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   </button>
                 </div>
               </div>
+
+              {/* Special Column Action for Base Antiga */}
+              {(stage.id === 'stage-base' || stage.id === 'stage-reativacao' || stage.name.toLowerCase().includes('base')) && stageLeads.length > 0 && (
+                <div className="px-3 py-1.5 bg-indigo-50/90 border-b border-indigo-100 flex items-center justify-between">
+                  <span className="text-[10px] font-semibold text-indigo-700">
+                    {stageLeads.length} contatos inativos
+                  </span>
+                  <button
+                    onClick={() => setShowCampaignModal(true)}
+                    className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-2xs transition-colors cursor-pointer"
+                    title="Disparar mensagens de reativação para todos os contatos desta coluna"
+                  >
+                    <Send className="w-2.5 h-2.5" />
+                    <span>Disparar Campanha</span>
+                  </button>
+                </div>
+              )}
 
               {/* Cards Container */}
               <div className="flex-1 p-2.5 overflow-y-auto space-y-2.5 min-h-[150px]">
@@ -603,6 +640,16 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         stages={stages}
         evolutionConfig={evolutionConfig}
         onImportSuccess={async () => {
+          if (onRefreshLeads) await onRefreshLeads();
+        }}
+      />
+
+      {/* Bulk Reactivation Campaign Modal */}
+      <ReactivationCampaignModal
+        isOpen={showCampaignModal}
+        onClose={() => setShowCampaignModal(false)}
+        baseLeads={baseLeads}
+        onLeadsUpdated={async () => {
           if (onRefreshLeads) await onRefreshLeads();
         }}
       />

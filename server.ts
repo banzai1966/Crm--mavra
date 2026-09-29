@@ -922,6 +922,82 @@ async function startServer() {
   });
 
   // =========================================================================
+  // 5b. CAMPANHAS DE REATIVAÇÃO DA BASE ANTIGA (DISPARO EM LOTE SEGURO)
+  // =========================================================================
+  app.get('/api/campaigns/base-leads', (req: Request, res: Response) => {
+    const baseLeads = db.leads.filter(
+      (l) => l.stageId === 'stage-base' || l.stageId === 'stage-reativacao' || l.tags.includes('Base Antiga') || l.tags.includes('Reativação')
+    );
+    res.json({ count: baseLeads.length, leads: baseLeads });
+  });
+
+  app.post('/api/campaigns/send-reactivation-single', async (req: Request, res: Response) => {
+    const { leadId, messageTemplate, sendAsVoice } = req.body;
+    const lead = db.leads.find((l) => l.id === leadId);
+    if (!lead) {
+      return res.status(404).json({ error: 'Lead não encontrado.' });
+    }
+
+    const firstName = (lead.name || 'tudo bem').split(' ')[0];
+    const customizedText = (messageTemplate || 'Olá {nome}, tudo bem? Passando para te dar um oi!')
+      .replace(/\{nome\}/gi, firstName)
+      .replace(/\{procedimento\}/gi, lead.triage?.procedure || lead.interest || 'atendimento')
+      .replace(/\{interesse\}/gi, lead.interest || 'nossos serviços')
+      .replace(/\{clinica\}/gi, 'clínica da Dra. Lucy Murata');
+
+    try {
+      let messageSentType = 'text';
+
+      if (sendAsVoice) {
+        const voiceResult = await synthesizeSpeech(customizedText, {
+          voiceName: db.agentConfig.voiceVoiceName || 'pt-BR-FranciscaNeural',
+          engine: db.agentConfig.voiceEngine || 'native_sofia',
+        });
+        if (voiceResult.success && voiceResult.audioBase64) {
+          await sendWhatsAppVoiceAudio(lead.phone, voiceResult.audioBase64);
+          messageSentType = 'voice';
+        } else {
+          await sendWhatsAppMessage(lead.phone, customizedText);
+        }
+      } else {
+        await sendWhatsAppMessage(lead.phone, customizedText);
+      }
+
+      // Record in messages
+      const msgObj: ChatMessage = {
+        id: 'msg-' + Date.now() + '-reactivation',
+        leadId: lead.id,
+        phone: lead.phone,
+        sender: 'ai',
+        text: messageSentType === 'voice' ? `🎙️ [Áudio de Reativação Enviado]: ${customizedText}` : customizedText,
+        timestamp: new Date().toISOString(),
+        status: 'delivered',
+      };
+      db.messages.push(msgObj);
+
+      // Update lead
+      lead.lastInteraction = new Date().toISOString();
+      if (!lead.tags.includes('Reativação Disparada')) {
+        lead.tags.push('Reativação Disparada');
+      }
+      lead.notes = `${lead.notes || ''}\n🚀 [Campanha Reativação ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}]: Mensagem de reativação enviada.`;
+      
+      db.saveToFile();
+
+      res.json({
+        success: true,
+        leadId: lead.id,
+        phone: lead.phone,
+        sentMessage: customizedText,
+        messageType: messageSentType,
+      });
+    } catch (err: any) {
+      console.error(`[Reactivation Error] Falha ao enviar para ${lead.phone}:`, err);
+      res.status(500).json({ error: err.message || 'Falha ao enviar mensagem pelo WhatsApp.' });
+    }
+  });
+
+  // =========================================================================
   // 6. VITE MIDDLEWARE (DEV) & STATIC SERVING (PROD)
   // =========================================================================
   if (process.env.NODE_ENV !== 'production') {

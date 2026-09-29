@@ -706,6 +706,16 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       console.log(`[Webhook 🔥 LEAD QUENTE / FECHAMENTO] Lead ${lead.name} (${cleanPhone}): ${lead.hotReason}`);
     }
 
+    // Handle Explicit Human Handoff (Transbordo Humano quando o cliente insistiu ou caso delicado)
+    if (aiResult.requestHuman) {
+      lead.aiPaused = true;
+      if (!lead.tags.includes('#Humano')) {
+        lead.tags.unshift('#Humano');
+      }
+      lead.notes = `${lead.notes || ''}\n👤 [TRANSBORDO HUMANO ${new Date().toLocaleTimeString('pt-BR')}]: ${aiResult.humanHandoffReason || 'Cliente solicitou atendimento humano direto'}`;
+      console.log(`[Webhook 👤 TRANSBORDO HUMANO] Lead ${lead.name} (${cleanPhone}) direcionado para secretária humana: ${aiResult.humanHandoffReason}`);
+    }
+
     // Handle Pre-appointment Triage Extraction
     if (aiResult.triage && (aiResult.triage.procedure || aiResult.triage.preferredPeriod || aiResult.triage.preferredDays)) {
       lead.triage = {

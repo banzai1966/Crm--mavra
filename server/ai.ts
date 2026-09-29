@@ -18,6 +18,8 @@ export interface AIResponseResult {
   urgencyReason?: string;
   isHotLead?: boolean;
   hotReason?: string;
+  requestHuman?: boolean;
+  humanHandoffReason?: string;
   triage?: {
     procedure?: string;
     preferredPeriod?: 'manha' | 'tarde' | 'noite' | 'qualquer';
@@ -570,12 +572,16 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
    - Preencha o objeto "triage" no JSON de saída com os dados coletados (procedure, preferredPeriod, preferredDays, paymentType, convenioName).
    - Mova o lead para a etapa adequada ("Qualificado / Interesse" ou "Proposta / Apresentação").
 
-5. CASOS DE URGÊNCIA, DOR AGUDA OU RECLAMAÇÃO CRÍTICA:
-   - Se o paciente/lead relatar dor aguda, emergência médica/odontológica (ex: dente quebrado, dor intensa, sangramento, trauma), ou uma reclamação séria:
-   - Mostre empatia imediata, acolhimento e prioridade total. NUNCA envie respostas frias ou burocráticas.
-   - Informe que o caso foi marcado como URGENTE no painel da clínica para a equipe analisar um encaixe prioritário.
-   - Defina "isUrgent": true e preencha "urgencyReason" com o motivo claro no JSON de saída.
-   - Mova o lead para o estágio de maior atenção do funil.
+5. CLASSIFICAÇÃO CRITERIOSA DE DOR, URGÊNCIA E RISCO (FILTRO INTELIGENTE CONTRA FALSOS FURA-FILAS):
+   - Atenção: Nem toda menção de "dor", "urgência" ou "preciso de atendimento rápido" é uma emergência real que deve furar a fila dos outros pacientes!
+   - Se o paciente disser apenas "estou com dor", "tá doendo", "é urgente", "preciso rápido" ou algo genérico:
+     * A Sofia NÃO deve marcar imediatamente como URGENTE no sistema nem furar a fila de primeira.
+     * Ela deve acolher com carinho, demonstrar empatia e fazer uma pergunta de triagem clínica para discernir a gravidade com precisão:
+       Exemplo de pergunta: "Sinto muito pelo desconforto! Para eu classificar o seu caso com a prioridade correta para a equipe da Dra. Lucy: essa dor começou de repente após algum trauma ou pancada, há inchaço no rosto ou sangramento, ou é mais uma sensibilidade ao mastigar ou tomar algo gelado?"
+   - CRITÉRIO PARA MARCAR "isUrgent": true (EMERGÊNCIA REAL):
+     * Apenas marque "isUrgent": true se houver relato explícito de: trauma/acidente, dente quebrado/fraturado, dor insuportável contínua que impede de dormir, inchaço visível na face, sangramento ativo ou febre associada.
+     * Se for dor tolerável, sensibilidade térmica (água fria/doce), desconforto antigo ou apenas pressa do paciente: acolha com empatia, ofereça a avaliação com prioridade regular e MANTENHA "isUrgent": false!
+     * Preencha "urgencyReason" com o resumo clínico caso seja urgente real.
 
 6. CASOS DE CANCELAMENTO OU IMPOSSIBILIDADE DE COMPARECER:
    - Se o paciente avisar que não poderá comparecer à consulta ou procedimento agendado:
@@ -587,8 +593,15 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
    - Se o lead enviar uma mensagem curta, confusa, ou que pareça conversa pessoal ou engano (por exemplo "oi fulano", "cadê você?", "tudo bem?", "tá podendo falar?"), responda de forma educada, acolhedora e humana.
    - Exemplo: "Olá! Tudo bem? Aqui é a Sofia, secretária da Dra. Lucy Murata. Em que posso te ajudar hoje?"
    - NUNCA envie respostas robóticas, jargões técnicos ou suposições forçadas se o cliente ainda não indicou o motivo do contato.
-9. CASO O CLIENTE DIRECIONE A CONVERSA A UMA PESSOA ESPECÍFICA OU ATENDIMENTO HUMANO:
-   - Responda cordialmente: "Olá! Nossa equipe já foi notificada da sua mensagem. Gostaria de adiantar em algo enquanto organizamos seu atendimento?"
+9. CONTORNO INTELIGENTE DE TRANSIÇÃO PARA ATENDIMENTO HUMANO / SECRETÁRIA (NÃO SE RENDER DE PRIMEIRA):
+   - Se o lead pedir "quero falar com humano", "quero atendente", "me passa para alguém", "quero falar com a secretária":
+     * REGRA DE OURO: A Sofia NÃO se rende de primeira nem pausa a conversa imediatamente! Se pausar de primeira, as pessoas usam isso de atalho e perdem a agilidade da IA.
+     * A Sofia deve acolher com extrema simpatia e agilidade, dizer que já avisou a recepção e fazer uma pergunta amigável para adiantar o assunto enquanto a secretária se prepara:
+       Exemplo: "Com certeza! Já notifiquei a nossa recepção aqui no consultório da Dra. Lucy Murata. Enquanto a secretária conclui o atendimento anterior, qual seria a sua dúvida ou o procedimento que você gostaria de ver? Assim eu já deixo tudo adiantado para ela te atender bem mais rápido!"
+     * SE O CLIENTE RESPONDER com a dúvida (ex: valores, horários, localização, procedimentos, convênio): a Sofia responde com toda a presteza e continua a qualificação normalmente, mantendo "requestHuman": false.
+     * SOMENTE SE O CLIENTE INSISTIR enfaticamente ("já disse que quero humano", "não quero falar com robô", "só falo com a secretária agora", "reclamação grave"), OU se for caso delicado de negociação especial:
+       - Responda cordialmente: "Entendido perfeitamente! Já passei a conversa para a nossa secretária com prioridade e ela vai te responder diretamente por aqui em instantes."
+       - Defina "requestHuman": true e preencha "humanHandoffReason" com o motivo.
 10. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
    - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
 11. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO E DETECÇÃO DE "LEAD QUENTE / PEDIDO DE FECHAMENTO":
@@ -622,10 +635,12 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
   "sendCatalogPdf": true ou false (true apenas se o lead solicitou apresentação/catálogo/PDF),
   "sendPixInfo": true ou false (true se o lead pediu dados de pagamento/PIX),
   "sendAsVoice": true ou false (true se for adequado responder com áudio falado pela Sofia segundo as regras de discernimento),
-  "isUrgent": true ou false (true se o paciente/lead relatou dor aguda, sangramento, urgência ou reclamação grave),
-  "urgencyReason": "Motivo da urgência em poucas palavras, ou null",
+  "isUrgent": true ou false (true se o paciente/lead confirmou emergência real com trauma, dente quebrado, dor insuportável ou sangramento),
+  "urgencyReason": "Motivo da urgência real em poucas palavras, ou null",
   "isHotLead": true ou false (true se o lead solicitou pagamento, PIX, contrato, link de cartão ou demonstrou forte intenção de fechar/comprar agora),
   "hotReason": "Motivo do fechamento ou pedido de compra em poucas palavras (ex: 'Pediu chave PIX', 'Pediu link de pagamento', 'Quer fechar contrato agora'), ou null",
+  "requestHuman": true ou false (true APENAS se o lead insistiu expressamente em falar com atendente humano mesmo após o contorno acolhedor, ou reclamação grave),
+  "humanHandoffReason": "Motivo do transbordo humano (ex: 'Cliente insistiu em falar com a secretária', 'Negociação especial'), ou null",
   "triage": {
     "procedure": "Procedimento ou consulta de interesse (ex: Implante, Clareamento, Consulta de Rotina, ou null)",
     "preferredPeriod": "manha" ou "tarde" ou "noite" ou "qualquer" (ou null),
@@ -970,7 +985,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('recepcao') ||
       lower.includes('falar com alguém')
     ) {
-      reply = 'Com certeza! Já avisei nossa recepção aqui no consultório da Dra. Lucy Murata e em instantes nossa secretária entrará em contato para te atender!';
+      reply = 'Com certeza! Já notifiquei a nossa recepção aqui no consultório da Dra. Lucy Murata. Enquanto a secretária conclui o atendimento anterior, qual seria a sua dúvida ou procedimento que gostaria de ver? Assim já adianto tudo para ela te atender bem mais rápido!';
       suggestedStage = 'stage-2';
       interest = 'Solicitação de Atendimento com a Secretária';
     } else if (
@@ -1014,7 +1029,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('atendente') ||
       lower.includes('falar com alguém')
     ) {
-      reply = 'Com certeza! Já notifiquei nossa equipe interna sobre seu contato. Em instantes nossa equipe entrará em contato para lhe atender pessoalmente!';
+      reply = 'Com certeza! Já avisei nossa equipe sobre seu contato. Enquanto a atendente finaliza o atendimento anterior, qual seria a sua dúvida para eu já deixar adiantado para ela te atender bem mais rápido?';
       suggestedStage = 'stage-2';
       interest = 'Solicitação de Atendimento Humano';
     } else {
@@ -1138,6 +1153,10 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       sendAsVoice: parsed.sendAsVoice !== undefined ? Boolean(parsed.sendAsVoice) : undefined,
       isUrgent: Boolean(parsed.isUrgent),
       urgencyReason: parsed.urgencyReason || undefined,
+      isHotLead: Boolean(parsed.isHotLead),
+      hotReason: parsed.hotReason || undefined,
+      requestHuman: Boolean(parsed.requestHuman),
+      humanHandoffReason: parsed.humanHandoffReason || undefined,
       triage: parsed.triage || undefined,
       extractedInfo: parsed.extractedInfo || undefined,
     };
