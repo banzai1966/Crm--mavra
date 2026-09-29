@@ -242,17 +242,15 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <span className="hidden sm:inline">Importar / Sincronizar Base</span>
           </button>
 
-          {baseLeads.length > 0 && (
-            <button
-              id="btn-reactivate-campaign-top"
-              onClick={() => setShowCampaignModal(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer"
-              title="Disparar campanha de reativação segura para pacientes da base antiga"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>Disparar Reativação ({baseLeads.length})</span>
-            </button>
-          )}
+          <button
+            id="btn-reactivate-campaign-top"
+            onClick={() => setShowCampaignModal(true)}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer"
+            title="Disparar campanha de reativação para pacientes e contatos da base antiga"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>Disparar Reativação ({baseLeads.length})</span>
+          </button>
 
           <a
             href="/api/leads/export/csv"
@@ -351,15 +349,15 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               </div>
 
               {/* Special Column Action for Base Antiga */}
-              {(stage.id === 'stage-base' || stage.id === 'stage-reativacao' || stage.name.toLowerCase().includes('base')) && stageLeads.length > 0 && (
+              {(stage.id === 'stage-base' || stage.id === 'stage-reativacao' || stage.name.toLowerCase().includes('base')) && (
                 <div className="px-3 py-1.5 bg-indigo-50/90 border-b border-indigo-100 flex items-center justify-between">
                   <span className="text-[10px] font-semibold text-indigo-700">
-                    {stageLeads.length} contatos inativos
+                    {stageLeads.length} contatos na base
                   </span>
                   <button
                     onClick={() => setShowCampaignModal(true)}
-                    className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-2xs transition-colors cursor-pointer"
-                    title="Disparar mensagens de reativação para todos os contatos desta coluna"
+                    className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-2xs transition-colors cursor-pointer"
+                    title="Disparar mensagens de reativação para contatos da base antiga"
                   >
                     <Send className="w-2.5 h-2.5" />
                     <span>Disparar Campanha</span>

@@ -679,34 +679,42 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {baseLeads.map((lead) => {
-                        const isSelected = selectedLeadIds.includes(lead.id);
-                        return (
-                          <tr
-                            key={lead.id}
-                            onClick={() => toggleSelectLead(lead.id)}
-                            className={`cursor-pointer transition-colors ${
-                              isSelected ? 'bg-indigo-50/40 hover:bg-indigo-50/70' : 'hover:bg-slate-50'
-                            }`}
-                          >
-                            <td className="py-2 px-3">
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => {}}
-                                className="rounded text-indigo-600 focus:ring-indigo-500"
-                              />
-                            </td>
-                            <td className="py-2 px-3 font-semibold text-slate-800">{lead.name}</td>
-                            <td className="py-2 px-3 font-mono text-slate-500">{lead.phone}</td>
-                            <td className="py-2 px-3 text-slate-500">
-                              <span className="truncate max-w-[200px] block">
-                                {lead.interest || lead.tags.join(', ')}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                      {baseLeads.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="py-6 text-center text-xs text-slate-400">
+                            Nenhum contato na coluna Base Antiga no momento. Arraste cards para a coluna ou use "Importar / Sincronizar Base".
+                          </td>
+                        </tr>
+                      ) : (
+                        baseLeads.map((lead) => {
+                          const isSelected = selectedLeadIds.includes(lead.id);
+                          return (
+                            <tr
+                              key={lead.id}
+                              onClick={() => toggleSelectLead(lead.id)}
+                              className={`cursor-pointer transition-colors ${
+                                isSelected ? 'bg-indigo-50/40 hover:bg-indigo-50/70' : 'hover:bg-slate-50'
+                              }`}
+                            >
+                              <td className="py-2 px-3">
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => {}}
+                                  className="rounded text-indigo-600 focus:ring-indigo-500"
+                                />
+                              </td>
+                              <td className="py-2 px-3 font-semibold text-slate-800">{lead.name}</td>
+                              <td className="py-2 px-3 font-mono text-slate-500">{lead.phone}</td>
+                              <td className="py-2 px-3 text-slate-500">
+                                <span className="truncate max-w-[200px] block">
+                                  {lead.interest || lead.tags.join(', ')}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
                     </tbody>
                   </table>
                 </div>
