@@ -308,8 +308,13 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
 
   public sentinelAlerts: SentinelAlertConfig = {
     enabled: true,
-    notifyOnWhatsApp: true,
+    notifyOnWhatsApp: false,
     notifyPhone: '5511976143323', // Número do Marco Duarte
+    notifyOnTelegram: true,
+    telegramBotToken: '8799978414:AAEemup1ywf71hueEKfgzPmx8J7VjPz73tQ',
+    telegramChatId: '6789341084',
+    notifyOnEmail: true,
+    notifyEmail: 'marco.agduarte22@gmail.com',
     alertOnWhatsAppDisconnect: true,
     alertOnHighMemory: true,
     alertOnHighDisk: true,

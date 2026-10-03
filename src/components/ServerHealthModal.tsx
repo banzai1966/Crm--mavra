@@ -35,20 +35,28 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Sentinel Notification Settings state
-  const [alertsConfig, setAlertsConfig] = useState<SentinelAlertConfig>({
-    enabled: true,
-    notifyOnWhatsApp: false,
-    notifyPhone: '5511976143323',
-    notifyOnTelegram: true,
-    telegramBotToken: '',
-    telegramChatId: '',
-    notifyOnEmail: true,
-    notifyEmail: 'marco.agduarte22@gmail.com',
-    alertOnWhatsAppDisconnect: true,
-    alertOnHighMemory: true,
-    alertOnHighDisk: true,
-    alertOnAiFailure: true,
-    cooldownMinutes: 30,
+  const [alertsConfig, setAlertsConfig] = useState<SentinelAlertConfig>(() => {
+    const savedLocal = typeof window !== 'undefined' ? localStorage.getItem('nexa_sentinel_alerts') : null;
+    if (savedLocal) {
+      try {
+        return JSON.parse(savedLocal);
+      } catch {}
+    }
+    return {
+      enabled: true,
+      notifyOnWhatsApp: false,
+      notifyPhone: '5511976143323',
+      notifyOnTelegram: true,
+      telegramBotToken: '8799978414:AAEemup1ywf71hueEKfgzPmx8J7VjPz73tQ',
+      telegramChatId: '6789341084',
+      notifyOnEmail: true,
+      notifyEmail: 'marco.agduarte22@gmail.com',
+      alertOnWhatsAppDisconnect: true,
+      alertOnHighMemory: true,
+      alertOnHighDisk: true,
+      alertOnAiFailure: true,
+      cooldownMinutes: 30,
+    };
   });
   const [activeChannelTab, setActiveChannelTab] = useState<'telegram' | 'whatsapp' | 'email'>('telegram');
   const [isAlertsInitialized, setIsAlertsInitialized] = useState(false);
@@ -68,6 +76,8 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
         setAlertsConfig({
           ...data.sentinelAlerts,
           notifyEmail: data.sentinelAlerts.notifyEmail || 'marco.agduarte22@gmail.com',
+          telegramBotToken: data.sentinelAlerts.telegramBotToken || '8799978414:AAEemup1ywf71hueEKfgzPmx8J7VjPz73tQ',
+          telegramChatId: data.sentinelAlerts.telegramChatId || '6789341084',
           notifyOnTelegram: data.sentinelAlerts.notifyOnTelegram !== false,
           notifyOnEmail: data.sentinelAlerts.notifyOnEmail !== false,
         });
@@ -90,6 +100,9 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
         body: JSON.stringify(alertsConfig),
       });
       if (!res.ok) throw new Error('Falha ao salvar configurações de alerta');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('nexa_sentinel_alerts', JSON.stringify(alertsConfig));
+      }
       setTestSentMsg('Configurações do Sentinela salvas com sucesso!');
       setTimeout(() => setTestSentMsg(null), 3000);
     } catch (err: any) {
