@@ -21,9 +21,11 @@ import {
   VolumeX,
   Flame,
   ExternalLink,
+  Activity,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
+import { ServerHealthModal } from './ServerHealthModal';
 
 interface HeaderProps {
   activeTab: 'dashboard' | 'kanban' | 'chat' | 'agent' | 'evolution' | 'supabase';
@@ -58,6 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showClientLinkModal, setShowClientLinkModal] = useState(false);
+  const [showServerHealthModal, setShowServerHealthModal] = useState(false);
   const logoClicksRef = useRef<number>(0);
   const logoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -297,6 +300,18 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
+            {/* Server Health & Resources (Admin only) */}
+            {isAdminUnlocked && (
+              <button
+                onClick={() => setShowServerHealthModal(true)}
+                className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                title="Ver consumo de Memória RAM, Espaço em Disco e Telemetria em tempo real"
+              >
+                <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                <span className="hidden sm:inline">Servidor & Recursos</span>
+              </button>
+            )}
+
             {/* Gerador de Link do Cliente */}
             {isAdminUnlocked && (
               <button
@@ -336,6 +351,12 @@ export const Header: React.FC<HeaderProps> = ({
       <ClientLinkModal
         isOpen={showClientLinkModal}
         onClose={() => setShowClientLinkModal(false)}
+      />
+
+      {/* Server Health & Resources Telemetry Modal */}
+      <ServerHealthModal
+        isOpen={showServerHealthModal}
+        onClose={() => setShowServerHealthModal(false)}
       />
     </header>
   );

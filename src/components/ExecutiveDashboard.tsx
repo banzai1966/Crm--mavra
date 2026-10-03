@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { Lead, KanbanStage, AgentConfig, EvolutionConfig, BusinessNiche } from '../types';
 import { ResetDataModal } from './ResetDataModal';
+import { ServerHealthModal } from './ServerHealthModal';
 
 export interface NichePreset {
   id: string;
@@ -195,6 +196,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   const currentNiche: NichePreset = NICHE_PRESETS[currentNicheKey] || NICHE_PRESETS.general;
 
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showHealthModal, setShowHealthModal] = useState(false);
 
   const handleNicheChange = (newNiche: BusinessNiche) => {
     if (onUpdateAgentConfig) {
@@ -451,6 +453,19 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 : '📲 Conectar WhatsApp (QR Code)'}
             </span>
           </button>
+
+          {/* Server Health & Resources (Admin) */}
+          {isAdmin && (
+            <button
+              id="btn-dashboard-server-health"
+              onClick={() => setShowHealthModal(true)}
+              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+              title="Monitorar consumo de Memória RAM, Espaço em Disco e Telemetria do Servidor"
+            >
+              <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <span>Servidor & Recursos</span>
+            </button>
+          )}
 
           {/* Clear / Reset CRM Data Button (Available for Admin) */}
           {isAdmin && (
@@ -1376,6 +1391,12 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Server Health & Resources Modal */}
+      <ServerHealthModal
+        isOpen={showHealthModal}
+        onClose={() => setShowHealthModal(false)}
+      />
     </div>
   );
 };

@@ -1,0 +1,1304 @@
+{
+  "stages": [
+    {
+      "id": "stage-base",
+      "name": "Base Antiga / Reativação",
+      "color": "#6366f1",
+      "order": 0
+    },
+    {
+      "id": "stage-1",
+      "name": "Novo Lead",
+      "color": "#3b82f6",
+      "order": 1,
+      "isDefault": true
+    },
+    {
+      "id": "stage-2",
+      "name": "Qualificado / Interesse",
+      "color": "#f59e0b",
+      "order": 2
+    },
+    {
+      "id": "stage-3",
+      "name": "Proposta / Apresentação",
+      "color": "#8b5cf6",
+      "order": 3
+    },
+    {
+      "id": "stage-4",
+      "name": "Em Negociação",
+      "color": "#06b6d4",
+      "order": 4
+    },
+    {
+      "id": "stage-5",
+      "name": "Ganho / Fechado",
+      "color": "#10b981",
+      "order": 5
+    },
+    {
+      "id": "stage-6",
+      "name": "Perdido",
+      "color": "#ef4444",
+      "order": 6
+    }
+  ],
+  "leads": [
+    {
+      "id": "lead-1",
+      "name": "Dr. Roberto Silva",
+      "phone": "5511987654321",
+      "email": "roberto.silva@clinica.com.br",
+      "stageId": "stage-3",
+      "value": 12500,
+      "interest": "Plano Enterprise + Integração WhatsApp",
+      "tags": [
+        "Clínica Médica",
+        "Decisor",
+        "Alta Prioridade",
+        "🔥 LEAD QUENTE",
+        "Follow-up Enviado"
+      ],
+      "notes": "Solicitou proposta para 10 atendentes com IA conversacional.\n🔁 [Follow-up Automático #1]: 02:30:39\n🔁 [Follow-up Automático #2]: 06:35:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:29:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:06:08\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:06",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-03T00:24:06.707Z",
+      "createdAt": "2026-09-18T22:45:38.575+00:00",
+      "unreadCount": 0,
+      "followUpCount": 1,
+      "lastFollowUpAt": "2026-10-03T00:24:06.707Z"
+    },
+    {
+      "id": "lead-1790015749543",
+      "name": "Lead 8888",
+      "phone": "5511999998888",
+      "email": "",
+      "stageId": "stage-1",
+      "value": 0,
+      "interest": "Novo contato via WhatsApp",
+      "tags": [
+        "WhatsApp",
+        "Novo Lead",
+        "Follow-up Enviado"
+      ],
+      "notes": "Lead criado automaticamente via Evolution API v2.\n🔁 [Follow-up Automático #1]: 22:38:40\n🔁 [Follow-up Automático #2]: 02:43:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:28:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:07:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-03T00:24:07.194Z",
+      "createdAt": "2026-09-21T18:35:49.543+00:00",
+      "unreadCount": 0,
+      "followUpCount": 1,
+      "lastFollowUpAt": "2026-10-03T00:24:07.194Z"
+    },
+    {
+      "id": "lead-2",
+      "name": "Camila Castro",
+      "phone": "5521991234567",
+      "email": "camila@castromarketing.com",
+      "stageId": "stage-2",
+      "value": 4800,
+      "interest": "Agente de Atendimento 24/7",
+      "tags": [
+        "E-commerce",
+        "Lead Quente",
+        "Follow-up Enviado"
+      ],
+      "notes": "Quer automatizar respostas para 200 pedidos/dia.\n🔁 [Follow-up Automático #1]: 02:00:39\n🔁 [Follow-up Automático #2]: 06:05:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:10\n🔁 [Follow-up Automático #1]: 15:48:34\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:46\n🔁 [Follow-up Automático #1]: 17:24:32\n🔁 [Follow-up Automático #1]: 21:30:15\n🔁 [Follow-up Automático #1]: 02:07:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:08:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-03T00:24:07.336Z",
+      "createdAt": "2026-09-20T10:45:38.575+00:00",
+      "unreadCount": 0,
+      "followUpCount": 1,
+      "lastFollowUpAt": "2026-10-03T00:24:07.336Z"
+    },
+    {
+      "id": "lead-1790015029550",
+      "name": "Tania Maria",
+      "phone": "5511982220223",
+      "email": "",
+      "stageId": "stage-2",
+      "value": 0,
+      "interest": "Como Funciona a Odontologia Integrativa",
+      "tags": [
+        "WhatsApp",
+        "Novo Lead",
+        "Follow-up Enviado"
+      ],
+      "notes": "Lead criado automaticamente via Evolution API v2.\n[21/09/2026] Movido para \"Qualificado / Interesse\" pela IA.\n🔁 [Follow-up Automático #1]: 22:58:41\n🔁 [Follow-up Automático #2]: 03:03:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:34\n🔁 [Follow-up Automático #1]: 21:27:14\n🔁 [Follow-up Automático #1]: 01:27:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:05:08\n🔁 [Follow-up Automático #1]: 00:05:19\n🔁 [Follow-up Automático #2]: 04:10:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-03T00:24:07.782Z",
+      "createdAt": "2026-09-21T18:23:49.55+00:00",
+      "unreadCount": 0,
+      "followUpCount": 1,
+      "lastFollowUpAt": "2026-10-03T00:24:07.782Z"
+    },
+    {
+      "id": "lead-3",
+      "name": "Lucas Mendes",
+      "phone": "5531988887777",
+      "email": "lucas@techmendes.io",
+      "stageId": "stage-1",
+      "value": 2900,
+      "interest": "NEXA CRM Starter",
+      "tags": [
+        "SaaS",
+        "Trial"
+      ],
+      "notes": "Chegou pelo anúncio do Instagram querendo demonstração.\n[29/09/2026] Movido manualmente para \"Base Antiga / Reativação\".\n[29/09/2026] Movido manualmente para \"Novo Lead\".",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-09-20T21:25:38.575+00:00",
+      "createdAt": "2026-09-20T20:45:38.575+00:00",
+      "unreadCount": 0
+    },
+    {
+      "id": "lead-4",
+      "name": "Mariana Rios",
+      "phone": "5541999990000",
+      "email": "mariana.rios@imoveisprime.com",
+      "stageId": "stage-4",
+      "value": 18000,
+      "interest": "Qualificação Imobiliária Automatizada",
+      "tags": [
+        "Imobiliária",
+        "Contrato Anual"
+      ],
+      "notes": "Revisando minuta contratual. IA respondeu dúvidas jurídicas com sucesso.",
+      "aiPaused": true,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-09-20T20:15:38.575+00:00",
+      "createdAt": "2026-09-18T22:45:38.575+00:00",
+      "unreadCount": 0
+    },
+    {
+      "id": "lead-5",
+      "name": "Carlos Albuquerque",
+      "phone": "5581977776666",
+      "email": "carlos@albuquerquelaw.adv.br",
+      "stageId": "stage-5",
+      "value": 9500,
+      "interest": "Atendimento Jurídico Pré-triagem",
+      "tags": [
+        "Advocacia",
+        "Cliente Ativo"
+      ],
+      "notes": "Assinou contrato trimestral com sucesso!",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-09-20T17:45:38.575+00:00",
+      "createdAt": "2026-09-17T22:45:38.575+00:00",
+      "unreadCount": 0
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-5",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "lead",
+      "text": "Boa tarde, consigo colocar catálogo de produtos em PDF para a IA ler?",
+      "status": "read",
+      "timestamp": "2026-09-20T22:00:38.575+00:00"
+    },
+    {
+      "id": "msg-1",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "lead",
+      "text": "Olá! Vi a plataforma NEXA de vocês. Como funciona o agente de IA para WhatsApp?",
+      "status": "read",
+      "timestamp": "2026-09-20T22:10:38.575+00:00"
+    },
+    {
+      "id": "msg-2",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá, Dr. Roberto! Que prazer falar com você. Nossa Inteligência Artificial corporativa atende diretamente no WhatsApp da sua clínica com respostas ágeis, personalizadas e integração direta ao CRM em tempo real! Qual é o tamanho da sua equipe?",
+      "status": "read",
+      "timestamp": "2026-09-20T22:11:38.575+00:00"
+    },
+    {
+      "id": "msg-3",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "lead",
+      "text": "Temos 10 atendentes na clínica. Vocês conseguem enviar proposta para esse volume?",
+      "status": "read",
+      "timestamp": "2026-09-20T22:25:38.575+00:00"
+    },
+    {
+      "id": "msg-4",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Perfeito! Para 10 atendentes temos o Plano Enterprise com instâncias dedicadas e suporte prioritário. Já atualizei seu cadastro no nosso CRM para \"Proposta / Apresentação\". Nosso especialista Marco Duarte entrará em contato para agendar uma demonstração exclusiva!",
+      "status": "delivered",
+      "timestamp": "2026-09-20T22:27:38.575+00:00"
+    },
+    {
+      "id": "msg-1789956039143-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T02:00:39.143+00:00"
+    },
+    {
+      "id": "msg-1789957839142-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T02:30:39.142+00:00"
+    },
+    {
+      "id": "msg-1789970739290-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T06:05:39.29+00:00"
+    },
+    {
+      "id": "msg-1789972539170-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T06:35:39.17+00:00"
+    },
+    {
+      "id": "msg-1790015029550-in",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "Oi",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:23:49.55+00:00"
+    },
+    {
+      "id": "msg-1790015031145-ai",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Aqui é a Sofia, secretária e coordenadora de atendimento da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:23:51.145+00:00"
+    },
+    {
+      "id": "msg-1790015084776-in",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "A doutora trabalha com odontologia biológica",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:24:44.776+00:00"
+    },
+    {
+      "id": "msg-1790015086313-ai",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "A Odontologia Integrativa da Dra. Lucy Murata cuida do sorriso em conexão direta com a saúde sistêmica de todo o corpo, unindo tecnologia digital (escaneamento 3D) à remoção de toxinas e biomateriais puros. Nosso consultório fica no Euroville Mall em Bragança Paulista. Gostaria de agendar sua avaliação inicial?",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:24:46.313+00:00"
+    },
+    {
+      "id": "msg-1790015749174-in",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "🎤 [Áudio Transcrito]: \"Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.\"",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:35:49.174+00:00"
+    },
+    {
+      "id": "msg-1790015749543-in",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "lead",
+      "text": "Teste de deduplicacao",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:35:49.543+00:00"
+    },
+    {
+      "id": "msg-1790015750683-ai",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "🎙️ [Áudio de Voz Enviado]: \"Com certeza! Pode me enviar áudios tranquilamente, eu escuto perfeitamente e também posso te responder por voz para tornar tudo mais prático para você. Como posso te orientar sobre seu tratamento hoje?\"",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:35:50.683+00:00"
+    },
+    {
+      "id": "msg-1790015751057-ai",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Aqui é a Sofia, secretária e assistente da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:35:51.057+00:00"
+    },
+    {
+      "id": "msg-1790015782489-in",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "🎤 [Áudio Transcrito]: \"Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.\"",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:36:22.489+00:00"
+    },
+    {
+      "id": "msg-1790015783994-ai",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "🎙️ [Áudio de Voz Enviado]: \"Com certeza! Pode me enviar áudios tranquilamente, eu escuto perfeitamente e também posso te responder por voz para tornar tudo mais prático para você. Como posso te orientar sobre seu tratamento hoje?\"",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:36:23.994+00:00"
+    },
+    {
+      "id": "msg-1790016831502-in",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "Oi",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:53:51.502+00:00"
+    },
+    {
+      "id": "msg-1790016833035-ai",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Aqui é a Sofia, secretária e coordenadora de atendimento da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:53:53.035+00:00"
+    },
+    {
+      "id": "msg-1790016860004-in",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "🎤 [Áudio Transcrito]: \"Olá! Enviei uma mensagem de áudio para o consultório da Dra. Lucy Murata.\"",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:54:20.004+00:00"
+    },
+    {
+      "id": "msg-1790016861544-ai",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "🎙️ [Áudio de Voz Enviado]: \"Com certeza! Pode me enviar áudios tranquilamente, eu escuto perfeitamente e também posso te responder por voz para tornar tudo mais prático para você. Como posso te orientar sobre seu tratamento hoje?\"",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:54:21.544+00:00"
+    },
+    {
+      "id": "msg-1790016916459-in",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "lead",
+      "text": "Qual o endereço da clinica",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:55:16.459+00:00"
+    },
+    {
+      "id": "msg-1790016918168-ai",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "A Odontologia Integrativa da Dra. Lucy Murata cuida do sorriso em conexão direta com a saúde sistêmica de todo o corpo, unindo tecnologia digital (escaneamento 3D) à remoção de toxinas e biomateriais puros. Nosso consultório fica no Euroville Mall em Bragança Paulista. Gostaria de agendar sua avaliação inicial?",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:55:18.168+00:00"
+    },
+    {
+      "id": "msg-1790030320885-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T22:38:40.885+00:00"
+    },
+    {
+      "id": "msg-1790031521097-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T22:58:41.097+00:00"
+    },
+    {
+      "id": "msg-1790045020911-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T02:43:40.911+00:00"
+    },
+    {
+      "id": "msg-1790046220892-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T03:03:40.892+00:00"
+    },
+    {
+      "id": "msg-1790114833317-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T22:07:13.317+00:00"
+    },
+    {
+      "id": "msg-1790114833946-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T22:07:13.946+00:00"
+    },
+    {
+      "id": "msg-1790114834097-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T22:07:14.097+00:00"
+    },
+    {
+      "id": "msg-1790114834294-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T22:07:14.294+00:00"
+    },
+    {
+      "id": "msg-1790129410573-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T02:10:10.573+00:00"
+    },
+    {
+      "id": "msg-1790129411279-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T02:10:11.279+00:00"
+    },
+    {
+      "id": "msg-1790129411450-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T02:10:11.45+00:00"
+    },
+    {
+      "id": "msg-1790129411605-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T02:10:11.605+00:00"
+    },
+    {
+      "id": "msg-1790178513128-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T15:48:33.128+00:00"
+    },
+    {
+      "id": "msg-1790178513770-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T15:48:33.77+00:00"
+    },
+    {
+      "id": "msg-1790178513929-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T15:48:33.929+00:00"
+    },
+    {
+      "id": "msg-1790178514082-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T15:48:34.082+00:00"
+    },
+    {
+      "id": "msg-1790192940480-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T19:49:00.48+00:00"
+    },
+    {
+      "id": "msg-1790192940635-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T19:49:00.635+00:00"
+    },
+    {
+      "id": "msg-1790192940795-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T19:49:00.795+00:00"
+    },
+    {
+      "id": "msg-1790192940921-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T19:49:00.921+00:00"
+    },
+    {
+      "id": "msg-1790428603690-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:16:43.69+00:00"
+    },
+    {
+      "id": "msg-1790428603946-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:16:43.946+00:00"
+    },
+    {
+      "id": "msg-1790428604086-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:16:44.086+00:00"
+    },
+    {
+      "id": "msg-1790428604233-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:16:44.233+00:00"
+    },
+    {
+      "id": "msg-1790428785268-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:19:45.268+00:00"
+    },
+    {
+      "id": "msg-1790428785784-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:19:45.784+00:00"
+    },
+    {
+      "id": "msg-1790428785925-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:19:45.925+00:00"
+    },
+    {
+      "id": "msg-1790428786394-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:19:46.394+00:00"
+    },
+    {
+      "id": "msg-1790443472711-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T17:24:32.711+00:00"
+    },
+    {
+      "id": "msg-1790443473409-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T17:24:33.409+00:00"
+    },
+    {
+      "id": "msg-1790443473901-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T17:24:33.901+00:00"
+    },
+    {
+      "id": "msg-1790443474069-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T17:24:34.069+00:00"
+    },
+    {
+      "id": "msg-1790458034122-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T21:27:14.122+00:00"
+    },
+    {
+      "id": "msg-1790458094736-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T21:28:14.736+00:00"
+    },
+    {
+      "id": "msg-1790458154887-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T21:29:14.887+00:00"
+    },
+    {
+      "id": "msg-1790458215035-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T21:30:15.035+00:00"
+    },
+    {
+      "id": "msg-1790472467605-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T01:27:47.605+00:00"
+    },
+    {
+      "id": "msg-1790472767203-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T01:32:47.203+00:00"
+    },
+    {
+      "id": "msg-1790472767715-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T01:32:47.715+00:00"
+    },
+    {
+      "id": "msg-1790474867220-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T02:07:47.22+00:00"
+    },
+    {
+      "id": "msg-1790524726868-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T15:58:46.868+00:00"
+    },
+    {
+      "id": "msg-1790524727135-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T15:58:47.135+00:00"
+    },
+    {
+      "id": "msg-1790524727282-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T15:58:47.282+00:00"
+    },
+    {
+      "id": "msg-1790524727424-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T15:58:47.424+00:00"
+    },
+    {
+      "id": "msg-1790524924013-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:04.013+00:00"
+    },
+    {
+      "id": "msg-1790524924527-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:04.527+00:00"
+    },
+    {
+      "id": "msg-1790524924664-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:04.664+00:00"
+    },
+    {
+      "id": "msg-1790524924803-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:04.803+00:00"
+    },
+    {
+      "id": "msg-1790524958724-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:38.724+00:00"
+    },
+    {
+      "id": "msg-1790524970324-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:50.324+00:00"
+    },
+    {
+      "id": "msg-1790524971223-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:51.223+00:00"
+    },
+    {
+      "id": "msg-1790524971723-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:51.723+00:00"
+    },
+    {
+      "id": "msg-1790539508744-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T20:05:08.744+00:00"
+    },
+    {
+      "id": "msg-1790539568898-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T20:06:08.898+00:00"
+    },
+    {
+      "id": "msg-1790539629057-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T20:07:09.057+00:00"
+    },
+    {
+      "id": "msg-1790539689209-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T20:08:09.209+00:00"
+    },
+    {
+      "id": "msg-1790553919185-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:05:19.185+00:00"
+    },
+    {
+      "id": "msg-1790553955803-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:05:55.803+00:00"
+    },
+    {
+      "id": "msg-1790554219181-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:10:19.181+00:00"
+    },
+    {
+      "id": "msg-1790554219681-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:10:19.681+00:00"
+    },
+    {
+      "id": "msg-1790554219818-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:10:19.818+00:00"
+    },
+    {
+      "id": "msg-1790554258767-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:10:58.767+00:00"
+    },
+    {
+      "id": "msg-1790554259668-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:10:59.668+00:00"
+    },
+    {
+      "id": "msg-1790554264466-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:11:04.466+00:00"
+    },
+    {
+      "id": "msg-1790568619197-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T04:10:19.197+00:00"
+    },
+    {
+      "id": "msg-1790568919191-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T04:15:19.191+00:00"
+    },
+    {
+      "id": "msg-1790568919823-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T04:15:19.823+00:00"
+    },
+    {
+      "id": "msg-1790568919957-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T04:15:19.957+00:00"
+    },
+    {
+      "id": "msg-1790627838453-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T20:37:18.453+00:00"
+    },
+    {
+      "id": "msg-1790627838961-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T20:37:18.961+00:00"
+    },
+    {
+      "id": "msg-1790627839090-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T20:37:19.09+00:00"
+    },
+    {
+      "id": "msg-1790627839523-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T20:37:19.523+00:00"
+    },
+    {
+      "id": "msg-1790642400278-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-29T00:40:00.278+00:00"
+    },
+    {
+      "id": "msg-1790642400970-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-29T00:40:00.97+00:00"
+    },
+    {
+      "id": "msg-1790642401124-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-29T00:40:01.124+00:00"
+    },
+    {
+      "id": "msg-1790642401275-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-29T00:40:01.275+00:00"
+    },
+    {
+      "id": "msg-1790957376098-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T16:09:36.098+00:00"
+    },
+    {
+      "id": "msg-1790957376650-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T16:09:36.65+00:00"
+    },
+    {
+      "id": "msg-1790957376803-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T16:09:36.803+00:00"
+    },
+    {
+      "id": "msg-1790957376958-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T16:09:36.958+00:00"
+    },
+    {
+      "id": "msg-1790972031031-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T20:13:51.031+00:00"
+    },
+    {
+      "id": "msg-1790972031543-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T20:13:51.543+00:00"
+    },
+    {
+      "id": "msg-1790972031667-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T20:13:51.667+00:00"
+    },
+    {
+      "id": "msg-1790972031793-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T20:13:51.793+00:00"
+    },
+    {
+      "id": "msg-1790987046707-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "timestamp": "2026-10-03T00:24:06.707Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1790987047194-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "timestamp": "2026-10-03T00:24:07.194Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1790987047336-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "timestamp": "2026-10-03T00:24:07.336Z",
+      "status": "delivered"
+    },
+    {
+      "id": "msg-1790987047782-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "timestamp": "2026-10-03T00:24:07.782Z",
+      "status": "delivered"
+    }
+  ],
+  "agentConfig": {
+    "personaName": "Sofia",
+    "role": "Coordenadora de Atendimento e Triagem Integrativa da Clínica Dra. Lucy Murata",
+    "toneOfVoice": "Altamente refinado, acolhedor, empático, científico, sereno e focado na saúde sistêmica e integrativa",
+    "salesGoal": "Compreender a necessidade ou queixa biofuncional do paciente, acolher com autoridade e agendar a Consulta de Avaliação Integrativa no consultório do Euroville Mall.",
+    "activeProvider": "gemini",
+    "activeModel": "gemini-3.8-flash",
+    "geminiApiKey": "AIzaSyAaM2rf2lpAh7FM2cpWDJ7EOjSWJpcYJIY",
+    "openaiApiKey": "",
+    "anthropicApiKey": "",
+    "knowledgeFaq": "PERGUNTAS FREQUENTES (ODONTOLOGIA INTEGRATIVA & BIOLÓGICA - DRA. LUCY MURATA):\n\nP: O que é a Odontologia Integrativa e Biológica?\nR: É a prática odontológica que enxerga o ser humano de forma holística e sistêmica. Compreendemos que cada dente, tecido e material utilizado na cavidade bucal interage diretamente com os órgãos, meridianos, imunidade e saúde celular do organismo como um todo.\n\nP: Vocês informam valores ou orçamentos por WhatsApp?\nR: Não passamos orçamentos sem consulta prévia. Na odontologia biológica de alta performance e conforme as normas éticas do CFO, cada organismo é biologicamente único. A Dra. Lucy Murata realiza uma Consulta de Avaliação Integrativa completa (com análise clínica, histórico de saúde e tecnologia de escaneamento 3D) para estruturar um plano de tratamento preciso, personalizado e biocompatível para o seu caso.\n\nP: O que é a Remoção Segura de Amálgama (Protocolo SMART)?\nR: O amálgama contém mercúrio, um metal pesado altamente tóxico que libera vapores contínuos. A Dra. Lucy Murata é membro da IAOMT (International Academy of Oral Medicine and Toxicology - EUA) e segue rigorosamente o protocolo internacional SMART: isolamento absoluto, aspiração de alta potência com filtros específicos, paramentação de proteção e suplementação/desintoxicação biológica para garantir que nem o paciente nem a equipe inalem vapores de mercúrio durante o procedimento.\n\nP: Como funcionam os Implantes de Zircônia (Metal-Free)?\nR: São implantes cerâmicos totalmente livres de metais, biocompatíveis e com coloração branca natural semelhante à raiz do dente. Não geram correntes galvânicas, reduzem drasticamente o risco de inflamações peri-implantares e preservam a harmonia bioenergética do corpo.\n\nP: Onde fica localizado o consultório da Dra. Lucy Murata?\nR: O consultório está situado em Bragança Paulista/SP, no Euroville Mall (Torre II - Praça Maastricht, 200 - Sala 103, Jardim São José), em um ambiente tranquilo, seguro e de fácil acesso com estacionamento.\n\nP: A clínica atende convênios?\nR: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedicado, materiais biológicos de padrão internacional e atendimento sem pressa. Fornecemos nota fiscal e relatórios detalhados caso o paciente deseje solicitar reembolso junto ao seu plano de saúde.",
+    "knowledgeCatalog": "TRATAMENTOS & ESPECIALIDADES - DRA. LUCY MURATA:\n\n1. Bio-Odontologia & Desintoxicação:\n- Remoção Segura de Restaurações de Amálgama (Protocolo SMART - IAOMT EUA).\n- Substituição por resinas biocompatíveis de última geração e cerâmicas puras (livres de bisfenol A e metais pesados).\n- Terapia Neural, Biorressonância e Práticas Integrativas aplicadas à odontologia.\n\n2. Implantodontia Cerâmica (Metal-Free):\n- Implantes Dentários de Zircônia (Cerâmica pura de alto desempenho, biocompatibilidade total e integração tecidual superior).\n- Reabilitação Oral Funcional e Biológica para restauração da mastigação e equilíbrio neuromuscular.\n\n3. Tecnologia & Diagnóstico Digital:\n- Escaneamento Intraoral 3D de alta precisão (conforto máximo sem moldagens com massinha).\n- Planejamento estético e funcional com previsibilidade biomimética.\n\n4. Prótese & Estética Biomimética:\n- Coroas, facetas e lentes de contato em cerâmica pura que mimetizam perfeitamente o esmalte dental natural.\n- Preservação máxima da estrutura biológica do dente.",
+    "knowledgePricing": "POLÍTICA DE ATENDIMENTO & INVESTIMENTO:\n\n- Princípio de Transparência & Ética: Não praticamos valores tabelados por mensagem. O investimento definitivo depende da avaliação clínica individualizada realizada pela Dra. Lucy Murata.\n- Consulta de Avaliação Integrativa: Compreende anamnese detalhada do histórico de saúde sistêmica do paciente, exame clínico minucioso da saúde bucal e análise com tecnologias digitais para traçar o mapa bio-odontológico.\n- Condições de Pagamento: A clínica oferece opções flexíveis para viabilizar o plano de tratamento completo (parcelamento no cartão de crédito ou condições diferenciadas à vista via PIX). A secretária detalha todas as opções confortavelmente após o plano apresentado pela doutora.",
+    "knowledgeRules": "DIRETRIZES FUNDAMENTAIS DE ATENDIMENTO (DRA. LUCY MURATA):\n\n1. NUNCA dê orçamentos ou valores pelo WhatsApp. Explique que na odontologia integrativa cada ser humano tem particularidades biológicas únicas e que a conduta ética e segura começa na Consulta de Avaliação Integrativa.\n2. Posicionamento de Autoridade & Acolhimento: A Dra. Lucy Murata é Mestre em Bioodontologia e membro da conceituada IAOMT dos EUA. Transmita essa excelência técnica com palavras gentis, seguras e acolhedoras.\n3. Roteiro de Triagem:\n   - Passo 1: Ouça e compreenda a queixa ou objetivo do paciente (ex: quer trocar restaurações escuras com segurança? precisa de implantes sem metal? busca alívio de queixas funcionais?).\n   - Passo 2: Valide a preocupação do paciente com empatia e explique resumidamente a abordagem biológica.\n   - Passo 3: Pergunte se o paciente prefere atendimento pela manhã ou tarde e quais dias da semana são mais convenientes.\n   - Passo 4: Transfira com cordialidade para a recepção/secretária da clínica confirmar o melhor horário na agenda no Euroville Mall.\n4. Jamais cite nomes de tecnologias internas (Evolution API, Gemini, robô, IA). A Sofia é a assistente e coordenadora humana e atenciosa do consultório da Dra. Lucy Murata.",
+    "strictKnowledgeOnly": true,
+    "autoTriggerCRMStages": true,
+    "isGlobalAiActive": true,
+    "testModeEnabled": false,
+    "testNumberWhitelist": "",
+    "autoTranscribeAudio": true,
+    "typingDelayMs": 1500,
+    "catalogPdfUrl": "",
+    "catalogPdfName": "Apresentacao_Dra_Lucy_Murata.pdf",
+    "voiceResponseEnabled": true,
+    "voiceResponseMode": "smart_discernment",
+    "voiceEngine": "native_sofia",
+    "voiceVoiceName": "pt-BR-FranciscaNeural",
+    "maxConsecutiveAudios": 4,
+    "maxAudioChars": 500,
+    "googleTtsApiKey": "",
+    "elevenLabsApiKey": "",
+    "pixKey": "marco.agduarte22@gmail.com",
+    "pixKeyType": "email",
+    "autoFollowUpEnabled": true,
+    "followUpDelayHours": 4,
+    "followUpNiche": "dental",
+    "followUpCustomMessage": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+    "maxFollowUpsPerLead": 2
+  },
+  "documents": [
+    {
+      "id": "doc-1",
+      "name": "Guia_Institucional_NEXA.txt",
+      "type": "txt",
+      "size": 1520,
+      "contentText": "Apresentação Institucional NEXA CRM: Solução corporativa de atendimento inteligente e gestão de relacionamento com clientes no WhatsApp. Utilizamos Inteligência Artificial de última geração treinada exclusivamente para qualificação ágil de clientes e conversão comercial.",
+      "uploadedAt": "2026-09-30T00:19:06.125Z"
+    },
+    {
+      "id": "doc-2",
+      "name": "SLA_e_Qualidade_de_Atendimento.txt",
+      "type": "txt",
+      "size": 1200,
+      "contentText": "Padrão de Atendimento NEXA CRM: Disponibilidade contínua 24/7, privacidade e conformidade rigorosa com a LGPD, garantindo respostas rápidas, acolhedoras e personalizadas para cada lead.",
+      "uploadedAt": "2026-10-01T00:19:06.125Z"
+    }
+  ],
+  "evolutionConfig": {
+    "serverUrl": "URL da Evolution API\thttps://api.makprojetosmake.com.br",
+    "apiKey": "CE08ADFF7647-4B88-91A4-55E66D9A0620",
+    "instanceName": "agente-ia",
+    "isConnected": false,
+    "state": "disconnected",
+    "lastTestedAt": "2026-10-03T00:19:06.125Z"
+  },
+  "supabaseConfig": {
+    "url": "https://pejcssjahomczedjzqzr.supabase.co",
+    "serviceKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlamNzc2phaG9tY3plZGp6cXpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTI1OTg2MiwiZXhwIjoyMTA0ODM1ODYyfQ.VYNhGfHlojrkA7c3TOGTppfzoxty-X9YWEeLiYu4hVw",
+    "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlamNzc2phaG9tY3plZGp6cXpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyNTk4NjIsImV4cCI6MjEwNDgzNTg2Mn0.uswQ8-H2-XRfupFEzDIDHah5zQeuxrsGgmPLMbbyB8o",
+    "isConnected": true
+  },
+  "sentinelAlerts": {
+    "enabled": true,
+    "notifyOnWhatsApp": true,
+    "notifyPhone": "5511976143323",
+    "alertOnWhatsAppDisconnect": true,
+    "alertOnHighMemory": true,
+    "alertOnHighDisk": true,
+    "alertOnAiFailure": true,
+    "cooldownMinutes": 30,
+    "lastAlertSentAt": ""
+  }
+}

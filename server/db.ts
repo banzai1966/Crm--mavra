@@ -10,6 +10,7 @@ import {
   EvolutionConfig,
   SupabaseConfig,
   WebhookEventLog,
+  SentinelAlertConfig,
 } from '../src/types';
 
 function getStorageFilePath(): string {
@@ -28,7 +29,7 @@ function getStorageFilePath(): string {
   return nexaPath;
 }
 
-const STORAGE_FILE = getStorageFilePath();
+export const STORAGE_FILE = getStorageFilePath();
 
 function cleanUrl(url?: string): string {
   if (!url) return '';
@@ -302,6 +303,19 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     isConnected: false,
     state: 'disconnected',
     lastTestedAt: new Date().toISOString(),
+    wasEverConnected: false,
+  };
+
+  public sentinelAlerts: SentinelAlertConfig = {
+    enabled: true,
+    notifyOnWhatsApp: true,
+    notifyPhone: '5511976143323', // Número do Marco Duarte
+    alertOnWhatsAppDisconnect: true,
+    alertOnHighMemory: true,
+    alertOnHighDisk: true,
+    alertOnAiFailure: true,
+    cooldownMinutes: 30,
+    lastAlertSentAt: '',
   };
 
   public webhookLogs: WebhookEventLog[] = [];
@@ -343,6 +357,7 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
         documents: this.documents,
         evolutionConfig: this.evolutionConfig,
         supabaseConfig: this.supabaseConfig,
+        sentinelAlerts: this.sentinelAlerts,
       };
       fs.writeFileSync(STORAGE_FILE, JSON.stringify(payload, null, 2), 'utf-8');
     } catch (err) {
@@ -469,6 +484,12 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
             ...data.supabaseConfig,
           };
           this.initSupabaseClient();
+        }
+        if (data.sentinelAlerts) {
+          this.sentinelAlerts = {
+            ...this.sentinelAlerts,
+            ...data.sentinelAlerts,
+          };
         }
         console.log(`[DB Storage] Dados restaurados com sucesso do disco (${this.leads.length} leads, ${this.messages.length} mensagens).`);
       }

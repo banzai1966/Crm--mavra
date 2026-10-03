@@ -586,9 +586,12 @@ export async function checkEvolutionStatus(): Promise<{
       const data = await response.json();
       const state = data?.instance?.state || data?.state || 'connected';
       const isOpen = state === 'open' || state === 'connected';
+      if (isOpen) {
+        db.evolutionConfig.wasEverConnected = true;
+      }
       return {
         isConnected: isOpen,
-        state: isOpen ? 'connected' : 'disconnected',
+        state: isOpen ? 'connected' : (state === 'connecting' ? 'connecting' : 'disconnected'),
         rawResponse: data,
       };
     }

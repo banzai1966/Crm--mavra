@@ -138,6 +138,7 @@ export interface EvolutionConfig {
   state: 'connecting' | 'connected' | 'disconnected' | 'qrcode';
   qrcode?: string;
   lastTestedAt?: string;
+  wasEverConnected?: boolean;
 }
 
 export interface SupabaseConfig {
@@ -156,4 +157,78 @@ export interface WebhookEventLog {
   status: 'processed' | 'ignored_from_me' | 'ignored_group' | 'no_text' | 'error';
   details?: string;
   rawPayloadSnippet?: string;
+}
+
+export interface SentinelAlertConfig {
+  enabled: boolean;
+  notifyOnWhatsApp: boolean;
+  notifyPhone: string; // Ex: 5511976143323
+  notifyOnTelegram?: boolean;
+  telegramBotToken?: string;
+  telegramChatId?: string;
+  notifyOnEmail?: boolean;
+  notifyEmail?: string;
+  alertOnWhatsAppDisconnect: boolean;
+  alertOnHighMemory: boolean; // > 85%
+  alertOnHighDisk: boolean; // > 90%
+  alertOnAiFailure: boolean;
+  cooldownMinutes: number; // Intervalo para não floodar (padrão: 30 min)
+  lastAlertSentAt?: string;
+}
+
+export interface SystemMetrics {
+  uptimeSeconds: number;
+  uptimeFormatted: string;
+  nodeVersion: string;
+  platform: string;
+  memory: {
+    totalMb: number;
+    usedMb: number;
+    freeMb: number;
+    usagePercent: number;
+    processRssMb: number;
+    processHeapUsedMb: number;
+  };
+  disk: {
+    totalGb: number;
+    usedGb: number;
+    freeGb: number;
+    usagePercent: number;
+  };
+  database: {
+    storageFile: string;
+    fileSizeBytes: number;
+    fileSizeFormatted: string;
+    leadsCount: number;
+    messagesCount: number;
+    documentsCount: number;
+    stagesCount: number;
+  };
+  services: {
+    evolutionApi: {
+      status: 'connected' | 'disconnected' | 'connecting';
+      instance: string;
+      url: string;
+    };
+    supabase: {
+      status: 'connected' | 'disconnected';
+      url: string;
+    };
+    aiEngine: {
+      provider: string;
+      model: string;
+      isGlobalActive: boolean;
+    };
+  };
+  uptimeProbe: {
+    status: 'operational' | 'degraded' | 'down';
+    latencyMs: number;
+    lastCheckedAt: string;
+    uptimePercentage: number;
+    checksCount: number;
+    evolutionPingMs: number;
+    supabasePingMs: number;
+  };
+  sentinelAlerts: SentinelAlertConfig;
+  timestamp: string;
 }
