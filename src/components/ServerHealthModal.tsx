@@ -117,12 +117,21 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
     setIsTestingAlert(true);
     setTestSentMsg(null);
     try {
+      // First save current values so backend has latest token/chatId
+      await fetch('/api/system/sentinel-alerts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(alertsConfig),
+      });
+
       const res = await fetch('/api/system/sentinel-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           channel: targetChannel,
           phone: alertsConfig.notifyPhone,
+          telegramBotToken: alertsConfig.telegramBotToken,
+          telegramChatId: alertsConfig.telegramChatId,
         }),
       });
       const data = await res.json();

@@ -1144,7 +1144,7 @@ async function startServer() {
   // Universal Dispatcher for Sentinel Alerts (Telegram, Email, WhatsApp)
   async function dispatchSentinelAlert(
     message: string,
-    options?: { testChannel?: 'telegram' | 'whatsapp' | 'email'; testPhone?: string }
+    options?: { testChannel?: 'telegram' | 'whatsapp' | 'email'; testPhone?: string; telegramBotToken?: string; telegramChatId?: string }
   ): Promise<{ channels: string[]; errors: string[] }> {
     const config = db.sentinelAlerts;
     const channels: string[] = [];
@@ -1156,8 +1156,8 @@ async function startServer() {
       : config.notifyOnTelegram && config.telegramBotToken && config.telegramChatId;
 
     if (shouldTelegram) {
-      const token = config.telegramBotToken?.trim();
-      const chatId = config.telegramChatId?.trim();
+      const token = (options?.telegramBotToken || config.telegramBotToken)?.trim();
+      const chatId = (options?.telegramChatId || config.telegramChatId)?.trim();
       if (!token || !chatId) {
         errors.push('Telegram: Token ou Chat ID não preenchido.');
       } else {
@@ -1229,7 +1229,7 @@ async function startServer() {
   // Test emergency alert dispatcher
   app.post('/api/system/sentinel-test', async (req: Request, res: Response) => {
     try {
-      const { channel, phone } = req.body;
+      const { channel, phone, telegramBotToken, telegramChatId } = req.body;
       const targetPhone = phone || db.sentinelAlerts.notifyPhone;
 
       const alertMsg = `🚨 <b>[SENTINELA CRM - TESTE DE ALERTA]</b>\n\nOlá Marco! Este é um teste do Sentinela de Uptime e Saúde do seu CRM.\n\n🟢 <b>Servidor:</b> ONLINE\n⏱️ <b>Uptime:</b> ${Math.floor(process.uptime() / 60)} minutos\n💾 <b>Memória RAM:</b> ${Math.round(os.freemem() / 1024 / 1024)}MB livres\n📲 <b>WhatsApp Conectado:</b> ${db.evolutionConfig.isConnected ? 'SIM ✅' : 'NÃO (Desconectado) ⚠️'}\n\nO Sentinela está ativo e pronto para te notificar imediatamente se o sistema precisar da sua atenção!`;
@@ -1237,6 +1237,8 @@ async function startServer() {
       const result = await dispatchSentinelAlert(alertMsg, {
         testChannel: channel,
         testPhone: targetPhone,
+        telegramBotToken: telegramBotToken || db.sentinelAlerts.telegramBotToken,
+        telegramChatId: telegramChatId || db.sentinelAlerts.telegramChatId,
       });
 
       if (result.channels.length > 0) {
