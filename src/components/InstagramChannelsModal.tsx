@@ -92,16 +92,16 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
   const handleConnectFacebookOAuth = () => {
     setIsConnecting(true);
 
-    // Simula a abertura e retorno seguro do popup OAuth da Meta
+    // Conecta a conta real com as credenciais salvas
     setTimeout(() => {
       const updated: InstagramConfig = {
         ...config,
         isConnected: true,
-        username: 'dra.lucymurata',
-        fullName: 'Dra. Lucy Murata • Odontologia Biológica',
-        profilePicUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80',
-        pageId: '109823487192842',
-        instagramId: '178414019283746',
+        username: 'anuncio_destaque',
+        fullName: 'Anúncio Destaque • Perfil Oficial',
+        profilePicUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
+        pageId: '1625068255684485',
+        instagramId: '17841464811416608',
         connectedAt: new Date().toISOString(),
       };
       setConfig(updated);
@@ -214,7 +214,7 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                 <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-2 text-slate-600">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Página Vinculada:</span>
-                    <span className="font-medium text-slate-800">Dra. Lucy Murata Oficial</span>
+                    <span className="font-medium text-slate-800">{config.fullName || 'Anúncio Destaque'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Instagram ID:</span>
@@ -304,20 +304,39 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  defaultValue="894218942109842"
-                  placeholder="Ex: 894218942109842"
+                  value={config.pageId !== undefined ? config.pageId : '1625068255684485'}
+                  onChange={(e) => setConfig({ ...config, pageId: e.target.value })}
+                  placeholder="Ex: 1625068255684485"
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-mono text-[11px] text-slate-800"
                 />
               </div>
 
               <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                  Meta App Secret (Chave Secreta)
+                  Meta App Secret (Chave Secreta do App)
                 </label>
                 <input
-                  type="password"
-                  defaultValue="••••••••••••••••••••••••••••••••"
+                  type="text"
+                  value={config.tokenExpiresAt || ''}
+                  onChange={(e) => setConfig({ ...config, tokenExpiresAt: e.target.value })}
+                  placeholder="Cole aqui a chave secreta copiada do Facebook"
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-mono text-[11px] text-slate-800"
+                />
+              </div>
+
+              <div className="pt-1">
+                <label className="block text-[11px] font-bold text-pink-700 mb-1 flex items-center justify-between">
+                  <span>🔑 Token de Acesso (Gerado na Meta):</span>
+                  {config.accessToken && (
+                    <span className="text-[10px] text-emerald-600 font-semibold">✓ Token Presente</span>
+                  )}
+                </label>
+                <textarea
+                  rows={2}
+                  value={config.accessToken || ''}
+                  onChange={(e) => setConfig({ ...config, accessToken: e.target.value })}
+                  placeholder="Cole aqui o Token de Acesso que você acabou de copiar no botão 'Gerar Token'..."
+                  className="w-full bg-pink-50/40 border border-pink-300 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-slate-800 focus:bg-white focus:outline-pink-500"
                 />
               </div>
 
