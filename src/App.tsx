@@ -305,12 +305,14 @@ export default function App() {
     }
   };
 
-  const handleSaveAgentConfig = async (updated: AgentConfig) => {
+  const handleSaveAgentConfig = async (updated: Partial<AgentConfig> | AgentConfig) => {
     try {
+      const merged = { ...agentConfig, ...updated };
+      setAgentConfig(merged);
       const res = await fetch('/api/agent-config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
+        body: JSON.stringify(merged),
       });
       if (res.ok) {
         setAgentConfig(await res.json());
@@ -549,6 +551,7 @@ export default function App() {
           <InstagramChannelsModal
             agentConfig={agentConfig}
             onUpdateAgentConfig={handleSaveAgentConfig}
+            isAdmin={isAdminUnlocked}
           />
         )}
 

@@ -28,11 +28,13 @@ import { AgentConfig, InstagramConfig } from '../types';
 interface InstagramChannelsModalProps {
   agentConfig: AgentConfig;
   onUpdateAgentConfig: (updated: Partial<AgentConfig>) => Promise<void>;
+  isAdmin?: boolean;
 }
 
 export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
   agentConfig,
   onUpdateAgentConfig,
+  isAdmin = false,
 }) => {
   const currentConfig: InstagramConfig = agentConfig.instagramConfig || {
     enabled: true,
@@ -293,105 +295,107 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
             )}
           </div>
 
-          {/* Setup App ID / App Secret Card (Para Agência) */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <Key className="w-3.5 h-3.5 text-slate-600" />
-                <span>Credenciais do App Meta (Setup Agência)</span>
-              </h2>
-              <button
-                onClick={() => setShowMetaSetupGuide(!showMetaSetupGuide)}
-                className="text-[11px] text-indigo-600 hover:text-indigo-800 font-semibold cursor-pointer"
-              >
-                {showMetaSetupGuide ? 'Ocultar Guia' : 'Como pegar?'}
-              </button>
-            </div>
-            <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
-              Configurado uma única vez na Meta para liberar o botão de 1-Clique para todos os seus clientes.
-            </p>
-
-            <div className="space-y-2.5 text-xs">
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                  Meta App ID (Identificador do App)
-                </label>
-                <input
-                  type="text"
-                  value={config.pageId !== undefined ? config.pageId : '1625068255684485'}
-                  onChange={(e) => setConfig({ ...config, pageId: e.target.value })}
-                  placeholder="Ex: 1625068255684485"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-mono text-[11px] text-slate-800"
-                />
+          {/* Setup App ID / App Secret Card (Apenas Visível para Agência / Admin Mestre) */}
+          {isAdmin && (
+            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-slate-600" />
+                  <span>Credenciais do App Meta (Setup Agência)</span>
+                </h2>
+                <button
+                  onClick={() => setShowMetaSetupGuide(!showMetaSetupGuide)}
+                  className="text-[11px] text-indigo-600 hover:text-indigo-800 font-semibold cursor-pointer"
+                >
+                  {showMetaSetupGuide ? 'Ocultar Guia' : 'Como pegar?'}
+                </button>
               </div>
+              <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
+                Configurado uma única vez na Meta para liberar o botão de 1-Clique para todos os seus clientes.
+              </p>
 
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                  Meta App Secret (Chave Secreta do App)
-                </label>
-                <input
-                  type="text"
-                  value={config.tokenExpiresAt || ''}
-                  onChange={(e) => setConfig({ ...config, tokenExpiresAt: e.target.value })}
-                  placeholder="Cole aqui a chave secreta copiada do Facebook"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-mono text-[11px] text-slate-800"
-                />
-              </div>
-
-              <div className="pt-1">
-                <label className="block text-[11px] font-bold text-pink-700 mb-1 flex items-center justify-between">
-                  <span>🔑 Token de Acesso (Gerado na Meta):</span>
-                  {config.accessToken && (
-                    <span className="text-[10px] text-emerald-600 font-semibold">✓ Token Presente</span>
-                  )}
-                </label>
-                <textarea
-                  rows={2}
-                  value={config.accessToken || ''}
-                  onChange={(e) => setConfig({ ...config, accessToken: e.target.value })}
-                  placeholder="Cole aqui o Token de Acesso que você acabou de copiar no botão 'Gerar Token'..."
-                  className="w-full bg-pink-50/40 border border-pink-300 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-slate-800 focus:bg-white focus:outline-pink-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                  Webhook URL (Callback)
-                </label>
-                <div className="flex gap-1.5">
+              <div className="space-y-2.5 text-xs">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Meta App ID (Identificador do App)
+                  </label>
                   <input
                     type="text"
-                    readOnly
-                    value="https://crm.makprojetosmake.com.br/api/instagram/webhook"
-                    className="w-full bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-slate-600"
+                    value={config.pageId !== undefined ? config.pageId : '1625068255684485'}
+                    onChange={(e) => setConfig({ ...config, pageId: e.target.value })}
+                    placeholder="Ex: 1625068255684485"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-mono text-[11px] text-slate-800"
                   />
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText('https://crm.makprojetosmake.com.br/api/instagram/webhook');
-                    }}
-                    className="px-2 py-1 bg-slate-200 hover:bg-slate-300 rounded-lg text-slate-700 text-xs cursor-pointer"
-                    title="Copiar Webhook"
-                  >
-                    <Share2 className="w-3.5 h-3.5" />
-                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Meta App Secret (Chave Secreta do App)
+                  </label>
+                  <input
+                    type="text"
+                    value={config.tokenExpiresAt || ''}
+                    onChange={(e) => setConfig({ ...config, tokenExpiresAt: e.target.value })}
+                    placeholder="Cole aqui a chave secreta copiada do Facebook"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-mono text-[11px] text-slate-800"
+                  />
+                </div>
+
+                <div className="pt-1">
+                  <label className="block text-[11px] font-bold text-pink-700 mb-1 flex items-center justify-between">
+                    <span>🔑 Token de Acesso (Gerado na Meta):</span>
+                    {config.accessToken && (
+                      <span className="text-[10px] text-emerald-600 font-semibold">✓ Token Presente</span>
+                    )}
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={config.accessToken || ''}
+                    onChange={(e) => setConfig({ ...config, accessToken: e.target.value })}
+                    placeholder="Cole aqui o Token de Acesso que você acabou de copiar no botão 'Gerar Token'..."
+                    className="w-full bg-pink-50/40 border border-pink-300 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-slate-800 focus:bg-white focus:outline-pink-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Webhook URL (Callback)
+                  </label>
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      readOnly
+                      value="https://crm.makprojetosmake.com.br/api/instagram/webhook"
+                      className="w-full bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-slate-600"
+                    />
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText('https://crm.makprojetosmake.com.br/api/instagram/webhook');
+                      }}
+                      className="px-2 py-1 bg-slate-200 hover:bg-slate-300 rounded-lg text-slate-700 text-xs cursor-pointer"
+                      title="Copiar Webhook"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {showMetaSetupGuide && (
-              <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900 space-y-1.5">
-                <p className="font-bold flex items-center gap-1">
-                  <Info className="w-3.5 h-3.5 text-amber-600" /> Passo a Passo Rápido na Meta:
-                </p>
-                <ol className="list-decimal pl-4 space-y-1 text-amber-800 text-[10.5px]">
-                  <li>Acesse developers.facebook.com e crie um App do tipo "Negócios".</li>
-                  <li>Adicione os produtos "Instagram Graph API" e "Webhooks".</li>
-                  <li>Cole a Webhook URL acima e marque os eventos <code>messages</code> e <code>messaging_postbacks</code>.</li>
-                  <li>Copie o App ID e Secret e cole nos campos acima. Pronto!</li>
-                </ol>
-              </div>
-            )}
-          </div>
+              {showMetaSetupGuide && (
+                <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900 space-y-1.5">
+                  <p className="font-bold flex items-center gap-1">
+                    <Info className="w-3.5 h-3.5 text-amber-600" /> Passo a Passo Rápido na Meta:
+                  </p>
+                  <ol className="list-decimal pl-4 space-y-1 text-amber-800 text-[10.5px]">
+                    <li>Acesse developers.facebook.com e crie um App do tipo "Negócios".</li>
+                    <li>Adicione os produtos "Instagram Graph API" e "Webhooks".</li>
+                    <li>Cole a Webhook URL acima e marque os eventos <code>messages</code> e <code>messaging_postbacks</code>.</li>
+                    <li>Copie o App ID e Secret e cole nos campos acima. Pronto!</li>
+                  </ol>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Column: Trigger Rules, Auto-Reply, Direct & Kanban Funnel */}
@@ -484,7 +488,7 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                     </span>
                   </h3>
                   <p className="text-[11px] text-slate-300">
-                    Teste agora sem precisar sair da tela: simule um seguidor comentando no post da Dra. Lucy!
+                    Teste agora sem precisar sair da tela: simule um seguidor comentando no seu post do Instagram!
                   </p>
                 </div>
               </div>
