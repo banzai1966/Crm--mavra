@@ -36,22 +36,30 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
 }) => {
   const currentConfig: InstagramConfig = agentConfig.instagramConfig || {
     enabled: true,
-    isConnected: true,
-    username: 'dra.lucymurata',
-    fullName: 'Dra. Lucy Murata • Odontologia Biológica',
-    profilePicUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80',
-    pageId: '109823487192842',
-    instagramId: '178414019283746',
+    isConnected: false,
+    username: '',
+    fullName: '',
+    profilePicUrl: '',
+    pageId: '1625068255684485',
+    instagramId: '',
     autoReplyComments: true,
     commentTriggerKeywords: ['AVALIACAO', 'AGENDA', 'CRM', 'SORRISO', 'BIOODONTO'],
     commentPublicReplyText: 'Olá! Te respondi com todos os detalhes no seu Direct, dá uma olhadinha lá! ✨😊',
-    directWelcomePrompt: 'Olá! Vi que você comentou no nosso post sobre Odontologia Biológica. Sou a Sofia, assistente da Dra. Lucy Murata! Você já sente algum desconforto ou busca uma avaliação preventiva para restaurações ou implantes?',
+    directWelcomePrompt: 'Olá! Vi que você comentou no nosso post. Sou a assistente virtual! Como podemos te ajudar hoje?',
     directAutoQualify: true,
     leadCaptureMoveToStage: 'stage-1',
-    connectedAt: new Date().toISOString(),
   };
 
-  const [config, setConfig] = useState<InstagramConfig>(currentConfig);
+  const [config, setConfig] = useState<InstagramConfig>(() => {
+    return agentConfig.instagramConfig || currentConfig;
+  });
+
+  // Keep in sync when parent agentConfig loads from server
+  React.useEffect(() => {
+    if (agentConfig.instagramConfig) {
+      setConfig(agentConfig.instagramConfig);
+    }
+  }, [agentConfig.instagramConfig]);
   const [newKeyword, setNewKeyword] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
