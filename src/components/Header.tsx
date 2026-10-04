@@ -22,14 +22,16 @@ import {
   Flame,
   ExternalLink,
   Activity,
+  Calendar as CalendarIcon,
+  Instagram,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
 import { ServerHealthModal } from './ServerHealthModal';
 
 interface HeaderProps {
-  activeTab: 'dashboard' | 'kanban' | 'chat' | 'agent' | 'evolution' | 'supabase';
-  setActiveTab: (tab: 'dashboard' | 'kanban' | 'chat' | 'agent' | 'evolution' | 'supabase') => void;
+  activeTab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'instagram' | 'agent' | 'evolution' | 'supabase';
+  setActiveTab: (tab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'instagram' | 'agent' | 'evolution' | 'supabase') => void;
   evolutionConfig: EvolutionConfig;
   agentConfig: AgentConfig;
   totalLeads: number;
@@ -232,6 +234,38 @@ export const Header: React.FC<HeaderProps> = ({
                   {unreadCount}
                 </span>
               )}
+            </button>
+
+            {/* Agendamentos & Google Calendar tab (Visible if enabled for this client or unlocked as Admin) */}
+            {(agentConfig.showCalendarModuleInMenu !== false || isAdminUnlocked) && (
+              <button
+                id="nav-tab-calendar"
+                onClick={() => setActiveTab('calendar')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeTab === 'calendar'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <CalendarIcon className="w-3.5 h-3.5 text-blue-500" />
+                <span>Agendamentos & Agenda</span>
+              </button>
+            )}
+
+            {/* Instagram Direct & Gatilhos Tab */}
+            <button
+              id="nav-tab-instagram"
+              onClick={() => setActiveTab('instagram')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                activeTab === 'instagram'
+                  ? 'bg-gradient-to-r from-pink-600 to-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-pink-600 hover:bg-pink-50'
+              }`}
+              title="Automação do Instagram Direct & Resposta a Comentários (Meta Oficial)"
+            >
+              <Instagram className="w-3.5 h-3.5 text-pink-500" />
+              <span>Instagram Direct</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             </button>
 
             {/* Admin Protected Tabs: Only visible when unlocked */}

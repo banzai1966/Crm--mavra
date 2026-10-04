@@ -13,6 +13,7 @@ import {
   Tag,
   DollarSign,
   Phone,
+  Instagram,
   Layers,
   Sparkles,
   ChevronRight,
@@ -75,6 +76,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
   const [targetStageForNewLead, setTargetStageForNewLead] = useState<string | undefined>();
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
+  const [leadToDelete, setLeadToDelete] = useState<{ id: string; name: string } | null>(null);
 
   // Base Antiga leads eligible for reactivation campaigns
   const baseLeads = leads.filter(
@@ -493,14 +495,25 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {/* Tags */}
                       {lead.tags && lead.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
-                          {lead.tags.slice(0, 3).map((tag, idx) => (
-                            <span
-                              key={idx}
-                              className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
+                          {lead.tags.slice(0, 4).map((tag, idx) => {
+                            const isInstagram = tag.toLowerCase().includes('instagram') || tag.toLowerCase().includes('direct');
+                            const isHot = tag.toLowerCase().includes('quente') || tag.toLowerCase().includes('urgente');
+                            return (
+                              <span
+                                key={idx}
+                                className={`text-[10px] px-1.5 py-0.2 rounded font-medium inline-flex items-center gap-1 ${
+                                  isInstagram
+                                    ? 'bg-pink-50 text-pink-700 border border-pink-200 font-bold'
+                                    : isHot
+                                    ? 'bg-amber-50 text-amber-800 border border-amber-200 font-bold'
+                                    : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                }`}
+                              >
+                                {isInstagram && <Instagram className="w-2.5 h-2.5 text-pink-600" />}
+                                #{tag}
+                              </span>
+                            );
+                          })}
                         </div>
                       )}
 
@@ -563,9 +576,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (window.confirm(`Deseja excluir permanentemente o lead "${lead.name}"?`)) {
-                                onDeleteLead(lead.id);
-                              }
+                              setLeadToDelete({ id: lead.id, name: lead.name });
                             }}
                             className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                             title="Excluir Oportunidade"
@@ -605,6 +616,43 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           );
         })}
       </div>
+
+      {/* Modal de Confirmação de Exclusão de Lead */}
+      {leadToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-5 border border-slate-200">
+            <div className="w-11 h-11 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <h3 className="text-sm font-bold text-slate-900 text-center">
+              Excluir Lead Permanentemente?
+            </h3>
+            <p className="text-xs text-slate-600 text-center mt-1.5 leading-relaxed">
+              Tem certeza que deseja excluir o lead <strong className="text-slate-900 font-semibold">"{leadToDelete.name}"</strong>? O histórico de mensagens e dados serão removidos.
+            </p>
+            <div className="flex items-center gap-2 mt-5">
+              <button
+                type="button"
+                onClick={() => setLeadToDelete(null)}
+                className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteLead(leadToDelete.id);
+                  setLeadToDelete(null);
+                }}
+                className="flex-1 py-2 px-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Sim, Excluir</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* New/Edit Lead Modal */}
       <NewLeadModal

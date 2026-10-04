@@ -11,6 +11,7 @@ import {
   SupabaseConfig,
   WebhookEventLog,
   SentinelAlertConfig,
+  AppointmentSlot,
 } from '../src/types';
 
 function getStorageFilePath(): string {
@@ -46,6 +47,24 @@ function cleanSupabaseUrl(url?: string): string {
 }
 
 export const DEFAULT_DEMO_LEADS: Lead[] = [
+  {
+    id: 'lead-insta-1',
+    name: 'Dra. Ana Beatriz Lima',
+    phone: '5511994328811',
+    email: 'anabeatriz.odonto@gmail.com',
+    stageId: 'stage-1',
+    value: 7500,
+    interest: 'Remoção de Amálgama Segura & Odonto Biológica',
+    tags: ['📸 Instagram Direct', 'Comentou AVALIACAO', '🔥 LEAD QUENTE'],
+    notes: 'Chegou pelo Reels do Instagram após comentar AVALIACAO. A Sofia iniciou no Direct, fez a triagem e obteve o WhatsApp para agendamento presencial no Euroville Mall.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Pediu para verificar horários da Dra. Lucy para a próxima quinta-feira',
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+    unreadCount: 1,
+  },
+
   {
     id: 'lead-1',
     name: 'Dr. Roberto Silva',
@@ -275,6 +294,29 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     followUpNiche: 'dental',
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨',
     maxFollowUpsPerLead: 2,
+    calendarEnabled: false,
+    calendarConnectedEmail: '',
+    calendarDefaultDurationMinutes: 45,
+    calendarDefaultTitle: 'Consulta de Avaliação Integrativa',
+    calendarDefaultLocation: 'Euroville Mall - Torre II - Praça Maastricht, 200 - Sala 103, Bragança Paulista/SP',
+    calendarAllowAiBooking: true,
+    showCalendarModuleInMenu: true,
+    instagramConfig: {
+      enabled: true,
+      isConnected: true,
+      username: 'dra.lucymurata',
+      fullName: 'Dra. Lucy Murata • Odontologia Biológica',
+      profilePicUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80',
+      pageId: '109823487192842',
+      instagramId: '178414019283746',
+      autoReplyComments: true,
+      commentTriggerKeywords: ['AVALIACAO', 'AGENDA', 'CRM', 'SORRISO', 'BIOODONTO'],
+      commentPublicReplyText: 'Olá! Te respondi com todos os detalhes no seu Direct, dá uma olhadinha lá! ✨😊',
+      directWelcomePrompt: 'Olá! Vi que você comentou no nosso post sobre Odontologia Biológica. Sou a Sofia, assistente da Dra. Lucy Murata! Você já sente algum desconforto ou busca uma avaliação preventiva para restaurações ou implantes?',
+      directAutoQualify: true,
+      leadCaptureMoveToStage: 'stage-1',
+      connectedAt: new Date().toISOString(),
+    },
   };
 
   public documents: KnowledgeDocument[] = [
@@ -324,6 +366,20 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
   };
 
   public webhookLogs: WebhookEventLog[] = [];
+  public appointments: AppointmentSlot[] = [
+    {
+      id: 'apt-1',
+      leadId: 'lead-1',
+      leadName: 'Dr. Roberto Silva',
+      leadPhone: '5511987654321',
+      summary: 'Consulta de Avaliação Integrativa - Dr. Roberto Silva',
+      description: 'Avaliação clínica odontológica biológica com a Dra. Lucy Murata. Paciente deseja diagnóstico para remoção segura de restaurações antigas.',
+      startIso: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
+      endIso: new Date(Date.now() + 1000 * 60 * 60 * 24 + 1000 * 60 * 45).toISOString(),
+      status: 'confirmed',
+      createdAt: new Date().toISOString(),
+    },
+  ];
 
   public logWebhookEvent(event: Omit<WebhookEventLog, 'id' | 'timestamp'>): WebhookEventLog {
     const entry: WebhookEventLog = {
@@ -363,6 +419,7 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
         evolutionConfig: this.evolutionConfig,
         supabaseConfig: this.supabaseConfig,
         sentinelAlerts: this.sentinelAlerts,
+        appointments: this.appointments,
       };
       fs.writeFileSync(STORAGE_FILE, JSON.stringify(payload, null, 2), 'utf-8');
     } catch (err) {
@@ -495,6 +552,9 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
             ...this.sentinelAlerts,
             ...data.sentinelAlerts,
           };
+        }
+        if (data.appointments && Array.isArray(data.appointments)) {
+          this.appointments = data.appointments;
         }
         console.log(`[DB Storage] Dados restaurados com sucesso do disco (${this.leads.length} leads, ${this.messages.length} mensagens).`);
       }

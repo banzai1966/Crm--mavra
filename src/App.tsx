@@ -7,6 +7,8 @@ import { EvolutionSettings } from './components/EvolutionSettings';
 import { SupabaseSettings } from './components/SupabaseSettings';
 import { ExecutiveDashboard } from './components/ExecutiveDashboard';
 import { AdminAuthModal } from './components/AdminAuthModal';
+import { CalendarIntegration } from './components/CalendarIntegration';
+import { InstagramChannelsModal } from './components/InstagramChannelsModal';
 import {
   Lead,
   KanbanStage,
@@ -18,7 +20,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'dashboard' | 'kanban' | 'chat' | 'agent' | 'evolution' | 'supabase'
+    'dashboard' | 'kanban' | 'chat' | 'calendar' | 'agent' | 'evolution' | 'supabase'
   >('kanban');
 
   const [stages, setStages] = useState<KanbanStage[]>([]);
@@ -532,6 +534,21 @@ export default function App() {
             onConfirmTriage={handleConfirmTriage}
             onDeleteLead={handleDeleteLead}
             personaName={agentConfig?.personaName || 'Sofia'}
+          />
+        )}
+
+        {activeTab === 'calendar' && (
+          <CalendarIntegration
+            agentConfig={agentConfig}
+            leads={leads}
+            onUpdateAgentConfig={handleSaveAgentConfig}
+          />
+        )}
+
+        {activeTab === 'instagram' && (
+          <InstagramChannelsModal
+            agentConfig={agentConfig}
+            onUpdateAgentConfig={handleSaveAgentConfig}
           />
         )}
 
