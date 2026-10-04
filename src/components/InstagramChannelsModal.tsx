@@ -194,15 +194,21 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
               <span>Conexão do Perfil Oficial</span>
             </h2>
 
-            {config.isConnected ? (
+            {config.isConnected && config.username ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 bg-pink-50/60 rounded-xl border border-pink-200">
                   <div className="relative">
-                    <img
-                      src={config.profilePicUrl}
-                      alt={config.username}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-pink-500 shadow-xs"
-                    />
+                    {config.profilePicUrl ? (
+                      <img
+                        src={config.profilePicUrl}
+                        alt={config.username}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-pink-500 shadow-xs"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-pink-600 text-white font-bold flex items-center justify-center border-2 border-pink-400">
+                        {config.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></span>
                   </div>
                   <div className="min-w-0 flex-1">
@@ -212,7 +218,7 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                       </span>
                       <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                     </div>
-                    <p className="text-[11px] text-slate-500 truncate">{config.fullName}</p>
+                    <p className="text-[11px] text-slate-500 truncate">{config.fullName || config.username}</p>
                     <span className="inline-block mt-1 text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
                       🟢 Ativo & Respondendo Directs
                     </span>
@@ -222,11 +228,11 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                 <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-2 text-slate-600">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Página Vinculada:</span>
-                    <span className="font-medium text-slate-800">{config.fullName || 'Anúncio Destaque'}</span>
+                    <span className="font-medium text-slate-800">{config.fullName || config.username || 'Página Oficial'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Instagram ID:</span>
-                    <span className="font-mono text-[11px] text-slate-700">{config.instagramId}</span>
+                    <span className="font-mono text-[11px] text-slate-700">{config.instagramId || '17841464811416608'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Modo de Conexão:</span>
