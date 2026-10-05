@@ -459,10 +459,18 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </div>
                       )}
 
-                      {/* Phone & interest */}
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2 font-mono">
-                        <Phone className="w-3 h-3 text-slate-400" />
-                        <span>{lead.phone}</span>
+                      {/* Phone & Lead Arrival Date / Time */}
+                      <div className="flex items-center justify-between text-[10px] text-slate-500 mb-2">
+                        <div className="flex items-center gap-1 font-mono">
+                          <Phone className="w-3 h-3 text-slate-400" />
+                          <span className="truncate max-w-[130px]">{lead.phone}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[9.5px] text-slate-400 font-medium shrink-0" title={`Recebido em: ${new Date(lead.createdAt || lead.lastInteraction).toLocaleString('pt-BR')}`}>
+                          <Clock className="w-2.5 h-2.5 text-slate-400" />
+                          <span>
+                            {new Date(lead.lastInteraction || lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} às {new Date(lead.lastInteraction || lead.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Pre-Appointment Triage Card */}
