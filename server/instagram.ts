@@ -83,8 +83,10 @@ export async function sendInstagramDirectMessage(
   pageOrInstaId?: string
 ): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
-    const targetEndpoint = pageOrInstaId || 'me';
-    const res = await fetch(`https://graph.facebook.com/v19.0/${targetEndpoint}/messages`, {
+    // Tenta primeiro com o endpoint 'me/messages' que é o padrão da Meta para o token da página/Instagram
+    console.log(`[Meta Graph API] Enviando Direct para recipientId=${recipientId} via access_token (${accessToken.slice(0, 15)}...)...`);
+    
+    let res = await fetch(`https://graph.facebook.com/v19.0/me/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,9 +98,27 @@ export async function sendInstagramDirectMessage(
       }),
     });
 
-    const data = await res.json();
+    let data = await res.json();
+
+    // Se falhar e tivermos um pageId específico, tenta com pageId/messages
+    if (!res.ok && pageOrInstaId && pageOrInstaId !== 'me') {
+      console.warn(`[Meta Graph API] Tentativa com 'me/messages' retornou: ${data?.error?.message}. Tentando com '${pageOrInstaId}/messages'...`);
+      res = await fetch(`https://graph.facebook.com/v19.0/${pageOrInstaId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipient: { id: recipientId },
+          message: { text: messageText },
+          access_token: accessToken,
+        }),
+      });
+      data = await res.json();
+    }
+
     if (!res.ok) {
-      console.error('[Meta Graph API] Erro ao enviar Direct:', data);
+      console.error('[Meta Graph API] Erro ao enviar Direct:', JSON.stringify(data));
       return { success: false, error: data?.error?.message || 'Falha ao enviar Direct' };
     }
     console.log('[Meta Graph API] Direct enviado com sucesso:', data);

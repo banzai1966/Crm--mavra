@@ -340,17 +340,31 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                 </div>
 
                 <div className="pt-1">
-                  <label className="block text-[11px] font-bold text-pink-700 mb-1 flex items-center justify-between">
-                    <span>🔑 Token de Acesso (Gerado na Meta):</span>
-                    {config.accessToken && (
-                      <span className="text-[10px] text-emerald-600 font-semibold">✓ Token Presente</span>
-                    )}
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-bold text-pink-700">
+                      🔑 Token de Acesso (Gerado na Meta):
+                    </label>
+                    <a
+                      href={`https://developers.facebook.com/tools/explorer/?method=GET&path=me%3Ffields%3Did%2Cname&version=v19.0&classic=0`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition-colors"
+                      title="Abrir o gerador de token oficial da Meta em 1 clique"
+                    >
+                      <ExternalLink className="w-2.5 h-2.5" />
+                      <span>Abrir Gerador da Meta</span>
+                    </a>
+                  </div>
+                  {config.accessToken && (
+                    <div className="text-[10px] text-emerald-600 font-semibold mb-1 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Token Configurado
+                    </div>
+                  )}
                   <textarea
                     rows={2}
                     value={config.accessToken || ''}
                     onChange={(e) => setConfig({ ...config, accessToken: e.target.value })}
-                    placeholder="Cole aqui o Token de Acesso que você acabou de copiar no botão 'Gerar Token'..."
+                    placeholder="Cole aqui o Token de Acesso copiado da Meta..."
                     className="w-full bg-pink-50/40 border border-pink-300 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-slate-800 focus:bg-white focus:outline-pink-500"
                   />
                 </div>
