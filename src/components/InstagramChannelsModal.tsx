@@ -239,7 +239,7 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
             ) : (
               <div className="space-y-4">
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  O cliente conecta o Instagram comercial com o Facebook em 1 clique. A Sofia (IA) monitora e responde comentários e directs automaticamente.
+                  Conecte a conta comercial do Instagram através do Facebook em 1 clique. A Sofia (IA) responderá comentários e qualificará leads no Direct automaticamente.
                 </p>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3.5 space-y-2">
@@ -248,7 +248,7 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                     1 Clique para Autorizar
                   </div>
                   <p className="text-xs text-blue-800">
-                    Nenhuma senha é compartilhada. O cliente clica no botão abaixo e autoriza a conta comercial na janela oficial da Meta.
+                    Nenhuma senha é compartilhada. Basta clicar no botão abaixo e autorizar o acesso na janela oficial da Meta.
                   </p>
                 </div>
 
