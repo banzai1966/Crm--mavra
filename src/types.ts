@@ -29,6 +29,8 @@ export interface Lead {
   urgencyReason?: string;
   isHotLead?: boolean;
   hotReason?: string;
+  scheduledDate?: string; // ISO ou Data legível da consulta
+  scheduledTime?: string; // Horário formatado da consulta (ex: 14:00)
   triage?: PreAppointmentTriage;
   lastFollowUpAt?: string;
   followUpCount?: number;

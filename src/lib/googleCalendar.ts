@@ -104,16 +104,24 @@ export async function createCalendarEvent(
     endIso: string;
     attendeeEmail?: string;
     location?: string;
+    timeZone?: string;
   }
 ): Promise<CalendarEvent> {
+  const userTimeZone =
+    event.timeZone ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone ||
+    'America/Sao_Paulo';
+
   const payload = {
     summary: event.summary,
     description: event.description,
     start: {
       dateTime: event.startIso,
+      timeZone: userTimeZone,
     },
     end: {
       dateTime: event.endIso,
+      timeZone: userTimeZone,
     },
     location: event.location,
     attendees: event.attendeeEmail ? [{ email: event.attendeeEmail }] : undefined,

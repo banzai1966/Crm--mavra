@@ -733,6 +733,32 @@ async function executeWebhookPipeline(body: any): Promise<void> {
         lead.tags.push('Triagem Agendada');
       }
       lead.notes = `${lead.notes || ''}\n🗓️ [Triagem ${new Date().toLocaleDateString('pt-BR')}]: ${lead.triage.procedure || 'Consulta'} - Período: ${lead.triage.preferredPeriod || 'A definir'} (${lead.triage.preferredDays || 'dias flexíveis'})`;
+      
+      // Criar agendamento automático na lista do sistema se ainda não existir
+      const existingApt = db.appointments.find((a) => a.leadId === lead.id);
+      if (!existingApt) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(lead.triage.preferredPeriod === 'manha' ? 10 : 15, 0, 0, 0);
+        
+        const autoApt = {
+          id: 'apt-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+          leadId: lead.id,
+          leadName: lead.name,
+          leadPhone: lead.phone,
+          summary: `${db.agentConfig.calendarDefaultTitle || 'Consulta de Avaliação Integrativa'} - ${lead.name}`,
+          description: `Agendado via IA Sofia no WhatsApp. Procedimento: ${lead.triage.procedure || 'Avaliação'}. Período: ${lead.triage.preferredPeriod || 'Flexível'}.`,
+          startIso: tomorrow.toISOString(),
+          endIso: new Date(tomorrow.getTime() + 45 * 60 * 1000).toISOString(),
+          status: 'confirmed' as const,
+          createdAt: new Date().toISOString(),
+        };
+        db.appointments.unshift(autoApt);
+        if (!lead.tags.includes('📅 Agendado')) {
+          lead.tags.push('📅 Agendado');
+        }
+        lead.stageId = 'stage-3'; // Proposta / Apresentação (Agendado)
+      }
     }
 
     // 8. Register AI reply in chat history

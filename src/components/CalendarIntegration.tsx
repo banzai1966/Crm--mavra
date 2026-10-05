@@ -35,12 +35,14 @@ interface CalendarIntegrationProps {
   agentConfig: AgentConfig;
   leads: Lead[];
   onUpdateAgentConfig: (updated: Partial<AgentConfig>) => void;
+  onRefreshLeads?: () => void;
 }
 
 export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   agentConfig,
   leads,
   onUpdateAgentConfig,
+  onRefreshLeads,
 }) => {
   // Google Auth state
   const [googleUserEmail, setGoogleUserEmail] = useState<string | null>(
@@ -178,7 +180,8 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
 
       // Se o Google estiver conectado com token, sincronizar direto na nuvem
       const token = await getAccessToken();
-      if (token && googleUserEmail) {
+      let googleSyncStatus = '';
+      if (token) {
         try {
           const gEvent = await createCalendarEvent(token, 'primary', {
             summary: formSummary,
@@ -190,9 +193,13 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
           });
           googleEventId = gEvent.id;
           htmlLink = gEvent.htmlLink;
-        } catch (gErr) {
-          console.warn('Falha ao enviar para Google Calendar, salvando no CRM:', gErr);
+          googleSyncStatus = ' (Sincronizado no Google Calendar com sucesso!)';
+        } catch (gErr: any) {
+          console.error('Falha ao enviar para Google Calendar:', gErr);
+          googleSyncStatus = ` (Atenção: Não sincronizou no Google Calendar porque o token expirou ou deu erro: ${gErr.message})`;
         }
+      } else {
+        googleSyncStatus = ' (Aviso: Não sincronizou no Google Calendar porque a sessão do Google não tem token ativo. Clique em "Desconectar" e depois "Conectar Google Agenda" para renovar a permissão).';
       }
 
       // Salvar no backend do CRM
@@ -217,6 +224,8 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
         setFormDescription('');
         await loadAppointments();
         if (token) await loadGoogleCalendarEvents();
+        if (onRefreshLeads) onRefreshLeads();
+        alert(`✅ Agendamento criado com sucesso!${googleSyncStatus}`);
       }
     } catch (err: any) {
       alert('Erro ao salvar agendamento: ' + err.message);
@@ -567,13 +576,24 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2 self-end md:self-center shrink-0">
-                    {apt.htmlLink && (
+                    {apt.htmlLink || apt.googleEventId ? (
                       <a
-                        href={apt.htmlLink}
+                        href={apt.htmlLink || `https://calendar.google.com/calendar/u/0/r/eventedit/${apt.googleEventId}`}
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition-all"
-                        title="Abrir no Google Calendar"
+                        title="Abrir diretamente no Google Calendar"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Ver no Google</span>
+                      </a>
+                    ) : (
+                      <a
+                        href={`https://calendar.google.com/calendar/u/0/r/eventedit?text=${encodeURIComponent(apt.summary)}&details=${encodeURIComponent((apt.description || '') + '\n\nLead: ' + (apt.leadName || '') + ' (' + (apt.leadPhone || '') + ')')}&location=${encodeURIComponent(agentConfig.calendarDefaultLocation || 'Euroville Mall')}&dates=${new Date(apt.startIso).toISOString().replace(/-|:|\.\d\d\d/g, '')}/${new Date(apt.endIso).toISOString().replace(/-|:|\.\d\d\d/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition-all"
+                        title="Abrir e salvar diretamente na sua agenda Google"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         <span>Ver no Google</span>

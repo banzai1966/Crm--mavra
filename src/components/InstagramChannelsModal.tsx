@@ -21,7 +21,8 @@ import {
   Smartphone,
   Layers,
   ArrowRight,
-  Info
+  Info,
+  Send,
 } from 'lucide-react';
 import { AgentConfig, InstagramConfig } from '../types';
 
@@ -29,12 +30,16 @@ interface InstagramChannelsModalProps {
   agentConfig: AgentConfig;
   onUpdateAgentConfig: (updated: Partial<AgentConfig>) => Promise<void>;
   isAdmin?: boolean;
+  onRefreshLeads?: () => void;
+  onNavigateToTab?: (tab: string) => void;
 }
 
 export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
   agentConfig,
   onUpdateAgentConfig,
   isAdmin = false,
+  onRefreshLeads,
+  onNavigateToTab,
 }) => {
   const currentConfig: InstagramConfig = agentConfig.instagramConfig || {
     enabled: true,
@@ -538,6 +543,80 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
                       Quando o seguidor digita o telefone no Direct, o CRM cria o lead com a tag <span className="bg-pink-100 text-pink-800 font-bold px-1.5 py-0.2 rounded text-[10px]">📸 Instagram Direct</span> e a Sofia já chama no WhatsApp com horários da agenda!
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* Simulador de Teste ao Vivo de Comentário e Direct */}
+              <div className="p-4 bg-slate-900 text-white rounded-xl shadow-md border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-pink-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-pink-300">
+                      Laboratório de Teste: Simular Comentário de Post/Reels
+                    </h4>
+                  </div>
+                  <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">
+                    Simulador em Tempo Real
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Teste o fluxo completo: digite um @ e um comentário com uma das palavras-chave (ex: <strong>AVALIACAO</strong> ou <strong>AGENDA</strong>). O sistema responderá publicamente e abrirá o Direct no CRM!
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    id="test-sim-user"
+                    defaultValue="@paciente_teste"
+                    placeholder="@usuario"
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-pink-500"
+                  />
+                  <input
+                    type="text"
+                    id="test-sim-comment"
+                    defaultValue="Quero agendar uma AVALIACAO"
+                    placeholder="Comentário no post"
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-pink-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const userEl = document.getElementById('test-sim-user') as HTMLInputElement;
+                      const commentEl = document.getElementById('test-sim-comment') as HTMLInputElement;
+                      const u = userEl?.value || '@paciente_teste';
+                      const c = commentEl?.value || 'Quero agendar uma AVALIACAO';
+
+                      try {
+                        const res = await fetch('/api/instagram/simulate', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            username: u,
+                            commentText: c,
+                            postTitle: 'Reels Odontologia Biológica',
+                          }),
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          if (onRefreshLeads) onRefreshLeads();
+                          alert(`🎉 Teste Executado com Sucesso!\n\n1. Resposta Pública: "${data.publicReply}"\n2. Sofia abriu o Direct de ${u}!\n3. Lead criado no CRM Kanban com a tag 📸 Instagram Direct!\n\nRedirecionando para o CRM Kanban...`);
+                          if (onNavigateToTab) {
+                            onNavigateToTab('kanban');
+                          } else {
+                            window.location.reload();
+                          }
+                        } else {
+                          alert('Erro ao simular: ' + (data.error || 'Falha'));
+                        }
+                      } catch (e: any) {
+                        alert('Erro ao executar simulação: ' + e.message);
+                      }
+                    }}
+                    className="bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-all shadow cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Disparar Teste</span>
+                  </button>
                 </div>
               </div>
             </div>

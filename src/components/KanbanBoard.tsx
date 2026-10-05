@@ -486,6 +486,23 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </div>
                       )}
 
+                      {/* Scheduled Appointment Date/Time Badge in Kanban */}
+                      {(lead.scheduledDate || lead.tags?.includes('📅 Agendado')) && (
+                        <div className="p-1.5 mb-2 bg-blue-50/90 border border-blue-200 rounded text-[10px] text-blue-900 flex items-center justify-between font-semibold shadow-2xs">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <Calendar className="w-3 h-3 text-blue-600 shrink-0" />
+                            <span className="truncate">
+                              {lead.scheduledDate
+                                ? new Date(lead.scheduledDate).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }) + ' às ' + (lead.scheduledTime || new Date(lead.scheduledDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
+                                : 'Consulta Agendada'}
+                            </span>
+                          </div>
+                          <span className="text-[9px] bg-blue-200/80 text-blue-950 px-1 py-0.5 rounded font-bold shrink-0">
+                            Agenda
+                          </span>
+                        </div>
+                      )}
+
                       {lead.interest && (
                         <p className="text-[11px] text-slate-600 line-clamp-2 bg-slate-50 p-2 rounded border border-slate-150 mb-2">
                           {lead.interest}

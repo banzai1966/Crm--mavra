@@ -19,8 +19,9 @@ provider.setCustomParameters({
   access_type: 'offline',
 });
 
-// Cache in-memory do access token
-let cachedAccessToken: string | null = null;
+// Cache in-memory e no localStorage do access token para persistência permanente
+const TOKEN_KEY = 'nexa_gcal_access_token_v2';
+let cachedAccessToken: string | null = typeof window !== 'undefined' ? (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) : null;
 let isSigningIn = false;
 
 export const initAuth = (
@@ -28,11 +29,15 @@ export const initAuth = (
   onAuthFailure?: () => void
 ) => {
   return onAuthStateChanged(auth, async (user: User | null) => {
-    if (user && cachedAccessToken) {
-      if (onAuthSuccess) onAuthSuccess(user, cachedAccessToken);
+    const token = cachedAccessToken || (typeof window !== 'undefined' ? (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) : null);
+    if (user && token) {
+      cachedAccessToken = token;
+      if (onAuthSuccess) onAuthSuccess(user, token);
+    } else if (user && !token) {
+      // User is logged in with Firebase Auth, notify app with user
+      if (onAuthSuccess) onAuthSuccess(user, '');
     } else {
       if (!isSigningIn) {
-        cachedAccessToken = null;
         if (onAuthFailure) onAuthFailure();
       }
     }
@@ -49,6 +54,10 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
     }
 
     cachedAccessToken = credential.accessToken;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(TOKEN_KEY, credential.accessToken);
+      sessionStorage.setItem(TOKEN_KEY, credential.accessToken);
+    }
     return { user: result.user, accessToken: cachedAccessToken };
   } catch (error: any) {
     console.error('Google Sign-in error:', error);
@@ -59,11 +68,28 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
 };
 
 export const getAccessToken = async (): Promise<string | null> => {
-  return cachedAccessToken;
+  if (cachedAccessToken) return cachedAccessToken;
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+    if (stored) {
+      cachedAccessToken = stored;
+      return stored;
+    }
+  }
+  return null;
 };
 
 export const setCachedAccessToken = (token: string | null) => {
   cachedAccessToken = token;
+  if (typeof window !== 'undefined') {
+    if (token) {
+      localStorage.setItem(TOKEN_KEY, token);
+      sessionStorage.setItem(TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+    }
+  }
 };
 
 export const logoutGoogle = async () => {
@@ -73,4 +99,8 @@ export const logoutGoogle = async () => {
     console.error(e);
   }
   cachedAccessToken = null;
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
+  }
 };

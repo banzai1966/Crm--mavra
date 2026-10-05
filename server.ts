@@ -26,6 +26,7 @@ import {
 import { processAiConversation, synthesizeSpeech, testGeminiApiKey } from './server/ai';
 import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
 import { startEvolutionSync } from './server/evolutionSync';
+import { handleMetaInstagramWebhook } from './server/instagram';
 import { ChatMessage } from './src/types';
 
 async function startServer() {
@@ -96,8 +97,10 @@ async function startServer() {
       const body = req.body;
       console.log('[Instagram Webhook] Evento recebido da Meta:', JSON.stringify(body).slice(0, 200));
 
-      // Se for comentário ou direct
-      // Processamento em segundo plano...
+      // Processar em segundo plano sem travar a resposta da Meta
+      handleMetaInstagramWebhook(body).catch((err) => {
+        console.error('[Instagram Webhook] Falha no processamento em segundo plano:', err);
+      });
     } catch (e) {
       console.error('[Instagram Webhook] Erro no processamento:', e);
     }
@@ -771,17 +774,68 @@ async function startServer() {
     db.saveToFile();
 
     // Se houver lead associado, atualizar o lead e registrar evento no chat
-    if (leadId) {
-      const lead = db.leads.find((l) => l.id === leadId);
-      if (lead) {
-        if (!lead.tags.includes('📅 Agendado')) {
-          lead.tags.push('📅 Agendado');
-        }
-        lead.lastInteraction = new Date().toISOString();
+    let targetLead = leadId ? db.leads.find((l) => l.id === leadId) : null;
+    
+    // Se o usuário digitou ou selecionou um nome/resumo que não tinha leadId associado, encontrar ou criar o card no Kanban automaticamente!
+    if (!targetLead && summary) {
+      // Tentar extrair o nome do paciente do resumo (ex: "Consulta de Avaliação - Nome")
+      const candidateName = leadName || (summary.includes('-') ? summary.split('-').slice(1).join('-').trim() : summary);
+      targetLead = db.leads.find((l) => l.name.toLowerCase() === candidateName.toLowerCase());
+      
+      if (!targetLead && candidateName) {
+        // Criar novo lead automaticamente para aparecer no Kanban
+        targetLead = {
+          id: 'lead-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+          name: candidateName,
+          phone: leadPhone || '551199999' + Math.floor(1000 + Math.random() * 9000),
+          stageId: 'stage-3', // Proposta / Apresentação (Agendado)
+          value: 350,
+          interest: summary,
+          tags: ['📅 Agendado', 'Google Calendar'],
+          notes: `[Agendamento ${new Date().toLocaleDateString('pt-BR')}]: ${summary} marcado para ${new Date(startIso).toLocaleString('pt-BR')}.`,
+          aiPaused: false,
+          lastInteraction: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          unreadCount: 0,
+        };
+        db.leads.unshift(targetLead);
+        newApt.leadId = targetLead.id;
+        newApt.leadName = targetLead.name;
+        newApt.leadPhone = targetLead.phone;
       }
     }
 
+    if (targetLead) {
+      if (!targetLead.tags.includes('📅 Agendado')) {
+        targetLead.tags.push('📅 Agendado');
+      }
+      targetLead.scheduledDate = startIso;
+      targetLead.scheduledTime = new Date(startIso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      targetLead.stageId = 'stage-3'; // Sempre coloca na coluna de Agendado/Proposta
+      targetLead.lastInteraction = new Date().toISOString();
+    }
+
+    db.saveToFile();
+
     res.status(201).json(newApt);
+  });
+
+  app.put('/api/appointments/:id', (req: Request, res: Response) => {
+    const apt = db.appointments.find((a) => a.id === req.params.id);
+    if (!apt) {
+      return res.status(404).json({ error: 'Agendamento não encontrado' });
+    }
+    const { googleEventId, htmlLink, status, summary, description, startIso, endIso } = req.body;
+    if (googleEventId) apt.googleEventId = googleEventId;
+    if (htmlLink) apt.htmlLink = htmlLink;
+    if (status) apt.status = status;
+    if (summary) apt.summary = summary;
+    if (description !== undefined) apt.description = description;
+    if (startIso) apt.startIso = startIso;
+    if (endIso) apt.endIso = endIso;
+
+    db.saveToFile();
+    res.json(apt);
   });
 
   app.delete('/api/appointments/:id', (req: Request, res: Response) => {

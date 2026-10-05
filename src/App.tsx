@@ -544,6 +544,7 @@ export default function App() {
             agentConfig={agentConfig}
             leads={leads}
             onUpdateAgentConfig={handleSaveAgentConfig}
+            onRefreshLeads={loadAllData}
           />
         )}
 
@@ -552,6 +553,8 @@ export default function App() {
             agentConfig={agentConfig}
             onUpdateAgentConfig={handleSaveAgentConfig}
             isAdmin={isAdminUnlocked}
+            onRefreshLeads={loadAllData}
+            onNavigateToTab={(tab) => setActiveTab(tab as any)}
           />
         )}
 
