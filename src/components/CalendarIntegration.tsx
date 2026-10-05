@@ -278,12 +278,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
             <CalendarIcon className="w-6 h-6" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-slate-900">Agendamentos & Google Calendar</h1>
-              <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                Multi-Profissionais
-              </span>
-            </div>
+            <h1 className="text-xl font-bold text-slate-900">Agendamentos & Google Calendar</h1>
             <p className="text-sm text-slate-600 mt-1">
               Conecte a conta Google do seu cliente ou colega para permitir que a Inteligência Artificial agende consultas e reuniões diretamente na agenda oficial.
             </p>
@@ -403,7 +398,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Settings className="w-4 h-4 text-slate-600" />
-              <span>Regras de Agendamento da IA & Visibilidade</span>
+              <span>Regras de Agendamento da Sofia (IA)</span>
             </h2>
             {saveSuccessMsg && (
               <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
@@ -457,46 +452,13 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 pt-2">
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={allowAiBooking}
-                onChange={(e) => setAllowAiBooking(e.target.checked)}
-                className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
-              />
-              <div>
-                <span className="text-xs font-semibold text-slate-800">
-                  Permitir que a Sofia (IA) sugira e crie agendamentos automaticamente no WhatsApp
-                </span>
-                <p className="text-[11px] text-slate-500">
-                  Quando o cliente confirmar dia e turno, a IA reserva o slot e adiciona a tag '📅 Agendado' no lead.
-                </p>
-              </div>
-            </label>
-
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showInMenu}
-                onChange={(e) => setShowInMenu(e.target.checked)}
-                className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
-              />
-              <div>
-                <span className="text-xs font-semibold text-slate-800">
-                  Exibir Módulo de Agendamentos no Menu Superior para este cliente
-                </span>
-                <p className="text-[11px] text-slate-500">
-                  Para clientes com agenda física ou secretária (ex: médicos), desmarque para deixar o CRM limpo e focado no WhatsApp.
-                </p>
-              </div>
-            </label>
-          </div>
-
-          <div className="pt-3 flex justify-end">
+          <div className="pt-2 flex items-center justify-between">
+            <p className="text-[11px] text-slate-500">
+              💡 A IA consulta os horários livres e reserva o intervalo exato na agenda do profissional.
+            </p>
             <button
               onClick={handleSaveSettings}
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-xs transition-all cursor-pointer"
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
             >
               Salvar Regras de Agendamento
             </button>

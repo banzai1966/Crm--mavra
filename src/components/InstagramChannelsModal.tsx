@@ -73,14 +73,28 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
   const handleConnectFacebookOAuth = () => {
     setIsConnecting(true);
 
-    // Conecta a conta do cliente via autenticação Meta OAuth
+    // Permite testar com o @ do cliente ou perfil padrão
+    const promptedUsername = window.prompt(
+      '🔐 [Meta OAuth Simulação Real]\n\nDigite o @ do Instagram comercial do seu cliente para testar a conexão (ou deixe em branco para usar o perfil padrão):',
+      'clinica.odontologia'
+    );
+
+    const targetUser = (promptedUsername && promptedUsername.trim()) 
+      ? promptedUsername.trim().replace(/^@/, '') 
+      : 'anuncio_destaque';
+
+    const formattedTitle = targetUser
+      .split(/[._]/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ') + ' • Perfil Oficial';
+
     setTimeout(() => {
       const updated: InstagramConfig = {
         ...config,
         isConnected: true,
-        username: 'anuncio_destaque',
-        fullName: 'Anúncio Destaque • Perfil Oficial',
-        profilePicUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
+        username: targetUser,
+        fullName: formattedTitle,
+        profilePicUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${targetUser}`,
         pageId: '1625068255684485',
         instagramId: '17841464811416608',
         connectedAt: new Date().toISOString(),
@@ -90,7 +104,7 @@ export const InstagramChannelsModal: React.FC<InstagramChannelsModalProps> = ({
       setIsConnecting(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    }, 1000);
+    }, 800);
   };
 
   const handleDisconnect = () => {
