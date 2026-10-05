@@ -23,15 +23,14 @@ import {
   ExternalLink,
   Activity,
   Calendar as CalendarIcon,
-  Instagram,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
 import { ServerHealthModal } from './ServerHealthModal';
 
 interface HeaderProps {
-  activeTab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'instagram' | 'agent' | 'evolution' | 'supabase';
-  setActiveTab: (tab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'instagram' | 'agent' | 'evolution' | 'supabase') => void;
+  activeTab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'agent' | 'evolution' | 'supabase';
+  setActiveTab: (tab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'agent' | 'evolution' | 'supabase') => void;
   evolutionConfig: EvolutionConfig;
   agentConfig: AgentConfig;
   totalLeads: number;
@@ -251,22 +250,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>Agendamentos & Agenda</span>
               </button>
             )}
-
-            {/* Instagram Direct & Gatilhos Tab */}
-            <button
-              id="nav-tab-instagram"
-              onClick={() => setActiveTab('instagram')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                activeTab === 'instagram'
-                  ? 'bg-gradient-to-r from-pink-600 to-indigo-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-pink-600 hover:bg-pink-50'
-              }`}
-              title="Automação do Instagram Direct & Resposta a Comentários (Meta Oficial)"
-            >
-              <Instagram className="w-3.5 h-3.5 text-pink-500" />
-              <span>Instagram Direct</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            </button>
 
             {/* Admin Protected Tabs: Only visible when unlocked */}
             {isAdminUnlocked && (

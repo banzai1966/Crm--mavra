@@ -13,7 +13,6 @@ import {
   Tag,
   DollarSign,
   Phone,
-  Instagram,
   Layers,
   Sparkles,
   ChevronRight,
@@ -462,12 +461,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {/* Phone, Channel Origin & Arrival Timestamp */}
                       <div className="flex items-center justify-between text-[10px] text-slate-500 mb-2">
                         <div className="flex items-center gap-1.5 font-mono">
-                          {lead.tags?.some((t) => t.toLowerCase().includes('instagram') || t.toLowerCase().includes('direct')) || lead.phone.startsWith('instagram:') || lead.name.startsWith('@') ? (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-pink-700 bg-pink-100/90 px-1.5 py-0.5 rounded border border-pink-200" title="Origem: Instagram Direct">
-                              <Instagram className="w-2.5 h-2.5 text-pink-600" />
-                              <span>Direct</span>
-                            </span>
-                          ) : lead.tags?.includes('Google Calendar') || lead.scheduledDate ? (
+                          {lead.tags?.includes('Google Calendar') || lead.scheduledDate ? (
                             <span className="inline-flex items-center gap-1 text-[9px] font-bold text-blue-700 bg-blue-100/90 px-1.5 py-0.5 rounded border border-blue-200" title="Origem: Agendamento">
                               <Calendar className="w-2.5 h-2.5 text-blue-600" />
                               <span>Agenda</span>
@@ -478,7 +472,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                               <span>WhatsApp</span>
                             </span>
                           )}
-                          <span className="truncate max-w-[105px] text-slate-600">{lead.phone.replace('instagram:', '')}</span>
+                          <span className="truncate max-w-[130px] text-slate-600">{lead.phone}</span>
                         </div>
                         <div className="flex items-center gap-1 text-[9.5px] text-slate-500 font-medium shrink-0 bg-slate-100/80 px-1.5 py-0.5 rounded" title={`Data e Hora do contato: ${new Date(lead.createdAt || lead.lastInteraction).toLocaleString('pt-BR')}`}>
                           <Clock className="w-2.5 h-2.5 text-slate-400" />
@@ -536,20 +530,16 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {lead.tags && lead.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
                           {lead.tags.slice(0, 4).map((tag, idx) => {
-                            const isInstagram = tag.toLowerCase().includes('instagram') || tag.toLowerCase().includes('direct');
                             const isHot = tag.toLowerCase().includes('quente') || tag.toLowerCase().includes('urgente');
                             return (
                               <span
                                 key={idx}
                                 className={`text-[10px] px-1.5 py-0.2 rounded font-medium inline-flex items-center gap-1 ${
-                                  isInstagram
-                                    ? 'bg-pink-50 text-pink-700 border border-pink-200 font-bold'
-                                    : isHot
+                                  isHot
                                     ? 'bg-amber-50 text-amber-800 border border-amber-200 font-bold'
                                     : 'bg-slate-100 text-slate-600 border border-slate-200'
                                 }`}
                               >
-                                {isInstagram && <Instagram className="w-2.5 h-2.5 text-pink-600" />}
                                 #{tag}
                               </span>
                             );

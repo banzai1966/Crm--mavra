@@ -138,26 +138,6 @@ export interface AgentConfig {
   calendarDefaultLocation?: string;
   calendarAllowAiBooking?: boolean;
   showCalendarModuleInMenu?: boolean;
-  instagramConfig?: InstagramConfig;
-}
-
-export interface InstagramConfig {
-  enabled: boolean;
-  isConnected: boolean;
-  username: string; // Ex: dra.lucymurata
-  fullName?: string;
-  profilePicUrl?: string;
-  pageId?: string;
-  instagramId?: string;
-  accessToken?: string;
-  tokenExpiresAt?: string;
-  autoReplyComments: boolean;
-  commentTriggerKeywords: string[]; // ['AVALIACAO', 'AGENDA', 'CRM', 'SORRISO', 'CANAL']
-  commentPublicReplyText: string;
-  directWelcomePrompt: string;
-  directAutoQualify: boolean;
-  leadCaptureMoveToStage: string;
-  connectedAt?: string;
 }
 
 export interface AppointmentSlot {

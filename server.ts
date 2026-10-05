@@ -26,7 +26,6 @@ import {
 import { processAiConversation, synthesizeSpeech, testGeminiApiKey } from './server/ai';
 import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
 import { startEvolutionSync } from './server/evolutionSync';
-import { handleMetaInstagramWebhook } from './server/instagram';
 import { ChatMessage } from './src/types';
 
 async function startServer() {
@@ -71,125 +70,6 @@ async function startServer() {
   };
 
   app.post('/api/webhook', webhookHandler);
-
-  // =========================================================================
-  // META / INSTAGRAM GRAPH API WEBHOOKS
-  // Supports Meta Verification (GET hub.challenge) & Event Ingestion (POST)
-  // =========================================================================
-  app.get('/api/instagram/webhook', (req: Request, res: Response) => {
-    const mode = req.query['hub.mode'];
-    const token = req.query['hub.verify_token'];
-    const challenge = req.query['hub.challenge'];
-
-    // Verify token check
-    if (mode === 'subscribe') {
-      console.log('[Instagram Webhook] Verificação da Meta aprovada com sucesso!');
-      return res.status(200).send(challenge);
-    }
-    return res.sendStatus(403);
-  });
-
-  app.post('/api/instagram/webhook', async (req: Request, res: Response) => {
-    // Immediate 200 OK response to Meta (<50ms)
-    res.status(200).send('EVENT_RECEIVED');
-
-    try {
-      const body = req.body;
-      console.log('[Instagram Webhook] Evento recebido da Meta:', JSON.stringify(body).slice(0, 200));
-
-      // Processar em segundo plano sem travar a resposta da Meta
-      handleMetaInstagramWebhook(body).catch((err) => {
-        console.error('[Instagram Webhook] Falha no processamento em segundo plano:', err);
-      });
-    } catch (e) {
-      console.error('[Instagram Webhook] Erro no processamento:', e);
-    }
-  });
-
-  // Simulator route for Instagram Direct & Comments
-  app.post('/api/instagram/simulate', async (req: Request, res: Response) => {
-    try {
-      const { username, commentText, postTitle } = req.body;
-      if (!username || !commentText) {
-        return res.status(400).json({ error: 'Username e comentário são obrigatórios' });
-      }
-
-      const cleanUser = username.replace(/^@/, '').trim();
-      const textUpper = commentText.toUpperCase();
-
-      // Check keywords
-      const currentConfig = db.agentConfig.instagramConfig || {
-        commentTriggerKeywords: ['AVALIACAO', 'AGENDA', 'CRM', 'SORRISO', 'BIOODONTO'],
-        commentPublicReplyText: 'Olá! Te respondi com todos os detalhes no seu Direct, dá uma olhadinha lá! ✨😊',
-        directWelcomePrompt: 'Olá! Vi que você comentou no nosso post sobre Odontologia Biológica. Sou a Sofia, assistente da Dra. Lucy Murata! Você já sente algum desconforto ou busca uma avaliação preventiva para restaurações ou implantes?'
-      };
-
-      const matchedKeyword = currentConfig.commentTriggerKeywords.find((kw: string) => textUpper.includes(kw.toUpperCase()));
-
-      // 1. Create or find lead in CRM
-      let lead = db.leads.find((l: any) => l.name.includes(cleanUser) || l.tags.includes(`@${cleanUser}`));
-      const leadId = lead ? lead.id : `lead-insta-${Date.now()}`;
-
-      if (!lead) {
-        lead = {
-          id: leadId,
-          name: `@${cleanUser}`,
-          phone: 'Aguardando no Direct',
-          stageId: 'stage-1',
-          value: 4500,
-          interest: `Interesse via Instagram: ${commentText}`,
-          tags: ['📸 Instagram Direct', matchedKeyword ? `Comentou ${matchedKeyword}` : 'Comentário Geral', '🔥 LEAD QUENTE'],
-          notes: `Comentou no post "${postTitle || 'Reels Odonto'}" com a mensagem: "${commentText}". Sofia acionada no Direct.`,
-          aiPaused: false,
-          isHotLead: true,
-          hotReason: `Interagiu com palavra-chave #${matchedKeyword || 'INSTA'} no Instagram Direct`,
-          lastInteraction: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          unreadCount: 1,
-        };
-        db.leads.unshift(lead);
-      } else {
-        lead.lastInteraction = new Date().toISOString();
-        lead.unreadCount = (lead.unreadCount || 0) + 1;
-      }
-
-      // 2. Add direct messages
-      const msgUser = {
-        id: `msg-in-${Date.now()}`,
-        leadId: lead.id,
-        phone: `instagram:${cleanUser}`,
-        sender: 'lead' as const,
-        text: commentText,
-        timestamp: new Date().toISOString(),
-        status: 'read' as const,
-      };
-
-      const msgAi = {
-        id: `msg-out-${Date.now()}`,
-        leadId: lead.id,
-        phone: `instagram:${cleanUser}`,
-        sender: 'ai' as const,
-        text: currentConfig.directWelcomePrompt || 'Olá! Vi que você comentou no nosso post. Como podemos te ajudar?',
-        timestamp: new Date(Date.now() + 1000).toISOString(),
-        status: 'delivered' as const,
-      };
-
-      db.messages.push(msgUser, msgAi);
-      await db.save();
-
-      return res.json({
-        success: true,
-        matchedKeyword,
-        lead,
-        publicReply: currentConfig.commentPublicReplyText,
-        directSent: msgAi.text,
-      });
-    } catch (e: any) {
-      console.error('[Instagram Simulator] Erro:', e);
-      return res.status(500).json({ error: e.message });
-    }
-  });
-
   app.post('/api/whatsapp/webhook', webhookHandler);
 
   // Simulator route to simulate incoming WhatsApp message directly from the UI
@@ -652,7 +532,7 @@ async function startServer() {
     db.messages.push(newMsg);
     lead.lastInteraction = new Date().toISOString();
 
-    // Optionally send via Evolution API
+    // Optionally send via Evolution API (WhatsApp)
     if (sendViaWhatsApp !== false) {
       const sendResult = await sendWhatsAppMessage(lead.phone, text.trim());
       if (sendResult.success) {

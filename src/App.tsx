@@ -8,7 +8,6 @@ import { SupabaseSettings } from './components/SupabaseSettings';
 import { ExecutiveDashboard } from './components/ExecutiveDashboard';
 import { AdminAuthModal } from './components/AdminAuthModal';
 import { CalendarIntegration } from './components/CalendarIntegration';
-import { InstagramChannelsModal } from './components/InstagramChannelsModal';
 import {
   Lead,
   KanbanStage,
@@ -545,16 +544,6 @@ export default function App() {
             leads={leads}
             onUpdateAgentConfig={handleSaveAgentConfig}
             onRefreshLeads={loadAllData}
-          />
-        )}
-
-        {activeTab === 'instagram' && (
-          <InstagramChannelsModal
-            agentConfig={agentConfig}
-            onUpdateAgentConfig={handleSaveAgentConfig}
-            isAdmin={isAdminUnlocked}
-            onRefreshLeads={loadAllData}
-            onNavigateToTab={(tab) => setActiveTab(tab as any)}
           />
         )}
 
