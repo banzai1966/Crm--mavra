@@ -502,14 +502,14 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
           const isLegacyNexa = typeof data.agentConfig.role === 'string' && data.agentConfig.role.includes('NEXA CRM');
           
           let loadedInstagram = data.agentConfig.instagramConfig;
-          if (loadedInstagram && loadedInstagram.username === 'dra.lucymurata') {
+          // Se for a conta de exemplo inicial de desenvolvimento, manter desconectado por padrão para que o cliente veja a tela inicial
+          if (loadedInstagram && (loadedInstagram.username === 'dra.lucymurata' || loadedInstagram.username === 'anuncio_destaque')) {
             loadedInstagram = {
               ...loadedInstagram,
-              username: 'anuncio_destaque',
-              fullName: 'Anúncio Destaque • Perfil Oficial',
-              profilePicUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
-              pageId: '1625068255684485',
-              instagramId: '17841464811416608',
+              isConnected: false,
+              username: '',
+              fullName: '',
+              profilePicUrl: '',
             };
           }
 
