@@ -459,13 +459,28 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </div>
                       )}
 
-                      {/* Phone & Lead Arrival Date / Time */}
+                      {/* Phone, Channel Origin & Arrival Timestamp */}
                       <div className="flex items-center justify-between text-[10px] text-slate-500 mb-2">
-                        <div className="flex items-center gap-1 font-mono">
-                          <Phone className="w-3 h-3 text-slate-400" />
-                          <span className="truncate max-w-[130px]">{lead.phone}</span>
+                        <div className="flex items-center gap-1.5 font-mono">
+                          {lead.tags?.some((t) => t.toLowerCase().includes('instagram') || t.toLowerCase().includes('direct')) || lead.phone.startsWith('instagram:') || lead.name.startsWith('@') ? (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-pink-700 bg-pink-100/90 px-1.5 py-0.5 rounded border border-pink-200" title="Origem: Instagram Direct">
+                              <Instagram className="w-2.5 h-2.5 text-pink-600" />
+                              <span>Direct</span>
+                            </span>
+                          ) : lead.tags?.includes('Google Calendar') || lead.scheduledDate ? (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-blue-700 bg-blue-100/90 px-1.5 py-0.5 rounded border border-blue-200" title="Origem: Agendamento">
+                              <Calendar className="w-2.5 h-2.5 text-blue-600" />
+                              <span>Agenda</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-100/90 px-1.5 py-0.5 rounded border border-emerald-200" title="Origem: WhatsApp">
+                              <Phone className="w-2.5 h-2.5 text-emerald-600" />
+                              <span>WhatsApp</span>
+                            </span>
+                          )}
+                          <span className="truncate max-w-[105px] text-slate-600">{lead.phone.replace('instagram:', '')}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[9.5px] text-slate-400 font-medium shrink-0" title={`Recebido em: ${new Date(lead.createdAt || lead.lastInteraction).toLocaleString('pt-BR')}`}>
+                        <div className="flex items-center gap-1 text-[9.5px] text-slate-500 font-medium shrink-0 bg-slate-100/80 px-1.5 py-0.5 rounded" title={`Data e Hora do contato: ${new Date(lead.createdAt || lead.lastInteraction).toLocaleString('pt-BR')}`}>
                           <Clock className="w-2.5 h-2.5 text-slate-400" />
                           <span>
                             {new Date(lead.lastInteraction || lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} às {new Date(lead.lastInteraction || lead.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
