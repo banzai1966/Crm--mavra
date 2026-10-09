@@ -51,7 +51,7 @@ async function startServer() {
   app.get('/api/health', (req: Request, res: Response) => {
     res.json({
       status: 'ok',
-      service: 'MAVRA CRM Conversacional Autônomo',
+      service: 'NEXA CRM Conversacional Autônomo',
       admin: 'Marco Duarte (marco.agduarte22@gmail.com)',
       time: new Date().toISOString(),
     });
@@ -506,6 +506,26 @@ async function startServer() {
 
     const msgs = db.messages.filter((m) => m.leadId === leadId);
     res.json(msgs);
+  });
+
+  // Delete a single message by ID
+  app.delete('/api/chat/message/:messageId', (req: Request, res: Response) => {
+    const { messageId } = req.params;
+    const initialLen = db.messages.length;
+    db.messages = db.messages.filter((m) => m.id !== messageId);
+    if (db.messages.length < initialLen) {
+      db.saveToFile();
+      return res.json({ success: true, messageId });
+    }
+    res.status(404).json({ error: 'Mensagem não encontrada' });
+  });
+
+  // Clear all messages for a specific lead
+  app.delete('/api/chat/clear/:leadId', (req: Request, res: Response) => {
+    const { leadId } = req.params;
+    db.messages = db.messages.filter((m) => m.leadId !== leadId);
+    db.saveToFile();
+    res.json({ success: true, leadId });
   });
 
   app.post('/api/chat/send', async (req: Request, res: Response) => {
@@ -1441,7 +1461,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`MAVRA Server running on http://0.0.0.0:${PORT}`);
+    console.log(`NEXA CRM Server running on http://0.0.0.0:${PORT}`);
     console.log(`Master Admin: Marco Duarte (marco.agduarte22@gmail.com)`);
 
     // Start background automated follow-up loop

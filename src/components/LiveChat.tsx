@@ -26,6 +26,7 @@ import {
   Zap,
   CalendarCheck,
   Trash2,
+  RotateCcw,
   ArrowLeft,
   X,
   Info,
@@ -87,6 +88,15 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
+
+  // Deletion modal state (Lead, Histórico ou Mensagem individual)
+  const [deleteTarget, setDeleteTarget] = useState<{
+    type: 'lead' | 'clear_messages' | 'message';
+    messageId?: string;
+    leadId?: string;
+    leadName?: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Attachment & Emoji state
   const [showAttachMenu, setShowAttachMenu] = useState(false);
@@ -212,6 +222,54 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
     return () => clearInterval(interval);
   }, [activeLead?.id]);
+
+  // Handle single message deletion
+  const handleDeleteSingleMessage = async (messageId: string) => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/chat/message/${messageId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      }
+    } catch (err) {
+      console.error('Erro ao excluir mensagem:', err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
+    }
+  };
+
+  // Handle clearing chat history for this lead
+  const handleClearHistory = async (leadId: string) => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/chat/clear/${leadId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error('Erro ao limpar histórico de mensagens:', err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
+    }
+  };
+
+  // Handle full lead & chat deletion
+  const handleConfirmDeleteLead = async (leadId: string) => {
+    if (onDeleteLead) {
+      setIsDeleting(true);
+      try {
+        await onDeleteLead(leadId);
+        setMobileView('list');
+      } catch (err) {
+        console.error('Erro ao excluir lead do CRM:', err);
+      } finally {
+        setIsDeleting(false);
+        setDeleteTarget(null);
+      }
+    }
+  };
 
   // Handle standard text message sending
   const handleSendMessage = async (e?: React.FormEvent) => {
@@ -636,6 +694,21 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
                 <button
                   type="button"
+                  onClick={() =>
+                    setDeleteTarget({
+                      type: 'lead',
+                      leadId: activeLead.id,
+                      leadName: activeLead.name,
+                    })
+                  }
+                  className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                  title="Excluir este lead e conversa do sistema"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setShowDetails(!showDetails)}
                   className={`p-1.5 rounded-lg border border-slate-200 transition-colors cursor-pointer ${
                     showDetails ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-100 text-slate-700'
@@ -736,8 +809,25 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   return (
                     <div
                       key={msg.id}
-                      className={`flex ${isLead ? 'justify-start' : 'justify-end'} group`}
+                      className={`flex items-end gap-1.5 group ${
+                        isLead ? 'justify-start' : 'justify-end flex-row-reverse'
+                      }`}
                     >
+                      {/* Delete individual message action on hover */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDeleteTarget({
+                            type: 'message',
+                            messageId: msg.id,
+                          })
+                        }
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/80 cursor-pointer shrink-0 mb-1"
+                        title="Excluir esta mensagem do histórico"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+
                       <div
                         className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-3 shadow-xs relative ${
                           isLead
@@ -1327,6 +1417,20 @@ export const LiveChat: React.FC<LiveChatProps> = ({
             onResolveUrgency={onResolveUrgency}
             onConfirmTriage={onConfirmTriage}
             onUpdateLeadNotes={onUpdateLeadNotes}
+            onRequestDelete={() =>
+              setDeleteTarget({
+                type: 'lead',
+                leadId: activeLead.id,
+                leadName: activeLead.name,
+              })
+            }
+            onRequestClear={() =>
+              setDeleteTarget({
+                type: 'clear_messages',
+                leadId: activeLead.id,
+                leadName: activeLead.name,
+              })
+            }
           />
         </div>
       )}
@@ -1352,7 +1456,78 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               onResolveUrgency={onResolveUrgency}
               onConfirmTriage={onConfirmTriage}
               onUpdateLeadNotes={onUpdateLeadNotes}
+              onRequestDelete={() =>
+                setDeleteTarget({
+                  type: 'lead',
+                  leadId: activeLead.id,
+                  leadName: activeLead.name,
+                })
+              }
+              onRequestClear={() =>
+                setDeleteTarget({
+                  type: 'clear_messages',
+                  leadId: activeLead.id,
+                  leadName: activeLead.name,
+                })
+              }
             />
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Confirmação de Exclusão (Lead, Limpeza ou Mensagem) */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-slate-900">
+                  {deleteTarget.type === 'lead'
+                    ? 'Excluir Lead e Conversa?'
+                    : deleteTarget.type === 'clear_messages'
+                    ? 'Limpar Histórico de Mensagens?'
+                    : 'Excluir Mensagem?'}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  {deleteTarget.type === 'lead'
+                    ? `Esta ação removerá "${deleteTarget.leadName || activeLead?.name}" do CRM e apagará todas as mensagens permanentemente.`
+                    : deleteTarget.type === 'clear_messages'
+                    ? `Todas as mensagens de "${deleteTarget.leadName || activeLead?.name}" serão apagadas, mas o lead permanecerá cadastrado no funil.`
+                    : 'Esta mensagem será removida permanentemente do histórico do chat.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={isDeleting}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => {
+                  if (deleteTarget.type === 'lead' && deleteTarget.leadId) {
+                    handleConfirmDeleteLead(deleteTarget.leadId);
+                  } else if (deleteTarget.type === 'clear_messages' && deleteTarget.leadId) {
+                    handleClearHistory(deleteTarget.leadId);
+                  } else if (deleteTarget.type === 'message' && deleteTarget.messageId) {
+                    handleDeleteSingleMessage(deleteTarget.messageId);
+                  }
+                }}
+                className="bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isDeleting ? 'Excluindo...' : 'Sim, Excluir'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1368,6 +1543,8 @@ interface DetailsContentProps {
   onResolveUrgency?: (leadId: string) => void;
   onConfirmTriage?: (leadId: string, dateStr: string) => Promise<void>;
   onUpdateLeadNotes: (leadId: string, notes: string) => void;
+  onRequestDelete?: () => void;
+  onRequestClear?: () => void;
 }
 
 const DetailsContent: React.FC<DetailsContentProps> = ({
@@ -1377,6 +1554,8 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
   onResolveUrgency,
   onConfirmTriage,
   onUpdateLeadNotes,
+  onRequestDelete,
+  onRequestClear,
 }) => {
   return (
     <>
@@ -1543,6 +1722,33 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
           placeholder="Adicione observações sobre a negociação..."
           className="w-full flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-slate-400 resize-none"
         />
+      </div>
+
+      {/* Gerenciamento da Conversa e Lead */}
+      <div className="pt-3 border-t border-slate-200 space-y-2">
+        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+          Gerenciamento
+        </h4>
+        {onRequestClear && (
+          <button
+            type="button"
+            onClick={onRequestClear}
+            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+            <span>Limpar Histórico de Mensagens</span>
+          </button>
+        )}
+        {onRequestDelete && (
+          <button
+            type="button"
+            onClick={onRequestDelete}
+            className="w-full bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+            <span>Excluir Lead e Conversa</span>
+          </button>
+        )}
       </div>
     </>
   );
