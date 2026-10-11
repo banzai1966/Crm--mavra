@@ -51,6 +51,23 @@ export interface PreRecordedAudio {
   maxPerLead?: number;
 }
 
+export interface ClientProfile {
+  id: string;
+  name: string;
+  nicheTag: string;
+  evolutionInstanceName?: string;
+  agentConfig: AgentConfig;
+  updatedAt: string;
+}
+
+export interface ClientProfileSummary {
+  id: string;
+  name: string;
+  nicheTag: string;
+  evolutionInstanceName?: string;
+  updatedAt: string;
+}
+
 export interface KanbanStage {
   id: string;
   name: string;

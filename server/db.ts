@@ -12,6 +12,7 @@ import {
   WebhookEventLog,
   SentinelAlertConfig,
   AppointmentSlot,
+  ClientProfile,
 } from '../src/types';
 
 function getStorageFilePath(): string {
@@ -418,6 +419,18 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     },
   ];
 
+  public activeProfileId: string = 'profile-dra-lucy';
+  public savedProfiles: ClientProfile[] = [
+    {
+      id: 'profile-dra-lucy',
+      name: 'Dra. Lucy Murata (Odontologia Integrativa)',
+      nicheTag: 'Odontologia',
+      evolutionInstanceName: 'dra-lucy-murata',
+      agentConfig: JSON.parse(JSON.stringify(this.agentConfig)),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
   public logWebhookEvent(event: Omit<WebhookEventLog, 'id' | 'timestamp'>): WebhookEventLog {
     const entry: WebhookEventLog = {
       id: 'wh-log-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
@@ -457,6 +470,8 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
         supabaseConfig: this.supabaseConfig,
         sentinelAlerts: this.sentinelAlerts,
         appointments: this.appointments,
+        activeProfileId: this.activeProfileId,
+        savedProfiles: this.savedProfiles,
       };
       fs.writeFileSync(STORAGE_FILE, JSON.stringify(payload, null, 2), 'utf-8');
     } catch (err) {
@@ -611,6 +626,24 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
         }
         if (data.appointments && Array.isArray(data.appointments)) {
           this.appointments = data.appointments;
+        }
+        if (data.activeProfileId) {
+          this.activeProfileId = data.activeProfileId;
+        }
+        if (data.savedProfiles && Array.isArray(data.savedProfiles) && data.savedProfiles.length > 0) {
+          this.savedProfiles = data.savedProfiles;
+        } else {
+          // Garante que o perfil da Dra. Lucy esteja sempre salvo como base inicial
+          this.savedProfiles = [
+            {
+              id: 'profile-dra-lucy',
+              name: 'Dra. Lucy Murata (Odontologia Integrativa)',
+              nicheTag: 'Odontologia',
+              evolutionInstanceName: 'dra-lucy-murata',
+              agentConfig: JSON.parse(JSON.stringify(this.agentConfig)),
+              updatedAt: new Date().toISOString(),
+            },
+          ];
         }
         console.log(`[DB Storage] Dados restaurados com sucesso do disco (${this.leads.length} leads, ${this.messages.length} mensagens).`);
       }

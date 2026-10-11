@@ -645,8 +645,134 @@ async function startServer() {
       ...db.agentConfig,
       ...req.body,
     };
+    // Sincronizar perfil ativo
+    const active = db.savedProfiles.find((p) => p.id === db.activeProfileId);
+    if (active) {
+      active.agentConfig = JSON.parse(JSON.stringify(db.agentConfig));
+      active.updatedAt = new Date().toISOString();
+    }
     db.saveToFile();
     res.json(db.agentConfig);
+  });
+
+  // =========================================================================
+  // 4.0. MULTI-CLIENT PROFILE MANAGEMENT (SELETOR MINIMALISTA DE CLIENTES)
+  // =========================================================================
+  app.get('/api/client-profiles', (req: Request, res: Response) => {
+    const active = db.savedProfiles.find((p) => p.id === db.activeProfileId);
+    if (active) {
+      active.agentConfig = db.agentConfig;
+    }
+    res.json({
+      activeProfileId: db.activeProfileId,
+      profiles: db.savedProfiles.map((p) => ({
+        id: p.id,
+        name: p.name,
+        nicheTag: p.nicheTag,
+        evolutionInstanceName: p.evolutionInstanceName,
+        updatedAt: p.updatedAt,
+      })),
+    });
+  });
+
+  app.post('/api/client-profiles/switch', (req: Request, res: Response) => {
+    const { profileId } = req.body;
+    if (!profileId) {
+      return res.status(400).json({ error: 'profileId é obrigatório' });
+    }
+
+    const curr = db.savedProfiles.find((p) => p.id === db.activeProfileId);
+    if (curr) {
+      curr.agentConfig = JSON.parse(JSON.stringify(db.agentConfig));
+      curr.updatedAt = new Date().toISOString();
+    }
+
+    const target = db.savedProfiles.find((p) => p.id === profileId);
+    if (!target) {
+      return res.status(404).json({ error: 'Perfil não encontrado' });
+    }
+
+    db.activeProfileId = target.id;
+    db.agentConfig = JSON.parse(JSON.stringify(target.agentConfig));
+    if (target.evolutionInstanceName) {
+      db.evolutionConfig.instanceName = target.evolutionInstanceName;
+    }
+    db.saveToFile();
+
+    res.json({
+      success: true,
+      activeProfileId: db.activeProfileId,
+      activeProfileName: target.name,
+      agentConfig: db.agentConfig,
+    });
+  });
+
+  app.post('/api/client-profiles/create', (req: Request, res: Response) => {
+    const { name, nicheTag, evolutionInstanceName, baseConfig } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Nome do cliente é obrigatório' });
+    }
+
+    const curr = db.savedProfiles.find((p) => p.id === db.activeProfileId);
+    if (curr) {
+      curr.agentConfig = JSON.parse(JSON.stringify(db.agentConfig));
+      curr.updatedAt = new Date().toISOString();
+    }
+
+    const newProfile = {
+      id: 'profile-' + Date.now(),
+      name: name.trim(),
+      nicheTag: nicheTag || 'Geral',
+      evolutionInstanceName: evolutionInstanceName || '',
+      agentConfig: baseConfig || JSON.parse(JSON.stringify(db.agentConfig)),
+      updatedAt: new Date().toISOString(),
+    };
+
+    db.savedProfiles.push(newProfile);
+    db.activeProfileId = newProfile.id;
+    db.agentConfig = JSON.parse(JSON.stringify(newProfile.agentConfig));
+    if (newProfile.evolutionInstanceName) {
+      db.evolutionConfig.instanceName = newProfile.evolutionInstanceName;
+    }
+    db.saveToFile();
+
+    res.json({
+      success: true,
+      newProfileId: newProfile.id,
+      profiles: db.savedProfiles.map((p) => ({
+        id: p.id,
+        name: p.name,
+        nicheTag: p.nicheTag,
+        updatedAt: p.updatedAt,
+      })),
+      agentConfig: db.agentConfig,
+    });
+  });
+
+  app.delete('/api/client-profiles/:id', (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (db.savedProfiles.length <= 1) {
+      return res.status(400).json({ error: 'Não é possível excluir o único perfil existente' });
+    }
+
+    db.savedProfiles = db.savedProfiles.filter((p) => p.id !== id);
+    if (db.activeProfileId === id) {
+      db.activeProfileId = db.savedProfiles[0].id;
+      db.agentConfig = JSON.parse(JSON.stringify(db.savedProfiles[0].agentConfig));
+    }
+    db.saveToFile();
+
+    res.json({
+      success: true,
+      activeProfileId: db.activeProfileId,
+      profiles: db.savedProfiles.map((p) => ({
+        id: p.id,
+        name: p.name,
+        nicheTag: p.nicheTag,
+        updatedAt: p.updatedAt,
+      })),
+      agentConfig: db.agentConfig,
+    });
   });
 
   // =========================================================================

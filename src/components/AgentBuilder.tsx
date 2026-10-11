@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bot,
   Sparkles,
@@ -47,8 +47,10 @@ import {
   Headphones,
   Plus,
   Music,
+  ChevronDown,
+  Building,
 } from 'lucide-react';
-import { AgentConfig, KnowledgeDocument, AIProvider, PreRecordedAudio } from '../types';
+import { AgentConfig, KnowledgeDocument, AIProvider, PreRecordedAudio, ClientProfileSummary } from '../types';
 import { AiTestingLabModal } from './AiTestingLabModal';
 
 export interface AgentPreset {
@@ -444,6 +446,108 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [presetSuccessToast, setPresetSuccessToast] = useState<string | null>(null);
   const [presetCategoryFilter, setPresetCategoryFilter] = useState<string>('all');
 
+  // Minimalist Client Profiles State (Multi-Empresa)
+  const [savedProfiles, setSavedProfiles] = useState<ClientProfileSummary[]>([
+    {
+      id: 'profile-dra-lucy',
+      name: 'Dra. Lucy Murata (Odontologia Integrativa)',
+      nicheTag: 'Odontologia',
+      updatedAt: new Date().toISOString(),
+    },
+  ]);
+  const [activeProfileId, setActiveProfileId] = useState<string>('profile-dra-lucy');
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [showNewProfileModal, setShowNewProfileModal] = useState(false);
+  const [newProfileName, setNewProfileName] = useState('');
+  const [newProfileNiche, setNewProfileNiche] = useState('Geral');
+  const [isSwitchingProfile, setIsSwitchingProfile] = useState(false);
+
+  // Load profiles from backend
+  useEffect(() => {
+    fetch('/api/client-profiles')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.profiles && Array.isArray(data.profiles)) {
+          setSavedProfiles(data.profiles);
+        }
+        if (data.activeProfileId) {
+          setActiveProfileId(data.activeProfileId);
+        }
+      })
+      .catch((err) => console.warn('Erro ao carregar perfis de clientes:', err));
+  }, []);
+
+  const handleSwitchProfile = async (targetId: string) => {
+    if (targetId === activeProfileId) {
+      setIsProfileDropdownOpen(false);
+      return;
+    }
+    setIsSwitchingProfile(true);
+    try {
+      const res = await fetch('/api/client-profiles/switch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileId: targetId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setActiveProfileId(data.activeProfileId);
+        setConfig(data.agentConfig);
+        await onSaveConfig(data.agentConfig);
+        setIsProfileDropdownOpen(false);
+        setPresetSuccessToast(`✨ Perfil do cliente "${data.activeProfileName}" carregado com sucesso!`);
+      }
+    } catch (err: any) {
+      console.error('Falha ao alternar perfil:', err);
+    } finally {
+      setIsSwitchingProfile(false);
+    }
+  };
+
+  const handleCreateNewProfile = async () => {
+    if (!newProfileName.trim()) return;
+    try {
+      const res = await fetch('/api/client-profiles/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newProfileName.trim(),
+          nicheTag: newProfileNiche,
+          baseConfig: config,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setActiveProfileId(data.newProfileId);
+        setSavedProfiles(data.profiles);
+        setShowNewProfileModal(false);
+        setNewProfileName('');
+        setPresetSuccessToast(`✨ Novo perfil de cliente "${newProfileName}" criado e ativo!`);
+      }
+    } catch (err) {
+      console.error('Falha ao criar perfil:', err);
+    }
+  };
+
+  const handleDeleteProfile = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (savedProfiles.length <= 1) return;
+    if (!confirm('Deseja realmente excluir este perfil de cliente?')) return;
+    try {
+      const res = await fetch(`/api/client-profiles/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setSavedProfiles(data.profiles);
+        if (data.activeProfileId) {
+          setActiveProfileId(data.activeProfileId);
+          setConfig(data.agentConfig);
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao excluir perfil:', err);
+    }
+  };
+
   const handleApplyPreset = async (preset: AgentPreset) => {
     const updatedConfig: AgentConfig = {
       ...config,
@@ -748,13 +852,90 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2.5">
               <div className="p-2 rounded-lg bg-slate-900 text-white shadow-2xs">
                 <Bot className="w-5 h-5" />
               </div>
               <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                Construtor de Agente & Base de Conhecimento
+                Construtor de Agente
               </h2>
+
+              {/* SELETOR MINIMALISTA DE CLIENTE (DISCRETO, COMPACTO E SEM AMONTOADOS) */}
+              <div className="relative">
+                <button
+                  type="button"
+                  id="btn-select-client-profile"
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  disabled={isSwitchingProfile}
+                  className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer hover:border-slate-400"
+                  title="Alternar perfil de cliente / empresa"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="text-slate-400 font-normal">Cliente:</span>
+                  <span className="font-bold text-slate-900 max-w-[170px] truncate">
+                    {savedProfiles.find((p) => p.id === activeProfileId)?.name || 'Dra. Lucy Murata'}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                </button>
+
+                {isProfileDropdownOpen && (
+                  <div className="absolute left-0 mt-1.5 w-64 bg-white border border-slate-200 rounded-xl shadow-lg z-50 p-1.5 animate-in fade-in zoom-in-95">
+                    <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Clientes Cadastrados
+                    </div>
+                    <div className="max-h-52 overflow-y-auto space-y-0.5">
+                      {savedProfiles.map((p) => {
+                        const isCurrent = p.id === activeProfileId;
+                        return (
+                          <div
+                            key={p.id}
+                            onClick={() => handleSwitchProfile(p.id)}
+                            className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-xs transition-colors cursor-pointer group ${
+                              isCurrent
+                                ? 'bg-slate-900 text-white font-bold'
+                                : 'text-slate-700 hover:bg-slate-100'
+                            }`}
+                          >
+                            <div className="truncate pr-2">
+                              <div className="truncate">{p.name}</div>
+                              <div className={`text-[10px] ${isCurrent ? 'text-slate-300' : 'text-slate-400'}`}>
+                                {p.nicheTag || 'Geral'}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {isCurrent && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                              {!isCurrent && savedProfiles.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleDeleteProfile(p.id, e)}
+                                  className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 transition-opacity"
+                                  title="Excluir este perfil"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="border-t border-slate-100 mt-1 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          setShowNewProfileModal(true);
+                        }}
+                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-semibold text-indigo-700 hover:bg-indigo-50 transition-colors cursor-pointer text-left"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Salvar como Novo Cliente...</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <p className="text-xs text-slate-500 mt-1">
               Configure em 15 minutos a Persona, os Motores Multi-IA (Gemini, OpenAI, Claude), regras de negócio e limites anti-alucinação.
@@ -2723,6 +2904,85 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 >
                   <Check className="w-4 h-4" />
                   <span>Confirmar e Aplicar no Formulário</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Minimalista: Salvar como Novo Cliente */}
+        {showNewProfileModal && (
+          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl space-y-4 animate-in fade-in zoom-in-95">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Building className="w-4 h-4 text-indigo-600" />
+                  Salvar como Novo Cliente / Perfil
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowNewProfileModal(false)}
+                  className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-slate-500">
+                Cria uma nova caixinha independente no banco de dados. Os dados do cliente anterior permanecem intactos e protegidos.
+              </p>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Nome do Cliente / Empresa
+                  </label>
+                  <input
+                    type="text"
+                    value={newProfileName}
+                    onChange={(e) => setNewProfileName(e.target.value)}
+                    placeholder="Ex: Imobiliária Prime, Clínica Estética Bella..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-indigo-500 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Segmento / Nicho
+                  </label>
+                  <select
+                    value={newProfileNiche}
+                    onChange={(e) => setNewProfileNiche(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-indigo-500 font-medium"
+                  >
+                    <option value="Odontologia">Odontologia & Saúde Bucal</option>
+                    <option value="Imobiliária">Imobiliária & Corretores</option>
+                    <option value="Estética">Clínica de Estética & Harmonização</option>
+                    <option value="Advocacia">Advocacia & Jurídico</option>
+                    <option value="Médica">Clínica Médica Geral</option>
+                    <option value="Solar">Energia Solar Fotovoltaica</option>
+                    <option value="Automotivo">Repasse & Veículos</option>
+                    <option value="SaaS">SaaS & Software B2B</option>
+                    <option value="Geral">Outro Negócio / Varejo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowNewProfileModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCreateNewProfile}
+                  disabled={!newProfileName.trim()}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-2xs"
+                >
+                  Criar Perfil
                 </button>
               </div>
             </div>
