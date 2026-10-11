@@ -58,6 +58,8 @@ export const AiTestingLabModal: React.FC<AiTestingLabModalProps> = ({
   const [autoFixResult, setAutoFixResult] = useState<{ success: boolean; optimizedRules: string; explanation: string } | null>(null);
   const [appliedSuccessToast, setAppliedSuccessToast] = useState<string | null>(null);
   const [copiedRule, setCopiedRule] = useState(false);
+  const [isApplyingRules, setIsApplyingRules] = useState(false);
+  const [appliedSuccessfully, setAppliedSuccessfully] = useState(false);
 
   // Load scenarios on open
   useEffect(() => {
@@ -157,12 +159,19 @@ export const AiTestingLabModal: React.FC<AiTestingLabModalProps> = ({
 
   const handleApplyOptimizedRulesNow = async () => {
     if (!autoFixResult?.optimizedRules) return;
+    setIsApplyingRules(true);
     try {
       await onSaveRules(autoFixResult.optimizedRules);
+      setAppliedSuccessfully(true);
       setAppliedSuccessToast('🎉 Regras salvas e aplicadas com sucesso no Construtor de Agente!');
+      setTimeout(() => {
+        setAppliedSuccessfully(false);
+      }, 4000);
       setTimeout(() => setAppliedSuccessToast(null), 6000);
     } catch (e: any) {
       console.error('Falha ao aplicar regras:', e);
+    } finally {
+      setIsApplyingRules(false);
     }
   };
 
@@ -386,10 +395,29 @@ export const AiTestingLabModal: React.FC<AiTestingLabModalProps> = ({
 
                       <button
                         onClick={handleApplyOptimizedRulesNow}
-                        className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors shadow-2xs"
+                        disabled={isApplyingRules || appliedSuccessfully}
+                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all shadow-sm disabled:opacity-90 ${
+                          appliedSuccessfully
+                            ? 'bg-emerald-700 text-white ring-2 ring-emerald-400 scale-105'
+                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                        }`}
                       >
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Salvar & Aplicar no Agente Agora</span>
+                        {isApplyingRules ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Aplicando...</span>
+                          </>
+                        ) : appliedSuccessfully ? (
+                          <>
+                            <Check className="w-4 h-4 text-white animate-bounce" />
+                            <span>✨ Salvo & Aplicado com Sucesso!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Salvar & Aplicar no Agente Agora</span>
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
