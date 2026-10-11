@@ -289,6 +289,42 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     elevenLabsApiKey: '',
     pixKey: 'marco.agduarte22@gmail.com',
     pixKeyType: 'email',
+    preRecordedAudiosEnabled: true,
+    preRecordedAudios: [
+      {
+        id: 'audio-welcome-dra-lucy',
+        title: 'Boas-Vindas & Acolhimento Humanizado',
+        speakerName: 'Dra. Lucy Murata',
+        triggerType: 'welcome',
+        contextDescription: 'Disparar na abertura da conversa quando o lead fizer uma saudação inicial (olá, bom dia) querendo conhecer os serviços, se ele ainda não ouviu a Dra. NUNCA disparar se ele veio com pergunta técnica/pontual (ex: preço, convênio, horário específico) ou se já foi recepcionado.',
+        transcript: 'Olá! Tudo bem? Sou a Dra. Lucy Murata! Que bom que você entrou em contato com o nosso consultório. A Sofia, da minha equipe, já vai te dar todas as informações, mas eu fiz questão de te dar as boas-vindas pessoalmente. Me conta: o que você gostaria de cuidar no seu sorriso hoje?',
+        durationSeconds: 16,
+        enabled: true,
+        maxPerLead: 1,
+      },
+      {
+        id: 'audio-pitch-dra-lucy',
+        title: 'Convite para Consulta de Avaliação Integrativa',
+        speakerName: 'Dra. Lucy Murata',
+        triggerType: 'schedule_pitch',
+        contextDescription: 'Disparar quando o lead já tirou as primeiras dúvidas e demonstrar interesse em marcar consulta, agendar ou conhecer os horários da agenda. Acalma a decisão e reforça a importância da avaliação presencial no Euroville Mall.',
+        transcript: 'Oi! Que excelente decisão. Fazer uma avaliação com calma é o melhor passo pra gente entender direitinho a sua saúde bucal e indicar o melhor tratamento pra você. Já avisei a recepção pra priorizar os melhores horários pra você. Pode escolher o dia e a hora que ficarem mais confortáveis pra você, tá bom? Te espero aqui!',
+        durationSeconds: 18,
+        enabled: true,
+        maxPerLead: 1,
+      },
+      {
+        id: 'audio-urgency-dra-lucy',
+        title: 'Acolhimento Cuidadoso em Dor ou Desconforto',
+        speakerName: 'Dra. Lucy Murata',
+        triggerType: 'urgency_care',
+        contextDescription: 'Disparar quando o paciente relatar dor forte, incômodo ou urgência confirmada pela triagem clínica. Transmite calma, empatia e compromisso de encaixe prioritário.',
+        transcript: 'Oi, tudo bem? Sou a Dra. Lucy. Vi aqui que você mencionou que está com incômodo ou dor. Não se preocupa, a gente cuida de você. Minha equipe vai verificar o quanto antes a nossa escala pra te encaixar com carinho e resolver isso logo. Fica tranquilo(a), tá bom?',
+        durationSeconds: 15,
+        enabled: true,
+        maxPerLead: 1,
+      },
+    ],
     autoFollowUpEnabled: true,
     followUpDelayHours: 4,
     followUpNiche: 'dental',
@@ -516,6 +552,12 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
           this.agentConfig = {
             ...this.agentConfig,
             ...(isLegacyNexa ? {} : data.agentConfig),
+            preRecordedAudios: data.agentConfig.preRecordedAudios && data.agentConfig.preRecordedAudios.length > 0
+              ? data.agentConfig.preRecordedAudios
+              : this.agentConfig.preRecordedAudios,
+            preRecordedAudiosEnabled: data.agentConfig.preRecordedAudiosEnabled !== undefined
+              ? data.agentConfig.preRecordedAudiosEnabled
+              : (this.agentConfig.preRecordedAudiosEnabled ?? true),
             instagramConfig: loadedInstagram || this.agentConfig.instagramConfig,
             maxAudioChars: (!loadedMaxChars || loadedMaxChars <= 220) ? 500 : loadedMaxChars,
             geminiApiKey: (() => {

@@ -23,7 +23,14 @@ import {
   fetchEvolutionContacts,
   MASTER_EVOLUTION_KEY,
 } from './server/evolution';
-import { processAiConversation, synthesizeSpeech, testGeminiApiKey } from './server/ai';
+import {
+  processAiConversation,
+  synthesizeSpeech,
+  testGeminiApiKey,
+  runAiLabAudit,
+  optimizeAgentRulesWithAi,
+  DEFAULT_AI_LAB_SCENARIOS,
+} from './server/ai';
 import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
 import { startEvolutionSync } from './server/evolutionSync';
 import { ChatMessage } from './src/types';
@@ -843,6 +850,47 @@ async function startServer() {
       res.json(result);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+  // =========================================================================
+  // 4b. LABORATÓRIO DE TESTES AUTOMATIZADOS & AUTO-CORREÇÃO COM IA
+  // =========================================================================
+  app.get('/api/ai-lab/scenarios', (req: Request, res: Response) => {
+    res.json(DEFAULT_AI_LAB_SCENARIOS);
+  });
+
+  app.post('/api/ai-lab/run-audit', async (req: Request, res: Response) => {
+    try {
+      const { customScenarios } = req.body;
+      const report = await runAiLabAudit(customScenarios);
+      res.json(report);
+    } catch (err: any) {
+      console.error('[AI Lab Audit Error]:', err);
+      res.status(500).json({ error: err.message || 'Falha ao executar auditoria com IA' });
+    }
+  });
+
+  app.post('/api/ai-lab/auto-optimize-rules', async (req: Request, res: Response) => {
+    try {
+      const { failedItems, currentRules } = req.body;
+      const baseRules = currentRules || db.agentConfig.knowledgeRules || '';
+      const result = await optimizeAgentRulesWithAi(baseRules, failedItems || []);
+      
+      // Se solicitado autoApply: true, já salva diretamente no banco
+      if (req.body.autoApply) {
+        db.agentConfig.knowledgeRules = result.optimizedRules;
+        db.saveToFile();
+      }
+
+      res.json({
+        ...result,
+        applied: Boolean(req.body.autoApply),
+        agentConfig: db.agentConfig,
+      });
+    } catch (err: any) {
+      console.error('[AI Lab Auto-Optimize Error]:', err);
+      res.status(500).json({ error: err.message || 'Falha ao otimizar regras com IA' });
     }
   });
 

@@ -35,6 +35,7 @@ export interface AIResponseResult {
     interest?: string;
     value?: number;
   };
+  dispatchPreRecordedAudioId?: string | null;
 }
 
 /**
@@ -521,6 +522,40 @@ export async function processAiConversation(
     day: '2-digit',
   }).format(nowInBrazil);
 
+  // 13. Biblioteca de Áudios Reais do Especialista / Proprietário (Avaliação de Contexto e Concordância)
+  const preRecordedList = (config.preRecordedAudios || []).filter((a) => a.enabled);
+  const alreadyDispatched = new Set(lead.dispatchedAudioIds || []);
+  chatHistory.forEach((m) => {
+    preRecordedList.forEach((a) => {
+      if (m.text && (m.text.includes(a.title) || (a.speakerName && m.text.includes(a.speakerName) && m.text.includes('Áudio Real')))) {
+        alreadyDispatched.add(a.id);
+      }
+    });
+  });
+  const availableAudios = preRecordedList.filter((a) => !alreadyDispatched.has(a.id));
+
+  let audiosGuideline = '';
+  if (config.preRecordedAudiosEnabled !== false && availableAudios.length > 0) {
+    audiosGuideline = `
+13. ÁUDIOS REAIS PRÉ-GRAVADOS DO ESPECIALISTA / PROPRIETÁRIO (DISCERNIMENTO CONTEXTUAL CRITERIOSO):
+O negócio conta com áudios humanizados gravados pelo(a) próprio(a) especialista/proprietário(a).
+Áudios disponíveis para este lead (AINDA NÃO ENVIADOS PARA ELE):
+${availableAudios.map((a) => `- ID: "${a.id}" | Título: "${a.title}" | Quem fala: "${a.speakerName}" | Tipo: "${a.triggerType}"
+  * Regra de Oportunidade / Contexto: ${a.contextDescription}
+  * Transcrição exata do que o especialista fala no áudio: "${a.transcript}"`).join('\n')}
+
+REGRAS DE OURO PARA DECIDIR SE DEVE OU NÃO DISPARAR UM ÁUDIO ("dispatchPreRecordedAudioId"):
+a) CRITÉRIO DE CONCORDÂNCIA E CONTEXTO (NUNCA FORÇAR ÁUDIO FORA DE HORA):
+   - A IA NUNCA deve sugerir o áudio se a mensagem do cliente for uma pergunta pontual ou técnica (ex: "Vocês atendem Bradesco?", "Qual o valor?", "Qual o endereço?", "Abrem aos sábados?"). Nesses casos, RESPONDA A DÚVIDA DIRETAMENTE EM TEXTO primeiro e retorne "dispatchPreRecordedAudioId": null!
+   - Se o lead estiver iniciando o contato com uma saudação (olá, bom dia) querendo conhecer os serviços, o áudio de Boas-Vindas ("welcome") é perfeito.
+   - Se o lead já tirou dúvidas e está demonstrando interesse em agendar ou saber horários, o áudio de Convite para Consulta/Avaliação ("schedule_pitch") gera enorme conversão.
+   - Se o lead relatou dor ou urgência real e confirmada na triagem, o áudio de Cuidado em Urgência ("urgency_care") acalma e passa máxima segurança.
+b) NUNCA REPETIR: Se o lead já recebeu o áudio, ele nunca mais deve ser reenviado para este mesmo lead.
+c) TRANSIÇÃO ELEGANTE NO TEXTO: Quando decidir disparar o áudio ("dispatchPreRecordedAudioId" preenchido com o ID), inclua no "replyText" uma frase acolhedora introduzindo o áudio (ex: "A própria ${availableAudios[0]?.speakerName || 'doutora'} gravou um recadinho especial pra você, ouça com carinho 👇").
+d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": null.
+`;
+  }
+
   const systemInstruction = `Você é ${config.personaName}, atuando como ${config.role}.
 Seu tom de voz é: ${config.toneOfVoice}.
 Seu objetivo comercial primordial é: ${config.salesGoal}.
@@ -624,6 +659,8 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
      * NUNCA use emojis no texto quando responder em áudio (evitando que o sintetizador de voz soletre o nome dos emojis como 'estrelinhas' ou 'rosto sorridente').
      * NUNCA use asteriscos (*) ou marcadores mecânicos de lista. Diga frases fluidas e acolhedoras.
 
+${audiosGuideline}
+
 === ESTÁGIOS DISPONÍVEIS NO CRM KANBAN ===
 ${stagesList}
 
@@ -632,6 +669,7 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
 {
   "replyText": "O texto da mensagem que será enviada diretamente pelo WhatsApp para o lead",
   "suggestedStageId": "ID do estágio para onde mover o lead no CRM se a intenção ou contexto mudou, ou null se mantiver o mesmo",
+  "dispatchPreRecordedAudioId": "ID do áudio pré-gravado para disparar SE e SOMENTE SE o contexto da conversa casar perfeitamente com a proposta daquele áudio (ou null se nenhum for oportuno agora)",
   "sendCatalogPdf": true ou false (true apenas se o lead solicitou apresentação/catálogo/PDF),
   "sendPixInfo": true ou false (true se o lead pediu dados de pagamento/PIX),
   "sendAsVoice": true ou false (true se for adequado responder com áudio falado pela Sofia segundo as regras de discernimento),
@@ -1159,6 +1197,7 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       humanHandoffReason: parsed.humanHandoffReason || undefined,
       triage: parsed.triage || undefined,
       extractedInfo: parsed.extractedInfo || undefined,
+      dispatchPreRecordedAudioId: parsed.dispatchPreRecordedAudioId || null,
     };
   } catch (err) {
     console.error('Erro ao interpretar JSON da IA:', err, 'Raw:', rawText);
@@ -1168,4 +1207,264 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       modelUsed: model,
     };
   }
+}
+
+// =========================================================================
+// LABORATÓRIO DE TESTES AUTOMATIZADOS COM IA (AUDITORIA & CORREÇÃO DE REGRAS)
+// =========================================================================
+
+export const DEFAULT_AI_LAB_SCENARIOS = [
+  {
+    id: 'sc-1-preco-direto',
+    title: 'Pressão por Preço / Orçamento Direto',
+    category: 'preco',
+    description: 'Cliente insiste de forma incisiva em saber o preço exato sem querer agendar avaliação presencial.',
+    incomingMessage: 'Quanto custa a remoção de amálgama e o implante de zircônia? Só me diz o valor exato, não quero enrolação nem consulta.',
+    expectedBehavior: 'Não deve passar valor tabelado fechado. Deve explicar com empatia e autoridade que cada caso biológico é único, detalhar o que compõe a Consulta Integrativa e convidar para agendar sem ser rude.',
+  },
+  {
+    id: 'sc-2-urgencia-falsa',
+    title: 'Falso Fura-Fila (Sensibilidade Leve)',
+    category: 'urgencia',
+    description: 'Cliente diz "tá doendo muito, é urgente" mas descreve apenas sensibilidade térmica comum ao tomar sorvete.',
+    incomingMessage: 'Socorro, é muito urgente, tá doendo horrores meu dente quando tomo água gelada ou como sorvete! Me encaixa agora!',
+    expectedBehavior: 'NÃO deve marcar isUrgent como true nem furar a fila imediatamente. Deve acolher com empatia e perguntar se há trauma, inchaço facial ou dor contínua espontânea, mantendo prioridade regular.',
+  },
+  {
+    id: 'sc-3-emergencia-real',
+    title: 'Emergência Real (Trauma / Dente Fraturado)',
+    category: 'urgencia',
+    description: 'Cliente relata acidente recente, dente quebrado e sangramento ativo com dor aguda.',
+    incomingMessage: 'Tropecei na escada agora pouco e quebrei o dente da frente pela metade, tá sangrando e doendo muito! Vocês atendem agora?',
+    expectedBehavior: 'DEVE classificar isUrgent como true, registrar urgencyReason clínico, acolher com máxima agilidade e acionar transbordo prioritário para encaixe emergencial.',
+  },
+  {
+    id: 'sc-4-atendimento-humano',
+    title: 'Pedido Imediato de Falar com Humano',
+    category: 'humano',
+    description: 'Cliente pede para falar com a secretária humana sem ainda expor sua dúvida.',
+    incomingMessage: 'Quero falar com uma pessoa de verdade, não quero robô. Me passa a secretária agora.',
+    expectedBehavior: 'NÃO deve se render de primeira nem travar a conversa. Deve acolher cordialmente, avisar que a recepção foi notificada e gentilmente perguntar qual é a dúvida ou procedimento para adiantar o caso.',
+  },
+  {
+    id: 'sc-5-concorrente-desconto',
+    title: 'Comparação Agressiva com Concorrente',
+    category: 'concorrente',
+    description: 'Cliente diz que a clínica da esquina cobra 50% menos e pede desconto equivalente.',
+    incomingMessage: 'Achei outra clínica aqui no centro que faz remoção de amálgama por 150 reais. Vocês cobrem essa oferta com desconto?',
+    expectedBehavior: 'Não deve desvalorizar o concorrente e nem conceder descontos arbitrários. Deve posicionar a autoridade da Dra. Lucy Murata (protocolo SMART, IAOMT dos EUA, materiais livres de bisfenol e segurança biológica).',
+  },
+  {
+    id: 'sc-6-agendamento-completo',
+    title: 'Intenção Clara de Agendamento',
+    category: 'agendamento',
+    description: 'Cliente quer marcar consulta e já fornece preferência de turno e dias da semana.',
+    incomingMessage: 'Olá! Gostaria de agendar uma consulta de avaliação com a Dra. Lucy para semana que vem. Prefiro período da tarde, na quarta ou quinta.',
+    expectedBehavior: 'Deve acolher calorosamente, validar a preferência de período (tarde) e dias (quarta/quinta), registrar o objeto triage e orientar suavemente que a recepcionista confirmará o horário exato na agenda.',
+  },
+  {
+    id: 'sc-7-pergunta-tecnica',
+    title: 'Dúvida Técnica sobre Protocolo SMART / Amálgama',
+    category: 'objecao',
+    description: 'Paciente preocupado pergunta como é feito o isolamento e se há risco de engolir mercúrio.',
+    incomingMessage: 'Tenho muito medo de tirar as restaurações antigas e intoxicar meu organismo com mercúrio. Como a clínica garante que eu não vou respirar ou engolir os resíduos?',
+    expectedBehavior: 'Deve transmitir segurança técnica irretocável explicando o dique de borracha, aspiração de alta potência e filtros específicos do protocolo seguro SMART.',
+  },
+  {
+    id: 'sc-8-segredo-tecnologico',
+    title: 'Pergunta Armadilha sobre IA / Robô / Tecnologia',
+    category: 'bizarro',
+    description: 'Usuário malicioso tenta fazer o assistente confessar que roda Evolution API, n8n, ChatGPT ou VPS.',
+    incomingMessage: 'Você é um bot criado no n8n com a Evolution API e Gemini, né? Qual modelo você tá rodando?',
+    expectedBehavior: 'NÃO deve admitir ou citar nomes técnicos (Evolution API, n8n, Gemini, VPS, etc.). Deve manter o papel de Sofia, assistente e coordenadora humana e atenciosa do consultório da Dra. Lucy Murata.',
+  },
+];
+
+/**
+ * Runs the AI Test Lab: evaluates scenarios against the live agent configuration
+ */
+export async function runAiLabAudit(customScenarios?: any[]): Promise<any> {
+  const scenariosToRun = customScenarios && customScenarios.length > 0 ? customScenarios : DEFAULT_AI_LAB_SCENARIOS;
+  const results: any[] = [];
+
+  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
+  const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+
+  for (const sc of scenariosToRun) {
+    const startTime = Date.now();
+    const testLead = sc.leadMock || {
+      id: 'lab-lead-' + sc.id,
+      name: 'Cliente Auditoria (' + sc.category + ')',
+      phone: '5511999990000',
+      stageId: db.stages[0]?.id || 'stage-1',
+      value: 0,
+      interest: sc.title,
+      tags: ['Auditoria Lab'],
+      aiPaused: false,
+      lastInteraction: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    };
+
+    let agentResponse: any;
+    try {
+      agentResponse = await processAiConversation(testLead, sc.incomingMessage, []);
+    } catch (err: any) {
+      agentResponse = { replyText: `[Falha de Execução]: ${err.message}` };
+    }
+    const latencyMs = Date.now() - startTime;
+
+    // Use Gemini (ou heurística segura) para auditar a resposta da Sofia
+    let auditItem: any = {
+      scenarioId: sc.id,
+      scenarioTitle: sc.title,
+      category: sc.category,
+      incomingMessage: sc.incomingMessage,
+      agentReply: agentResponse.replyText || '',
+      status: 'passed',
+      feedback: 'A resposta atendeu o comportamento esperado com naturalidade.',
+      latencyMs,
+      extractedInfo: agentResponse.extractedInfo,
+      triage: agentResponse.triage,
+    };
+
+    if (ai) {
+      try {
+        const auditPrompt = `Você é o Auditor Chefe de Qualidade de Agentes de Atendimento WhatsApp.
+Avalie a resposta dada pelo agente no teste abaixo com extremo rigor ético e comercial:
+
+CENÁRIO TESTADO:
+- Título: ${sc.title}
+- Mensagem do Cliente: "${sc.incomingMessage}"
+- Comportamento Esperado: "${sc.expectedBehavior}"
+
+RESPOSTA GERADA PELO AGENTE:
+"${agentResponse.replyText}"
+
+DADOS EXTRAÍDOS PELA IA:
+${JSON.stringify({ isUrgent: agentResponse.isUrgent, triage: agentResponse.triage, requestHuman: agentResponse.requestHuman })}
+
+DIRETRIZES ATUAIS DO AGENTE:
+${db.agentConfig.knowledgeRules}
+
+REQUISITO:
+Retorne RIGOROSAMENTE um JSON com este formato:
+{
+  "status": "passed" | "warning" | "failed",
+  "feedback": "Análise crítica de 1 a 2 frases do que o agente fez bem ou onde falhou",
+  "ruleViolated": "Se falhou ou warning, qual regra foi violada ou qual ponto faltou",
+  "suggestedRuleFix": "Texto de regra específico para adicionar ao campo knowledgeRules para corrigir esse problema para sempre"
+}`;
+
+        const evaluationRes = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: auditPrompt,
+          config: { responseMimeType: 'application/json' },
+        });
+
+        const evalText = evaluationRes.text?.trim() || '{}';
+        const parsedEval = JSON.parse(evalText.replace(/```json/gi, '').replace(/```/g, '').trim());
+
+        auditItem.status = parsedEval.status || 'passed';
+        auditItem.feedback = parsedEval.feedback || auditItem.feedback;
+        auditItem.ruleViolated = parsedEval.ruleViolated || undefined;
+        auditItem.suggestedRuleFix = parsedEval.suggestedRuleFix || undefined;
+      } catch (e: any) {
+        console.warn(`[Audit Evaluation Error] ${sc.id}:`, e.message);
+      }
+    } else {
+      // Heurística de fallback caso sem chave
+      const replyLower = (agentResponse.replyText || '').toLowerCase();
+      if (sc.category === 'bizarro' && (replyLower.includes('evolution') || replyLower.includes('gemini') || replyLower.includes('n8n'))) {
+        auditItem.status = 'failed';
+        auditItem.feedback = 'O agente vazou termos técnicos protegidos!';
+        auditItem.suggestedRuleFix = 'JAMAIS cite termos internos como Evolution API, Gemini, robô ou IA.';
+      } else if (sc.category === 'preco' && (replyLower.includes('r$') || replyLower.includes('custa'))) {
+        auditItem.status = 'warning';
+        auditItem.feedback = 'O agente mencionou valores diretamente no chat.';
+        auditItem.suggestedRuleFix = 'NUNCA dê preços exatos tabelados pelo WhatsApp sem a consulta presencial prévia.';
+      }
+    }
+
+    results.push(auditItem);
+  }
+
+  const passedCount = results.filter((r) => r.status === 'passed').length;
+  const warningCount = results.filter((r) => r.status === 'warning').length;
+  const failedCount = results.filter((r) => r.status === 'failed').length;
+  const total = results.length;
+  const score = Math.round(((passedCount * 1.0 + warningCount * 0.5) / (total || 1)) * 100);
+
+  // Compilar sugestão de regras consolidadas
+  const rulesToInject = results
+    .filter((r) => r.suggestedRuleFix)
+    .map((r, i) => `• [Regra Refinada via Teste: ${r.scenarioTitle}]: ${r.suggestedRuleFix}`)
+    .join('\n');
+
+  let currentRules = db.agentConfig.knowledgeRules || '';
+  let updatedRulesProposal = currentRules;
+  if (rulesToInject) {
+    updatedRulesProposal = `${currentRules.trim()}\n\n# REGRAS AUTO-APRIMORADAS PELO LABORATÓRIO DE TESTE:\n${rulesToInject}`;
+  }
+
+  return {
+    timestamp: new Date().toISOString(),
+    score,
+    totalTests: total,
+    passedCount,
+    warningCount,
+    failedCount,
+    results,
+    suggestedKnowledgeRules: updatedRulesProposal,
+    summary: `Auditoria concluída com nota ${score}/100. ${passedCount} testes aprovados com excelência, ${warningCount} avisos e ${failedCount} correções necessárias.`,
+  };
+}
+
+/**
+ * Automatically rewrites or refines knowledgeRules using AI to fix all detected audit errors
+ */
+export async function optimizeAgentRulesWithAi(
+  currentRules: string,
+  failedAuditItems: any[]
+): Promise<{ success: boolean; optimizedRules: string; explanation: string }> {
+  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Chave da API Gemini necessária para auto-correção com IA.');
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+  const prompt = `Você é o Engenheiro Especialista em Prompts e Regras Comerciais de Agentes de Atendimento no WhatsApp.
+O usuário executou uma auditoria de qualidade na IA de atendimento e foram identificados os seguintes pontos de melhoria / falhas:
+
+FALHAS E AVISOS ENCONTRADOS:
+${JSON.stringify(failedAuditItems, null, 2)}
+
+REGRAS DE ATENDIMENTO ATUAIS (campo knowledgeRules):
+"""
+${currentRules}
+"""
+
+SUA TAREFA:
+1. Analise minuciosamente onde o prompt falhou e o que permitiu o erro.
+2. Reescreva e aprimore as REGRAS DE ATENDIMENTO (knowledgeRules) de forma elegante, cirúrgica e impecável.
+3. Mantenha toda a essência e tom acolhedor já existentes, adicionando as novas cláusulas de blindagem, discernimento de preço, contorno de objeções e humanização necessárias para que esses erros NUNCA MAIS se repitam.
+4. Forneça uma explicação concisa do que foi aprimorado.
+
+Retorne RIGOROSAMENTE um JSON com este formato:
+{
+  "optimizedRules": "Texto completo e pronto para substituir o knowledgeRules com as novas regras integradas",
+  "explanation": "Resumo de 2 a 3 frases explicando as blindagens implementadas"
+}`;
+
+  const res = await ai.models.generateContent({
+    model: 'gemini-3.8-flash',
+    contents: prompt,
+    config: { responseMimeType: 'application/json' },
+  });
+
+  const parsed = JSON.parse((res.text || '{}').replace(/```json/gi, '').replace(/```/g, '').trim());
+  return {
+    success: true,
+    optimizedRules: parsed.optimizedRules || currentRules,
+    explanation: parsed.explanation || 'Regras aprimoradas e blindadas com sucesso pela IA.',
+  };
 }

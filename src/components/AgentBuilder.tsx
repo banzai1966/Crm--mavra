@@ -42,8 +42,14 @@ import {
   Sparkles as SparklesIcon,
   Moon,
   Calendar,
+  Beaker,
+  FlaskConical,
+  Headphones,
+  Plus,
+  Music,
 } from 'lucide-react';
-import { AgentConfig, KnowledgeDocument, AIProvider } from '../types';
+import { AgentConfig, KnowledgeDocument, AIProvider, PreRecordedAudio } from '../types';
+import { AiTestingLabModal } from './AiTestingLabModal';
 
 export interface AgentPreset {
   id: string;
@@ -519,6 +525,15 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [isTestingKey, setIsTestingKey] = useState(false);
   const [keyTestResult, setKeyTestResult] = useState<{ success: boolean; message?: string; error?: string } | null>(null);
 
+  // AI Testing Lab state
+  const [showAiTestingLab, setShowAiTestingLab] = useState(false);
+
+  const handleSaveRulesFromLab = async (newRules: string) => {
+    const updated = { ...config, knowledgeRules: newRules };
+    setConfig(updated);
+    await onSaveConfig(updated);
+  };
+
   const handleTestKey = async () => {
     if (!config.geminiApiKey?.trim()) {
       setKeyTestResult({ success: false, error: 'Por favor, cole sua chave de API do Gemini antes de testar.' });
@@ -644,6 +659,89 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     reader.readAsText(file);
   };
 
+  // State e Handlers para a Biblioteca de Áudios Reais do Especialista
+  const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
+  const [audioPlayerInstance, setAudioPlayerInstance] = useState<HTMLAudioElement | null>(null);
+
+  const handleTogglePlayAudio = (audioItem: PreRecordedAudio) => {
+    if (playingAudioId === audioItem.id) {
+      if (audioPlayerInstance) {
+        audioPlayerInstance.pause();
+      }
+      setPlayingAudioId(null);
+      setAudioPlayerInstance(null);
+      return;
+    }
+
+    if (audioPlayerInstance) {
+      audioPlayerInstance.pause();
+    }
+
+    const src = audioItem.audioBase64 || audioItem.audioUrl;
+    if (!src) {
+      alert('Nenhum arquivo de áudio carregado para este item ainda. Suba um áudio gravado no celular (.mp3, .ogg ou .m4a) pelo botão "Subir Gravação"!');
+      return;
+    }
+
+    const player = new Audio(src);
+    player.onended = () => {
+      setPlayingAudioId(null);
+      setAudioPlayerInstance(null);
+    };
+    player.play().catch((err) => {
+      console.warn('Erro ao reproduzir áudio:', err);
+    });
+    setAudioPlayerInstance(player);
+    setPlayingAudioId(audioItem.id);
+  };
+
+  const handleUpdateAudio = (id: string, updates: Partial<PreRecordedAudio>) => {
+    const list = (config.preRecordedAudios || []).map((a) => (a.id === id ? { ...a, ...updates } : a));
+    setConfig({ ...config, preRecordedAudios: list });
+  };
+
+  const handleAddCustomAudio = () => {
+    const newAudio: PreRecordedAudio = {
+      id: 'audio-custom-' + Date.now(),
+      title: 'Novo Áudio Real do Especialista',
+      speakerName: config.personaName || 'Especialista',
+      triggerType: 'custom',
+      contextDescription: 'Explique para a IA quando disparar. Ex: Quando o lead pedir detalhes sobre parcelamento, convênios ou garantia.',
+      transcript: 'Olá! Gravei esse áudio pra te explicar pessoalmente como funciona...',
+      durationSeconds: 15,
+      enabled: true,
+      maxPerLead: 1,
+    };
+    setConfig({
+      ...config,
+      preRecordedAudios: [...(config.preRecordedAudios || []), newAudio],
+    });
+  };
+
+  const handleRemoveAudio = (id: string) => {
+    if (playingAudioId === id && audioPlayerInstance) {
+      audioPlayerInstance.pause();
+      setPlayingAudioId(null);
+    }
+    const list = (config.preRecordedAudios || []).filter((a) => a.id !== id);
+    setConfig({ ...config, preRecordedAudios: list });
+  };
+
+  const handleAudioFileUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      const current = (config.preRecordedAudios || []).find((a) => a.id === id);
+      handleUpdateAudio(id, {
+        audioBase64: base64,
+        title: current?.title || file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' '),
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-8" id="agent-builder-module">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -663,7 +761,41 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* ATALHO RÁPIDO PARA BIBLIOTECA DE ÁUDIOS REAIS */}
+            <button
+              type="button"
+              id="btn-shortcut-audios"
+              onClick={() => {
+                const el = document.getElementById('biblioteca-audios-reais');
+                el?.scrollIntoView({ behavior: 'smooth' });
+                el?.classList.add('ring-4', 'ring-indigo-400');
+                setTimeout(() => el?.classList.remove('ring-4', 'ring-indigo-400'), 2500);
+              }}
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-800 hover:from-purple-600 hover:to-indigo-700 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer border border-indigo-400/30"
+              title="Clique para ir direto à Biblioteca de Áudios Reais"
+            >
+              <Headphones className="w-4 h-4 text-purple-200" />
+              <span>🎧 Áudios da Especialista</span>
+              <span className="bg-white/20 text-[10px] font-mono px-1.5 py-0.5 rounded text-white font-bold">
+                {config.preRecordedAudios?.length || 3}
+              </span>
+            </button>
+
+            {/* NOVO: BOTÃO LABORATÓRIO DE TESTE & AUTO-CORREÇÃO COM IA */}
+            <button
+              type="button"
+              id="btn-open-ai-lab"
+              onClick={() => setShowAiTestingLab(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-indigo-700 to-indigo-900 hover:from-indigo-600 hover:to-indigo-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer border border-indigo-500/40"
+            >
+              <FlaskConical className="w-4 h-4 text-indigo-200" />
+              <span>🧪 Laboratório de Teste com IA</span>
+              <span className="bg-indigo-400/30 text-[10px] font-mono px-1.5 py-0.5 rounded text-indigo-100">
+                Auto-Correção
+              </span>
+            </button>
+
             {saveSuccess && (
               <span className="flex items-center gap-1.5 text-xs text-emerald-800 font-semibold bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
                 <Check className="w-3.5 h-3.5 text-emerald-700" />
@@ -1793,6 +1925,262 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
             </div>
           </div>
 
+          {/* 🎧 BIBLIOTECA DE ÁUDIOS REAIS DO ESPECIALISTA / PROPRIETÁRIO (DISPARO CONTEXTUAL INTELIGENTE) */}
+          <div id="biblioteca-audios-reais" className="scroll-mt-6 mt-4 pt-4 border-t border-slate-200/80 bg-gradient-to-br from-indigo-50/50 via-purple-50/30 to-white p-5 rounded-2xl space-y-4 border-2 border-indigo-200/70 shadow-xs transition-all duration-500">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-2xs">
+                  <Headphones className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-slate-900">
+                      Biblioteca de Áudios Reais do Especialista / Dono (Disparo Contextual com IA)
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      Custo Zero (R$ 0,00)
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Grave no celular do dono/doutora e envie no WhatsApp como áudio real (PTT). A IA avalia com inteligência se o momento da conversa é oportuno antes de disparar.
+                  </p>
+                </div>
+              </div>
+
+              {/* Toggle Master */}
+              <div className="flex items-center gap-2 shrink-0 bg-white px-3 py-1.5 rounded-xl border border-indigo-200 shadow-2xs">
+                <span className="text-xs font-semibold text-slate-700">Áudios Ativos:</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.preRecordedAudiosEnabled !== false}
+                    onChange={(e) => setConfig({ ...config, preRecordedAudiosEnabled: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-8 h-4 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+            </div>
+
+            {/* Destaque das Regras de Discernimento */}
+            <div className="bg-white/80 border border-indigo-100 rounded-xl p-3 text-[11px] text-slate-700 space-y-1.5 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-indigo-950">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Como a IA decide quando enviar cada áudio (Sem Forçar e Sem Repetir):</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1 text-[10.5px]">
+                <div className="p-2 rounded-lg bg-indigo-50/50 border border-indigo-100/60">
+                  <span className="font-bold text-indigo-900 block mb-0.5">🎯 1. Concordância Contextual</span>
+                  <span>Se o cliente fizer uma pergunta direta de convênio, endereço ou preço, a IA responde a dúvida em texto primeiro! Só manda áudio quando o contexto for de acolhimento ou agendamento.</span>
+                </div>
+                <div className="p-2 rounded-lg bg-emerald-50/50 border border-emerald-100/60">
+                  <span className="font-bold text-emerald-900 block mb-0.5">🚫 2. Regra Anti-Repetição</span>
+                  <span>Cada áudio só é enviado <b>uma única vez por lead</b>. A IA nunca repete as boas-vindas nem incomoda o mesmo cliente duas vezes com o mesmo áudio.</span>
+                </div>
+                <div className="p-2 rounded-lg bg-purple-50/50 border border-purple-100/60">
+                  <span className="font-bold text-purple-900 block mb-0.5">🎙️ 3. Efeito WhatsApp PTT</span>
+                  <span>O áudio é entregue como nota de voz gravada na hora com o microfone verde, simulando que a pessoa pegou o celular para mandar o áudio naquele exato momento.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Lista de Áudios Configurados */}
+            <div className="space-y-3 pt-1">
+              {(config.preRecordedAudios || []).map((audioItem, idx) => {
+                const isPlaying = playingAudioId === audioItem.id;
+                const hasFile = Boolean(audioItem.audioBase64 || audioItem.audioUrl);
+
+                return (
+                  <div
+                    key={audioItem.id}
+                    className={`p-4 rounded-xl border transition-all ${
+                      audioItem.enabled
+                        ? 'bg-white border-indigo-200/90 shadow-2xs'
+                        : 'bg-slate-50/60 border-slate-200 opacity-60'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-100">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-800 font-bold text-[10px] flex items-center justify-center shrink-0">
+                          {idx + 1}
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-slate-900">{audioItem.title}</span>
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                              audioItem.triggerType === 'welcome'
+                                ? 'bg-blue-100 text-blue-800'
+                                : audioItem.triggerType === 'schedule_pitch'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : audioItem.triggerType === 'urgency_care'
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-purple-100 text-purple-800'
+                            }`}>
+                              {audioItem.triggerType === 'welcome'
+                                ? '👋 Boas-Vindas & Acolhimento'
+                                : audioItem.triggerType === 'schedule_pitch'
+                                ? '📅 Convite para Consulta'
+                                : audioItem.triggerType === 'urgency_care'
+                                ? '🚨 Cuidado em Urgência'
+                                : '✨ Gatilho Personalizado'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-500">
+                            Voz / Especialista: <b>{audioItem.speakerName || 'Especialista'}</b> (~{audioItem.durationSeconds || 15}s)
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        {/* Play / Preview Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleTogglePlayAudio(audioItem)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            isPlaying
+                              ? 'bg-amber-600 text-white shadow-2xs'
+                              : hasFile
+                              ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs'
+                              : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                          }`}
+                          title={hasFile ? 'Ouvir gravação' : 'Sem arquivo de áudio carregado'}
+                        >
+                          {isPlaying ? <VolumeX className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+                          <span>{isPlaying ? 'Pausar' : hasFile ? 'Ouvir Áudio' : 'Sem Arquivo'}</span>
+                        </button>
+
+                        {/* Botão de Upload de Arquivo MP3/OGG/M4A */}
+                        <label className="flex items-center gap-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-colors">
+                          <Upload className="w-3 h-3 text-slate-500" />
+                          <span>{hasFile ? 'Trocar Gravação' : 'Subir Gravação'}</span>
+                          <input
+                            type="file"
+                            accept="audio/*,.mp3,.ogg,.m4a,.wav"
+                            onChange={(e) => handleAudioFileUpload(audioItem.id, e)}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {/* Ativar/Desativar */}
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateAudio(audioItem.id, { enabled: !audioItem.enabled })}
+                          className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition-colors ${
+                            audioItem.enabled
+                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                              : 'bg-slate-100 text-slate-500'
+                          }`}
+                        >
+                          {audioItem.enabled ? 'Ativo' : 'Pausado'}
+                        </button>
+
+                        {/* Excluir (se houver mais de 1) */}
+                        {(config.preRecordedAudios || []).length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAudio(audioItem.id)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 cursor-pointer transition-colors"
+                            title="Remover áudio"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Inputs de Edição */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                          Título do Áudio
+                        </label>
+                        <input
+                          type="text"
+                          value={audioItem.title}
+                          onChange={(e) => handleUpdateAudio(audioItem.id, { title: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-900 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                          Nome de Quem Fala (Locutor)
+                        </label>
+                        <input
+                          type="text"
+                          value={audioItem.speakerName}
+                          onChange={(e) => handleUpdateAudio(audioItem.id, { speakerName: e.target.value })}
+                          placeholder="Ex: Dra. Lucy Murata"
+                          className="w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-900 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                          Momento / Gatilho de Disparo
+                        </label>
+                        <select
+                          value={audioItem.triggerType}
+                          onChange={(e) => handleUpdateAudio(audioItem.id, { triggerType: e.target.value as any })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-900 font-medium"
+                        >
+                          <option value="welcome">👋 Boas-Vindas & Abertura da Conversa</option>
+                          <option value="schedule_pitch">📅 Convite para Consulta / Agendamento</option>
+                          <option value="urgency_care">🚨 Acolhimento em Caso de Dor / Urgência</option>
+                          <option value="custom">✨ Regra Personalizada</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2.5">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-700 mb-0.5 flex items-center justify-between">
+                          <span>Instrução de Oportunidade para a IA (Quando enviar?):</span>
+                          <span className="text-[9px] text-indigo-600 font-normal">IA analisa antes de disparar</span>
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={audioItem.contextDescription}
+                          onChange={(e) => handleUpdateAudio(audioItem.id, { contextDescription: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-[11px] text-slate-800 leading-relaxed resize-none focus:outline-hidden focus:border-indigo-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-700 mb-0.5 flex items-center justify-between">
+                          <span>Transcrição do Áudio (O que é falado no áudio):</span>
+                          <span className="text-[9px] text-emerald-700 font-normal">Evita que a IA repita no texto</span>
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={audioItem.transcript}
+                          onChange={(e) => handleUpdateAudio(audioItem.id, { transcript: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-[11px] text-slate-800 leading-relaxed resize-none focus:outline-hidden focus:border-indigo-400 font-mono text-[10.5px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Botão Adicionar Novo Áudio */}
+            <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={handleAddCustomAudio}
+                className="flex items-center gap-1.5 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-300 font-bold px-3.5 py-2 rounded-xl text-xs transition-colors cursor-pointer shadow-2xs"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Adicionar Novo Áudio de Especialista</span>
+              </button>
+
+              <span className="text-[10px] text-slate-500">
+                Total de <b>{(config.preRecordedAudios || []).length} áudios</b> cadastrados nesta biblioteca.
+              </span>
+            </div>
+          </div>
+
           {/* Envio de Chave PIX e Fechamento Comercial */}
           <div className="mt-4 pt-4 border-t border-slate-200/80 bg-emerald-50/50 p-4 rounded-xl space-y-3 border border-emerald-200/60">
             <div className="flex items-center justify-between">
@@ -2142,14 +2530,26 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
 
         {/* 5. PLAYGROUND / TESTADOR INSTANTÂNEO DO AGENTE */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-4">
-          <div className="flex items-center gap-2">
-            <Play className="w-4 h-4 text-emerald-700" />
-            <h3 className="text-sm font-bold text-slate-900">
-              5. Simulador Instantâneo do Agente (Teste ao Vivo)
-            </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <Play className="w-4 h-4 text-emerald-700" />
+              <h3 className="text-sm font-bold text-slate-900">
+                5. Simulador Instantâneo & Laboratório de Testes com IA
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowAiTestingLab(true)}
+              className="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+            >
+              <FlaskConical className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Abrir Bateria de Testes Automatizada ({8} cenários)</span>
+              <Wand2 className="w-3 h-3 text-indigo-500" />
+            </button>
           </div>
           <p className="text-xs text-slate-500">
-            Digite qualquer pergunta como se fosse um cliente no WhatsApp para ver a resposta exata da IA e se ela identifica movimentação de etapa.
+            Digite qualquer pergunta como se fosse um cliente no WhatsApp para ver a resposta exata da IA e se ela identifica movimentação de etapa, ou abra o <b>Laboratório Completo</b> para rodar todos os testes de estresse de uma vez e auto-corrigir as regras.
           </p>
 
           <div className="flex gap-2">
@@ -2328,6 +2728,14 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
             </div>
           </div>
         )}
+
+        {/* MODAL DO LABORATÓRIO DE TESTES AUTOMATIZADOS COM IA */}
+        <AiTestingLabModal
+          isOpen={showAiTestingLab}
+          onClose={() => setShowAiTestingLab(false)}
+          agentConfig={config}
+          onSaveRules={handleSaveRulesFromLab}
+        />
       </div>
     </div>
   );

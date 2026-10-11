@@ -34,6 +34,21 @@ export interface Lead {
   triage?: PreAppointmentTriage;
   lastFollowUpAt?: string;
   followUpCount?: number;
+  dispatchedAudioIds?: string[];
+}
+
+export interface PreRecordedAudio {
+  id: string;
+  title: string;
+  speakerName: string;
+  triggerType: 'welcome' | 'schedule_pitch' | 'urgency_care' | 'custom';
+  contextDescription: string;
+  transcript: string;
+  audioUrl?: string;
+  audioBase64?: string;
+  durationSeconds?: number;
+  enabled: boolean;
+  maxPerLead?: number;
 }
 
 export interface KanbanStage {
@@ -119,6 +134,9 @@ export interface AgentConfig {
   elevenLabsApiKey?: string;
   pixKey?: string;
   pixKeyType?: 'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria';
+  // Biblioteca de Áudios Reais do Especialista / Dono (Disparo Contextual)
+  preRecordedAudiosEnabled?: boolean;
+  preRecordedAudios?: PreRecordedAudio[];
   autoFollowUpEnabled?: boolean;
   followUpDelayHours?: number;
   followUpNiche?: BusinessNiche;
@@ -138,6 +156,23 @@ export interface AgentConfig {
   calendarDefaultLocation?: string;
   calendarAllowAiBooking?: boolean;
   showCalendarModuleInMenu?: boolean;
+  instagramConfig?: {
+    enabled?: boolean;
+    isConnected?: boolean;
+    username?: string;
+    fullName?: string;
+    profilePicUrl?: string;
+    pageId?: string;
+    instagramId?: string;
+    autoReplyComments?: boolean;
+    commentTriggerKeywords?: string[];
+    commentPublicReplyText?: string;
+    directWelcomePrompt?: string;
+    directAutoQualify?: boolean;
+    leadCaptureMoveToStage?: string;
+    tokenExpiresAt?: string;
+    accessToken?: string;
+  };
 }
 
 export interface AppointmentSlot {
@@ -256,4 +291,50 @@ export interface SystemMetrics {
   };
   sentinelAlerts: SentinelAlertConfig;
   timestamp: string;
+}
+
+// =========================================================================
+// LABORATÓRIO DE TESTE & AUTO-CORREÇÃO DE REGRAS COM IA (ADMIN / DEV)
+// =========================================================================
+export interface AiTestScenario {
+  id: string;
+  title: string;
+  category: 'objecao' | 'preco' | 'urgencia' | 'humano' | 'concorrente' | 'agendamento' | 'bizarro';
+  description: string;
+  incomingMessage: string;
+  expectedBehavior: string;
+  leadMock?: {
+    name: string;
+    phone: string;
+    interest?: string;
+    value?: number;
+    stageId?: string;
+  };
+}
+
+export interface AiTestResultItem {
+  scenarioId: string;
+  scenarioTitle: string;
+  category: string;
+  incomingMessage: string;
+  agentReply: string;
+  status: 'passed' | 'warning' | 'failed';
+  feedback: string;
+  ruleViolated?: string;
+  suggestedRuleFix?: string;
+  extractedInfo?: any;
+  triage?: any;
+  latencyMs: number;
+}
+
+export interface AiLabAuditReport {
+  timestamp: string;
+  score: number; // 0 a 100
+  totalTests: number;
+  passedCount: number;
+  warningCount: number;
+  failedCount: number;
+  results: AiTestResultItem[];
+  suggestedKnowledgeRules: string;
+  summary: string;
 }

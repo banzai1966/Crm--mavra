@@ -920,6 +920,43 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       });
     }
 
+    // 12. Disparo de Áudio Real Pré-Gravado do Especialista / Dono (Decisão Contextual da IA)
+    if (aiResult.dispatchPreRecordedAudioId && db.agentConfig.preRecordedAudiosEnabled !== false) {
+      const audioToDispatch = (db.agentConfig.preRecordedAudios || []).find(
+        (a) => a.id === aiResult.dispatchPreRecordedAudioId && a.enabled
+      );
+
+      if (audioToDispatch) {
+        console.log(`[Webhook 🎧 Áudio Real Humanizado] Disparando "${audioToDispatch.title}" (${audioToDispatch.speakerName}) para ${cleanPhone}...`);
+
+        lead.dispatchedAudioIds = lead.dispatchedAudioIds || [];
+        if (!lead.dispatchedAudioIds.includes(audioToDispatch.id)) {
+          lead.dispatchedAudioIds.push(audioToDispatch.id);
+        }
+
+        const audioData = audioToDispatch.audioBase64 || audioToDispatch.audioUrl;
+        if (audioData) {
+          try {
+            await sendWhatsAppVoiceAudio(cleanPhone, audioData, incomingInstance);
+          } catch (audioSendErr: any) {
+            console.warn('[Webhook] Falha ao disparar áudio pré-gravado para WhatsApp:', audioSendErr.message);
+          }
+        }
+
+        db.messages.push({
+          id: 'msg-' + Date.now() + '-real-audio',
+          leadId: lead.id,
+          phone: cleanPhone,
+          sender: 'ai',
+          text: `🎧 [Áudio Real de ${audioToDispatch.speakerName}]: "${audioToDispatch.title}" (${audioToDispatch.durationSeconds || 15}s)`,
+          mediaUrl: audioToDispatch.audioUrl || (audioToDispatch.audioBase64 ? 'audio-real' : undefined),
+          mediaType: 'audio',
+          timestamp: new Date().toISOString(),
+          status: 'delivered',
+        });
+      }
+    }
+
     db.saveToFile();
   } catch (aiErr: any) {
     console.error('[Webhook] Falha ao gerar resposta da IA:', aiErr.message);
