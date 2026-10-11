@@ -34,6 +34,8 @@ export interface AIResponseResult {
     email?: string;
     interest?: string;
     value?: number;
+    channelOrigin?: 'mentoria_vip' | 'consultorio_clinica' | 'geral';
+    tag?: string;
   };
   dispatchPreRecordedAudioId?: string | null;
 }
@@ -597,7 +599,18 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
 3. SIGILO DE TECNOLOGIA E IDENTIDADE HUMANA:
    - É EXPRESSAMENTE PROIBIDO mencionar nomes de ferramentas internas, infraestrutura técnica ou jargões como "Evolution API", "Supabase", "n8n", "VPS", "Contabo", "Node.js", "Docker", "webhooks" ou similares.
    - NUNCA mencione o nome do CRM ou plataforma (como "NEXA", "CRM") ou diga que você é um robô/sistema/IA. Você é humana: a secretária, assistente e coordenadora de atendimento dedicada da Dra. Lucy Murata.
-   - Apresente-se sempre como: "${config.personaName}, secretária e assistente de atendimento da clínica da Dra. Lucy Murata".
+   - Apresente-se sempre como: "${config.personaName}, da equipe da Dra. Lucy Murata".
+3.1. SEGREGAÇÃO INTELIGENTE DE CANAL E ORIGEM (CONSULTÓRIO vs MENTORIA VIP):
+   - SE O CONTATO VIER DA MENTORIA (mencionar 'CANDIDATURA VIP', 'MENTORIA', 'CRO', 'cirurgião-dentista', 'Ambulatório IA', 'zircônia metal-free', 'L-PRF', 'processo seletivo' ou enviar o protocolo do site https://mentoria.lucymurata.com.br/):
+     * O contato é um(a) CIRURGIÃO-DENTISTA aplicando para o Programa Oficial de Mentoria Executiva VIP em Odontologia Biológica & Ambulatório IA da Dra. Luci Murata (turma restrita de 10 vagas).
+     * Trate o(a) colega dentista com linguagem executiva, profissional e acolhedora de alto nível ("doutor(a)", "colega").
+     * Confirme imediatamente o recebimento da aplicação / protocolo, esclarecendo que o dossiê já foi protocolado para avaliação da banca clínica da Dra. Luci.
+     * Explique que, como são apenas 10 vagas exclusivas, a equipe entrará em contato para agendar a entrevista seletiva individual.
+     * NUNCA trate esse contato como paciente clínico de consultório (NÃO fale de dor de dente, limpeza ou consulta convencional).
+     * No JSON, defina "channelOrigin": "mentoria_vip", "tag": "Mentoria VIP", e defina "dispatchPreRecordedAudioId": null (a menos que haja um áudio gravado explicitamente para dentistas da mentoria).
+   - SE O CONTATO FOR PACIENTE DO CONSULTÓRIO (site institucional, blog, Instagram, procurando consulta, implantes, dor, avaliação integrativa, canal, etc.):
+     * Siga o fluxo tradicional de acolhimento de paciente do consultório odontológico no Euroville Mall em Bragança Paulista.
+     * No JSON, defina "channelOrigin": "consultorio_clinica" e "tag": "Paciente Consultório".
 4. AGENDAMENTOS, INFORMAÇÕES BÁSICAS E TRANSIÇÃO PARA A SECRETÁRIA/RECEPÇÃO:
    - Se o lead/paciente demonstrar interesse em marcar consulta, saber valores ou procedimentos:
    - DÊ A INFORMAÇÃO BÁSICA E OBJETIVA PRIMEIRO (ex: explicar de forma simples como funciona o procedimento, orientar sobre a avaliação inicial ou dar uma estimativa geral de valores/condições sem prometer diagnósticos fechados).
@@ -690,7 +703,9 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
     "name": "Nome da pessoa caso ela tenha dito ou corrigido (ou null)",
     "email": "E-mail informado pelo lead (ou null)",
     "interest": "Resumo do produto/serviço que ele demonstrou interesse (ou null)",
-    "value": 0 ou valor numérico estimado se aplicável (ou null)
+    "value": 0 ou valor numérico estimado se aplicável (ou null),
+    "channelOrigin": "mentoria_vip" ou "consultorio_clinica" ou "geral",
+    "tag": "Mentoria VIP" ou "Paciente Consultório" ou null
   }
 }`;
 
@@ -867,6 +882,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   let estimatedValue: number | undefined = undefined;
   let interest: string | undefined = undefined;
   let sendAsVoice = false;
+  let dispatchAudioId: string | null = null;
 
   if (isLucyOrDental) {
     // Odontologia Integrativa Dra. Lucy Murata Logic (Objetiva, calorosa, humana e contextual)
@@ -921,6 +937,9 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('claro') ||
       lower.includes('por favor')
     ) {
+      if (db.agentConfig.preRecordedAudiosEnabled !== false && (db.agentConfig.preRecordedAudios || []).some((a) => a.id === 'audio-pitch-dra-lucy' && a.enabled)) {
+        dispatchAudioId = 'audio-pitch-dra-lucy';
+      }
       reply = 'Maravilha! Você prefere atendimento pela manhã ou no período da tarde? E quais dias da semana costumam ficar mais confortáveis na sua rotina para vir ao consultório no Euroville Mall?';
       suggestedStage = 'stage-3';
       interest = 'Confirmação de Agendamento';
@@ -954,6 +973,17 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       interest = 'Remoção Segura de Amálgama (Protocolo SMART)';
       estimatedValue = 1800;
     } else if (
+      lower.includes('mentoria') ||
+      lower.includes('candidatura vip') ||
+      lower.includes('cro') ||
+      lower.includes('ambulat') ||
+      lower.includes('cirurgião-dentista') ||
+      lower.includes('cirurgiao-dentista')
+    ) {
+      reply = 'Olá, Doutor(a)! Tudo bem? Que prazer receber seu contato sobre a Mentoria Executiva VIP em Odontologia Biológica & Ambulatório IA da Dra. Luci Murata. Já registramos sua intenção e nosso comitê entrará em contato para agendar a entrevista do processo seletivo (são apenas 10 vagas exclusivas). Você já atua com Zircônia ou L-PRF atualmente?';
+      suggestedStage = 'stage-2';
+      interest = 'Mentoria Odontologia Biológica & Ambulatório IA';
+    } else if (
       lower.includes('zircônia') ||
       lower.includes('zirconia') ||
       lower.includes('implante') ||
@@ -974,6 +1004,9 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('inchado') ||
       lower.includes('sangr')
     ) {
+      if (db.agentConfig.preRecordedAudiosEnabled !== false && (db.agentConfig.preRecordedAudios || []).some((a) => a.id === 'audio-urgency-dra-lucy' && a.enabled)) {
+        dispatchAudioId = 'audio-urgency-dra-lucy';
+      }
       reply = 'Sinto muito por esse desconforto! Já marquei seu atendimento como PRIORITÁRIO aqui no consultório para verificar um encaixe de urgência com a equipe. Você está com dor intensa neste momento?';
       suggestedStage = 'stage-1';
       interest = 'Urgência / Encaixe Prioritário';
@@ -1035,7 +1068,12 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('boa noite') ||
       lower.includes('tudo bem')
     ) {
-      reply = 'Olá! Tudo bem? Sou a Sofia, secretária da Dra. Lucy Murata aqui no consultório em Bragança Paulista. Como posso te ajudar hoje? 😊';
+      if (db.agentConfig.preRecordedAudiosEnabled !== false && (db.agentConfig.preRecordedAudios || []).some((a) => a.id === 'audio-welcome-dra-lucy' && a.enabled)) {
+        dispatchAudioId = 'audio-welcome-dra-lucy';
+        reply = 'Olá! Tudo bem? Sou a Sofia, secretária da Dra. Lucy Murata aqui no consultório em Bragança Paulista. A própria Dra. Lucy gravou um recadinho carinhoso de boas-vindas pra você, ouça com carinho abaixo! Como posso te ajudar hoje? 😊';
+      } else {
+        reply = 'Olá! Tudo bem? Sou a Sofia, secretária da Dra. Lucy Murata aqui no consultório em Bragança Paulista. Como posso te ajudar hoje? 😊';
+      }
     } else {
       reply = 'Perfeito! Estou à disposição para tirar qualquer dúvida e organizar sua avaliação com a Dra. Lucy aqui no consultório do Euroville Mall. Em que mais posso te orientar?';
       suggestedStage = 'stage-2';
@@ -1081,6 +1119,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     modelUsed: 'Knowledge Engine Fallback',
     stageTriggered: suggestedStage,
     sendAsVoice,
+    dispatchPreRecordedAudioId: dispatchAudioId,
     extractedInfo: {
       interest,
       value: estimatedValue,

@@ -359,6 +359,38 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
 
   public documents: KnowledgeDocument[] = [
     {
+      id: 'doc-mentoria-dra-luci',
+      name: 'Mentoria_Dra_Luci_Murata_Odontologia_Biologica_Ambulatorio_IA.txt',
+      type: 'txt',
+      size: 4200,
+      contentText: `PROGRAMA OFICIAL DE MENTORIA - DRA. LUCI MURATA
+Website Oficial: https://mentoria.lucymurata.com.br/
+Título: Mentoria Dra. Luci Murata - Odontologia Biológica & Ambulatório IA
+Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurgias Metal-Free em Zircônia, L-PRF e o pioneiro ecossistema Ambulatório IA com imersão presencial na Clínica Euroville.
+
+1. PÚBLICO-ALVO & REQUISITOS:
+- Exclusivo para Cirurgiões-Dentistas com inscrição ativa no CRO.
+- Formato VIP restrito: Apenas 10 vagas exclusivas por turma.
+- Processo Seletivo Oficial: Seleção curricular criteriosa avaliada individualmente pela banca clínica da Dra. Luci Murata para garantir a homogeneidade de excelência da turma.
+
+2. PILARES CLÍNICOS E CONTEÚDO PROGRAMÁTICO:
+- Odontologia Biológica & Integrativa: Princípios de biocompatibilidade celular, destoxificação, imunologia bucal e protocolo seguro de remoção de restaurações metálicas e amálgama (SMART).
+- Cirurgias Metal-Free em Zircônia: Implantes cerâmicos 100% livres de metal, técnicas cirúrgicas atraumáticas, osseointegração bioativa e reabilitação protética de alta estética biológica.
+- L-PRF (Fibrina Rica em Plaquetas e Leucócitos): Coleta venosa, protocolos de centrifugação, confecção de plugues, membranas e sticky bone autólogo para regeneração tecidual guiada e cicatrização acelerada.
+- Ozonioterapia Medicinal em Odontologia: Protocolos de aplicação antimicrobiana, bioestimulação, descontaminação cavitária e cirúrgica com ozônio medicinal.
+- Diagnóstico Digital & Tomografia (CBCT): Planejamento digital avançado, escaneamento intraoral e navegação guiada tridimensional.
+- Ecossistema "Ambulatório IA": Implementação pioneira de Inteligência Artificial e automações no consultório do dentista — triagem inteligente de pacientes, prontuários acelerados, pós-operatório automatizado e conversão de planos de tratamento de alto valor.
+
+3. IMERSÃO PRESENCIAL & LOCALIZAÇÃO:
+- Imersão prática presencial no consultório modelo da Dra. Luci Murata: Euroville Mall - Torre II - Praça Maastricht, 200 - Sala 103, Bragança Paulista/SP.
+- Cirurgias demonstrativas ao vivo com pacientes reais e mentoria direta com a Dra. Luci.
+
+4. INVESTIMENTO E CONDIÇÕES:
+- O valor da mentoria é reservado e informado exclusivamente aos candidatos aprovados na etapa de análise curricular e entrevista seletiva individual com a equipe da Dra. Luci.
+- Candidaturas são realizadas pelo site oficial com geração de Protocolo VIP e envio direto para o WhatsApp da equipe.`,
+      uploadedAt: new Date().toISOString(),
+    },
+    {
       id: 'doc-1',
       name: 'Guia_Institucional_NEXA.txt',
       type: 'txt',
@@ -588,7 +620,45 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
             anthropicApiKey: ((data.agentConfig.anthropicApiKey || '').trim() || (process.env.ANTHROPIC_API_KEY || '').trim() || this.agentConfig.anthropicApiKey || '').trim(),
           };
         }
-        if (data.documents && Array.isArray(data.documents)) this.documents = data.documents;
+        if (data.documents && Array.isArray(data.documents)) {
+          this.documents = data.documents;
+          const hasMentoriaDoc = this.documents.some((d) => d.id === 'doc-mentoria-dra-luci' || d.name?.includes('Mentoria'));
+          if (!hasMentoriaDoc) {
+            const defaultMentoriaDoc = this.documents.find((d) => d.id === 'doc-mentoria-dra-luci') || {
+              id: 'doc-mentoria-dra-luci',
+              name: 'Mentoria_Dra_Luci_Murata_Odontologia_Biologica_Ambulatorio_IA.txt',
+              type: 'txt',
+              size: 4200,
+              contentText: `PROGRAMA OFICIAL DE MENTORIA - DRA. LUCI MURATA
+Website Oficial: https://mentoria.lucymurata.com.br/
+Título: Mentoria Dra. Luci Murata - Odontologia Biológica & Ambulatório IA
+Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurgias Metal-Free em Zircônia, L-PRF e o pioneiro ecossistema Ambulatório IA com imersão presencial na Clínica Euroville.
+
+1. PÚBLICO-ALVO & REQUISITOS:
+- Exclusivo para Cirurgiões-Dentistas com inscrição ativa no CRO.
+- Formato VIP restrito: Apenas 10 vagas exclusivas por turma.
+- Processo Seletivo Oficial: Seleção curricular criteriosa avaliada individualmente pela banca clínica da Dra. Luci Murata para garantir a homogeneidade de excelência da turma.
+
+2. PILARES CLÍNICOS E CONTEÚDO PROGRAMÁTICO:
+- Odontologia Biológica & Integrativa: Princípios de biocompatibilidade celular, destoxificação, imunologia bucal e protocolo seguro de remoção de restaurações metálicas e amálgama (SMART).
+- Cirurgias Metal-Free em Zircônia: Implantes cerâmicos 100% livres de metal, técnicas cirúrgicas atraumáticas, osseointegração bioativa e reabilitação protética de alta estética biológica.
+- L-PRF (Fibrina Rica em Plaquetas e Leucócitos): Coleta venosa, protocolos de centrifugação, confecção de plugues, membranas e sticky bone autólogo para regeneração tecidual guiada e cicatrização acelerada.
+- Ozonioterapia Medicinal em Odontologia: Protocolos de aplicação antimicrobiana, bioestimulação, descontaminação cavitária e cirúrgica com ozônio medicinal.
+- Diagnóstico Digital & Tomografia (CBCT): Planejamento digital avançado, escaneamento intraoral e navegação guiada tridimensional.
+- Ecossistema "Ambulatório IA": Implementação pioneira de Inteligência Artificial e automações no consultório do dentista — triagem inteligente de pacientes, prontuários acelerados, pós-operatório automatizado e conversão de planos de tratamento de alto valor.
+
+3. IMERSÃO PRESENCIAL & LOCALIZAÇÃO:
+- Imersão prática presencial no consultório modelo da Dra. Luci Murata: Euroville Mall - Torre II - Praça Maastricht, 200 - Sala 103, Bragança Paulista/SP.
+- Cirurgias demonstrativas ao vivo com pacientes reais e mentoria direta com a Dra. Luci.
+
+4. INVESTIMENTO E CONDIÇÕES:
+- O valor da mentoria é reservado e informado exclusivamente aos candidatos aprovados na etapa de análise curricular e entrevista seletiva individual com a equipe da Dra. Luci.
+- Candidaturas são realizadas pelo site oficial com geração de Protocolo VIP e envio direto para o WhatsApp da equipe.`,
+              uploadedAt: new Date().toISOString(),
+            };
+            this.documents.unshift(defaultMentoriaDoc);
+          }
+        }
         if (data.evolutionConfig) {
           const loadedKey = (data.evolutionConfig.apiKey || '').trim();
           const effectiveKey =

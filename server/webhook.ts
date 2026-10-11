@@ -680,6 +680,21 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       if (aiResult.extractedInfo.value && aiResult.extractedInfo.value > 0) {
         lead.value = aiResult.extractedInfo.value;
       }
+      if (aiResult.extractedInfo.tag) {
+        if (!lead.tags.includes(aiResult.extractedInfo.tag)) {
+          lead.tags.push(aiResult.extractedInfo.tag);
+        }
+      }
+      if (aiResult.extractedInfo.channelOrigin === 'mentoria_vip' || /candidatura vip|mentoria|cro\b/i.test(messageText)) {
+        if (!lead.tags.includes('Mentoria VIP')) {
+          lead.tags.push('Mentoria VIP');
+        }
+        lead.notes = `${lead.notes || ''}\n🎓 [MENTORIA VIP ${new Date().toLocaleTimeString('pt-BR')}]: Cirurgião-dentista aplicando para a turma seletiva da Mentoria Dra. Luci Murata.`;
+      } else if (aiResult.extractedInfo.channelOrigin === 'consultorio_clinica' || /consulta|consultorio|dente|dor|sorriso|euroville/i.test(messageText)) {
+        if (!lead.tags.includes('Paciente Consultório') && !lead.tags.includes('Mentoria VIP')) {
+          lead.tags.push('Paciente Consultório');
+        }
+      }
     }
 
     // Handle Urgency Detection
