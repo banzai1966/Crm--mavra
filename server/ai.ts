@@ -558,6 +558,11 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
 `;
   }
 
+  const isNexaSales = 
+    (config.role || '').toLowerCase().includes('nexa') ||
+    (config.personaName || '').toLowerCase().includes('alex') ||
+    (config.followUpNiche === 'nexa_sales');
+
   const systemInstruction = `Você é ${config.personaName}, atuando como ${config.role}.
 Seu tom de voz é: ${config.toneOfVoice}.
 Seu objetivo comercial primordial é: ${config.salesGoal}.
@@ -595,8 +600,20 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
 
 === DIRETRIZES E REGRAS DE ATENDIMENTO NO WHATSAPP (MUITO IMPORTANTE) ===
 1. Responda SEMPRE em mensagens CURTAS, DINÂMICAS e NATURAIS (máximo de 2 a 3 frases por resposta).
-2. NUNCA envie blocos gigantes de texto. Seja caloroso, direto ao ponto e termine sempre com UMA pergunta amigável para continuar a conversa.
-3. SIGILO DE TECNOLOGIA E IDENTIDADE HUMANA:
+2. NUNCA envie blocos gigantes de texto. Seja consultivo, caloroso, direto ao ponto e termine sempre com UMA pergunta amigável para continuar a conversa.
+${isNexaSales ? `3. IDENTIDADE E POSICIONAMENTO COMERCIAL (NEXA CRM):
+   - Apresente-se como: "${config.personaName}, especialista comercial da equipe NEXA CRM".
+   - Você é um consultor consultivo que ajuda empresários, médicos, dentistas, clínicas e empresas a automatizarem seu WhatsApp com IA humanizada, eliminarem perda de vendas e organizarem seus leads no CRM Kanban.
+   - Destaque que o NEXA CRM opera 24/7, envia áudios reais com voz humana, conecta em 2 minutos via QR Code e custa uma fração do valor de uma equipe extra.
+   - NUNCA mencione infraestrutura técnica irrelevante ("Docker", "Node.js", "VPS", "Contabo", "Postgres"). Foque na experiência e no resultado comercial para o cliente!
+4. QUALIFICAÇÃO E AGENDAMENTO DE DEMONSTRAÇÃO DE 15 MINUTOS:
+   - Descubra o segmento do cliente e seu maior desafio (ex: demora para responder fora do horário comercial, leads que chegam dos anúncios e somem sem resposta, secretária sobrecarregada).
+   - Apresente a solução prática e convide para a demonstração ao vivo:
+     "Para você ver na prática o robô atendendo e qualificando clientes da sua empresa em tempo real, podemos agendar uma rápida demonstração de 15 minutos amanhã. Qual horário fica melhor para você: manhã ou tarde?"
+   - No JSON de saída: preencha "interest" com "Demonstração NEXA CRM" ou o plano de interesse (Starter/Pro), e atribua a tag "NEXA Lead B2B".
+5. PREÇOS E CONDIÇÕES:
+   - Se perguntarem preços: apresente com clareza o Plano Starter (R$ 297/mês) e o Plano Pro (R$ 597/mês - o mais procurado, com voz e follow-up), informando que a demonstração de 15 minutos é gratuita e sem compromisso.
+` : `3. SIGILO DE TECNOLOGIA E IDENTIDADE HUMANA:
    - É EXPRESSAMENTE PROIBIDO mencionar nomes de ferramentas internas, infraestrutura técnica ou jargões como "Evolution API", "Supabase", "n8n", "VPS", "Contabo", "Node.js", "Docker", "webhooks" ou similares.
    - NUNCA mencione o nome do CRM ou plataforma (como "NEXA", "CRM") ou diga que você é um robô/sistema/IA. Você é humana: a secretária, assistente e coordenadora de atendimento dedicada da Dra. Lucy Murata.
    - Apresente-se sempre como: "${config.personaName}, da equipe da Dra. Lucy Murata".
@@ -619,6 +636,7 @@ ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
    - Exemplo de fechamento humanizado: "Perfeito! Já anotei aqui sua preferência para a avaliação com a Dra. Lucy Murata. A nossa secretária já está verificando o melhor horário disponível na agenda e vai te chamar em instantes para confirmar tudo certinho com você, tá bom? 😊"
    - Preencha o objeto "triage" no JSON de saída com os dados coletados (procedure, preferredPeriod, preferredDays, paymentType, convenioName).
    - Mova o lead para a etapa adequada ("Qualificado / Interesse" ou "Proposta / Apresentação").
+`}
 
 5. CLASSIFICAÇÃO CRITERIOSA DE DOR, URGÊNCIA E RISCO (FILTRO INTELIGENTE CONTRA FALSOS FURA-FILAS):
    - Atenção: Nem toda menção de "dor", "urgência" ou "preciso de atendimento rápido" é uma emergência real que deve furar a fila dos outros pacientes!
@@ -864,7 +882,12 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   const config = db.agentConfig;
   const lowerRole = (config.role || '').toLowerCase();
   const lowerPersona = (config.personaName || '').toLowerCase();
-  const isLucyOrDental = 
+  const isNexaSales = 
+    lowerRole.includes('nexa') || 
+    lowerPersona.includes('alex') || 
+    (config.followUpNiche === 'nexa_sales');
+
+  const isLucyOrDental = !isNexaSales && (
     lowerRole.includes('lucy') || 
     lowerRole.includes('odonto') || 
     lowerRole.includes('dent') || 
@@ -872,9 +895,12 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     lowerRole.includes('biologica') || 
     lowerRole.includes('clínica') || 
     lowerRole.includes('clinica') || 
-    lowerPersona.includes('sofia');
+    lowerPersona.includes('sofia')
+  );
 
-  let reply = isLucyOrDental
+  let reply = isNexaSales
+    ? `Perfeito! Estou à disposição para tirar suas dúvidas sobre o NEXA CRM e agendar uma demonstração rápida de 15 minutos ao vivo na tela. Como posso te orientar?`
+    : isLucyOrDental
     ? `Perfeito! Estou à disposição para tirar qualquer dúvida e organizar seu agendamento com a Dra. Lucy aqui no consultório do Euroville Mall. Em que posso te orientar?`
     : `Perfeito! Estou à disposição para tirar suas dúvidas e dar andamento ao seu atendimento. Como posso te orientar?`;
 
@@ -884,7 +910,62 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   let sendAsVoice = false;
   let dispatchAudioId: string | null = null;
 
-  if (isLucyOrDental) {
+  if (isNexaSales) {
+    if (
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('quanto custa') ||
+      lower.includes('valor') ||
+      lower.includes('mensalidade') ||
+      lower.includes('plano')
+    ) {
+      reply = 'O NEXA CRM possui o Plano Starter por R$ 297/mês e o Plano Pro completo por R$ 597/mês (com atendimento ilimitado, suporte a voz e áudios reais, e follow-up inteligente). Gostaria de agendar uma demonstração rápida de 15 minutos para ver o sistema funcionando na prática?';
+      suggestedStage = 'stage-3';
+      interest = 'Planos e Preços NEXA CRM';
+      estimatedValue = 597;
+    } else if (
+      lower.includes('demonstração') ||
+      lower.includes('demonstracao') ||
+      lower.includes('demo') ||
+      lower.includes('agendar') ||
+      lower.includes('ver na prática') ||
+      lower.includes('ver funcionando') ||
+      lower.includes('apresentação') ||
+      lower.includes('apresentacao')
+    ) {
+      reply = 'Com certeza! Será um prazer te mostrar o NEXA CRM operando ao vivo na tela. Você prefere uma demonstração de 15 minutos amanhã no período da manhã ou da tarde?';
+      suggestedStage = 'stage-3';
+      interest = 'Demonstração ao Vivo NEXA CRM';
+      estimatedValue = 597;
+    } else if (
+      lower.includes('whatsapp') ||
+      lower.includes('conectar') ||
+      lower.includes('qr code') ||
+      lower.includes('instalação') ||
+      lower.includes('instalacao')
+    ) {
+      reply = 'A conexão com o seu WhatsApp é feita em menos de 2 minutos lendo um QR Code na tela via Evolution API, de forma 100% segura. O sistema roda na nuvem e não precisa deixar computador ligado! Quer ver uma demonstração de como funciona?';
+      interest = 'Dúvida Conexão WhatsApp';
+    } else if (
+      lower.includes('áudio') ||
+      lower.includes('audio') ||
+      lower.includes('voz') ||
+      lower.includes('grava')
+    ) {
+      reply = 'Sim! O NEXA CRM pode disparar áudios gravados com a sua própria voz no momento certo da conversa e sintetizar voz humana realista. O cliente nem percebe que é uma IA. Gostaria de ouvir um exemplo na demonstração ao vivo?';
+      interest = 'Atendimento em Áudio e Voz';
+    } else if (
+      lower.includes('oi') ||
+      lower.includes('olá') ||
+      lower.includes('ola') ||
+      lower.includes('bom dia') ||
+      lower.includes('boa tarde') ||
+      lower.includes('boa noite')
+    ) {
+      reply = 'Olá! Tudo bem? Sou o Alex, especialista comercial da NEXA CRM. Como posso te ajudar a automatizar o WhatsApp da sua empresa com inteligência artificial hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isLucyOrDental) {
     // Odontologia Integrativa Dra. Lucy Murata Logic (Objetiva, calorosa, humana e contextual)
     if (
       lower.includes('não foi possível transcrever') ||

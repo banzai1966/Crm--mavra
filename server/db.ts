@@ -194,6 +194,129 @@ export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
   },
 ];
 
+export function createNexaAgentConfig(baseConfig?: Partial<AgentConfig>): AgentConfig {
+  return {
+    personaName: 'Alex',
+    role: 'Consultor Especialista em Inteligência Conversacional & Automação Comercial NEXA CRM',
+    toneOfVoice: 'Inovador, consultivo, altamente profissional, empático e focado em ROI e conversão comercial',
+    salesGoal: 'Mapear gargalos no atendimento via WhatsApp da empresa do lead, demonstrar o impacto do NEXA CRM no faturamento e agendar uma demonstração executiva de 15 minutos ao vivo.',
+    activeProvider: baseConfig?.activeProvider || 'gemini',
+    activeModel: baseConfig?.activeModel || 'gemini-3.8-flash',
+    geminiApiKey: baseConfig?.geminiApiKey || (process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('p80qfADWas1aX40qx1TMkUmwGf6kg') && !process.env.GEMINI_API_KEY.startsWith('AQ.Ab8RN6J') ? process.env.GEMINI_API_KEY : ''),
+    openaiApiKey: baseConfig?.openaiApiKey || '',
+    anthropicApiKey: baseConfig?.anthropicApiKey || '',
+    followUpNiche: 'nexa_sales',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu dar uma olhada na proposta do NEXA CRM. Separei um horário amanhã para te mostrar o sistema atendendo e qualificando clientes ao vivo na tela. Qual período fica melhor para você: manhã ou tarde? 🚀📊',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (NEXA CRM - AUTOMAÇÃO CONVERSACIONAL COM IA):
+
+P: O que é o NEXA CRM e como ele funciona na prática?
+R: O NEXA CRM é uma plataforma completa de automação de vendas e atendimento inteligente para WhatsApp. Ele une Inteligência Artificial generativa humanizada (que atende texto e áudios de voz 24 horas por dia), CRM Kanban visual com extração automática dos dados do cliente, agendamentos automáticos e motor de follow-up para reativar contatos que pararam de responder.
+
+P: Ele é aquele chatbot antigo e irritante de menus com "digite 1 para vendas, 2 para suporte"?
+R: De jeito nenhum! O NEXA CRM aboliu os menus robóticos. Ele opera com IA generativa moderna (baseada em modelos avançados como Gemini), compreendendo áudios de voz, textos informais, gírias e contextos complexos, respondendo com a mesma empatia, inteligência e autoridade do seu melhor vendedor ou secretária.
+
+P: O sistema envia áudios reais com voz humana?
+R: Sim! Esse é um dos maiores diferenciais da plataforma. Você pode gravar áudios com a sua própria voz (ou de quem preferir) e a IA sabe o momento exato de dispará-los na conversa (boas-vindas acolhedoras, explicação de diferenciais, confirmação de reunião), além de síntese de voz ultra-realista. Mais de 90% dos clientes têm certeza absoluta de que estão falando com uma pessoa real.
+
+P: Preciso deixar meu computador ou celular ligado o dia todo?
+R: Não! O NEXA CRM opera 100% em nuvem em servidores dedicados de alta performance. Mesmo que você desligue seu telefone ou esteja dormindo, seus clientes são atendidos, acolhidos e qualificados dia e noite (24/7).
+
+P: Como funciona a conexão com o WhatsApp? É seguro?
+R: A conexão é ultra simples e estável: você só precisa escanear um QR Code na tela (via integração oficial com a Evolution API). Não há burocracia complexa e a conexão fica ativa em menos de 2 minutos.
+
+P: E se o cliente fizer uma pergunta muito difícil ou exigir um atendente humano?
+R: O NEXA possui o recurso de Transbordo Humanizado (Handoff Inteligente). Se o cliente pedir para falar com uma pessoa, ou se o assunto exigir negociação especial da diretoria, o robô pausa as respostas para aquele contato e notifica instantaneamente sua equipe no painel para assumir o atendimento.
+
+P: O NEXA CRM funciona para o meu tipo de negócio?
+R: Sim! O NEXA já possui bibliotecas de nichos prontas para Clínicas Médicas e Odontológicas, Estética, Imobiliárias e Corretores, Escritórios de Advocacia, Concessionárias e Venda de Veículos, Energia Solar, Serviços B2B, SaaS e Comércio em geral. Tudo é 100% adaptável para a realidade da sua empresa em poucos minutos.
+
+P: Como funciona a demonstração do sistema?
+R: Nós agendamos uma demonstração rápida de 15 minutos via videoconferência ou pelo próprio WhatsApp, onde você vê o robô conversando, extraindo dados para o Kanban e organizando os agendamentos em tempo real na tela!`,
+
+    knowledgeCatalog: `MÓDULOS E RECURSOS DA PLATAFORMA NEXA CRM:
+
+1. ATENDENTE DE IA CONVERSACIONAL 24/7 (TEXTO & VOZ):
+- Atendimento humanizado e instantâneo no WhatsApp em menos de 10 segundos.
+- Compreensão e transcrição de áudios longos enviados pelos clientes.
+- Disparo de áudios reais gravados no momento oportuno do fluxo.
+- Blindagem anti-alucinação: a IA segue rigorosamente as regras da sua empresa sem inventar promessas falsas.
+
+2. CRM KANBAN INTELIGENTE COM AUTO-EXTRAÇÃO:
+- Funil de vendas visual: Novo Lead, Qualificado, Agendado, Negociação, Ganho e Perdido.
+- A IA extrai da conversa e preenche sozinha: Nome, Telefone, E-mail, Interesse, Dores e Valor Estimado do Negócio.
+- Histórico completo de conversas centralizado.
+
+3. AGENDAMENTO & CALENDÁRIO AUTOMÁTICO:
+- Marcação de consultas e reuniões diretamente pelo WhatsApp respeitando a disponibilidade da agenda.
+- Notificações automáticas para reduzir faltas (no-show).
+
+4. MOTOR DE FOLLOW-UP & RETARGETING:
+- Reativação inteligente de clientes que pararam de responder após o primeiro contato.
+- Mensagens estratégicas de resgate que aumentam a taxa de conversão em até 35%.
+
+5. LABORATÓRIO DE TESTES AUTOMATIZADOS COM IA:
+- Simulador integrado que audita as respostas da IA contra clientes difíceis e reescreve diretrizes com 1 clique.
+
+6. GESTÃO MULTI-CLIENTES & BIBLIOTECA DE NICHOS:
+- Permite gerenciar múltiplos perfis de empresas ou filiais no mesmo painel com facilidade.`,
+
+    knowledgePricing: `PLANOS E CONDIÇÕES COMERCIAIS NEXA CRM:
+
+- PLANO STARTER (Para Profissionais Autônomos e Pequenos Negócios):
+  * R$ 297,00/mês
+  * 1 Número de WhatsApp conectado.
+  * IA Conversacional 24/7 para texto.
+  * CRM Kanban completo com extração automática de dados.
+  * Até 1.500 atendimentos mensais.
+  * Suporte técnico via WhatsApp.
+
+- PLANO PRO (Mais Vendido & Recomendado):
+  * R$ 597,00/mês
+  * 1 Número de WhatsApp com atendimento Ilimitado.
+  * IA com Suporte a Voz e Áudios Reais Contextuais.
+  * Módulo de Follow-up Inteligente e Reativação de Leads.
+  * Agendamento de Consultas/Reuniões integrado.
+  * Laboratório de Testes Automatizados com IA.
+  * Onboarding e Configuração Personalizada inclusos.
+
+- PLANO ENTERPRISE / MULTI-EMPRESAS:
+  * Sob Consulta Personalizada.
+  * Múltiplas instâncias de WhatsApp e equipes grandes.
+  * Treinamento de IA dedicado e suporte prioritário.
+
+- CONDIÇÕES & FACILIDADES:
+  * Sem taxa de adesão em planos anuais (com 20% de desconto no pagamento à vista via PIX).
+  * Garantia incondicional de 7 dias com acompanhamento de implantação.`,
+
+    knowledgeRules: `DIRETRIZES E REGRAS DE VENDAS DO NEXA CRM:
+
+1. POSTURA E CONDUTA:
+- Apresente-se como Alex (ou consultor comercial da NEXA CRM).
+- Seja enérgico, educado, empático e focado nas dores práticas do empresário: demora para responder clientes, perda de vendas à noite ou fins de semana, secretária sobrecarregada e leads esquecidos sem follow-up.
+
+2. ROTEIRO DE QUALIFICAÇÃO & CONVERSÃO EM 4 PASSOS:
+- Passo 1 (Identificação): Pergunte qual é o segmento da empresa do cliente e se ele já atende clientes via WhatsApp diariamente.
+- Passo 2 (Mapeamento da Dor): Descubra o maior gargalo:
+  * "Hoje você sente que perde vendas por demorar para responder fora do horário comercial?"
+  * "Ou os clientes chegam dos anúncios e esfriam sem um acompanhamento rápido?"
+- Passo 3 (Apresentação de Valor): Mostre como o NEXA resolve exatamente essa dor com atendimento em menos de 10 segundos, áudios com voz humana e CRM Kanban que se atualiza sozinho.
+- Passo 4 (Chamada para Ação): Convide para a demonstração ao vivo:
+  "Para você ver na tela como o NEXA atenderia os clientes da sua empresa na prática, podemos fazer uma demonstração rápida de 15 minutos amanhã. Qual horário fica melhor para você: manhã ou tarde?"
+
+3. QUEBRA DE OBJEÇÕES:
+- "É difícil de usar ou configurar?": "Não! Nós entregamos tudo praticamente pronto para o seu nicho e a conexão com seu WhatsApp é feita em 2 minutos lendo um QR Code."
+- "Robô afasta os clientes": "Isso acontecia com os robôs antigos de menu! O NEXA usa IA generativa de ponta com respostas naturais e voz humana real. Nossos clientes relatam que os clientes elogiam o atendimento achando que é uma pessoa."
+- "Já tenho equipe de atendimento": "Excelente! O NEXA não substitui sua equipe, ele potencializa: faz a triagem inicial 24 horas por dia, filtra curiosos e entrega o cliente qualificado e pronto para seu vendedor fechar."`,
+    strictKnowledgeOnly: false,
+    preRecordedAudiosEnabled: true,
+    autoTriggerCRMStages: true,
+    isGlobalAiActive: true,
+    testModeEnabled: false,
+    testNumberWhitelist: '',
+    autoTranscribeAudio: true,
+  };
+}
+
 // In-memory / persistent fallback state
 class Database {
   public stages: KanbanStage[] = [
@@ -399,6 +522,34 @@ Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurg
       uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     },
     {
+      id: 'doc-nexa-comercial',
+      name: 'Manual_Comercial_e_Apresentacao_NEXA_CRM.txt',
+      type: 'txt',
+      size: 4800,
+      contentText: `MANUAL COMERCIAL E APRESENTAÇÃO INSTITUCIONAL - PLATAFORMA NEXA CRM
+Website Oficial: https://crm.makprojetosmake.com.br/
+Solução: CRM Conversacional com Inteligência Artificial Integrada para WhatsApp
+
+1. O QUE É O NEXA CRM:
+O NEXA CRM é o ecossistema definitivo para transformar o WhatsApp de qualquer empresa em uma máquina de vendas autônoma e humanizada. Ele elimina a lentidão no atendimento, o esquecimento de leads e a desorganização comercial através da combinação de IA Generativa, CRM Kanban visual e automação de follow-up.
+
+2. DIFERENCIAIS COMPETITIVOS:
+- Atendimento Instantâneo 24/7: Reduz o tempo de resposta de horas para menos de 10 segundos.
+- Compreensão Real de Contexto: Escuta e responde áudios de clientes com naturalidade.
+- Disparo de Áudios com Voz Humana: Conexão emocional profunda sem sensação de robô engessado.
+- CRM Kanban Auto-preenchível: Identifica dados de contato, interesse e valor sem digitação manual.
+- Conexão em 1 Clique: Conecta ao WhatsApp lendo QR Code em 2 minutos via Evolution API.
+
+3. PLANOS E PREÇOS:
+- Starter: R$ 297,00/mês (1 WhatsApp, IA texto 24/7, Kanban até 1.500 conversas/mês).
+- Pro (Recomendado): R$ 597,00/mês (Atendimento ilimitado, suporte a Voz e Áudios reais, Follow-up automático).
+- Enterprise: Sob consulta para grandes operações e franquias.
+
+4. OBJETIVO DA CONVERSA:
+Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atendendo e movimentando o Kanban em tempo real na tela.`,
+      uploadedAt: new Date().toISOString(),
+    },
+    {
       id: 'doc-2',
       name: 'SLA_e_Qualidade_de_Atendimento.txt',
       type: 'txt',
@@ -459,6 +610,14 @@ Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurg
       nicheTag: 'Odontologia',
       evolutionInstanceName: 'dra-lucy-murata',
       agentConfig: JSON.parse(JSON.stringify(this.agentConfig)),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'profile-nexa-crm',
+      name: 'NEXA CRM Oficial (Automação & Vendas)',
+      nicheTag: 'Tecnologia / SaaS',
+      evolutionInstanceName: 'nexa-crm-comercial',
+      agentConfig: createNexaAgentConfig(this.agentConfig),
       updatedAt: new Date().toISOString(),
     },
   ];
@@ -702,8 +861,31 @@ Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurg
         }
         if (data.savedProfiles && Array.isArray(data.savedProfiles) && data.savedProfiles.length > 0) {
           this.savedProfiles = data.savedProfiles;
+          // Garante que os perfis da Dra. Lucy e do NEXA CRM Oficial estejam sempre disponíveis
+          const hasLucy = this.savedProfiles.some((p) => p.id === 'profile-dra-lucy');
+          if (!hasLucy) {
+            this.savedProfiles.unshift({
+              id: 'profile-dra-lucy',
+              name: 'Dra. Lucy Murata (Odontologia Integrativa)',
+              nicheTag: 'Odontologia',
+              evolutionInstanceName: 'dra-lucy-murata',
+              agentConfig: JSON.parse(JSON.stringify(this.agentConfig)),
+              updatedAt: new Date().toISOString(),
+            });
+          }
+          const hasNexa = this.savedProfiles.some((p) => p.id === 'profile-nexa-crm');
+          if (!hasNexa) {
+            this.savedProfiles.push({
+              id: 'profile-nexa-crm',
+              name: 'NEXA CRM Oficial (Automação & Vendas)',
+              nicheTag: 'Tecnologia / SaaS',
+              evolutionInstanceName: 'nexa-crm-comercial',
+              agentConfig: createNexaAgentConfig(this.agentConfig),
+              updatedAt: new Date().toISOString(),
+            });
+          }
         } else {
-          // Garante que o perfil da Dra. Lucy esteja sempre salvo como base inicial
+          // Garante os perfis base iniciais
           this.savedProfiles = [
             {
               id: 'profile-dra-lucy',
@@ -711,6 +893,14 @@ Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurg
               nicheTag: 'Odontologia',
               evolutionInstanceName: 'dra-lucy-murata',
               agentConfig: JSON.parse(JSON.stringify(this.agentConfig)),
+              updatedAt: new Date().toISOString(),
+            },
+            {
+              id: 'profile-nexa-crm',
+              name: 'NEXA CRM Oficial (Automação & Vendas)',
+              nicheTag: 'Tecnologia / SaaS',
+              evolutionInstanceName: 'nexa-crm-comercial',
+              agentConfig: createNexaAgentConfig(this.agentConfig),
               updatedAt: new Date().toISOString(),
             },
           ];

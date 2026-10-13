@@ -116,7 +116,9 @@ export type BusinessNiche =
   | 'legal'
   | 'services'
   | 'general'
-  | 'custom';
+  | 'custom'
+  | 'saas_tech'
+  | 'nexa_sales';
 
 export interface AgentConfig {
   personaName: string;
