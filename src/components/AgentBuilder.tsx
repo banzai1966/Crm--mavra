@@ -78,9 +78,9 @@ export const AGENT_PRESETS: AgentPreset[] = [
     category: 'Tecnologia & B2B',
     tag: 'NEXA CRM Oficial',
     description: 'Agente comercial oficial para venda, demonstração e qualificação de clientes interessados em contratar a plataforma NEXA CRM para seus negócios.',
-    personaName: 'Alex',
-    role: 'Consultor Especialista em Inteligência Conversacional & Automação Comercial NEXA CRM',
-    toneOfVoice: 'Inovador, consultivo, altamente profissional, empático e focado em ROI e conversão comercial',
+    personaName: 'Sofia',
+    role: 'Consultora Especialista em Inteligência Conversacional & Automação Comercial NEXA CRM',
+    toneOfVoice: 'Acolhedora, inovadora, consultiva, altamente profissional, empática e focada em ROI e conversão comercial',
     salesGoal: 'Mapear gargalos no atendimento via WhatsApp da empresa do lead, demonstrar o impacto do NEXA CRM no faturamento e agendar uma demonstração executiva de 15 minutos ao vivo.',
     followUpNiche: 'nexa_sales',
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu dar uma olhada na proposta do NEXA CRM. Separei um horário amanhã para te mostrar o sistema atendendo e qualificando clientes ao vivo na tela. Qual período fica melhor para você: manhã ou tarde? 🚀📊',
@@ -165,8 +165,8 @@ R: Nós agendamos uma demonstração rápida de 15 minutos via videoconferência
     knowledgeRules: `DIRETRIZES E REGRAS DE VENDAS DO NEXA CRM:
 
 1. POSTURA E CONDUTA:
-- Apresente-se como Alex (ou consultor comercial da NEXA CRM).
-- Seja enérgico, educado, empático e focado nas dores práticas do empresário: demora para responder clientes, perda de vendas à noite ou fins de semana, secretária sobrecarregada e leads esquecidos sem follow-up.
+- Apresente-se como Sofia (ou consultora comercial da NEXA CRM).
+- Seja acolhedora, enérgica, educada, empática e focada nas dores práticas do empresário: demora para responder clientes, perda de vendas à noite ou fins de semana, secretária sobrecarregada e leads esquecidos sem follow-up.
 
 2. ROTEIRO DE QUALIFICAÇÃO & CONVERSÃO EM 4 PASSOS:
 - Passo 1 (Identificação): Pergunte qual é o segmento da empresa do cliente e se ele já atende clientes via WhatsApp diariamente.
@@ -672,6 +672,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   };
 
   const handleApplyPreset = async (preset: AgentPreset) => {
+    const isNexa = preset.id === 'nexa_crm';
     const updatedConfig: AgentConfig = {
       ...config,
       personaName: preset.personaName,
@@ -684,23 +685,25 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
+      catalogPdfName: isNexa ? 'Apresentacao_NEXA_CRM.pdf' : 'Apresentacao_Dra_Lucy_Murata.pdf',
     };
     setConfig(updatedConfig);
     setSelectedPresetModal(null);
     setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
 
+    const instanceName = isNexa ? 'nexa-crm' : 'dra-lucy-murata';
     try {
       const res = await fetch('/api/agent/apply-niche', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           preset: updatedConfig,
-          evolutionInstanceName: 'dra-lucy-murata',
+          evolutionInstanceName: instanceName,
         }),
       });
       const data = await res.json();
       if (data.success) {
-        setPresetSuccessToast(`✨ Nicho "${preset.name}" carregado e salvo! Instância WhatsApp "dra-lucy-murata" configurada com sucesso.`);
+        setPresetSuccessToast(`✨ Nicho "${preset.name}" carregado e salvo! Instância WhatsApp "${instanceName}" configurada com sucesso.`);
         await onSaveConfig(data.agentConfig || updatedConfig);
       } else {
         await onSaveConfig(updatedConfig);
