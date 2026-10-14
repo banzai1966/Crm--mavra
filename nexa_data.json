@@ -46,72 +46,37 @@
   ],
   "leads": [
     {
-      "id": "lead-1790015029550",
-      "name": "Tania Maria",
-      "phone": "5511982220223",
-      "email": "",
-      "stageId": "stage-3",
-      "value": 0,
-      "interest": "Como Funciona a Odontologia Integrativa",
+      "id": "lead-2",
+      "name": "Camila Castro",
+      "phone": "5521991234567",
+      "email": "camila@castromarketing.com",
+      "stageId": "stage-2",
+      "value": 68,
+      "interest": "Agente de Atendimento 24/7",
       "tags": [
-        "WhatsApp",
-        "Novo Lead",
-        "Follow-up Enviado",
-        "📅 Agendado"
+        "🍔 Restaurante/Delivery",
+        "📦 Pedido Ativo",
+        "Lead Quente"
       ],
-      "notes": "Lead criado automaticamente via Evolution API v2.\n[21/09/2026] Movido para \"Qualificado / Interesse\" pela IA.\n🔁 [Follow-up Automático #1]: 22:58:41\n🔁 [Follow-up Automático #2]: 03:03:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:34\n🔁 [Follow-up Automático #1]: 21:27:14\n🔁 [Follow-up Automático #1]: 01:27:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:05:08\n🔁 [Follow-up Automático #1]: 00:05:19\n🔁 [Follow-up Automático #2]: 04:10:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:56:09\n🔁 [Follow-up Automático #1]: 18:36:18\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:42\n🔁 [Follow-up Automático #1]: 16:20:09\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:15\n🔁 [Follow-up Automático #1]: 18:42:01\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:21\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:36\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:07\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:05",
+      "notes": "Quer automatizar respostas para 200 pedidos/dia.\n🔁 [Follow-up Automático #1]: 02:00:39\n🔁 [Follow-up Automático #2]: 06:05:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:10\n🔁 [Follow-up Automático #1]: 15:48:34\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:46\n🔁 [Follow-up Automático #1]: 17:24:32\n🔁 [Follow-up Automático #1]: 21:30:15\n🔁 [Follow-up Automático #1]: 02:07:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:08:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:57:10\n🔁 [Follow-up Automático #1]: 18:36:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:41\n🔁 [Follow-up Automático #1]: 16:20:18\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:14\n🔁 [Follow-up Automático #1]: 17:19:50\n🔁 [Follow-up Automático #1]: 21:23:16\n🔁 [Follow-up Automático #1]: 13:14:20\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:42\n🔁 [Follow-up Automático #1]: 13:19:13\n🔁 [Follow-up Automático #1]: 17:23:59\n🔁 [Follow-up Automático #1]: 21:27:53\n🔁 [Follow-up Automático #1]: 12:02:09\n🔁 [Follow-up Automático #1]: 16:06:41\n🔁 [Follow-up Automático #1]: 20:10:25",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-10-12T18:41:05.09+00:00",
-      "createdAt": "2026-09-21T18:23:49.55+00:00",
-      "unreadCount": 0
-    },
-    {
-      "id": "lead-1",
-      "name": "Dr. Roberto Silva",
-      "phone": "5511987654321",
-      "email": "roberto.silva@clinica.com.br",
-      "stageId": "stage-3",
-      "value": 12500,
-      "interest": "Plano Enterprise + Integração WhatsApp",
-      "tags": [
-        "Clínica Médica",
-        "Decisor",
-        "Alta Prioridade",
-        "🔥 LEAD QUENTE",
-        "Follow-up Enviado",
-        "📅 Agendado"
-      ],
-      "notes": "Solicitou proposta para 10 atendentes com IA conversacional.\n🔁 [Follow-up Automático #1]: 02:30:39\n🔁 [Follow-up Automático #2]: 06:35:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:29:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:06:08\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:06\n🔁 [Follow-up Automático #1]: 12:59:10\n🔁 [Follow-up Automático #1]: 18:34:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:32\n🔁 [Follow-up Automático #1]: 16:20:20\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:06\n🔁 [Follow-up Automático #1]: 19:11:43\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-10-12T18:41:04.629+00:00",
-      "createdAt": "2026-09-18T22:45:38.575+00:00",
-      "unreadCount": 0
-    },
-    {
-      "id": "lead-insta-1791217658483",
-      "name": "@paciente_teste",
-      "phone": "Aguardando no Direct",
-      "email": "",
-      "stageId": "stage-1",
-      "value": 4500,
-      "interest": "Interesse via Instagram: Quero agendar uma AVALIACAO",
-      "tags": [
-        "📸 Instagram Direct",
-        "Comentou AVALIACAO",
-        "🔥 LEAD QUENTE",
-        "Follow-up Enviado"
-      ],
-      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-10-12T18:41:04.629+00:00",
-      "createdAt": "2026-10-05T16:27:38.483+00:00",
-      "unreadCount": 0
+      "lastInteraction": "2026-10-14T20:10:25.304+00:00",
+      "createdAt": "2026-09-20T10:45:38.575+00:00",
+      "unreadCount": 0,
+      "deliveryInfo": {
+        "orderNumber": "PED-1024",
+        "itemsDescription": "1x Burger Angus Artesanal Duplo com Cheddar + Batata Rústica + Coca-Cola Zero",
+        "motoboyName": "Carlos Motoboy",
+        "motoboyPhone": "5511999887766",
+        "motoboyPlate": "ABC-1234",
+        "deliveryAddress": "Av. Paulista, 1000 - Apto 42 - Bela Vista, SP",
+        "etaMinutes": 12,
+        "dispatchedAt": "2026-10-14T20:14:43.931Z",
+        "status": "dispatched",
+        "verificationCode": "4567"
+      }
     },
     {
       "id": "lead-1790015749543",
@@ -126,13 +91,46 @@
         "Novo Lead",
         "Follow-up Enviado"
       ],
-      "notes": "Lead criado automaticamente via Evolution API v2.\n🔁 [Follow-up Automático #1]: 22:38:40\n🔁 [Follow-up Automático #2]: 02:43:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:28:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:07:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:58:10\n🔁 [Follow-up Automático #1]: 18:35:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:40\n🔁 [Follow-up Automático #1]: 16:20:19\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:11\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04",
+      "notes": "Lead criado automaticamente via Evolution API v2.\n🔁 [Follow-up Automático #1]: 22:38:40\n🔁 [Follow-up Automático #2]: 02:43:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:28:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:07:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:58:10\n🔁 [Follow-up Automático #1]: 18:35:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:40\n🔁 [Follow-up Automático #1]: 16:20:19\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:11\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:58\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:01:06\n🔁 [Follow-up Automático #1]: 16:07:41\n🔁 [Follow-up Automático #1]: 20:10:24",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-10-12T18:41:04.496+00:00",
+      "lastInteraction": "2026-10-14T20:10:24.809+00:00",
       "createdAt": "2026-09-21T18:35:49.543+00:00",
       "unreadCount": 0
+    },
+    {
+      "id": "lead-1",
+      "name": "Dr. Roberto Silva",
+      "phone": "5511987654321",
+      "email": "roberto.silva@clinica.com.br",
+      "stageId": "stage-3",
+      "value": 145,
+      "interest": "Plano Enterprise + Integração WhatsApp",
+      "tags": [
+        "🍣 Japonês/Delivery",
+        "📦 Chegando (5min)",
+        "🔥 LEAD QUENTE"
+      ],
+      "notes": "Solicitou proposta para 10 atendentes com IA conversacional.\n🔁 [Follow-up Automático #1]: 02:30:39\n🔁 [Follow-up Automático #2]: 06:35:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:29:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:06:08\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:06\n🔁 [Follow-up Automático #1]: 12:59:10\n🔁 [Follow-up Automático #1]: 18:34:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:32\n🔁 [Follow-up Automático #1]: 16:20:20\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:06\n🔁 [Follow-up Automático #1]: 19:11:43\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:29:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:01:41\n🔁 [Follow-up Automático #1]: 20:05:25",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-14T20:05:25.054+00:00",
+      "createdAt": "2026-09-18T22:45:38.575+00:00",
+      "unreadCount": 0,
+      "deliveryInfo": {
+        "orderNumber": "PED-1023",
+        "itemsDescription": "2x Combinado Sushi Premium 30 Peças + Temaki Salmão Grelhado",
+        "motoboyName": "Carlos Motoboy",
+        "motoboyPhone": "5511999887766",
+        "motoboyPlate": "ABC-1234",
+        "deliveryAddress": "Rua Oscar Freire, 800 - Jardins, SP",
+        "etaMinutes": 4,
+        "dispatchedAt": "2026-10-14T20:04:43.931Z",
+        "status": "arriving",
+        "verificationCode": "4321"
+      }
     },
     {
       "id": "lead-insta-1791127158451",
@@ -147,11 +145,11 @@
         "Comentou AVALIACAO",
         "Follow-up Enviado"
       ],
-      "notes": "Comentou no post \"Reels: Odontologia Biológica & Implantes de Zircônia\" com a mensagem: \"Dra. Lucy, quero fazer uma AVALIACAO com você!\". Sofia acionada no Direct.\n🏁 [FECHAMENTO FINALIZADO 16:10:29]: Lead atendido ou oportunidade concluída.\n🔁 [Follow-up Automático #1]: 19:19:48\n🔁 [Follow-up Automático #1]: 23:21:12\n🔁 [Follow-up Automático #1]: 03:21:55\n🔁 [Follow-up Automático #1]: 13:01:53\n[05/10/2026] Movido manualmente para \"Proposta / Apresentação\".\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04",
+      "notes": "Comentou no post \"Reels: Odontologia Biológica & Implantes de Zircônia\" com a mensagem: \"Dra. Lucy, quero fazer uma AVALIACAO com você!\". Sofia acionada no Direct.\n🏁 [FECHAMENTO FINALIZADO 16:10:29]: Lead atendido ou oportunidade concluída.\n🔁 [Follow-up Automático #1]: 19:19:48\n🔁 [Follow-up Automático #1]: 23:21:12\n🔁 [Follow-up Automático #1]: 03:21:55\n🔁 [Follow-up Automático #1]: 13:01:53\n[05/10/2026] Movido manualmente para \"Proposta / Apresentação\".\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-10-12T18:41:04.496+00:00",
+      "lastInteraction": "2026-10-14T20:05:25.054+00:00",
       "createdAt": "2026-10-04T15:19:18.451+00:00",
       "unreadCount": 0
     },
@@ -169,34 +167,56 @@
         "🔥 LEAD QUENTE",
         "Follow-up Enviado"
       ],
-      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04",
+      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:13\n🔁 [Follow-up Automático #1]: 17:23:58\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-10-12T18:41:04.302+00:00",
+      "lastInteraction": "2026-10-14T20:05:25.054+00:00",
       "createdAt": "2026-10-05T16:29:25.321+00:00",
       "unreadCount": 0
     },
     {
-      "id": "lead-2",
-      "name": "Camila Castro",
-      "phone": "5521991234567",
-      "email": "camila@castromarketing.com",
-      "stageId": "stage-2",
-      "value": 4800,
-      "interest": "Agente de Atendimento 24/7",
+      "id": "lead-insta-1791217658483",
+      "name": "@paciente_teste",
+      "phone": "Aguardando no Direct",
+      "email": "",
+      "stageId": "stage-1",
+      "value": 4500,
+      "interest": "Interesse via Instagram: Quero agendar uma AVALIACAO",
       "tags": [
-        "E-commerce",
-        "Lead Quente",
-        "Follow-up Enviado",
-        "📅 Agendado"
+        "📸 Instagram Direct",
+        "Comentou AVALIACAO",
+        "🔥 LEAD QUENTE",
+        "Follow-up Enviado"
       ],
-      "notes": "Quer automatizar respostas para 200 pedidos/dia.\n🔁 [Follow-up Automático #1]: 02:00:39\n🔁 [Follow-up Automático #2]: 06:05:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:10\n🔁 [Follow-up Automático #1]: 15:48:34\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:46\n🔁 [Follow-up Automático #1]: 17:24:32\n🔁 [Follow-up Automático #1]: 21:30:15\n🔁 [Follow-up Automático #1]: 02:07:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:08:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:57:10\n🔁 [Follow-up Automático #1]: 18:36:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:41\n🔁 [Follow-up Automático #1]: 16:20:18\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:14\n🔁 [Follow-up Automático #1]: 17:19:50\n🔁 [Follow-up Automático #1]: 21:23:16\n🔁 [Follow-up Automático #1]: 13:14:20\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04",
+      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:52\n🔁 [Follow-up Automático #1]: 21:29:53\n🔁 [Follow-up Automático #1]: 11:59:01\n🔁 [Follow-up Automático #1]: 16:01:41\n🔁 [Follow-up Automático #1]: 20:05:24",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-10-12T18:41:04.244+00:00",
-      "createdAt": "2026-09-20T10:45:38.575+00:00",
+      "lastInteraction": "2026-10-14T20:05:24.839+00:00",
+      "createdAt": "2026-10-05T16:27:38.483+00:00",
+      "unreadCount": 0
+    },
+    {
+      "id": "lead-1790015029550",
+      "name": "Tania Maria",
+      "phone": "5511982220223",
+      "email": "",
+      "stageId": "stage-3",
+      "value": 0,
+      "interest": "Como Funciona a Odontologia Integrativa",
+      "tags": [
+        "WhatsApp",
+        "Novo Lead",
+        "Follow-up Enviado",
+        "📅 Agendado"
+      ],
+      "notes": "Lead criado automaticamente via Evolution API v2.\n[21/09/2026] Movido para \"Qualificado / Interesse\" pela IA.\n🔁 [Follow-up Automático #1]: 22:58:41\n🔁 [Follow-up Automático #2]: 03:03:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:34\n🔁 [Follow-up Automático #1]: 21:27:14\n🔁 [Follow-up Automático #1]: 01:27:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:05:08\n🔁 [Follow-up Automático #1]: 00:05:19\n🔁 [Follow-up Automático #2]: 04:10:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:56:09\n🔁 [Follow-up Automático #1]: 18:36:18\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:42\n🔁 [Follow-up Automático #1]: 16:20:09\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:15\n🔁 [Follow-up Automático #1]: 18:42:01\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:21\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:36\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:07\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:05\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:15\n🔁 [Follow-up Automático #1]: 17:23:46\n🔁 [Follow-up Automático #1]: 21:30:53\n🔁 [Follow-up Automático #1]: 11:58:54\n🔁 [Follow-up Automático #1]: 16:02:41\n🔁 [Follow-up Automático #1]: 20:05:24",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-14T20:05:24.822+00:00",
+      "createdAt": "2026-09-21T18:23:49.55+00:00",
       "unreadCount": 0
     },
     {
@@ -226,12 +246,11 @@
       "phone": "5541999990000",
       "email": "mariana.rios@imoveisprime.com",
       "stageId": "stage-4",
-      "value": 18000,
+      "value": 38,
       "interest": "Qualificação Imobiliária Automatizada",
       "tags": [
-        "Imobiliária",
-        "Contrato Anual",
-        "📅 Agendado"
+        "🥗 Marmitaria Fit",
+        "✅ Entregue"
       ],
       "notes": "Revisando minuta contratual. IA respondeu dúvidas jurídicas com sucesso.",
       "aiPaused": true,
@@ -239,7 +258,19 @@
       "hotReason": "",
       "lastInteraction": "2026-10-05T14:22:33.42+00:00",
       "createdAt": "2026-09-18T22:45:38.575+00:00",
-      "unreadCount": 0
+      "unreadCount": 0,
+      "deliveryInfo": {
+        "orderNumber": "PED-1022",
+        "itemsDescription": "1x Marmita Fit Executiva (Filé de Frango Grelhado, Arroz Integral, Brócolis)",
+        "motoboyName": "Felipe Express",
+        "motoboyPhone": "5541988776655",
+        "motoboyPlate": "KTM-5544",
+        "deliveryAddress": "Alameda Santos, 450 - Cerqueira César, SP",
+        "etaMinutes": 0,
+        "dispatchedAt": "2026-10-14T19:37:43.931Z",
+        "status": "delivered",
+        "verificationCode": "0000"
+      }
     },
     {
       "id": "lead-insta-1",
@@ -268,12 +299,11 @@
       "phone": "5531988887777",
       "email": "lucas@techmendes.io",
       "stageId": "stage-1",
-      "value": 2900,
+      "value": 89,
       "interest": "NEXA CRM Starter",
       "tags": [
-        "SaaS",
-        "Trial",
-        "📅 Agendado"
+        "🍕 Pizzaria/Delivery",
+        "📦 Na Cozinha"
       ],
       "notes": "Chegou pelo anúncio do Instagram querendo demonstração.\n[29/09/2026] Movido manualmente para \"Base Antiga / Reativação\".\n[29/09/2026] Movido manualmente para \"Novo Lead\".",
       "aiPaused": false,
@@ -281,7 +311,19 @@
       "hotReason": "",
       "lastInteraction": "2026-09-20T21:25:38.575+00:00",
       "createdAt": "2026-09-20T20:45:38.575+00:00",
-      "unreadCount": 0
+      "unreadCount": 0,
+      "deliveryInfo": {
+        "orderNumber": "PED-1025",
+        "itemsDescription": "1x Pizza Grande Especial 8 Fatias (Metade Calabresa Gourmet, Metade 4 Queijos) + Guaraná 2L",
+        "motoboyName": "Marcos Entrega",
+        "motoboyPhone": "5511988884433",
+        "motoboyPlate": "XYZ-9876",
+        "deliveryAddress": "Rua Augusta, 1500 - Apto 81 - Consolação, SP",
+        "etaMinutes": 25,
+        "dispatchedAt": "2026-10-14T20:20:43.931Z",
+        "status": "preparing",
+        "verificationCode": "7777"
+      }
     }
   ],
   "messages": [
@@ -2291,6 +2333,132 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-08T18:06:20.105+00:00"
+    },
+    {
+      "id": "msg-1791912142537-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:22.537+00:00"
+    },
+    {
+      "id": "msg-1791912142568-followup",
+      "leadId": "lead-insta-1791217658483",
+      "phone": "Aguardando no Direct",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:22.568+00:00"
+    },
+    {
+      "id": "msg-1791912142721-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:22.721+00:00"
+    },
+    {
+      "id": "msg-1791912142722-followup",
+      "leadId": "lead-insta-1791127158451",
+      "phone": "Aguardando no Direct",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:22.722+00:00"
+    },
+    {
+      "id": "msg-1791912142864-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:22.864+00:00"
+    },
+    {
+      "id": "msg-1791912142865-followup",
+      "leadId": "lead-insta-1791217765321",
+      "phone": "Aguardando no Direct",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:22.865+00:00"
+    },
+    {
+      "id": "msg-1791912143015-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:23.015+00:00"
+    },
+    {
+      "id": "msg-1791993640936-followup",
+      "leadId": "lead-insta-1791127158451",
+      "phone": "Aguardando no Direct",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:00:40.936+00:00"
+    },
+    {
+      "id": "msg-1791993640966-followup",
+      "leadId": "lead-insta-1791217765321",
+      "phone": "Aguardando no Direct",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:00:40.966+00:00"
+    },
+    {
+      "id": "msg-1791993701110-followup",
+      "leadId": "lead-1",
+      "phone": "5511987654321",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:01:41.11+00:00"
+    },
+    {
+      "id": "msg-1791993701112-followup",
+      "leadId": "lead-insta-1791217658483",
+      "phone": "Aguardando no Direct",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:01:41.112+00:00"
+    },
+    {
+      "id": "msg-1791993761328-followup",
+      "leadId": "lead-1790015029550",
+      "phone": "5511982220223",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:02:41.328+00:00"
+    },
+    {
+      "id": "msg-1791994001086-followup",
+      "leadId": "lead-2",
+      "phone": "5521991234567",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:06:41.086+00:00"
+    },
+    {
+      "id": "msg-1791994061239-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:07:41.239+00:00"
     }
   ],
   "agentConfig": {

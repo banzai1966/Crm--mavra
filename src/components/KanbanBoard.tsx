@@ -25,6 +25,8 @@ import {
   Database,
   Upload,
   Send,
+  Bike,
+  UtensilsCrossed,
 } from 'lucide-react';
 import { Lead, KanbanStage, EvolutionConfig } from '../types';
 import { NewLeadModal } from './NewLeadModal';
@@ -45,6 +47,7 @@ interface KanbanBoardProps {
   onClearAllLeads?: () => Promise<void> | void;
   onRestoreDemoLeads?: () => Promise<void> | void;
   onRefreshLeads?: () => Promise<void> | void;
+  onNavigateToDelivery?: () => void;
   evolutionConfig?: EvolutionConfig;
   isAdmin?: boolean;
 }
@@ -62,10 +65,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onClearAllLeads,
   onRestoreDemoLeads,
   onRefreshLeads,
+  onNavigateToDelivery,
   evolutionConfig = { serverUrl: '', apiKey: '', instanceName: 'dra-lucy-murata', isConnected: false, state: 'disconnected' },
   isAdmin = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health' | 'general'>('all');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterHotOnly, setFilterHotOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,6 +82,15 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<{ id: string; name: string } | null>(null);
 
+  // Delivery / restaurant leads count
+  const restaurantLeadsCount = leads.filter(
+    (l) => Boolean(l.deliveryInfo) || l.tags.some((t) => t.toLowerCase().includes('restaurante') || t.toLowerCase().includes('delivery') || t.toLowerCase().includes('pizzaria'))
+  ).length;
+
+  const healthLeadsCount = leads.filter(
+    (l) => Boolean(l.triage) || l.tags.some((t) => t.toLowerCase().includes('clínica') || t.toLowerCase().includes('odonto') || t.toLowerCase().includes('médica') || t.toLowerCase().includes('avaliação'))
+  ).length;
+
   // Base Antiga leads eligible for reactivation campaigns
   const baseLeads = leads.filter(
     (l) => l.stageId === 'stage-base' || l.stageId === 'stage-reativacao' || l.tags.includes('Base Antiga') || l.tags.includes('Reativação')
@@ -86,6 +100,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const filteredLeads = leads.filter((lead) => {
     if (filterUrgentOnly && !lead.isUrgent) return false;
     if (filterHotOnly && !lead.isHotLead) return false;
+
+    if (nicheFilter === 'restaurant') {
+      const isRest = Boolean(lead.deliveryInfo) || lead.tags.some((t) => t.toLowerCase().includes('restaurante') || t.toLowerCase().includes('delivery') || t.toLowerCase().includes('pizzaria') || t.toLowerCase().includes('hambúrguer') || t.toLowerCase().includes('japonês') || t.toLowerCase().includes('marmita'));
+      if (!isRest) return false;
+    } else if (nicheFilter === 'health') {
+      const isHealth = Boolean(lead.triage) || lead.tags.some((t) => t.toLowerCase().includes('clínica') || t.toLowerCase().includes('odonto') || t.toLowerCase().includes('médica') || t.toLowerCase().includes('avaliação'));
+      if (!isHealth) return false;
+    } else if (nicheFilter === 'general') {
+      const isRest = Boolean(lead.deliveryInfo) || lead.tags.some((t) => t.toLowerCase().includes('restaurante') || t.toLowerCase().includes('delivery'));
+      const isHealth = Boolean(lead.triage) || lead.tags.some((t) => t.toLowerCase().includes('clínica') || t.toLowerCase().includes('odonto'));
+      if (isRest || isHealth) return false;
+    }
+
     const term = searchTerm.toLowerCase();
     return (
       lead.name.toLowerCase().includes(term) ||
@@ -276,6 +303,54 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <span>Nova Oportunidade</span>
           </button>
         </div>
+      </div>
+
+      {/* Niche Filter Bar (Restaurantes, Clínicas, Geral) */}
+      <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 shrink-0">
+        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0">Filtrar Segmento:</span>
+        <button
+          onClick={() => setNicheFilter('all')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+            nicheFilter === 'all'
+              ? 'bg-slate-900 text-white shadow-2xs'
+              : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+          }`}
+        >
+          Todos os Leads ({leads.length})
+        </button>
+
+        <button
+          onClick={() => setNicheFilter('restaurant')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+            nicheFilter === 'restaurant'
+              ? 'bg-amber-600 text-white shadow-2xs'
+              : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
+          }`}
+        >
+          <UtensilsCrossed className="w-3.5 h-3.5" />
+          <span>Restaurantes & Delivery ({restaurantLeadsCount})</span>
+        </button>
+
+        <button
+          onClick={() => setNicheFilter('health')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+            nicheFilter === 'health'
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100'
+          }`}
+        >
+          <span>Clínicas & Consultas ({healthLeadsCount})</span>
+        </button>
+
+        {onNavigateToDelivery && (
+          <button
+            onClick={onNavigateToDelivery}
+            className="ml-auto flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+          >
+            <Bike className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Ver Kanban de Pedidos & Motoboys ({restaurantLeadsCount}) ➔</span>
+          </button>
+        )}
       </div>
 
       {/* Clean Production Banner when leads === 0 */}
@@ -503,21 +578,50 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </div>
                       )}
 
-                      {/* Scheduled Appointment Date/Time Badge in Kanban */}
-                      {(lead.scheduledDate || lead.tags?.includes('📅 Agendado')) && (
-                        <div className="p-1.5 mb-2 bg-blue-50/90 border border-blue-200 rounded text-[10px] text-blue-900 flex items-center justify-between font-semibold shadow-2xs">
+                      {/* Pedido de Delivery Badge (Restaurantes & Comércio) */}
+                      {lead.deliveryInfo ? (
+                        <div className="p-2 mb-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg text-[10px] text-amber-900 flex items-center justify-between font-bold shadow-2xs">
                           <div className="flex items-center gap-1.5 truncate">
-                            <Calendar className="w-3 h-3 text-blue-600 shrink-0" />
-                            <span className="truncate">
-                              {lead.scheduledDate
-                                ? new Date(lead.scheduledDate).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }) + ' às ' + (lead.scheduledTime || new Date(lead.scheduledDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
-                                : 'Consulta Agendada'}
+                            <Bike className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                            <span className="truncate font-mono">
+                              #{lead.deliveryInfo.orderNumber} • {
+                                lead.deliveryInfo.status === 'preparing' ? '🍳 Na Cozinha' :
+                                lead.deliveryInfo.status === 'dispatched' ? '🛵 Em Rota' :
+                                lead.deliveryInfo.status === 'arriving' ? '⏱️ Chegando (5min)' :
+                                '✅ Entregue'
+                              }
                             </span>
                           </div>
-                          <span className="text-[9px] bg-blue-200/80 text-blue-950 px-1 py-0.5 rounded font-bold shrink-0">
-                            Agenda
-                          </span>
+                          {onNavigateToDelivery && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onNavigateToDelivery();
+                              }}
+                              className="text-[9px] bg-amber-600 hover:bg-amber-700 text-white px-2 py-0.5 rounded font-bold shrink-0 cursor-pointer shadow-2xs transition-colors"
+                              title="Acompanhar no Kanban de Pedidos & Motoboys"
+                            >
+                              Ver Pedido ➔
+                            </button>
+                          )}
                         </div>
+                      ) : (
+                        /* Scheduled Appointment Date/Time Badge in Kanban (Clínicas e Consultas) */
+                        (lead.scheduledDate || lead.tags?.includes('📅 Agendado')) && (
+                          <div className="p-1.5 mb-2 bg-blue-50/90 border border-blue-200 rounded text-[10px] text-blue-900 flex items-center justify-between font-semibold shadow-2xs">
+                            <div className="flex items-center gap-1.5 truncate">
+                              <Calendar className="w-3 h-3 text-blue-600 shrink-0" />
+                              <span className="truncate">
+                                {lead.scheduledDate
+                                  ? new Date(lead.scheduledDate).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }) + ' às ' + (lead.scheduledTime || new Date(lead.scheduledDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
+                                  : 'Consulta Agendada'}
+                              </span>
+                            </div>
+                            <span className="text-[9px] bg-blue-200/80 text-blue-950 px-1 py-0.5 rounded font-bold shrink-0">
+                              Agenda
+                            </span>
+                          </div>
+                        )
                       )}
 
                       {lead.interest && (

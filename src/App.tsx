@@ -457,6 +457,7 @@ export default function App() {
   const totalUnreadCount = leads.reduce((acc, l) => acc + (l.unreadCount || 0), 0);
   const urgentCount = leads.filter((l) => l.isUrgent).length;
   const hotCount = leads.filter((l) => l.isHotLead).length;
+  const deliveryOrdersCount = leads.filter((l) => Boolean(l.deliveryInfo)).length;
 
   if (isLoading) {
     return (
@@ -480,6 +481,7 @@ export default function App() {
         unreadCount={totalUnreadCount}
         urgentCount={urgentCount}
         hotCount={hotCount}
+        deliveryOrdersCount={deliveryOrdersCount}
         isAdminUnlocked={isAdminUnlocked}
         onOpenAdminAuth={() => setShowAdminAuthModal(true)}
         onLockAdmin={handleLockAdmin}
@@ -518,6 +520,7 @@ export default function App() {
             onClearAllLeads={handleClearAllLeads}
             onRestoreDemoLeads={handleRestoreDemoLeads}
             onRefreshLeads={loadAllData}
+            onNavigateToDelivery={() => setActiveTab('delivery')}
             evolutionConfig={evolutionConfig}
             isAdmin={isAdminUnlocked}
           />

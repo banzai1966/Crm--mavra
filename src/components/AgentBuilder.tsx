@@ -43,6 +43,7 @@ import {
   Moon,
   Calendar,
   Beaker,
+  UtensilsCrossed,
   FlaskConical,
   Headphones,
   Plus,
@@ -188,6 +189,72 @@ R: Nós agendamos uma demonstração rápida de 15 minutos via videoconferência
 - "É difícil de usar ou configurar?": "Não! Nós entregamos tudo praticamente pronto para o seu nicho e a conexão com seu WhatsApp é feita em 2 minutos lendo um QR Code."
 - "Robô afasta os clientes": "Isso acontecia com os robôs antigos de menu! O NEXA usa IA generativa de ponta com respostas naturais e voz humana real. Nossos clientes relatam que os clientes elogiam o atendimento achando que é uma pessoa."
 - "Já tenho equipe de atendimento": "Excelente! O NEXA não substitui sua equipe, ele potencializa: faz a triagem inicial 24 horas por dia, filtra curiosos e entrega o cliente qualificado e pronto para seu vendedor fechar."`
+  },
+  {
+    id: 'restaurant_delivery',
+    name: 'Restaurantes, Hamburguerias, Pizzarias & Delivery Gastronômico',
+    category: 'Alimentação & Delivery',
+    tag: 'Restaurante & Delivery',
+    description: 'Atendente autônoma de pedidos para WhatsApp: apresenta o cardápio, anota pedidos, adicionais e bebidas, calcula taxa de entrega, confirma pagamento e envia o pedido para a cozinha e para os motoboys com rastreamento GPS e PIN de confirmação.',
+    personaName: 'Sofia do Delivery',
+    role: 'Atendente Virtual e Gestora de Pedidos do Restaurante & Delivery',
+    toneOfVoice: 'Super simpática, rápida, prestativa, ágil, apetitosa nas descrições e focada em fechar o pedido sem enrolação',
+    salesGoal: 'Apresentar os pratos/combos mais pedidos, coletar os itens, endereço de entrega com CEP/bairro, forma de pagamento (PIX, Cartão na entrega) e gerar o número do pedido com código PIN de entrega.',
+    followUpNiche: 'retail',
+    followUpCustomMessage: 'Oi! Tudo bem? Sentiu vontade daquele lanche artesanal ou daquela pizza quentinha hoje? Nosso forno já está a todo vapor e hoje temos cupom de entrega grátis para pedidos feitos agora! Quer conferir o cardápio do dia? 🍕🍔🛵',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (RESTAURANTE & DELIVERY):
+
+P: Qual é o horário de funcionamento e entregas?
+R: Funcionamos de terça a domingo das 18h às 23h45. Entregas expressas em média de 30 a 45 minutos.
+
+P: Quais são as formas de pagamento aceitas?
+R: Aceitamos PIX (geramos a chave na hora), Cartão de Crédito e Débito na entrega (o motoboy leva a maquininha) e Dinheiro (por favor nos avise se precisar de troco).
+
+P: Como funciona a taxa de entrega?
+R: A taxa de entrega é calculada pela distância da nossa loja até o seu endereço:
+- Até 3 km: R$ 6,00
+- De 3 a 6 km: R$ 10,00
+- De 6 a 10 km: R$ 15,00
+- Acima de 10 km: consultar disponibilidade com nossa equipe.
+
+P: Como acompanho meu pedido e o motoboy?
+R: Assim que seu pedido sair da nossa cozinha, enviamos automaticamente pelo WhatsApp o link do rastreador em tempo real no mapa com a rota do motoboy e o tempo estimado de chegada.
+
+P: Para que serve o Código PIN de Entrega?
+R: É uma medida de segurança para garantir que o pedido seja entregue exclusivamente a você. O PIN são os 4 últimos dígitos do seu número de celular. Basta informar ao motoboy na entrega!`,
+    knowledgeCatalog: `CARDÁPIO & COMBOS EM DESTAQUE:
+
+1. COMBOS DE HAMBÚRGUER ARTESANAL:
+- Combo Smash Burger Duplo: 2 burgers 90g, queijo cheddar derretido, cebola caramelizada, maionese especial no pão brioche + Batata Frita + Refri Lata (R$ 39,90).
+- Combo Bacon Monster: Burger 160g angus, muito bacon crocante, cheddar inglês, molho barbecue artesanal + Batata Rústica + Refri Lata (R$ 47,90).
+- Combo Chicken Crispy: Sobrecoxa empanada crocante, alface americana, molho tártaro especial no brioche + Fritas (R$ 38,00).
+
+2. PIZZAS ARTESANAIS (8 FATIAS - MASSA DE FERMENTAÇÃO NATURAL):
+- Pizza Calabresa Especial: Molho de tomate pelado italiano, mussarela, calabresa artesanal fatiada, cebola roxa e orégano (R$ 64,90).
+- Pizza Quatro Queijos Nobres: Molho artesanal, mussarela, gorgonzola, provolone defumado e catupiry original (R$ 69,90).
+- Pizza Margherita Especial: Molho pelado, mussarela de búfala, rodelas de tomate e folhas de manjericão fresco (R$ 62,00).
+- Borda Recheada de Catupiry ou Cheddar: + R$ 12,00.
+
+3. SUSHIS & COMBINADOS JAPONESES:
+- Combinado Individual (16 peças): 4 sashimis salmão, 4 uramakis philadelphia, 4 hossomakis, 4 niguiris (R$ 54,90).
+- Combinado Casal (32 peças): Variado com salmão maçaricado, hot roll crocante e temaki (R$ 98,00).
+
+4. BEBIDAS & SOBREMESAS:
+- Refrigerante Lata (Coca-Cola, Guaraná, Fanta): R$ 6,50.
+- Refrigerante 2 Litros: R$ 14,00.
+- Suco Natural 500ml: R$ 9,90.
+- Brownie com Nutella e Ninho: R$ 16,00.`,
+    knowledgePricing: `TABELA DE PREÇOS E PROMOÇÕES:
+- Terça do Hambúrguer: Compre 1 burger e o segundo tem 50% de desconto.
+- Quarta da Pizza: Na compra de qualquer pizza grande, ganhe um refrigerante 2L grátis.
+- Taxa de entrega fixa promocional de R$ 5,00 para pedidos acima de R$ 80,00.`,
+    knowledgeRules: `REGRAS DE ATENDIMENTO DE PEDIDOS NO WHATSAPP:
+1. Sempre cumprimente com entusiasmo e apetite!
+2. Pergunte logo se o cliente quer entrega (delivery) ou retirada no balcão.
+3. Peça os itens do pedido com clareza (tamanho, sabor, acompanhamentos, ponto da carne).
+4. Solicite o endereço completo com número e ponto de referência.
+5. Confirme o valor total com a taxa de entrega e a forma de pagamento.
+6. Informe que o pedido foi enviado para a cozinha e que o motoboy enviará o código PIN e link de rastreamento quando sair!`
   },
   {
     id: 'dental_integrative',
@@ -1741,6 +1808,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               const isSolar = preset.id === 'solar_energy';
               const isAuto = preset.id === 'auto_dealer' || preset.id === 'automotive';
               const isSaaS = preset.id === 'nexa_crm' || preset.id === 'saas_tech';
+              const isRestaurant = preset.id === 'restaurant_delivery' || preset.id === 'restaurant';
 
               return (
                 <div
@@ -1748,6 +1816,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   className={`border rounded-xl p-4 flex flex-col justify-between hover:shadow-xs transition-all group ${
                     preset.id === 'nexa_crm'
                       ? 'bg-gradient-to-b from-indigo-50/60 to-white border-indigo-300 ring-1 ring-indigo-200'
+                      : preset.id === 'restaurant_delivery'
+                      ? 'bg-gradient-to-b from-amber-50/40 to-white border-amber-300 hover:border-amber-400'
                       : 'bg-white border-slate-200/90 hover:border-indigo-300'
                   }`}
                 >
@@ -1756,6 +1826,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
                         preset.id === 'nexa_crm'
                           ? 'text-indigo-900 bg-indigo-100/90 border-indigo-300 ring-1 ring-indigo-300 font-mono'
+                          : preset.id === 'restaurant_delivery'
+                          ? 'text-amber-900 bg-amber-100 border-amber-300 font-semibold'
                           : 'text-indigo-700 bg-indigo-50 border-indigo-100'
                       }`}>
                         {preset.id === 'nexa_crm' ? '🚀 OFICIAL NEXA CRM' : (preset.category || 'Nicho')}
@@ -1769,7 +1841,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                         {isSolar && <Sun className="w-4 h-4" />}
                         {isAuto && <Car className="w-4 h-4" />}
                         {isSaaS && <Bot className="w-4 h-4" />}
-                        {!isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && (
+                        {isRestaurant && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
+                        {!isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
                           <SparklesIcon className="w-4 h-4" />
                         )}
                       </div>

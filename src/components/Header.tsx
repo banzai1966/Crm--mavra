@@ -40,6 +40,7 @@ interface HeaderProps {
   unreadCount: number;
   urgentCount?: number;
   hotCount?: number;
+  deliveryOrdersCount?: number;
   isAdminUnlocked?: boolean;
   onOpenAdminAuth?: () => void;
   onLockAdmin?: () => void;
@@ -56,6 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
   unreadCount,
   urgentCount = 0,
   hotCount = 0,
+  deliveryOrdersCount = 0,
   isAdminUnlocked = false,
   onOpenAdminAuth,
   onLockAdmin,
@@ -277,7 +279,14 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Bike className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Entregas & Motoboys</span>
+              <span>Pedidos & Entregas</span>
+              {deliveryOrdersCount > 0 && (
+                <span className={`ml-1 px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${
+                  activeTab === 'delivery' ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-800'
+                }`}>
+                  {deliveryOrdersCount}
+                </span>
+              )}
             </button>
 
             {/* Admin Protected Tabs: Only visible when unlocked */}
