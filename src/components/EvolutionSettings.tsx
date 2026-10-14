@@ -215,6 +215,8 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     };
   }, [showQrModal, config.instanceName]);
 
+  const [presetNotice, setPresetNotice] = useState<string | null>(null);
+
   // Handle Switch Instance Tab
   const handleSelectInstanceTab = (inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'custom', customName?: string) => {
     setSelectedInstanceTab(inst);
@@ -226,11 +228,13 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     const updated = {
       ...config,
       serverUrl: 'https://api.makprojetosmake.com.br',
-      apiKey: config.apiKey && config.apiKey.length > 20 ? config.apiKey : 'b2efa885a71ee22edf72b597df1a0ce9',
+      apiKey: config.apiKey && config.apiKey.length > 10 ? config.apiKey : 'b2efa885a71ee22edf72b597df1a0ce9',
       instanceName: targetName,
     };
     setConfig(updated);
     onSaveConfig(updated);
+    setPresetNotice(`✅ Instância "${targetName}" ativada e salva com sucesso! Os campos abaixo foram sincronizados.`);
+    setTimeout(() => setPresetNotice(null), 4000);
   };
 
   // Handle Create Instance
@@ -483,6 +487,12 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               Alterne entre seu número oficial e instâncias de demonstração ao vivo
             </span>
           </div>
+
+          {presetNotice && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold p-2.5 rounded-xl">
+              {presetNotice}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Tab 1: Instância Dra. Lucy Murata */}
