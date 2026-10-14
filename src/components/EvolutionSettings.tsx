@@ -117,11 +117,17 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
   // Quick preset helper
   const handleApplyDraLucyInstance = () => {
+    const targetName = 'dra-lucy-murata';
+    const existingKey = config.instanceApiKeys?.[targetName] || 'b2efa885a71ee22edf72b597df1a0ce9';
     const updated = {
       ...config,
       serverUrl: 'https://api.makprojetosmake.com.br',
-      apiKey: 'b2efa885a71ee22edf72b597df1a0ce9',
-      instanceName: 'dra-lucy-murata',
+      apiKey: existingKey,
+      instanceName: targetName,
+      instanceApiKeys: {
+        ...(config.instanceApiKeys || {}),
+        [targetName]: existingKey,
+      },
     };
     setConfig(updated);
     onSaveConfig(updated);
@@ -225,15 +231,22 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     if (inst === 'demo-ao-vivo') targetName = 'demo-ao-vivo';
     if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
 
+    // Lookup saved apiKey for this target instance
+    const existingKey = config.instanceApiKeys?.[targetName] || (targetName === 'dra-lucy-murata' ? 'b2efa885a71ee22edf72b597df1a0ce9' : config.apiKey);
+
     const updated = {
       ...config,
       serverUrl: 'https://api.makprojetosmake.com.br',
-      apiKey: config.apiKey && config.apiKey.length > 10 ? config.apiKey : 'b2efa885a71ee22edf72b597df1a0ce9',
+      apiKey: existingKey,
       instanceName: targetName,
+      instanceApiKeys: {
+        ...(config.instanceApiKeys || {}),
+        [targetName]: existingKey,
+      },
     };
     setConfig(updated);
     onSaveConfig(updated);
-    setPresetNotice(`✅ Instância "${targetName}" ativada e salva com sucesso! Os campos abaixo foram sincronizados.`);
+    setPresetNotice(`✅ Instância "${targetName}" ativada e carregada com sucesso!`);
     setTimeout(() => setPresetNotice(null), 4000);
   };
 
@@ -340,12 +353,19 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     setIsAutoConfiguring(true);
     setAutoConfigFeedback(null);
     try {
+      const currentInstName = config.instanceName.trim();
+      const currentKey = config.apiKey.trim();
+      const updatedInstanceKeys = {
+        ...(config.instanceApiKeys || {}),
+        [currentInstName]: currentKey,
+      };
       // First, ensure the current sanitized configuration is saved to backend
       const sanitizedConfig: EvolutionConfig = {
         ...config,
+        instanceApiKeys: updatedInstanceKeys,
         serverUrl: cleanUrlString(config.serverUrl),
-        apiKey: config.apiKey.trim(),
-        instanceName: config.instanceName.trim(),
+        apiKey: currentKey,
+        instanceName: currentInstName,
       };
       await onSaveConfig(sanitizedConfig);
       setConfig(sanitizedConfig);
@@ -353,7 +373,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
       const res = await fetch('/api/evolution/auto-set-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ webhookUrl }),
+        body: JSON.stringify({ webhookUrl, instanceName: currentInstName }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -381,11 +401,18 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     e.preventDefault();
     setIsSaving(true);
     try {
+      const currentInstName = config.instanceName.trim();
+      const currentKey = config.apiKey.trim();
+      const updatedInstanceKeys = {
+        ...(config.instanceApiKeys || {}),
+        [currentInstName]: currentKey,
+      };
       const sanitizedConfig = {
         ...config,
+        instanceApiKeys: updatedInstanceKeys,
         serverUrl: cleanUrlString(config.serverUrl),
-        apiKey: config.apiKey.trim(),
-        instanceName: config.instanceName.trim(),
+        apiKey: currentKey,
+        instanceName: currentInstName,
       };
       await onSaveConfig(sanitizedConfig);
       setConfig(sanitizedConfig);
@@ -847,7 +874,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-slate-400"
               />
               <span className="text-[10px] text-slate-400 mt-1 block">
-                Nome no Evolution Manager: <code className="text-emerald-700">agente-ia</code>
+                Nome no Evolution Manager: <code className="text-emerald-700">{config.instanceName || 'agente-ia'}</code>
               </span>
             </div>
           </div>
@@ -861,8 +888,8 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </p>
               <ul className="text-[11px] text-slate-600 list-disc list-inside space-y-0.5">
                 <li><strong className="text-slate-900">URL da API:</strong> <code className="text-slate-800 font-bold">https://api.makprojetosmake.com.br</code> (endereço do seu servidor)</li>
-                <li><strong className="text-slate-900">Security Value / Apikey:</strong> <code className="text-slate-800 font-bold">CE08ADFF7647-4B88-91A4-55E66D9A0620</code> (campo de token da sua instância)</li>
-                <li><strong className="text-slate-900">Instância:</strong> <code className="text-emerald-700 font-bold">agente-ia</code> (conectada ao número 5511976143323)</li>
+                <li><strong className="text-slate-900">Security Value / Apikey:</strong> <code className="text-slate-800 font-bold">Token da instância ativa</code></li>
+                <li><strong className="text-slate-900">Instância:</strong> <code className="text-emerald-700 font-bold">{config.instanceName || 'agente-ia'}</code> (ativa no CRM)</li>
               </ul>
             </div>
           </div>

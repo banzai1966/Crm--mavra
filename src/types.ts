@@ -218,6 +218,7 @@ export interface EvolutionConfig {
   qrcode?: string;
   lastTestedAt?: string;
   wasEverConnected?: boolean;
+  instanceApiKeys?: Record<string, string>;
 }
 
 export interface SupabaseConfig {
