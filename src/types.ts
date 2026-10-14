@@ -35,6 +35,19 @@ export interface Lead {
   lastFollowUpAt?: string;
   followUpCount?: number;
   dispatchedAudioIds?: string[];
+  deliveryInfo?: {
+    orderNumber?: string;
+    itemsDescription?: string;
+    motoboyName?: string;
+    motoboyPhone?: string;
+    motoboyPlate?: string;
+    deliveryAddress?: string;
+    etaMinutes?: number;
+    dispatchedAt?: string;
+    status?: 'preparing' | 'dispatched' | 'arriving' | 'delivered';
+    verificationCode?: string;
+    trackingUrl?: string;
+  };
 }
 
 export interface PreRecordedAudio {
@@ -56,6 +69,8 @@ export interface ClientProfile {
   name: string;
   nicheTag: string;
   evolutionInstanceName?: string;
+  evolutionApiKey?: string;
+  evolutionServerUrl?: string;
   agentConfig: AgentConfig;
   updatedAt: string;
 }

@@ -684,6 +684,9 @@ async function startServer() {
     const curr = db.savedProfiles.find((p) => p.id === db.activeProfileId);
     if (curr) {
       curr.agentConfig = JSON.parse(JSON.stringify(db.agentConfig));
+      curr.evolutionApiKey = db.evolutionConfig.apiKey;
+      curr.evolutionServerUrl = db.evolutionConfig.serverUrl;
+      curr.evolutionInstanceName = db.evolutionConfig.instanceName;
       curr.updatedAt = new Date().toISOString();
     }
 
@@ -697,6 +700,12 @@ async function startServer() {
     if (target.evolutionInstanceName) {
       db.evolutionConfig.instanceName = target.evolutionInstanceName;
     }
+    if (target.evolutionApiKey) {
+      db.evolutionConfig.apiKey = target.evolutionApiKey;
+    }
+    if (target.evolutionServerUrl) {
+      db.evolutionConfig.serverUrl = target.evolutionServerUrl;
+    }
     db.saveToFile();
 
     res.json({
@@ -704,6 +713,7 @@ async function startServer() {
       activeProfileId: db.activeProfileId,
       activeProfileName: target.name,
       agentConfig: db.agentConfig,
+      evolutionConfig: db.evolutionConfig,
     });
   });
 
@@ -1093,6 +1103,17 @@ async function startServer() {
       apiKey: raw.apiKey ? raw.apiKey.trim() : db.evolutionConfig.apiKey,
       instanceName: raw.instanceName ? raw.instanceName.trim() : db.evolutionConfig.instanceName,
     };
+
+    // Sincronizar com o perfil ativo atual
+    const active = db.savedProfiles.find((p) => p.id === db.activeProfileId);
+    if (active) {
+      active.evolutionApiKey = db.evolutionConfig.apiKey;
+      active.evolutionServerUrl = db.evolutionConfig.serverUrl;
+      active.evolutionInstanceName = db.evolutionConfig.instanceName;
+      active.updatedAt = new Date().toISOString();
+    }
+    db.saveToFile();
+
     res.json(db.evolutionConfig);
   });
 

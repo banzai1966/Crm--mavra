@@ -9,6 +9,7 @@ import { ExecutiveDashboard } from './components/ExecutiveDashboard';
 import { AdminAuthModal } from './components/AdminAuthModal';
 import { CalendarIntegration } from './components/CalendarIntegration';
 import { SalesPlaybook } from './components/SalesPlaybook';
+import { DeliveryTracking } from './components/DeliveryTracking';
 import {
   Lead,
   KanbanStage,
@@ -20,7 +21,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'agent' | 'evolution' | 'supabase'
+    'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'delivery' | 'agent' | 'evolution' | 'supabase'
   >('kanban');
 
   const [stages, setStages] = useState<KanbanStage[]>([]);
@@ -550,6 +551,15 @@ export default function App() {
 
         {activeTab === 'sales' && (
           <SalesPlaybook />
+        )}
+
+        {activeTab === 'delivery' && (
+          <DeliveryTracking
+            leads={leads}
+            onSaveLead={handleSaveLead}
+            onOpenChat={handleOpenChat}
+            evolutionConfig={evolutionConfig}
+          />
         )}
 
         {/* Technical Modules (Protected: only rendered if admin is unlocked) */}
