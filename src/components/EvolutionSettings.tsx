@@ -48,16 +48,30 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   onSimulateWebhook,
 }) => {
   const [config, setConfig] = useState<EvolutionConfig>(evolutionConfig);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Keep local config in sync with parent evolutionConfig
+  // Keep local config in sync with parent evolutionConfig only when not actively editing
   useEffect(() => {
-    setConfig(evolutionConfig);
-  }, [evolutionConfig]);
+    if (!isEditing) {
+      setConfig(evolutionConfig);
+    }
+  }, [evolutionConfig, isEditing]);
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleClearForm = () => {
+    setIsEditing(true);
+    setConfig({
+      serverUrl: '',
+      apiKey: '',
+      instanceName: '',
+      isConnected: false,
+      state: 'disconnected',
+    });
+  };
 
   // Auto-config VPS webhook state
   const [isAutoConfiguring, setIsAutoConfiguring] = useState(false);
@@ -371,6 +385,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
       };
       await onSaveConfig(sanitizedConfig);
       setConfig(sanitizedConfig);
+      setIsEditing(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
@@ -724,6 +739,15 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
               <button
                 type="button"
+                onClick={handleClearForm}
+                className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 transition-colors cursor-pointer"
+                title="Limpar todos os campos para digitar do zero"
+              >
+                <span>Limpar</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={handleTest}
                 disabled={isTesting}
                 id="btn-test-evolution-conn"
@@ -755,7 +779,10 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                 required
                 placeholder="https://api.makprojetosmake.com.br"
                 value={config.serverUrl}
-                onChange={(e) => setConfig({ ...config, serverUrl: e.target.value })}
+                onChange={(e) => {
+                  setIsEditing(true);
+                  setConfig({ ...config, serverUrl: e.target.value });
+                }}
                 onBlur={(e) => setConfig({ ...config, serverUrl: cleanUrlString(e.target.value) })}
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-slate-400"
               />
@@ -774,7 +801,10 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                   required
                   placeholder="CE08ADFF7647-4B88-91A4-55E66D9A0620"
                   value={config.apiKey}
-                  onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
+                  onChange={(e) => {
+                    setIsEditing(true);
+                    setConfig({ ...config, apiKey: e.target.value });
+                  }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-9 py-2 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-slate-400"
                 />
                 <button
@@ -800,7 +830,10 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                 required
                 placeholder="agente-ia"
                 value={config.instanceName}
-                onChange={(e) => setConfig({ ...config, instanceName: e.target.value })}
+                onChange={(e) => {
+                  setIsEditing(true);
+                  setConfig({ ...config, instanceName: e.target.value });
+                }}
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono focus:outline-hidden focus:border-slate-400"
               />
               <span className="text-[10px] text-slate-400 mt-1 block">

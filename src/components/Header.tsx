@@ -23,14 +23,15 @@ import {
   ExternalLink,
   Activity,
   Calendar as CalendarIcon,
+  Briefcase,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
 import { ServerHealthModal } from './ServerHealthModal';
 
 interface HeaderProps {
-  activeTab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'agent' | 'evolution' | 'supabase';
-  setActiveTab: (tab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'agent' | 'evolution' | 'supabase') => void;
+  activeTab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'agent' | 'evolution' | 'supabase';
+  setActiveTab: (tab: 'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'agent' | 'evolution' | 'supabase') => void;
   evolutionConfig: EvolutionConfig;
   agentConfig: AgentConfig;
   totalLeads: number;
@@ -250,6 +251,20 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>Agendamentos & Agenda</span>
               </button>
             )}
+
+            {/* Guia Comercial & Vendas (Visible to Marco / Sales) */}
+            <button
+              id="nav-tab-sales"
+              onClick={() => setActiveTab('sales')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                activeTab === 'sales'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Guia Comercial & Vendas</span>
+            </button>
 
             {/* Admin Protected Tabs: Only visible when unlocked */}
             {isAdminUnlocked && (

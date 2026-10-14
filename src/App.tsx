@@ -8,6 +8,7 @@ import { SupabaseSettings } from './components/SupabaseSettings';
 import { ExecutiveDashboard } from './components/ExecutiveDashboard';
 import { AdminAuthModal } from './components/AdminAuthModal';
 import { CalendarIntegration } from './components/CalendarIntegration';
+import { SalesPlaybook } from './components/SalesPlaybook';
 import {
   Lead,
   KanbanStage,
@@ -19,7 +20,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'dashboard' | 'kanban' | 'chat' | 'calendar' | 'agent' | 'evolution' | 'supabase'
+    'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'agent' | 'evolution' | 'supabase'
   >('kanban');
 
   const [stages, setStages] = useState<KanbanStage[]>([]);
@@ -545,6 +546,10 @@ export default function App() {
             onUpdateAgentConfig={handleSaveAgentConfig}
             onRefreshLeads={loadAllData}
           />
+        )}
+
+        {activeTab === 'sales' && (
+          <SalesPlaybook />
         )}
 
         {/* Technical Modules (Protected: only rendered if admin is unlocked) */}
