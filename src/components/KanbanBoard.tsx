@@ -27,12 +27,73 @@ import {
   Send,
   Bike,
   UtensilsCrossed,
+  LayoutDashboard,
+  Stethoscope,
 } from 'lucide-react';
 import { Lead, KanbanStage, EvolutionConfig } from '../types';
 import { NewLeadModal } from './NewLeadModal';
 import { ResetDataModal } from './ResetDataModal';
 import { ImportLeadsModal } from './ImportLeadsModal';
 import { ReactivationCampaignModal } from './ReactivationCampaignModal';
+
+export const RESTAURANT_KANBAN_STAGES: KanbanStage[] = [
+  { id: 'rest-novo', name: '📥 Novo Pedido (WhatsApp)', color: '#3b82f6', order: 1 },
+  { id: 'rest-cozinha', name: '🍳 Na Cozinha (Em Preparo)', color: '#f59e0b', order: 2 },
+  { id: 'rest-rota', name: '🛵 Saiu p/ Entrega (Em Rota)', color: '#6366f1', order: 3 },
+  { id: 'rest-chegando', name: '⏱️ Chegando no Local (~5 min)', color: '#ea580c', order: 4 },
+  { id: 'rest-entregue', name: '✅ Entregue & Concluído (PIN)', color: '#10b981', order: 5 },
+  { id: 'rest-cancelado', name: '❌ Cancelado', color: '#ef4444', order: 6 },
+];
+
+export const HEALTH_KANBAN_STAGES: KanbanStage[] = [
+  { id: 'health-triagem', name: '📥 Novo Paciente / Triagem', color: '#3b82f6', order: 1 },
+  { id: 'health-avaliacao', name: '💬 Em Avaliação / Dúvidas', color: '#f59e0b', order: 2 },
+  { id: 'health-agendado', name: '📅 Consulta Agendada', color: '#8b5cf6', order: 3 },
+  { id: 'health-tratamento', name: '🩺 Paciente em Tratamento', color: '#06b6d4', order: 4 },
+  { id: 'health-concluido', name: '🌟 Alta / Concluído', color: '#10b981', order: 5 },
+  { id: 'health-retorno', name: '🔄 Retorno / Manutenção', color: '#6366f1', order: 6 },
+];
+
+export const isDeliveryOrRestaurantLead = (l: Lead): boolean => {
+  if (l.deliveryInfo) return true;
+  const str = `${l.name} ${(l.tags || []).join(' ')} ${l.interest || ''} ${l.notes || ''}`.toLowerCase();
+  return (
+    str.includes('delivery') ||
+    str.includes('restaurante') ||
+    str.includes('pizz') ||
+    str.includes('burger') ||
+    str.includes('lanche') ||
+    str.includes('sushi') ||
+    str.includes('marmit') ||
+    str.includes('comida') ||
+    str.includes('motoboy') ||
+    str.includes('ifood') ||
+    l.id === 'lead-1' ||
+    l.id === 'lead-2' ||
+    l.id === 'lead-3' ||
+    l.id === 'lead-4'
+  );
+};
+
+export const isHealthLead = (l: Lead): boolean => {
+  if (l.triage || l.scheduledDate) return true;
+  const str = `${l.name} ${(l.tags || []).join(' ')} ${l.interest || ''} ${l.notes || ''}`.toLowerCase();
+  return (
+    str.includes('clínica') ||
+    str.includes('odonto') ||
+    str.includes('médic') ||
+    str.includes('avaliação') ||
+    str.includes('dent') ||
+    str.includes('dra') ||
+    str.includes('doutor') ||
+    str.includes('paciente') ||
+    str.includes('amálgama') ||
+    l.id === 'lead-insta-1' ||
+    l.id === 'lead-insta-1791217658483' ||
+    l.id === 'lead-insta-1791217765321' ||
+    l.id === 'lead-insta-1791127158451'
+  );
+};
 
 interface KanbanBoardProps {
   stages: KanbanStage[];
@@ -70,7 +131,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   isAdmin = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health' | 'general'>('all');
+  const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>('all');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterHotOnly, setFilterHotOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -83,34 +144,60 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [leadToDelete, setLeadToDelete] = useState<{ id: string; name: string } | null>(null);
 
   // Delivery / restaurant leads count
-  const restaurantLeadsCount = leads.filter(
-    (l) => Boolean(l.deliveryInfo) || l.tags.some((t) => t.toLowerCase().includes('restaurante') || t.toLowerCase().includes('delivery') || t.toLowerCase().includes('pizzaria'))
-  ).length;
+  const restaurantLeadsCount = leads.filter(isDeliveryOrRestaurantLead).length;
+  const healthLeadsCount = leads.filter(isHealthLead).length;
 
-  const healthLeadsCount = leads.filter(
-    (l) => Boolean(l.triage) || l.tags.some((t) => t.toLowerCase().includes('clínica') || t.toLowerCase().includes('odonto') || t.toLowerCase().includes('médica') || t.toLowerCase().includes('avaliação'))
-  ).length;
+  // Active stages according to selected niche
+  const effectiveStages =
+    nicheFilter === 'restaurant'
+      ? RESTAURANT_KANBAN_STAGES
+      : nicheFilter === 'health'
+      ? HEALTH_KANBAN_STAGES
+      : stages;
 
   // Base Antiga leads eligible for reactivation campaigns
   const baseLeads = leads.filter(
     (l) => l.stageId === 'stage-base' || l.stageId === 'stage-reativacao' || l.tags.includes('Base Antiga') || l.tags.includes('Reativação')
   );
 
-  // Filter leads based on search term, urgency & hot closing toggle
+  // Map lead to stageId according to the selected niche funnel
+  const getLeadStageIdForNiche = (lead: Lead): string => {
+    if (nicheFilter === 'restaurant') {
+      const status = lead.deliveryInfo?.status;
+      if (status === 'preparing') return 'rest-cozinha';
+      if (status === 'dispatched') return 'rest-rota';
+      if (status === 'arriving') return 'rest-chegando';
+      if (status === 'delivered') return 'rest-entregue';
+      if (lead.stageId === 'stage-6') return 'rest-cancelado';
+      if (lead.stageId === 'stage-2') return 'rest-cozinha';
+      if (lead.stageId === 'stage-3') return 'rest-rota';
+      if (lead.stageId === 'stage-4') return 'rest-chegando';
+      if (lead.stageId === 'stage-5') return 'rest-entregue';
+      return 'rest-novo';
+    }
+
+    if (nicheFilter === 'health') {
+      if (lead.stageId === 'stage-1') return 'health-triagem';
+      if (lead.stageId === 'stage-2') return 'health-avaliacao';
+      if (lead.stageId === 'stage-3') return 'health-agendado';
+      if (lead.stageId === 'stage-4') return 'health-tratamento';
+      if (lead.stageId === 'stage-5') return 'health-concluido';
+      if (lead.stageId === 'stage-base') return 'health-retorno';
+      return 'health-triagem';
+    }
+
+    return lead.stageId;
+  };
+
+  // Filter leads based on search term, urgency, hot closing toggle and niche
   const filteredLeads = leads.filter((lead) => {
     if (filterUrgentOnly && !lead.isUrgent) return false;
     if (filterHotOnly && !lead.isHotLead) return false;
 
     if (nicheFilter === 'restaurant') {
-      const isRest = Boolean(lead.deliveryInfo) || lead.tags.some((t) => t.toLowerCase().includes('restaurante') || t.toLowerCase().includes('delivery') || t.toLowerCase().includes('pizzaria') || t.toLowerCase().includes('hambúrguer') || t.toLowerCase().includes('japonês') || t.toLowerCase().includes('marmita'));
-      if (!isRest) return false;
+      if (!isDeliveryOrRestaurantLead(lead)) return false;
     } else if (nicheFilter === 'health') {
-      const isHealth = Boolean(lead.triage) || lead.tags.some((t) => t.toLowerCase().includes('clínica') || t.toLowerCase().includes('odonto') || t.toLowerCase().includes('médica') || t.toLowerCase().includes('avaliação'));
-      if (!isHealth) return false;
-    } else if (nicheFilter === 'general') {
-      const isRest = Boolean(lead.deliveryInfo) || lead.tags.some((t) => t.toLowerCase().includes('restaurante') || t.toLowerCase().includes('delivery'));
-      const isHealth = Boolean(lead.triage) || lead.tags.some((t) => t.toLowerCase().includes('clínica') || t.toLowerCase().includes('odonto'));
-      if (isRest || isHealth) return false;
+      if (!isHealthLead(lead)) return false;
     }
 
     const term = searchTerm.toLowerCase();
@@ -124,7 +211,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     );
   });
 
-  const totalValue = leads.reduce((acc, l) => acc + (l.value || 0), 0);
+  const totalValue = filteredLeads.reduce((acc, l) => acc + (l.value || 0), 0);
   const urgentCount = leads.filter((l) => l.isUrgent).length;
   const hotCount = leads.filter((l) => l.isHotLead).length;
   const triageCount = leads.filter((l) => Boolean(l.triage)).length;
@@ -138,12 +225,78 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent, stageId: string) => {
+  const handleDrop = async (e: React.DragEvent, stageId: string) => {
     e.preventDefault();
     const leadId = e.dataTransfer.getData('text/plain') || draggedLeadId;
-    if (leadId) {
-      onMoveLead(leadId, stageId);
+    if (!leadId) return;
+
+    if (nicheFilter === 'restaurant') {
+      const lead = leads.find((l) => l.id === leadId);
+      if (lead) {
+        let deliveryStatus: 'preparing' | 'dispatched' | 'arriving' | 'delivered' = 'preparing';
+        let fallbackStage = 'stage-2';
+
+        if (stageId === 'rest-novo') {
+          fallbackStage = 'stage-1';
+          deliveryStatus = 'preparing';
+        } else if (stageId === 'rest-cozinha') {
+          fallbackStage = 'stage-2';
+          deliveryStatus = 'preparing';
+        } else if (stageId === 'rest-rota') {
+          fallbackStage = 'stage-3';
+          deliveryStatus = 'dispatched';
+        } else if (stageId === 'rest-chegando') {
+          fallbackStage = 'stage-4';
+          deliveryStatus = 'arriving';
+        } else if (stageId === 'rest-entregue') {
+          fallbackStage = 'stage-5';
+          deliveryStatus = 'delivered';
+        } else if (stageId === 'rest-cancelado') {
+          fallbackStage = 'stage-6';
+          deliveryStatus = 'delivered';
+        }
+
+        const updatedDelivery = {
+          orderNumber: lead.deliveryInfo?.orderNumber || `PED-${Math.floor(1000 + Math.random() * 9000)}`,
+          itemsDescription: lead.deliveryInfo?.itemsDescription || lead.interest || 'Pedido de Comida / Refeição',
+          motoboyName: lead.deliveryInfo?.motoboyName || 'Carlos Motoboy',
+          motoboyPhone: lead.deliveryInfo?.motoboyPhone || '5511999887766',
+          motoboyPlate: lead.deliveryInfo?.motoboyPlate || 'ABC-1234',
+          deliveryAddress: lead.deliveryInfo?.deliveryAddress || 'Endereço informado no WhatsApp',
+          etaMinutes: stageId === 'rest-chegando' ? 5 : stageId === 'rest-entregue' ? 0 : 20,
+          dispatchedAt: lead.deliveryInfo?.dispatchedAt || new Date().toISOString(),
+          status: deliveryStatus,
+          verificationCode: lead.deliveryInfo?.verificationCode || lead.phone.slice(-4) || '1234',
+        };
+
+        await onSaveLead(
+          {
+            stageId: fallbackStage,
+            deliveryInfo: updatedDelivery,
+          },
+          lead.id
+        );
+      }
+      setDraggedLeadId(null);
+      return;
     }
+
+    if (nicheFilter === 'health') {
+      const stageMap: Record<string, string> = {
+        'health-triagem': 'stage-1',
+        'health-avaliacao': 'stage-2',
+        'health-agendado': 'stage-3',
+        'health-tratamento': 'stage-4',
+        'health-concluido': 'stage-5',
+        'health-retorno': 'stage-base',
+      };
+      const actualStage = stageMap[stageId] || 'stage-1';
+      onMoveLead(leadId, actualStage);
+      setDraggedLeadId(null);
+      return;
+    }
+
+    onMoveLead(leadId, stageId);
     setDraggedLeadId(null);
   };
 
@@ -305,52 +458,98 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </div>
       </div>
 
-      {/* Niche Filter Bar (Restaurantes, Clínicas, Geral) */}
-      <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 shrink-0">
-        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0">Filtrar Segmento:</span>
-        <button
-          onClick={() => setNicheFilter('all')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            nicheFilter === 'all'
-              ? 'bg-slate-900 text-white shadow-2xs'
-              : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-          }`}
-        >
-          Todos os Leads ({leads.length})
-        </button>
-
-        <button
-          onClick={() => setNicheFilter('restaurant')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+      {/* Dynamic Niche Funnel Switcher Bar */}
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 mb-4 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className={`p-2.5 rounded-xl ${
             nicheFilter === 'restaurant'
-              ? 'bg-amber-600 text-white shadow-2xs'
-              : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
-          }`}
-        >
-          <UtensilsCrossed className="w-3.5 h-3.5" />
-          <span>Restaurantes & Delivery ({restaurantLeadsCount})</span>
-        </button>
+              ? 'bg-amber-600 text-white'
+              : nicheFilter === 'health'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-900 text-white'
+          } shadow-2xs`}>
+            {nicheFilter === 'restaurant' ? (
+              <UtensilsCrossed className="w-5 h-5 text-amber-100" />
+            ) : nicheFilter === 'health' ? (
+              <Stethoscope className="w-5 h-5 text-blue-100" />
+            ) : (
+              <LayoutDashboard className="w-5 h-5 text-indigo-300" />
+            )}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-900">
+                Funil do CRM Ativo:
+              </span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                nicheFilter === 'restaurant'
+                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                  : nicheFilter === 'health'
+                  ? 'bg-blue-50 text-blue-800 border-blue-200'
+                  : 'bg-slate-100 text-slate-800 border-slate-200'
+              }`}>
+                {nicheFilter === 'restaurant'
+                  ? 'Modo Gastronomia & Delivery'
+                  : nicheFilter === 'health'
+                  ? 'Modo Clínicas & Saúde'
+                  : 'Modo Geral & Vendas B2B'}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              {nicheFilter === 'restaurant' && 'Colunas adaptadas para pedidos: Novo Pedido ➔ Na Cozinha ➔ Saiu p/ Entrega ➔ Chegando ➔ Entregue.'}
+              {nicheFilter === 'health' && 'Colunas adaptadas para saúde: Novo Paciente ➔ Em Avaliação ➔ Consulta Agendada ➔ Em Tratamento ➔ Concluído.'}
+              {nicheFilter === 'all' && 'Colunas adaptadas para vendas B2B e serviços: Base Antiga ➔ Novo Lead ➔ Qualificação ➔ Proposta ➔ Fechado.'}
+            </p>
+          </div>
+        </div>
 
-        <button
-          onClick={() => setNicheFilter('health')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-            nicheFilter === 'health'
-              ? 'bg-blue-600 text-white shadow-2xs'
-              : 'bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100'
-          }`}
-        >
-          <span>Clínicas & Consultas ({healthLeadsCount})</span>
-        </button>
-
-        {onNavigateToDelivery && (
+        {/* 3 Niches Switcher Buttons */}
+        <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200 self-start md:self-auto overflow-x-auto">
           <button
-            onClick={onNavigateToDelivery}
-            className="ml-auto flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+            onClick={() => setNicheFilter('restaurant')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              nicheFilter === 'restaurant'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'text-slate-700 hover:text-amber-900 hover:bg-white'
+            }`}
           >
-            <Bike className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Ver Kanban de Pedidos & Motoboys ({restaurantLeadsCount}) ➔</span>
+            <UtensilsCrossed className="w-3.5 h-3.5" />
+            <span>🍔 Restaurantes & Delivery ({restaurantLeadsCount})</span>
           </button>
-        )}
+
+          <button
+            onClick={() => setNicheFilter('health')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              nicheFilter === 'health'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-700 hover:text-blue-900 hover:bg-white'
+            }`}
+          >
+            <Stethoscope className="w-3.5 h-3.5" />
+            <span>🏥 Clínicas & Saúde ({healthLeadsCount})</span>
+          </button>
+
+          <button
+            onClick={() => setNicheFilter('all')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              nicheFilter === 'all'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white'
+            }`}
+          >
+            <span>💼 Vendas & Geral ({leads.length})</span>
+          </button>
+
+          {onNavigateToDelivery && (
+            <button
+              onClick={onNavigateToDelivery}
+              className="ml-1 flex items-center gap-1 text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+            >
+              <Bike className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Painel Motoboys ➔</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Clean Production Banner when leads === 0 */}
@@ -378,8 +577,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
       {/* Kanban Stages Columns */}
       <div className="flex-1 flex gap-4 overflow-x-auto pb-4 min-h-0 items-stretch" id="kanban-columns-container">
-        {stages.map((stage) => {
-          const stageLeads = filteredLeads.filter((l) => l.stageId === stage.id);
+        {effectiveStages.map((stage) => {
+          const stageLeads = filteredLeads.filter((l) => getLeadStageIdForNiche(l) === stage.id);
           const stageTotalValue = stageLeads.reduce((acc, l) => acc + (l.value || 0), 0);
 
           return (
