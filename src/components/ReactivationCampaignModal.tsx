@@ -37,23 +37,28 @@ interface DispatchLog {
 const TEMPLATE_PRESETS = [
   {
     id: 'dental_checkup',
-    name: '🦷 Odontologia (Revisão Preventiva & Check-up)',
+    name: '🦷 Odontologia (Revisão Preventiva & Check-up Semestral)',
     text: 'Olá {nome}, tudo bem por aí? Passando rapidinho para saber como está a sua saúde bucal e te lembrar da importância da avaliação preventiva semestral com a Dra. Lucy Murata. Nossa equipe tem horários especiais abertos esta semana aqui no Euroville Mall! 🌿✨',
   },
   {
+    id: 'dental_prophylaxis',
+    name: '🦷 Odontologia (Limpeza & Profilaxia Preventiva Vencida)',
+    text: 'Olá {nome}! Tudo bem? Estávamos revisando sua ficha clínica e notamos que já se passaram mais de 6 meses desde a sua última profilaxia e remoção de biofilme. A prevenção é o segredo para manter o sorriso impecável. Gostaria que eu verificasse os horários disponíveis com a Dra. Lucy esta semana? 🦷✨',
+  },
+  {
     id: 'dental_treatment',
-    name: '🦷 Odontologia (Retomada de Tratamento)',
+    name: '🦷 Odontologia (Retomada de Tratamento / Implante / Alinhador)',
     text: 'Olá {nome}! Tudo bem? A equipe da Dra. Lucy Murata estava revisando os prontuários e lembramos de você. Conseguiu verificar a continuidade do seu tratamento de {procedimento}? Estamos com condições especiais de retomada esta semana! 🦷',
   },
   {
     id: 'aesthetic_care',
-    name: '💆‍♀️ Estética & Harmonização',
-    text: 'Olá {nome}, querida! Tudo bem? Passando para lembrar que estamos com poucas vagas para avaliação estética e bioestimuladores nesta semana. Vamos realçar ainda mais a sua beleza natural? ✨💖',
+    name: '💆‍♀️ Estética & Harmonização Facial (Retorno Semestral)',
+    text: 'Olá {nome}, querida! Tudo bem? Passando para lembrar que já completamos 6 meses da sua última aplicação e estamos no período ideal para o retoque do bioestimulador e toxina botulínica. Vamos realçar ainda mais a sua beleza natural? ✨💖',
   },
   {
     id: 'medical_routine',
-    name: '🩺 Clínica Médica (Acompanhamento)',
-    text: 'Olá {nome}! Como você tem passado? Passando para saber como está a sua saúde e se você já realizou os seus exames de rotina deste ano. Gostaria de verificar os horários de consulta para esta semana? 🩺',
+    name: '🩺 Clínica Médica (Exames de Rotina & Check-up Anual)',
+    text: 'Olá {nome}! Como você tem passado? Passando para saber como está a sua saúde e se você já realizou os seus exames de rotina deste ano. Acompanhar preventivamente é fundamental para o seu bem-estar. Gostaria de verificar os horários de consulta para esta semana? 🩺',
   },
   {
     id: 'commercial_followup',

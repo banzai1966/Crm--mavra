@@ -46,12 +46,14 @@ export const RESTAURANT_KANBAN_STAGES: KanbanStage[] = [
 ];
 
 export const HEALTH_KANBAN_STAGES: KanbanStage[] = [
-  { id: 'health-triagem', name: '📥 Novo Paciente / Triagem', color: '#3b82f6', order: 1 },
-  { id: 'health-avaliacao', name: '💬 Em Avaliação / Dúvidas', color: '#f59e0b', order: 2 },
-  { id: 'health-agendado', name: '📅 Consulta Agendada', color: '#8b5cf6', order: 3 },
-  { id: 'health-tratamento', name: '🩺 Paciente em Tratamento', color: '#06b6d4', order: 4 },
-  { id: 'health-concluido', name: '🌟 Alta / Concluído', color: '#10b981', order: 5 },
-  { id: 'health-retorno', name: '🔄 Retorno / Manutenção', color: '#6366f1', order: 6 },
+  { id: 'health-base', name: '📂 Base Antiga (+6m Inativos)', color: '#6366f1', order: 1 },
+  { id: 'health-reativacao', name: '⚡ Em Reativação (Sofia IA)', color: '#ec4899', order: 2 },
+  { id: 'health-triagem', name: '📥 Novo Paciente / Triagem', color: '#3b82f6', order: 3 },
+  { id: 'health-avaliacao', name: '💬 Em Avaliação / Dúvidas', color: '#f59e0b', order: 4 },
+  { id: 'health-agendado', name: '📅 Consulta Agendada', color: '#8b5cf6', order: 5 },
+  { id: 'health-tratamento', name: '🩺 Paciente em Tratamento', color: '#06b6d4', order: 6 },
+  { id: 'health-concluido', name: '🌟 Alta / Concluído', color: '#10b981', order: 7 },
+  { id: 'health-retorno', name: '🔄 Retorno Preventivo / Manutenção', color: '#14b8a6', order: 8 },
 ];
 
 export const isDeliveryOrRestaurantLead = (l: Lead): boolean => {
@@ -80,14 +82,27 @@ export const isHealthLead = (l: Lead): boolean => {
   const str = `${l.name} ${(l.tags || []).join(' ')} ${l.interest || ''} ${l.notes || ''}`.toLowerCase();
   return (
     str.includes('clínica') ||
+    str.includes('clinica') ||
     str.includes('odonto') ||
     str.includes('médic') ||
+    str.includes('medic') ||
     str.includes('avaliação') ||
     str.includes('dent') ||
     str.includes('dra') ||
     str.includes('doutor') ||
     str.includes('paciente') ||
     str.includes('amálgama') ||
+    str.includes('profilaxia') ||
+    str.includes('limpeza') ||
+    str.includes('harmonização') ||
+    str.includes('harmonizacao') ||
+    str.includes('botox') ||
+    str.includes('bioestimulador') ||
+    str.includes('prontuário') ||
+    str.includes('prontuario') ||
+    str.includes('consulta') ||
+    str.includes('exame') ||
+    l.id.startsWith('lead-health-') ||
     l.id === 'lead-insta-1' ||
     l.id === 'lead-insta-1791217658483' ||
     l.id === 'lead-insta-1791217765321' ||
@@ -146,6 +161,20 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   // Delivery / restaurant leads count
   const restaurantLeadsCount = leads.filter(isDeliveryOrRestaurantLead).length;
   const healthLeadsCount = leads.filter(isHealthLead).length;
+  const healthBaseLeadsCount = leads.filter(
+    (l) =>
+      isHealthLead(l) &&
+      (l.stageId === 'stage-base' ||
+        l.stageId === 'health-base' ||
+        l.tags?.some((t) => t.toLowerCase().includes('base antiga') || t.toLowerCase().includes('sem consulta')))
+  ).length;
+  const healthReactivationLeadsCount = leads.filter(
+    (l) =>
+      isHealthLead(l) &&
+      (l.stageId === 'stage-reativacao' ||
+        l.stageId === 'health-reativacao' ||
+        l.tags?.some((t) => t.toLowerCase().includes('reativação') || t.toLowerCase().includes('reativacao')))
+  ).length;
 
   // Active stages according to selected niche
   const effectiveStages =
@@ -156,9 +185,30 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
       : stages;
 
   // Base Antiga leads eligible for reactivation campaigns
-  const baseLeads = leads.filter(
-    (l) => l.stageId === 'stage-base' || l.stageId === 'stage-reativacao' || l.tags.includes('Base Antiga') || l.tags.includes('Reativação')
-  );
+  const baseLeads = leads.filter((l) => {
+    if (nicheFilter === 'health') {
+      return (
+        isHealthLead(l) &&
+        (l.stageId === 'stage-base' ||
+          l.stageId === 'stage-reativacao' ||
+          l.stageId === 'health-base' ||
+          l.stageId === 'health-reativacao' ||
+          l.tags?.some(
+            (t) =>
+              t.toLowerCase().includes('base antiga') ||
+              t.toLowerCase().includes('reativação') ||
+              t.toLowerCase().includes('sem consulta') ||
+              t.toLowerCase().includes('inativo')
+          ))
+      );
+    }
+    return (
+      l.stageId === 'stage-base' ||
+      l.stageId === 'stage-reativacao' ||
+      l.tags.includes('Base Antiga') ||
+      l.tags.includes('Reativação')
+    );
+  });
 
   // Map lead to stageId according to the selected niche funnel
   const getLeadStageIdForNiche = (lead: Lead): string => {
@@ -177,12 +227,31 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     }
 
     if (nicheFilter === 'health') {
-      if (lead.stageId === 'stage-1') return 'health-triagem';
-      if (lead.stageId === 'stage-2') return 'health-avaliacao';
-      if (lead.stageId === 'stage-3') return 'health-agendado';
-      if (lead.stageId === 'stage-4') return 'health-tratamento';
-      if (lead.stageId === 'stage-5') return 'health-concluido';
-      if (lead.stageId === 'stage-base') return 'health-retorno';
+      if (
+        lead.stageId === 'stage-base' ||
+        lead.stageId === 'health-base' ||
+        lead.tags?.some((t) => t.toLowerCase().includes('base antiga') || t.toLowerCase().includes('sem consulta'))
+      ) {
+        return 'health-base';
+      }
+      if (
+        lead.stageId === 'stage-reativacao' ||
+        lead.stageId === 'health-reativacao' ||
+        lead.tags?.some(
+          (t) =>
+            t.toLowerCase().includes('em reativação') ||
+            t.toLowerCase().includes('reativação disparada') ||
+            t.toLowerCase().includes('reativacao')
+        )
+      ) {
+        return 'health-reativacao';
+      }
+      if (lead.stageId === 'stage-1' || lead.stageId === 'health-triagem') return 'health-triagem';
+      if (lead.stageId === 'stage-2' || lead.stageId === 'health-avaliacao') return 'health-avaliacao';
+      if (lead.stageId === 'stage-3' || lead.stageId === 'health-agendado') return 'health-agendado';
+      if (lead.stageId === 'stage-4' || lead.stageId === 'health-tratamento') return 'health-tratamento';
+      if (lead.stageId === 'stage-5' || lead.stageId === 'health-concluido') return 'health-concluido';
+      if (lead.stageId === 'stage-6' || lead.stageId === 'health-retorno') return 'health-retorno';
       return 'health-triagem';
     }
 
@@ -283,12 +352,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
     if (nicheFilter === 'health') {
       const stageMap: Record<string, string> = {
+        'health-base': 'stage-base',
+        'health-reativacao': 'stage-reativacao',
         'health-triagem': 'stage-1',
         'health-avaliacao': 'stage-2',
         'health-agendado': 'stage-3',
         'health-tratamento': 'stage-4',
         'health-concluido': 'stage-5',
-        'health-retorno': 'stage-base',
+        'health-retorno': 'stage-6',
       };
       const actualStage = stageMap[stageId] || 'stage-1';
       onMoveLead(leadId, actualStage);
@@ -302,7 +373,22 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   const openNewLeadInStage = (stageId: string) => {
     setLeadToEdit(null);
-    setTargetStageForNewLead(stageId);
+    let target = stageId;
+    if (stageId === 'health-base') target = 'stage-base';
+    else if (stageId === 'health-reativacao') target = 'stage-reativacao';
+    else if (stageId === 'health-triagem') target = 'stage-1';
+    else if (stageId === 'health-avaliacao') target = 'stage-2';
+    else if (stageId === 'health-agendado') target = 'stage-3';
+    else if (stageId === 'health-tratamento') target = 'stage-4';
+    else if (stageId === 'health-concluido') target = 'stage-5';
+    else if (stageId === 'health-retorno') target = 'stage-6';
+    else if (stageId === 'rest-novo') target = 'stage-1';
+    else if (stageId === 'rest-cozinha') target = 'stage-2';
+    else if (stageId === 'rest-rota') target = 'stage-3';
+    else if (stageId === 'rest-chegando') target = 'stage-4';
+    else if (stageId === 'rest-entregue') target = 'stage-5';
+    else if (stageId === 'rest-cancelado') target = 'stage-6';
+    setTargetStageForNewLead(target);
     setIsModalOpen(true);
   };
 
@@ -497,7 +583,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             </div>
             <p className="text-[11px] text-slate-500 mt-0.5">
               {nicheFilter === 'restaurant' && 'Colunas adaptadas para pedidos: Novo Pedido ➔ Na Cozinha ➔ Saiu p/ Entrega ➔ Chegando ➔ Entregue.'}
-              {nicheFilter === 'health' && 'Colunas adaptadas para saúde: Novo Paciente ➔ Em Avaliação ➔ Consulta Agendada ➔ Em Tratamento ➔ Concluído.'}
+              {nicheFilter === 'health' && 'Colunas para clínicas & consultórios: 📂 Base Antiga (+6m) ➔ ⚡ Em Reativação (IA) ➔ 📥 Novo Paciente ➔ 💬 Avaliação ➔ 📅 Agendado ➔ 🩺 Tratamento ➔ 🌟 Alta ➔ 🔄 Retorno.'}
               {nicheFilter === 'all' && 'Colunas adaptadas para vendas B2B e serviços: Base Antiga ➔ Novo Lead ➔ Qualificação ➔ Proposta ➔ Fechado.'}
             </p>
           </div>
@@ -551,6 +637,51 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Clinic & Health Specialized Reativação Banner */}
+      {nicheFilter === 'health' && (
+        <div className="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 border border-blue-800/80 rounded-2xl p-4 mb-4 text-white shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="p-2.5 rounded-xl bg-blue-500/20 border border-blue-400/30 text-blue-300 shrink-0">
+              <Sparkles className="w-5 h-5 text-blue-300 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                  <Stethoscope className="w-4 h-4 text-blue-300" />
+                  <span>Base Antiga & Reativação Ativa de Pacientes (Sofia IA)</span>
+                </h4>
+                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/30 border border-indigo-400/40 text-indigo-200">
+                  {healthBaseLeadsCount} na Base Antiga • {healthReactivationLeadsCount} em Reativação
+                </span>
+              </div>
+              <p className="text-xs text-blue-100/80 mt-1 max-w-2xl">
+                Prontuários e pacientes sem retorno há mais de 6 meses (profilaxia preventiva, retoque de toxina/bioestimulador, continuidade de tratamentos/próteses e exames de rotina). A Sofia aborda com acolhimento e resgata horários na agenda!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <button
+              id="btn-health-campaign-launch"
+              onClick={() => setShowCampaignModal(true)}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+              title="Disparar campanha de reativação humanizada via WhatsApp para pacientes da base antiga"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Disparar Resgate de Pacientes ({healthBaseLeadsCount + healthReactivationLeadsCount})</span>
+            </button>
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              title="Importar lista de prontuários antigos do seu software odontológico/médico (CSV ou Excel)"
+            >
+              <Database className="w-3.5 h-3.5 text-blue-200" />
+              <span>Importar Prontuários</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Clean Production Banner when leads === 0 */}
       {leads.length === 0 && (
@@ -623,15 +754,21 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 </div>
               </div>
 
-              {/* Special Column Action for Base Antiga */}
-              {(stage.id === 'stage-base' || stage.id === 'stage-reativacao' || stage.name.toLowerCase().includes('base')) && (
+              {/* Special Column Action for Base Antiga and Reativação */}
+              {(stage.id === 'stage-base' ||
+                stage.id === 'stage-reativacao' ||
+                stage.id === 'health-base' ||
+                stage.id === 'health-reativacao' ||
+                stage.name.toLowerCase().includes('base') ||
+                stage.name.toLowerCase().includes('reativação') ||
+                stage.name.toLowerCase().includes('reativacao')) && (
                 <div className="px-3 py-1.5 bg-indigo-50/90 border-b border-indigo-100 flex items-center justify-between">
                   <span className="text-[10px] font-semibold text-indigo-700">
-                    {stageLeads.length} contatos na base
+                    {stageLeads.length} {stage.id.includes('reativacao') ? 'em reativação' : 'pacientes na base'}
                   </span>
                   <button
                     onClick={() => setShowCampaignModal(true)}
-                    className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-2xs transition-colors cursor-pointer"
+                    className="flex items-center gap-1 bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-700 hover:to-indigo-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-2xs transition-colors cursor-pointer"
                     title="Disparar mensagens de reativação para contatos da base antiga"
                   >
                     <Send className="w-2.5 h-2.5" />
@@ -821,6 +958,54 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                             </span>
                           </div>
                         )
+                      )}
+
+                      {/* Base Antiga & Inativos (+6 Meses) */}
+                      {(lead.stageId === 'stage-base' ||
+                        lead.stageId === 'health-base' ||
+                        lead.tags?.some(
+                          (t) => t.toLowerCase().includes('base antiga') || t.toLowerCase().includes('sem consulta')
+                        )) && (
+                        <div className="p-2 mb-2 bg-gradient-to-r from-indigo-50/90 to-purple-50/90 border border-indigo-200/90 rounded-lg text-[10px] text-indigo-950 flex items-center justify-between font-bold shadow-2xs">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                            <span className="truncate">
+                              📂 Base Antiga (+6m sem retorno)
+                            </span>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowCampaignModal(true);
+                            }}
+                            className="text-[9px] bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-700 hover:to-indigo-700 text-white px-2 py-0.5 rounded font-bold shrink-0 cursor-pointer shadow-2xs transition-colors"
+                            title="Disparar mensagem personalizada de reativação"
+                          >
+                            ⚡ Reativar
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Em Reativação Ativa */}
+                      {(lead.stageId === 'stage-reativacao' ||
+                        lead.stageId === 'health-reativacao' ||
+                        lead.tags?.some(
+                          (t) =>
+                            t.toLowerCase().includes('em reativação') ||
+                            t.toLowerCase().includes('reativação disparada') ||
+                            t.toLowerCase().includes('reativacao')
+                        )) && (
+                        <div className="p-2 mb-2 bg-gradient-to-r from-pink-50/90 to-rose-50/90 border border-pink-200 rounded-lg text-[10px] text-pink-950 flex items-center justify-between font-bold shadow-2xs">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <Send className="w-3.5 h-3.5 text-pink-600 shrink-0 animate-pulse" />
+                            <span className="truncate">
+                              ⚡ Em Reativação Ativa (IA Sofia)
+                            </span>
+                          </div>
+                          <span className="text-[9px] bg-pink-100 text-pink-800 border border-pink-300 px-1.5 py-0.5 rounded font-extrabold shrink-0">
+                            Aguardando
+                          </span>
+                        </div>
                       )}
 
                       {lead.interest && (

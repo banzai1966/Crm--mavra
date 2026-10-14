@@ -160,6 +160,15 @@ async function startServer() {
     res.json(db.leads);
   });
 
+  app.post('/api/admin/reload-data', (req: Request, res: Response) => {
+    db.loadFromFile();
+    res.json({
+      success: true,
+      leadsCount: db.leads.length,
+      stagesCount: db.stages.length,
+    });
+  });
+
   app.post('/api/leads', (req: Request, res: Response) => {
     const { name, phone, email, stageId, value, interest, tags, notes } = req.body;
     if (!name || !phone) {
@@ -1304,7 +1313,14 @@ async function startServer() {
       if (!lead.tags.includes('Reativação Disparada')) {
         lead.tags.push('Reativação Disparada');
       }
-      lead.notes = `${lead.notes || ''}\n🚀 [Campanha Reativação ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}]: Mensagem de reativação enviada.`;
+      if (!lead.tags.includes('⚡ Em Reativação')) {
+        lead.tags.push('⚡ Em Reativação');
+      }
+      lead.tags = lead.tags.filter((t) => !t.toLowerCase().includes('base antiga'));
+      if (lead.stageId === 'stage-base' || lead.stageId === 'health-base') {
+        lead.stageId = 'stage-reativacao';
+      }
+      lead.notes = `${lead.notes || ''}\n🚀 [Campanha Reativação ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}]: Mensagem de reativação enviada pela IA Sofia.`;
       
       db.saveToFile();
 

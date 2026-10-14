@@ -7,6 +7,12 @@
       "order": 0
     },
     {
+      "id": "stage-reativacao",
+      "name": "⚡ Em Reativação (Disparo IA)",
+      "color": "#ec4899",
+      "order": 1
+    },
+    {
       "id": "stage-1",
       "name": "Novo Lead",
       "color": "#3b82f6",
@@ -323,6 +329,111 @@
         "dispatchedAt": "2026-10-14T20:20:43.931Z",
         "status": "preparing",
         "verificationCode": "7777"
+      }
+    },
+    {
+      "id": "lead-health-base-1",
+      "name": "Juliana Santos",
+      "phone": "5511976543210",
+      "email": "juliana.santos@email.com",
+      "stageId": "stage-base",
+      "value": 850,
+      "interest": "Limpeza Preventiva & Profilaxia Semestral",
+      "tags": [
+        "🩺 Clínica/Odonto",
+        "📂 Base Antiga",
+        "Sem Consulta > 8m",
+        "Dra. Lucy Murata"
+      ],
+      "notes": "Prontuário #4120. Última consulta presencial há 8 meses (Restauração biológica). Não retornou para a profilaxia preventiva e remoção de biofilme.",
+      "aiPaused": false,
+      "isHotLead": false,
+      "lastInteraction": "2026-02-16T23:17:16.525Z",
+      "createdAt": "2026-01-27T23:17:16.526Z",
+      "unreadCount": 0,
+      "triage": {
+        "procedure": "Profilaxia e Check-up Semestral",
+        "status": "pending_confirmation",
+        "paymentType": "particular"
+      }
+    },
+    {
+      "id": "lead-health-base-2",
+      "name": "Carlos Eduardo Rocha",
+      "phone": "5511981234567",
+      "email": "carloseduardo.rocha@empresa.com.br",
+      "stageId": "stage-base",
+      "value": 4500,
+      "interest": "Retomada de Implante Cerâmico Zircônia (Fase 2 - Prótese)",
+      "tags": [
+        "🩺 Clínica/Odonto",
+        "📂 Base Antiga",
+        "⚠️ Tratamento Interrompido",
+        "Dra. Lucy Murata"
+      ],
+      "notes": "Prontuário #3890. Concluiu enxerto e instalação do pino de zircônia há 7 meses. Falta confeccionar a coroa definitiva biocompatível.",
+      "aiPaused": false,
+      "isHotLead": true,
+      "hotReason": "Quer retomar o implante para finalizar antes do recesso",
+      "lastInteraction": "2026-03-18T23:17:16.526Z",
+      "createdAt": "2026-02-26T23:17:16.526Z",
+      "unreadCount": 0,
+      "triage": {
+        "procedure": "Coroa de Zircônia sobre Implante",
+        "status": "pending_confirmation",
+        "paymentType": "particular"
+      }
+    },
+    {
+      "id": "lead-health-base-3",
+      "name": "Fernanda Lima Ribeiro",
+      "phone": "5511993456789",
+      "email": "fernanda.lima@advocacia.com",
+      "stageId": "stage-reativacao",
+      "value": 2400,
+      "interest": "Retoque Semestral de Toxina Botulínica & Bioestimulador",
+      "tags": [
+        "💆‍♀️ Harmonização Facial",
+        "⚡ Em Reativação",
+        "Retorno 6 Meses",
+        "Dra. Lucy Murata"
+      ],
+      "notes": "Realizou protocolo de bioestimulador e toxina há 6 meses. Sofia disparou mensagem de reativação via WhatsApp há 2 horas. Paciente respondeu querendo ver horários na próxima terça.",
+      "aiPaused": false,
+      "isHotLead": true,
+      "hotReason": "Pediu horários na próxima terça-feira com a Dra. Lucy",
+      "lastInteraction": "2026-10-14T21:17:16.526Z",
+      "createdAt": "2026-04-17T23:17:16.526Z",
+      "unreadCount": 1,
+      "triage": {
+        "procedure": "Toxina Botulínica e Bioestimulador",
+        "status": "pending_confirmation",
+        "paymentType": "particular"
+      }
+    },
+    {
+      "id": "lead-health-base-4",
+      "name": "Márcio Aurélio Fontes",
+      "phone": "5511965432198",
+      "email": "marcio.fontes@gestao.com.br",
+      "stageId": "stage-base",
+      "value": 1200,
+      "interest": "Check-up Clínico Integrativo & Exames Laboratoriais Anuais",
+      "tags": [
+        "🩺 Clínica Médica",
+        "📂 Base Antiga",
+        "🗓️ Check-up Anual Vencido"
+      ],
+      "notes": "Paciente crônico em acompanhamento preventivo. Última consulta e exames realizados há 11 meses. Necessita renovar pedidos de exames de rotina.",
+      "aiPaused": false,
+      "isHotLead": false,
+      "lastInteraction": "2025-11-18T23:17:16.526Z",
+      "createdAt": "2025-10-29T23:17:16.526Z",
+      "unreadCount": 0,
+      "triage": {
+        "procedure": "Check-up Clínico Geral e Exames",
+        "status": "pending_confirmation",
+        "paymentType": "particular"
       }
     }
   ],
