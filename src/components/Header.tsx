@@ -5,26 +5,25 @@ import {
   Bot,
   Radio,
   Database,
-  ShieldCheck,
-  Zap,
-  Sparkles,
-  PhoneCall,
-  UserCheck,
   BarChart3,
   Lock,
   Unlock,
   Eye,
   Share2,
-  Copy,
   Check,
-  Volume2,
-  VolumeX,
-  Flame,
   ExternalLink,
   Activity,
   Calendar as CalendarIcon,
   Briefcase,
   Bike,
+  Settings,
+  ChevronDown,
+  Layers,
+  Sparkles,
+  Stethoscope,
+  UtensilsCrossed,
+  ShoppingBag,
+  Building2,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
@@ -68,15 +67,34 @@ export const Header: React.FC<HeaderProps> = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [showClientLinkModal, setShowClientLinkModal] = useState(false);
   const [showServerHealthModal, setShowServerHealthModal] = useState(false);
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+  const [showMoreModulesDropdown, setShowMoreModulesDropdown] = useState(false);
+  const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false);
+
+  const adminDropdownRef = useRef<HTMLDivElement>(null);
+  const moreModulesDropdownRef = useRef<HTMLDivElement>(null);
+  const workspaceDropdownRef = useRef<HTMLDivElement>(null);
+
   const logoClicksRef = useRef<number>(0);
   const logoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Check if current URL is in pure client mode (?modo=cliente or ?cliente=1)
-  const isExplicitClientMode =
-    typeof window !== 'undefined' &&
-    (new URLSearchParams(window.location.search).has('cliente') ||
-      new URLSearchParams(window.location.search).has('client') ||
-      new URLSearchParams(window.location.search).has('modo'));
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (adminDropdownRef.current && !adminDropdownRef.current.contains(target)) {
+        setShowAdminDropdown(false);
+      }
+      if (moreModulesDropdownRef.current && !moreModulesDropdownRef.current.contains(target)) {
+        setShowMoreModulesDropdown(false);
+      }
+      if (workspaceDropdownRef.current && !workspaceDropdownRef.current.contains(target)) {
+        setShowWorkspaceDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Secret keyboard shortcut: Ctrl + Shift + A or Cmd + Shift + A
   useEffect(() => {
@@ -105,9 +123,9 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  // Function for Marco to open the link modal & copy the 100% clean link for the client
   const handleCopyClientUrl = () => {
     setShowClientLinkModal(true);
+    setShowAdminDropdown(false);
     try {
       const url = new URL(window.location.href);
       url.searchParams.set('modo', 'cliente');
@@ -134,143 +152,214 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  // Provider badge styling
-  const providerLabel = {
-    gemini: 'Google Gemini',
-    openai: 'OpenAI GPT-4o',
-    anthropic: 'Claude 3.5 Sonnet',
-  }[agentConfig.activeProvider] || 'Multi-IA';
+  // Determine current niche
+  const currentNiche =
+    agentConfig.followUpNiche === 'restaurant_delivery'
+      ? 'delivery'
+      : agentConfig.followUpNiche === 'retail'
+      ? 'ecommerce'
+      : agentConfig.followUpNiche === 'sales'
+      ? 'b2b'
+      : 'clinic';
+
+  const nicheMeta = {
+    clinic: { label: 'Clínica & Saúde', icon: Stethoscope, badge: 'Saúde' },
+    delivery: { label: 'Pizzaria & Delivery', icon: UtensilsCrossed, badge: 'Delivery' },
+    ecommerce: { label: 'E-commerce & Varejo', icon: ShoppingBag, badge: 'Varejo' },
+    b2b: { label: 'Comercial B2B', icon: Building2, badge: 'B2B' },
+  }[currentNiche];
+
+  const CurrentNicheIcon = nicheMeta.icon;
+
+  // Is active tab one of the technical admin settings?
+  const isTechnicalTab = activeTab === 'agent' || activeTab === 'evolution' || activeTab === 'supabase';
+
+  // Which specialized operational tab is primary for this niche?
+  const isDeliveryPrimary = currentNiche === 'delivery' || currentNiche === 'ecommerce';
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
-      {/* Main Header & Nav Tabs */}
-      <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div className="flex items-center justify-between md:justify-start gap-3">
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={handleLogoSecretClick}
-              className="cursor-pointer focus:outline-none flex items-center group transition-transform active:scale-95"
-              title="NEXA CRM (Clique 3x para Acesso Restrito)"
-            >
-              <img
-                src="/logo.png"
-                alt="NEXA CRM"
-                className="h-7 md:h-7.5 w-auto max-w-[130px] object-contain transition-opacity group-hover:opacity-85"
-              />
-            </button>
-          </div>
+      {/* Main Top Bar */}
+      <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+        {/* Left Section: Brand Logo & Niche Switcher */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={handleLogoSecretClick}
+            className="cursor-pointer focus:outline-none flex items-center group transition-transform active:scale-95"
+            title="NEXA CRM (Clique 3x para Gestão Restrita)"
+          >
+            <img
+              src="/logo.png"
+              alt="NEXA CRM"
+              className="h-7 md:h-7.5 w-auto max-w-[125px] object-contain transition-opacity group-hover:opacity-85"
+            />
+          </button>
 
-          {/* Quick status on mobile / compact */}
-          <div className="flex items-center gap-1.5 md:hidden">
-            <button
-              type="button"
-              onClick={handleOpenInExternalBrowser}
-              className="flex items-center gap-1 bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-900 border border-amber-300 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer shadow-2xs"
-              title="Abrir no navegador externo (Safari / Chrome)"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
-              <span>{typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'Safari' : 'Navegador'}</span>
-            </button>
+          {/* Vertical divider */}
+          <div className="hidden sm:block h-5 w-px bg-slate-200" />
 
-            {onToggleGlobalAi && (
+          {/* Smart Niche Environment Selector */}
+          {onSwitchWorkspace && (
+            <div className="relative" ref={workspaceDropdownRef}>
               <button
-                onClick={onToggleGlobalAi}
-                className={`p-1.5 rounded-md text-xs border ${
-                  agentConfig.isGlobalAiActive !== false
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                    : 'bg-rose-50 text-rose-800 border-rose-300'
-                }`}
-                title="Status da IA"
+                type="button"
+                onClick={() => setShowWorkspaceDropdown(!showWorkspaceDropdown)}
+                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200/90 text-slate-800 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                title="Alternar o Nicho da IA e Perfil da Empresa em 1 clique"
               >
-                <Bot className="w-4 h-4" />
+                <CurrentNicheIcon className="w-3.5 h-3.5 text-indigo-600" />
+                <span className="hidden sm:inline text-slate-500 font-normal">Nicho:</span>
+                <span className="font-semibold">{nicheMeta.label}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
-            )}
-          </div>
+
+              {showWorkspaceDropdown && (
+                <div className="absolute left-0 mt-1.5 w-60 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs">
+                  <div className="px-3 py-1.5 border-b border-slate-100">
+                    <p className="font-bold text-slate-800">Selecione o Nicho da Empresa</p>
+                    <p className="text-[11px] text-slate-500">Muda o cérebro da IA e adapta as telas</p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      onSwitchWorkspace('clinic');
+                      setShowWorkspaceDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                      currentNiche === 'clinic' ? 'bg-indigo-50/70 font-bold text-indigo-900' : 'text-slate-700'
+                    }`}
+                  >
+                    <Stethoscope className="w-4 h-4 text-emerald-600" />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span>Clínica & Saúde</span>
+                        {currentNiche === 'clinic' && <span className="text-[10px] text-indigo-600 font-bold">(Ativo)</span>}
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-normal">Foco: Agendamentos, consultas & exames</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onSwitchWorkspace('delivery');
+                      setShowWorkspaceDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                      currentNiche === 'delivery' ? 'bg-indigo-50/70 font-bold text-indigo-900' : 'text-slate-700'
+                    }`}
+                  >
+                    <UtensilsCrossed className="w-4 h-4 text-amber-600" />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span>Pizzaria & Delivery</span>
+                        {currentNiche === 'delivery' && <span className="text-[10px] text-indigo-600 font-bold">(Ativo)</span>}
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-normal">Foco: Pedidos rápidos, motoboy & taxa por CEP</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onSwitchWorkspace('ecommerce');
+                      setShowWorkspaceDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                      currentNiche === 'ecommerce' ? 'bg-indigo-50/70 font-bold text-indigo-900' : 'text-slate-700'
+                    }`}
+                  >
+                    <ShoppingBag className="w-4 h-4 text-purple-600" />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span>E-commerce & Varejo</span>
+                        {currentNiche === 'ecommerce' && <span className="text-[10px] text-indigo-600 font-bold">(Ativo)</span>}
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-normal">Foco: Catálogo, cotação de frete & vendas</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onSwitchWorkspace('b2b');
+                      setShowWorkspaceDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                      currentNiche === 'b2b' ? 'bg-indigo-50/70 font-bold text-indigo-900' : 'text-slate-700'
+                    }`}
+                  >
+                    <Building2 className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span>Comercial B2B</span>
+                        {currentNiche === 'b2b' && <span className="text-[10px] text-indigo-600 font-bold">(Ativo)</span>}
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-normal">Foco: Qualificação, propostas & fechamento</p>
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Navigation Tabs & Header Actions */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 w-full md:w-auto">
-          <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none -mx-4 px-4 md:mx-0 md:px-0 w-auto" id="main-navigation">
-            <button
-              id="nav-tab-dashboard"
-              onClick={() => setActiveTab('dashboard')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                activeTab === 'dashboard'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Dashboard Executivo</span>
-            </button>
+        {/* Center Section: Core Operational Navigation (Clean & uncluttered) */}
+        <nav className="flex items-center gap-1 overflow-visible relative" id="main-navigation">
+          {/* 1. Dashboard Executivo */}
+          <button
+            id="nav-tab-dashboard"
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'dashboard'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Dashboard</span>
+          </button>
 
-            <button
-              id="nav-tab-kanban"
-              onClick={() => setActiveTab('kanban')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                activeTab === 'kanban'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              <span>CRM Kanban</span>
-              <span className={`ml-1 px-1.5 py-0.2 rounded text-[10px] font-mono ${
+          {/* 2. CRM Kanban */}
+          <button
+            id="nav-tab-kanban"
+            onClick={() => setActiveTab('kanban')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'kanban'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            <span>Kanban</span>
+            <span
+              className={`ml-1 px-1.5 py-0.2 rounded text-[10px] font-mono tabular-nums ${
                 activeTab === 'kanban' ? 'bg-slate-800 text-white' : 'bg-slate-200 text-slate-700'
-              }`}>
-                {totalLeads}
+              }`}
+            >
+              {totalLeads}
+            </span>
+          </button>
+
+          {/* 3. Central de Chat */}
+          <button
+            id="nav-tab-chat"
+            onClick={() => setActiveTab('chat')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer relative whitespace-nowrap shrink-0 ${
+              activeTab === 'chat'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>Chat ao Vivo</span>
+            {unreadCount > 0 && (
+              <span className="bg-emerald-600 text-white font-bold px-1.5 py-0.2 rounded-full text-[10px] tabular-nums">
+                {unreadCount}
               </span>
-            </button>
-
-            <button
-              id="nav-tab-chat"
-              onClick={() => setActiveTab('chat')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer relative whitespace-nowrap shrink-0 ${
-                activeTab === 'chat'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Central de Chat</span>
-              {unreadCount > 0 && (
-                <span className="bg-emerald-600 text-white font-bold px-1.5 py-0.2 rounded-full text-[10px]">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* Agendamentos & Google Calendar tab (Visible if enabled for this client or unlocked as Admin) */}
-            {(agentConfig.showCalendarModuleInMenu !== false || isAdminUnlocked) && (
-              <button
-                id="nav-tab-calendar"
-                onClick={() => setActiveTab('calendar')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                  activeTab === 'calendar'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <CalendarIcon className="w-3.5 h-3.5 text-blue-500" />
-                <span>Agendamentos & Agenda</span>
-              </button>
             )}
+          </button>
 
-            {/* Guia Comercial & Vendas (Visible to Marco / Sales) */}
-            <button
-              id="nav-tab-sales"
-              onClick={() => setActiveTab('sales')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                activeTab === 'sales'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Guia Comercial & Vendas</span>
-            </button>
-
+          {/* 4. Contextual Niche Primary Tab (Clean & Relevant) */}
+          {isDeliveryPrimary ? (
             <button
               id="nav-tab-delivery"
               onClick={() => setActiveTab('delivery')}
@@ -283,149 +372,373 @@ export const Header: React.FC<HeaderProps> = ({
               <Bike className="w-3.5 h-3.5 text-emerald-500" />
               <span>Pedidos & Entregas</span>
               {deliveryOrdersCount > 0 && (
-                <span className={`ml-1 px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${
-                  activeTab === 'delivery' ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-800'
-                }`}>
+                <span
+                  className={`ml-1 px-1.5 py-0.2 rounded text-[10px] font-mono font-bold tabular-nums ${
+                    activeTab === 'delivery' ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-800'
+                  }`}
+                >
                   {deliveryOrdersCount}
                 </span>
               )}
             </button>
+          ) : (
+            <button
+              id="nav-tab-calendar"
+              onClick={() => setActiveTab('calendar')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                activeTab === 'calendar'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <CalendarIcon className="w-3.5 h-3.5 text-blue-500" />
+              <span>Agendamentos</span>
+            </button>
+          )}
 
-            {/* Admin Protected Tabs: Only visible when unlocked */}
-            {isAdminUnlocked && (
-              <>
+          {/* Show non-primary module if actively selected so it never vanishes */}
+          {!isDeliveryPrimary && activeTab === 'delivery' && (
+            <button
+              id="nav-tab-delivery-active"
+              onClick={() => setActiveTab('delivery')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 bg-slate-900 text-white shadow-xs"
+            >
+              <Bike className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Pedidos & Entregas</span>
+            </button>
+          )}
+
+          {isDeliveryPrimary && activeTab === 'calendar' && (
+            <button
+              id="nav-tab-calendar-active"
+              onClick={() => setActiveTab('calendar')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 bg-slate-900 text-white shadow-xs"
+            >
+              <CalendarIcon className="w-3.5 h-3.5 text-blue-400" />
+              <span>Agendamentos</span>
+            </button>
+          )}
+
+          {/* 5. More Modules Dropdown (Sales Playbook, Secondary modules) */}
+          <div className="relative" ref={moreModulesDropdownRef}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMoreModulesDropdown((prev) => !prev);
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                activeTab === 'sales'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : showMoreModulesDropdown
+                  ? 'bg-slate-200 text-slate-900'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+              title="Acessar outros módulos e ferramentas"
+            >
+              <span>Mais</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
+            </button>
+
+            {showMoreModulesDropdown && (
+              <div className="absolute left-0 mt-1.5 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs">
+                <div className="px-3 py-1.5 border-b border-slate-100 bg-slate-50 rounded-t-xl">
+                  <p className="font-bold text-slate-800">Mais Módulos</p>
+                  <p className="text-[10px] text-slate-500">Ferramentas de apoio e vendas</p>
+                </div>
+
+                <div className="py-1">
+                  {/* Secondary niche module option */}
+                  {!isDeliveryPrimary ? (
+                    <button
+                      onClick={() => {
+                        setActiveTab('delivery');
+                        setShowMoreModulesDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-slate-50 transition-colors cursor-pointer ${
+                        activeTab === 'delivery' ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-700'
+                      }`}
+                    >
+                      <Bike className="w-4 h-4 text-emerald-600" />
+                      <div>
+                        <p className="font-semibold">Pedidos & Entregas</p>
+                        <p className="text-[10px] text-slate-400 font-normal">Acompanhar fila de delivery</p>
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setActiveTab('calendar');
+                        setShowMoreModulesDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-slate-50 transition-colors cursor-pointer ${
+                        activeTab === 'calendar' ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-700'
+                      }`}
+                    >
+                      <CalendarIcon className="w-4 h-4 text-blue-600" />
+                      <div>
+                        <p className="font-semibold">Agendamentos & Agenda</p>
+                        <p className="text-[10px] text-slate-400 font-normal">Calendário e compromissos</p>
+                      </div>
+                    </button>
+                  )}
+
+                  {/* Sales Playbook */}
+                  <button
+                    onClick={() => {
+                      setActiveTab('sales');
+                      setShowMoreModulesDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-slate-50 transition-colors cursor-pointer ${
+                      activeTab === 'sales' ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-700'
+                    }`}
+                  >
+                    <Briefcase className="w-4 h-4 text-emerald-600" />
+                    <div>
+                      <p className="font-semibold">Guia Comercial & Vendas</p>
+                      <p className="text-[10px] text-slate-400 font-normal">Scripts e manual do vendedor</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* Right Section: System Status & Admin Controls */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Quick status on mobile */}
+          <div className="flex items-center gap-1 md:hidden">
+            <button
+              type="button"
+              onClick={handleOpenInExternalBrowser}
+              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"
+              title="Abrir no navegador externo"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Global AI Status Button */}
+          {onToggleGlobalAi && (
+            <button
+              onClick={onToggleGlobalAi}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+                agentConfig.isGlobalAiActive !== false
+                  ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                  : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-200 animate-pulse'
+              }`}
+              title={
+                agentConfig.isGlobalAiActive !== false
+                  ? 'IA Sofia está Ativa. Clique para pausar.'
+                  : 'IA Sofia está PAUSADA. Clique para reativar.'
+              }
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  agentConfig.isGlobalAiActive !== false ? 'bg-emerald-500' : 'bg-rose-500'
+                }`}
+              />
+              <span className="hidden sm:inline">
+                {agentConfig.isGlobalAiActive !== false ? 'IA Ativa' : 'IA Pausada'}
+              </span>
+            </button>
+          )}
+
+          {/* Admin Controls: Grouped cleanly under Settings Dropdown */}
+          {isAdminUnlocked ? (
+            <div className="flex items-center gap-1.5 pl-1.5 border-l border-slate-200" ref={adminDropdownRef}>
+              <div className="relative">
                 <button
-                  id="nav-tab-agent"
+                  type="button"
+                  onClick={() => setShowAdminDropdown(!showAdminDropdown)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+                    isTechnicalTab || showAdminDropdown
+                      ? 'bg-indigo-900 text-white border-indigo-900 shadow-xs'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
+                  }`}
+                  title="Configurações Administrativas, Banco de Dados e Integrações"
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Configurações</span>
+                  <ChevronDown className="w-3 h-3 opacity-70" />
+                </button>
+
+                {showAdminDropdown && (
+                  <div className="absolute right-0 mt-1.5 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs">
+                    <div className="px-3 py-1.5 border-b border-slate-100 bg-slate-50 rounded-t-xl">
+                      <p className="font-bold text-slate-800 flex items-center justify-between">
+                        <span>Painel Administrativo</span>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono">
+                          Master
+                        </span>
+                      </p>
+                      <p className="text-[11px] text-slate-500">Módulos de infraestrutura e IA</p>
+                    </div>
+
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          setActiveTab('agent');
+                          setShowAdminDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                          activeTab === 'agent' ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-700'
+                        }`}
+                      >
+                        <Bot className="w-4 h-4 text-indigo-600" />
+                        <div>
+                          <p className="font-semibold">Agente & Conhecimento</p>
+                          <p className="text-[10px] text-slate-400 font-normal">Prompts, documentos PDF e metas da Sofia</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setActiveTab('evolution');
+                          setShowAdminDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                          activeTab === 'evolution' ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-700'
+                        }`}
+                      >
+                        <Radio className="w-4 h-4 text-emerald-600" />
+                        <div>
+                          <p className="font-semibold">Evolution API (WhatsApp)</p>
+                          <p className="text-[10px] text-slate-400 font-normal">Instâncias VPS, QR Code e Webhook</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setActiveTab('supabase');
+                          setShowAdminDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                          activeTab === 'supabase' ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-700'
+                        }`}
+                      >
+                        <Database className="w-4 h-4 text-emerald-600" />
+                        <div>
+                          <p className="font-semibold">Supabase (PostgreSQL)</p>
+                          <p className="text-[10px] text-slate-400 font-normal">Banco de dados em nuvem e backups</p>
+                        </div>
+                      </button>
+                    </div>
+
+                    <div className="border-t border-slate-100 py-1">
+                      <button
+                        onClick={() => {
+                          setShowServerHealthModal(true);
+                          setShowAdminDropdown(false);
+                        }}
+                        className="w-full text-left px-3 py-2 flex items-center gap-2.5 text-slate-700 hover:bg-slate-50 transition-colors"
+                      >
+                        <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
+                        <div>
+                          <p className="font-semibold">Servidor & Recursos</p>
+                          <p className="text-[10px] text-slate-400 font-normal">Telemetria de RAM, disco e tempo de resposta</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={handleCopyClientUrl}
+                        className="w-full text-left px-3 py-2 flex items-center gap-2.5 text-slate-700 hover:bg-slate-50 transition-colors"
+                      >
+                        <Share2 className="w-4 h-4 text-indigo-600" />
+                        <div>
+                          <p className="font-semibold">Gerar Link do Cliente</p>
+                          <p className="text-[10px] text-slate-400 font-normal">Link 100% blindado sem abas técnicas</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Lock Button (Quick lock before handing screen to client) */}
+              {onLockAdmin && (
+                <button
+                  onClick={onLockAdmin}
+                  className="flex items-center gap-1 bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                  title="Bloquear Modo Administrador (proteger sistema antes de mostrar ao cliente)"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Bloquear</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            /* Admin Locked: Discreet unlock button */
+            onOpenAdminAuth && (
+              <button
+                onClick={onOpenAdminAuth}
+                className="flex items-center gap-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 px-2 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors"
+                title="Acesso do Administrador (Ctrl+Shift+A ou clique 3x no logo)"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Acesso Restrito</span>
+              </button>
+            )
+          )}
+        </div>
+      </div>
+
+      {/* Technical Admin Contextual Sub-Nav Bar (Visible only when inside Agent, Evolution or Supabase) */}
+      {isAdminUnlocked && isTechnicalTab && (
+        <div className="bg-slate-900 border-t border-slate-800 px-4 py-1.5 transition-all">
+          <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-300">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                <Settings className="w-3.5 h-3.5" />
+                <span>Gestão Técnica & Infraestrutura:</span>
+              </span>
+              <div className="flex items-center gap-1">
+                <button
                   onClick={() => setActiveTab('agent')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-2.5 py-1 rounded-md font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
                     activeTab === 'agent'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
                 >
                   <Bot className="w-3.5 h-3.5" />
-                  <span>Agente & Conhecimento</span>
+                  <span>Agente & Prompts</span>
                 </button>
-
                 <button
-                  id="nav-tab-evolution"
                   onClick={() => setActiveTab('evolution')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-2.5 py-1 rounded-md font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
                     activeTab === 'evolution'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
                 >
                   <Radio className="w-3.5 h-3.5" />
-                  <span>Evolution API</span>
+                  <span>Evolution WhatsApp</span>
                 </button>
-
                 <button
-                  id="nav-tab-supabase"
                   onClick={() => setActiveTab('supabase')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-2.5 py-1 rounded-md font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
                     activeTab === 'supabase'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
                 >
                   <Database className="w-3.5 h-3.5" />
-                  <span>Supabase</span>
+                  <span>Banco Supabase</span>
                 </button>
-              </>
-            )}
-          </nav>
+              </div>
+            </div>
 
-          {/* Clean Top Action Buttons (Workspace Switcher, IA toggle & Admin) */}
-          <div className="flex flex-wrap items-center gap-2 pt-1 md:pt-0 md:pl-2 md:border-l border-slate-200 shrink-0">
-            {onSwitchWorkspace && (
-              <select
-                id="header-workspace-switcher"
-                value={
-                  agentConfig.followUpNiche === 'restaurant_delivery'
-                    ? 'delivery'
-                    : agentConfig.followUpNiche === 'retail'
-                    ? 'ecommerce'
-                    : agentConfig.followUpNiche === 'sales'
-                    ? 'b2b'
-                    : 'clinic'
-                }
-                onChange={(e) => onSwitchWorkspace(e.target.value as 'clinic' | 'delivery' | 'ecommerce' | 'b2b')}
-                className="bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-300 rounded-md px-2.5 py-1 text-xs font-bold focus:outline-hidden cursor-pointer transition-colors"
-                title="Arquitetura Multi-Tenant: Alternar ambiente da empresa em 1 clique"
-              >
-                <option value="clinic">🦷 Ambiente: Clínica & Saúde</option>
-                <option value="delivery">🍕 Ambiente: Pizzaria & Delivery</option>
-                <option value="ecommerce">🛍️ Ambiente: E-commerce & Varejo</option>
-                <option value="b2b">💼 Ambiente: Comercial B2B</option>
-              </select>
-            )}
-
-            {onToggleGlobalAi && (
-              <button
-                onClick={onToggleGlobalAi}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs transition-all cursor-pointer border ${
-                  agentConfig.isGlobalAiActive !== false
-                    ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
-                    : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-300 animate-pulse'
-                }`}
-                title={
-                  agentConfig.isGlobalAiActive !== false
-                    ? 'IA Comercial está Ativa. Clique para silenciar a IA.'
-                    : 'IA Comercial está SILENCIADA. Clique para reativar.'
-                }
-              >
-                <span className={`w-2 h-2 rounded-full ${agentConfig.isGlobalAiActive !== false ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                <span>{agentConfig.isGlobalAiActive !== false ? 'IA Ativa' : 'IA Silenciada'}</span>
-              </button>
-            )}
-
-            {/* Server Health & Resources (Admin only) */}
-            {isAdminUnlocked && (
-              <button
-                onClick={() => setShowServerHealthModal(true)}
-                className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-                title="Ver consumo de Memória RAM, Espaço em Disco e Telemetria em tempo real"
-              >
-                <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                <span className="hidden sm:inline">Servidor & Recursos</span>
-              </button>
-            )}
-
-            {/* Gerador de Link do Cliente */}
-            {isAdminUnlocked && (
-              <button
-                onClick={handleCopyClientUrl}
-                className="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-md text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-                title="Abrir gerador e copiar link 100% limpo para o cliente"
-              >
-                {copiedLink ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="text-emerald-700 font-bold">Link Copiado!</span>
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Link do Cliente</span>
-                  </>
-                )}
-              </button>
-            )}
-
-            {isAdminUnlocked && (
-              <button
-                onClick={onLockAdmin}
-                className="flex items-center gap-1 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 px-2 py-1 rounded-md text-xs font-medium cursor-pointer"
-                title="Bloquear painel admin"
-              >
-                <Eye className="w-3 h-3 text-slate-500" />
-                <span>Bloquear</span>
-              </button>
-            )}
+            <button
+              onClick={() => setActiveTab('kanban')}
+              className="text-slate-400 hover:text-white text-[11px] flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <span>← Voltar à Operação (Kanban)</span>
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Client White-Label Link Modal */}
       <ClientLinkModal
@@ -441,3 +754,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+
