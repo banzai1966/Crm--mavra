@@ -822,22 +822,21 @@ export async function createEvolutionInstance(
   error?: string;
 }> {
   const config = db.evolutionConfig;
-  const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl) || 'https://api.makprojetosmake.com.br';
   const cleanName = normalizeInstanceName(instanceName);
-  const apiKey = getEvolutionApiKey();
 
-  if (!baseUrl || !apiKey) {
-    return { success: false, error: 'Servidor Evolution não configurado' };
-  }
   if (!cleanName) {
     return { success: false, error: 'Nome de instância inválido' };
   }
+
+  // Creating an instance in Evolution API v2 strictly requires the Global Master API Key
+  const effectiveMasterKey = MASTER_EVOLUTION_KEY;
 
   try {
     const endpoint = `${baseUrl}/instance/create`;
     const bodyPayload: any = {
       instanceName: cleanName,
-      token: apiKey,
+      token: cleanName + '-' + Math.random().toString(36).substring(2, 8),
       qrcode: true,
       integration: 'WHATSAPP-BAILEYS',
     };
@@ -856,29 +855,36 @@ export async function createEvolutionInstance(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: apiKey,
+        apikey: effectiveMasterKey,
       },
       body: JSON.stringify(bodyPayload),
     });
 
-    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
-      bodyPayload.token = MASTER_EVOLUTION_KEY;
-      response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: MASTER_EVOLUTION_KEY,
-        },
-        body: JSON.stringify(bodyPayload),
-      });
-      if (response.ok) {
-        db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
-        db.saveToFile();
-      }
-    }
-
     const data = await response.json().catch(() => ({}));
-    if (response.ok || response.status === 201 || (data?.message && data.message.includes('already in use'))) {
+
+    // If successfully created (200/201) or already exists ("already in use" / "already exists")
+    const isSuccessOrExists =
+      response.ok ||
+      response.status === 201 ||
+      (typeof data?.message === 'string' &&
+        (data.message.toLowerCase().includes('already in use') ||
+          data.message.toLowerCase().includes('already exists') ||
+          data.message.toLowerCase().includes('já existe')));
+
+    if (isSuccessOrExists) {
+      // Save instance in config
+      db.evolutionConfig.instanceName = cleanName;
+      db.evolutionConfig.state = 'disconnected';
+      db.evolutionConfig.isConnected = false;
+      
+      const instanceToken = data?.hash?.apikey || data?.instance?.apikey || bodyPayload.token;
+      if (!db.evolutionConfig.instanceApiKeys) {
+        db.evolutionConfig.instanceApiKeys = {};
+      }
+      db.evolutionConfig.instanceApiKeys[cleanName] = instanceToken || effectiveMasterKey;
+      db.saveToFile();
+
+      // Configure webhook
       if (webhookUrl && webhookUrl.trim()) {
         try {
           await setRemoteWebhookConfig(webhookUrl.trim(), cleanName);
@@ -886,12 +892,20 @@ export async function createEvolutionInstance(
           console.warn('[CreateInstance] Falha ao registrar webhook imediato:', wbErr);
         }
       }
+
+      console.log(`[Evolution API] Instância "${cleanName}" criada/registrada com sucesso na VPS!`);
       return { success: true, data };
     }
 
+    const errorMsg =
+      data?.response?.message?.[0] ||
+      data?.message ||
+      (Array.isArray(data?.error) ? data.error.join(', ') : data?.error) ||
+      `HTTP ${response.status}`;
+
     return {
       success: false,
-      error: data?.response?.message?.[0] || data?.message || `HTTP ${response.status}`,
+      error: errorMsg,
     };
   } catch (err: any) {
     return { success: false, error: err.message };

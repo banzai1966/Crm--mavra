@@ -10,6 +10,7 @@ import { AdminAuthModal } from './components/AdminAuthModal';
 import { CalendarIntegration } from './components/CalendarIntegration';
 import { SalesPlaybook } from './components/SalesPlaybook';
 import { DeliveryTracking } from './components/DeliveryTracking';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import {
   Lead,
   KanbanStage,
@@ -86,30 +87,105 @@ export default function App() {
     }
   };
 
+  // Helper to sanitize Lead objects against null/undefined fields & enrich Cognitive DNA
+  const sanitizeLeads = (rawLeads: any): Lead[] => {
+    if (!Array.isArray(rawLeads)) return [];
+    return rawLeads
+      .filter((l) => l && typeof l === 'object' && l.id)
+      .map((l) => {
+        const tags: string[] = Array.isArray(l.tags) ? l.tags.filter(Boolean).map(String) : [];
+        const isDelivery = Boolean(l.deliveryInfo) || tags.some((t) => t.toLowerCase().includes('delivery') || t.toLowerCase().includes('restaurante'));
+        const isClinic = Boolean(l.triage) || tags.some((t) => /consulta|paciente|odonto|clínica|clinica|retorno|exame/i.test(t)) || String(l.id).includes('health');
+
+        const defaultCognitive = l.cognitiveProfile || (
+          isDelivery
+            ? {
+                preferences: ['Sem cebola / ponto bem passado', 'Bebida bem gelada', 'Pagamento rápido via PIX'],
+                restrictionsOrObjections: ['Sensível a atrasos acima de 40 min'],
+                recurringHabits: 'Costuma pedir à noite e finais de semana no mesmo endereço',
+                vipNotes: 'Cliente recorrente — oferecer combo ou sobremesa com desconto aumenta ticket em 30%',
+              }
+            : isClinic
+            ? {
+                preferences: ['Horários no fim da tarde', 'Atendimento acolhedor e sem pressa', 'Explicação detalhada do procedimento'],
+                restrictionsOrObjections: ['Receio de procedimentos invasivos / sensibilidade'],
+                recurringHabits: 'Paciente preventivo — responde muito bem a lembretes semestrais no WhatsApp',
+                vipNotes: 'Priorizar encaixe com a especialista titular e envio de áudio de boas-vindas',
+              }
+            : {
+                preferences: ['Atendimento objetivo pelo WhatsApp', 'Proposta comercial em PDF claro'],
+                restrictionsOrObjections: ['Compara custo-benefício e retorno sobre investimento (ROI)'],
+                recurringHabits: 'Interage principalmente em horário comercial',
+                vipNotes: 'Decisor comercial — destacar economia de tempo e automação 24/7',
+              }
+        );
+
+        return {
+          ...l,
+          name: String(l.name || 'Lead Sem Nome'),
+          phone: String(l.phone || ''),
+          stageId: String(l.stageId || 'stage-1'),
+          value: typeof l.value === 'number' && !Number.isNaN(l.value) ? l.value : Number(l.value) || 0,
+          tags,
+          aiPaused: Boolean(l.aiPaused),
+          lastInteraction: l.lastInteraction || new Date().toISOString(),
+          createdAt: l.createdAt || new Date().toISOString(),
+          cognitiveProfile: defaultCognitive,
+        };
+      });
+  };
+
   // Initial load
   const loadAllData = async () => {
     try {
       const [stagesRes, leadsRes, agentRes, evoRes, supaRes, docsRes] = await Promise.all([
-        fetch('/api/stages'),
-        fetch('/api/leads'),
-        fetch('/api/agent-config'),
-        fetch('/api/evolution-config'),
-        fetch('/api/supabase-config'),
-        fetch('/api/documents'),
+        fetch('/api/stages').catch(() => null),
+        fetch('/api/leads').catch(() => null),
+        fetch('/api/agent-config').catch(() => null),
+        fetch('/api/evolution-config').catch(() => null),
+        fetch('/api/supabase-config').catch(() => null),
+        fetch('/api/documents').catch(() => null),
       ]);
 
-      if (stagesRes.ok) setStages(await stagesRes.json());
-      if (leadsRes.ok) {
-        const loadedLeads: Lead[] = await leadsRes.json();
+      if (stagesRes && stagesRes.ok) {
+        const rawStages = await stagesRes.json();
+        if (Array.isArray(rawStages)) setStages(rawStages);
+      }
+      if (leadsRes && leadsRes.ok) {
+        const loadedLeads = sanitizeLeads(await leadsRes.json());
         setLeads(loadedLeads);
         if (!selectedLeadId && loadedLeads.length > 0) {
           setSelectedLeadId(loadedLeads[0].id);
         }
       }
-      if (agentRes.ok) setAgentConfig(await agentRes.json());
-      if (evoRes.ok) setEvolutionConfig(await evoRes.json());
-      if (supaRes.ok) setSupabaseConfig(await supaRes.json());
-      if (docsRes.ok) setDocuments(await docsRes.json());
+      if (agentRes && agentRes.ok) {
+        const cfg = await agentRes.json();
+        if (cfg && typeof cfg === 'object') {
+          const defaultZones = [
+            { id: 'zone-1', regionName: 'Centro & Bairros Próximos (Até 3km)', keywords: 'centro, paulista, jardins, vila mariana, euroville', fee: 6.0, etaMinutes: 20 },
+            { id: 'zone-2', regionName: 'Zona Sul / Zona Oeste (3km a 7km)', keywords: 'moema, itaim, pinheiros, perdizes, santana, tatuapé', fee: 12.0, etaMinutes: 35 },
+            { id: 'zone-3', regionName: 'Regiões Afastadas / Condomínios (+7km)', keywords: 'alphaville, granja, interlagos, morumbi, barra funda', fee: 18.0, etaMinutes: 45 },
+          ];
+          setAgentConfig((prev) => ({
+            ...prev,
+            ...cfg,
+            deliveryZones: Array.isArray(cfg.deliveryZones) && cfg.deliveryZones.length > 0 ? cfg.deliveryZones : defaultZones,
+            freeShippingMinimum: cfg.freeShippingMinimum ?? 120,
+          }));
+        }
+      }
+      if (evoRes && evoRes.ok) {
+        const evo = await evoRes.json();
+        if (evo && typeof evo === 'object') setEvolutionConfig((prev) => ({ ...prev, ...evo }));
+      }
+      if (supaRes && supaRes.ok) {
+        const supa = await supaRes.json();
+        if (supa && typeof supa === 'object') setSupabaseConfig((prev) => ({ ...prev, ...supa }));
+      }
+      if (docsRes && docsRes.ok) {
+        const docs = await docsRes.json();
+        if (Array.isArray(docs)) setDocuments(docs);
+      }
     } catch (err) {
       console.error('Falha ao carregar dados do servidor:', err);
     } finally {
@@ -128,7 +204,7 @@ export default function App() {
       try {
         const res = await fetch('/api/leads');
         if (res.ok) {
-          const freshLeads: Lead[] = await res.json();
+          const freshLeads = sanitizeLeads(await res.json());
           setLeads(freshLeads);
         }
 
@@ -138,7 +214,9 @@ export default function App() {
           const evoRes = await fetch('/api/evolution-config');
           if (evoRes.ok) {
             const freshEvo = await evoRes.json();
-            setEvolutionConfig(freshEvo);
+            if (freshEvo && typeof freshEvo === 'object') {
+              setEvolutionConfig((prev) => ({ ...prev, ...freshEvo }));
+            }
           }
         }
       } catch (err) {}
@@ -453,6 +531,69 @@ export default function App() {
     }
   };
 
+  const handleConfirmPixReceipt = async (leadId: string, paidAmount?: number) => {
+    try {
+      const res = await fetch(`/api/leads/${leadId}/confirm-pix`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paidAmount, sendWhatsAppConfirmation: true }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.lead) {
+          const [sanitized] = sanitizeLeads([data.lead]);
+          if (sanitized) {
+            setLeads((prev) => prev.map((l) => (l.id === leadId ? sanitized : l)));
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao validar comprovante PIX:', err);
+    }
+  };
+
+  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b') => {
+    const presets: Record<string, Partial<AgentConfig>> = {
+      clinic: {
+        activeWorkspaceName: 'Clínica & Saúde Integrativa',
+        personaName: 'Sofia (Recepção Clínica)',
+        role: 'Coordenadora de Atendimento & Triagem Clínica',
+        followUpNiche: 'dental',
+        salesGoal: 'Acolher pacientes, realizar pré-triagem de sintomas/horários e agendar consultas e retornos da base antiga',
+      },
+      delivery: {
+        activeWorkspaceName: 'Restaurante & Pizzaria Delivery',
+        personaName: 'Sofia (Central de Pedidos)',
+        role: 'Atendente Especialista em Pedidos & Delivery Rápido',
+        followUpNiche: 'restaurant_delivery',
+        salesGoal: 'Anotar pedidos completos, sugerir bebidas/bordas, calcular taxa de entrega por bairro e validar PIX na hora',
+      },
+      ecommerce: {
+        activeWorkspaceName: 'E-commerce & Distribuidora',
+        personaName: 'Sofia (Consultora de Vendas & Logística)',
+        role: 'Especialista em Catálogo, Cotação de Frete e Fechamento PIX',
+        followUpNiche: 'retail',
+        salesGoal: 'Consultar catálogo completo em PDF, calcular frete por região/CEP, enviar chave PIX e liberar expedição',
+      },
+      b2b: {
+        activeWorkspaceName: 'NEXA B2B & Vendas Comerciais',
+        personaName: 'Sofia Mendes (Executiva B2B)',
+        role: 'Especialista em Soluções Comerciais & Fechamento',
+        followUpNiche: 'sales',
+        salesGoal: 'Qualificar decisores, contornar objeções, apresentar ROI e agendar reunião ou fechar contrato via PIX',
+      },
+    };
+    const chosen = presets[workspaceId];
+    if (chosen) {
+      await handleSaveAgentConfig(chosen);
+      if (workspaceId === 'delivery') {
+        setActiveTab('delivery');
+      } else {
+        setActiveTab('kanban');
+      }
+    }
+  };
+
   const totalPipelineValue = leads.reduce((acc, l) => acc + (l.value || 0), 0);
   const totalUnreadCount = leads.reduce((acc, l) => acc + (l.unreadCount || 0), 0);
   const urgentCount = leads.filter((l) => l.isUrgent).length;
@@ -486,110 +627,135 @@ export default function App() {
         onOpenAdminAuth={() => setShowAdminAuthModal(true)}
         onLockAdmin={handleLockAdmin}
         onToggleGlobalAi={handleToggleGlobalAi}
+        onSwitchWorkspace={handleSwitchWorkspacePreset}
       />
 
       {/* Main Content Modules */}
       <main className="flex-1 flex min-h-0 overflow-hidden bg-slate-50">
         {activeTab === 'dashboard' && (
-          <ExecutiveDashboard
-            leads={leads}
-            stages={stages}
-            agentConfig={agentConfig}
-            evolutionConfig={evolutionConfig}
-            onOpenChat={handleOpenChat}
-            onNavigateToTab={(tab) => setActiveTab(tab)}
-            onUpdateEvolutionConfig={handleSaveEvolutionConfig}
-            onUpdateAgentConfig={handleSaveAgentConfig}
-            onClearAllLeads={handleClearAllLeads}
-            onRestoreDemoLeads={handleRestoreDemoLeads}
-            isAdmin={isAdminUnlocked}
-          />
+          <ErrorBoundary moduleName="Dashboard Executivo">
+            <ExecutiveDashboard
+              leads={leads}
+              stages={stages}
+              agentConfig={agentConfig}
+              evolutionConfig={evolutionConfig}
+              onOpenChat={handleOpenChat}
+              onNavigateToTab={(tab) => setActiveTab(tab)}
+              onUpdateEvolutionConfig={handleSaveEvolutionConfig}
+              onUpdateAgentConfig={handleSaveAgentConfig}
+              onClearAllLeads={handleClearAllLeads}
+              onRestoreDemoLeads={handleRestoreDemoLeads}
+              isAdmin={isAdminUnlocked}
+            />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'kanban' && (
-          <KanbanBoard
-            stages={stages}
-            leads={leads}
-            onMoveLead={handleMoveLead}
-            onSaveLead={handleSaveLead}
-            onDeleteLead={handleDeleteLead}
-            onOpenChat={handleOpenChat}
-            onToggleAi={handleToggleAi}
-            onResolveUrgency={handleResolveUrgency}
-            onToggleHotLead={handleToggleHotLead}
-            onClearAllLeads={handleClearAllLeads}
-            onRestoreDemoLeads={handleRestoreDemoLeads}
-            onRefreshLeads={loadAllData}
-            onNavigateToDelivery={() => setActiveTab('delivery')}
-            evolutionConfig={evolutionConfig}
-            isAdmin={isAdminUnlocked}
-          />
+          <ErrorBoundary moduleName="CRM Kanban">
+            <KanbanBoard
+              stages={stages}
+              leads={leads}
+              onMoveLead={handleMoveLead}
+              onSaveLead={handleSaveLead}
+              onDeleteLead={handleDeleteLead}
+              onOpenChat={handleOpenChat}
+              onToggleAi={handleToggleAi}
+              onResolveUrgency={handleResolveUrgency}
+              onToggleHotLead={handleToggleHotLead}
+              onConfirmPixReceipt={handleConfirmPixReceipt}
+              onClearAllLeads={handleClearAllLeads}
+              onRestoreDemoLeads={handleRestoreDemoLeads}
+              onRefreshLeads={loadAllData}
+              onNavigateToDelivery={() => setActiveTab('delivery')}
+              evolutionConfig={evolutionConfig}
+              isAdmin={isAdminUnlocked}
+            />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'chat' && (
-          <LiveChat
-            leads={leads}
-            selectedLeadId={selectedLeadId}
-            onSelectLead={(id) => setSelectedLeadId(id)}
-            stages={stages}
-            onMoveLead={handleMoveLead}
-            onToggleAi={handleToggleAi}
-            onSendManualMessage={handleSendManualMessage}
-            onUpdateLeadNotes={handleUpdateLeadNotes}
-            onResolveUrgency={handleResolveUrgency}
-            onConfirmTriage={handleConfirmTriage}
-            onDeleteLead={handleDeleteLead}
-            personaName={agentConfig?.personaName || 'Sofia'}
-          />
+          <ErrorBoundary moduleName="Central de Chat">
+            <LiveChat
+              leads={leads}
+              selectedLeadId={selectedLeadId}
+              onSelectLead={(id) => setSelectedLeadId(id)}
+              stages={stages}
+              onMoveLead={handleMoveLead}
+              onToggleAi={handleToggleAi}
+              onSendManualMessage={handleSendManualMessage}
+              onUpdateLeadNotes={handleUpdateLeadNotes}
+              onResolveUrgency={handleResolveUrgency}
+              onConfirmTriage={handleConfirmTriage}
+              onConfirmPixReceipt={handleConfirmPixReceipt}
+              onDeleteLead={handleDeleteLead}
+              personaName={agentConfig?.personaName || 'Sofia'}
+              pixKey={agentConfig?.pixKey || 'financeiro@nexacrm.com.br'}
+            />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'calendar' && (
-          <CalendarIntegration
-            agentConfig={agentConfig}
-            leads={leads}
-            onUpdateAgentConfig={handleSaveAgentConfig}
-            onRefreshLeads={loadAllData}
-          />
+          <ErrorBoundary moduleName="Agendamentos & Agenda">
+            <CalendarIntegration
+              agentConfig={agentConfig}
+              leads={leads}
+              onUpdateAgentConfig={handleSaveAgentConfig}
+              onRefreshLeads={loadAllData}
+            />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'sales' && (
-          <SalesPlaybook />
+          <ErrorBoundary moduleName="Guia Comercial & Vendas">
+            <SalesPlaybook />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'delivery' && (
-          <DeliveryTracking
-            leads={leads}
-            onSaveLead={handleSaveLead}
-            onOpenChat={handleOpenChat}
-            evolutionConfig={evolutionConfig}
-          />
+          <ErrorBoundary moduleName="Pedidos & Entregas">
+            <DeliveryTracking
+              leads={leads}
+              onSaveLead={handleSaveLead}
+              onOpenChat={handleOpenChat}
+              evolutionConfig={evolutionConfig}
+              agentConfig={agentConfig}
+              onUpdateAgentConfig={handleSaveAgentConfig}
+              onConfirmPixReceipt={handleConfirmPixReceipt}
+            />
+          </ErrorBoundary>
         )}
 
         {/* Technical Modules (Protected: only rendered if admin is unlocked) */}
         {activeTab === 'agent' && isAdminUnlocked && (
-          <AgentBuilder
-            agentConfig={agentConfig}
-            documents={documents}
-            onSaveConfig={handleSaveAgentConfig}
-            onUploadDocument={handleUploadDocument}
-            onDeleteDocument={handleDeleteDocument}
-          />
+          <ErrorBoundary moduleName="Agente & Conhecimento">
+            <AgentBuilder
+              agentConfig={agentConfig}
+              documents={documents}
+              onSaveConfig={handleSaveAgentConfig}
+              onUploadDocument={handleUploadDocument}
+              onDeleteDocument={handleDeleteDocument}
+            />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'evolution' && isAdminUnlocked && (
-          <EvolutionSettings
-            evolutionConfig={evolutionConfig}
-            onSaveConfig={handleSaveEvolutionConfig}
-            onTestConnection={handleTestEvolutionConnection}
-            onSimulateWebhook={handleSimulateWebhook}
-          />
+          <ErrorBoundary moduleName="Evolution API">
+            <EvolutionSettings
+              evolutionConfig={evolutionConfig}
+              onSaveConfig={handleSaveEvolutionConfig}
+              onTestConnection={handleTestEvolutionConnection}
+              onSimulateWebhook={handleSimulateWebhook}
+            />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'supabase' && isAdminUnlocked && (
-          <SupabaseSettings
-            supabaseConfig={supabaseConfig}
-            onSaveConfig={handleSaveSupabaseConfig}
-          />
+          <ErrorBoundary moduleName="Supabase">
+            <SupabaseSettings
+              supabaseConfig={supabaseConfig}
+              onSaveConfig={handleSaveSupabaseConfig}
+            />
+          </ErrorBoundary>
         )}
       </main>
 

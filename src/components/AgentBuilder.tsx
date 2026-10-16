@@ -722,7 +722,6 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const handleDeleteProfile = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (savedProfiles.length <= 1) return;
-    if (!confirm('Deseja realmente excluir este perfil de cliente?')) return;
     try {
       const res = await fetch(`/api/client-profiles/${id}`, { method: 'DELETE' });
       const data = await res.json();
@@ -732,6 +731,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           setActiveProfileId(data.activeProfileId);
           setConfig(data.agentConfig);
         }
+        setPresetSuccessToast('🗑️ Perfil de cliente removido com sucesso.');
+        setTimeout(() => setPresetSuccessToast(null), 4000);
       }
     } catch (err) {
       console.error('Erro ao excluir perfil:', err);
@@ -976,7 +977,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
 
     const src = audioItem.audioBase64 || audioItem.audioUrl;
     if (!src) {
-      alert('Nenhum arquivo de áudio carregado para este item ainda. Suba um áudio gravado no celular (.mp3, .ogg ou .m4a) pelo botão "Subir Gravação"!');
+      setPresetSuccessToast('⚠️ Nenhum arquivo de áudio carregado ainda. Suba um áudio (.mp3, .ogg ou .m4a) pelo botão "Subir Gravação"!');
+      setTimeout(() => setPresetSuccessToast(null), 5000);
       return;
     }
 
@@ -2736,9 +2738,11 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   try {
                     const res = await fetch('/api/followup/run-now', { method: 'POST' });
                     const d = await res.json();
-                    alert(d.message || 'Ciclo de follow-up concluído com sucesso!');
+                    setPresetSuccessToast(`✅ ${d.message || 'Ciclo de follow-up concluído com sucesso!'}`);
+                    setTimeout(() => setPresetSuccessToast(null), 5000);
                   } catch (e: any) {
-                    alert('Erro ao executar follow-up: ' + e.message);
+                    setPresetSuccessToast(`❌ Erro ao executar follow-up: ${e.message || 'Falha na requisição'}`);
+                    setTimeout(() => setPresetSuccessToast(null), 5000);
                   }
                 }}
                 className="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs shrink-0"

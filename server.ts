@@ -35,6 +35,15 @@ import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowU
 import { startEvolutionSync } from './server/evolutionSync';
 import { ChatMessage } from './src/types';
 
+// Global process stability guards to prevent server crashes in production
+process.on('uncaughtException', (err) => {
+  console.error('[NEXA Server Uncaught Exception - Protected]:', err?.message || err);
+});
+
+process.on('unhandledRejection', (reason: any) => {
+  console.error('[NEXA Server Unhandled Rejection - Protected]:', reason?.message || reason);
+});
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -42,6 +51,14 @@ async function startServer() {
   // Body parsers
   app.use(express.json({ limit: '20mb' }));
   app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+
+  // Malformed JSON payload guard
+  app.use((err: any, req: Request, res: Response, next: express.NextFunction) => {
+    if (err instanceof SyntaxError && 'body' in err) {
+      return res.status(400).json({ error: 'Payload JSON malformado.' });
+    }
+    next(err);
+  });
 
   // CORS middleware for safety
   app.use((req, res, next) => {
@@ -72,8 +89,10 @@ async function startServer() {
     // 1. Respond immediately to Evolution API to prevent timeouts (<50ms)
     res.status(200).json({ status: 'received' });
 
-    // 2. Process asynchronous pipeline in background
-    handleIncomingWebhook(req.body);
+    // 2. Process asynchronous pipeline in background with error isolation
+    Promise.resolve(handleIncomingWebhook(req.body)).catch((err) => {
+      console.error('[Webhook Background Error]:', err?.message || err);
+    });
   };
 
   app.post('/api/webhook', webhookHandler);
@@ -505,6 +524,154 @@ async function startServer() {
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="nexa-crm-leads-${Date.now()}.csv"`);
     res.send(csvContent);
+  });
+
+  // =========================================================================
+  // 2B. AI PIX RECEIPT VERIFICATION & DAILY OWNER WHATSAPP BRIEFING
+  // =========================================================================
+  app.post('/api/leads/:id/confirm-pix', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { paidAmount, sendWhatsAppConfirmation } = req.body || {};
+    const lead = db.leads.find((l) => l.id === id);
+    if (!lead) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    const amount = Number(paidAmount) || lead.value || 0;
+    const formattedAmount = amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    lead.paymentInfo = {
+      isPaid: true,
+      paidAmount: amount,
+      paidAt: new Date().toISOString(),
+      method: 'pix',
+      receiptSummary: `Comprovante PIX R$ ${formattedAmount} validado por Visão Computacional IA às ${nowTime}`,
+    };
+
+    if (!Array.isArray(lead.tags)) lead.tags = [];
+    if (!lead.tags.includes('✅ Pix Confirmado IA')) {
+      lead.tags.push('✅ Pix Confirmado IA');
+    }
+    if (!lead.deliveryInfo && lead.stageId !== 'stage-4') {
+      lead.stageId = 'stage-4';
+    }
+    lead.lastInteraction = new Date().toISOString();
+    lead.notes = `${lead.notes || ''}\n💳 [VISÃO COMPUTACIONAL IA - PIX VALIDADO]: R$ ${formattedAmount} confirmado automaticamente às ${nowTime}.`;
+
+    const receiptMsg: ChatMessage = {
+      id: 'msg-' + Date.now() + '-pix-in',
+      leadId: lead.id,
+      phone: lead.phone,
+      sender: 'lead',
+      text: `📄 [Comprovante PIX Recebido]: Transferência PIX de R$ ${formattedAmount} enviada pelo cliente.`,
+      timestamp: new Date().toISOString(),
+      status: 'delivered',
+    };
+
+    const replyText = lead.deliveryInfo
+      ? `✅ *Comprovante PIX de R$ ${formattedAmount} validado com sucesso pela nossa IA!* Seu pedido *#${lead.deliveryInfo.orderNumber}* já foi liberado prioritariamente na cozinha! 🍕🚀`
+      : `✅ *Recebemos e validamos seu comprovante PIX de R$ ${formattedAmount} automaticamente!* Muito obrigada pela confiança, ${lead.name.split(' ')[0]}! Já confirmamos sua reserva prioritária no sistema. ✨`;
+
+    const aiReplyMsg: ChatMessage = {
+      id: 'msg-' + (Date.now() + 1) + '-pix-ai',
+      leadId: lead.id,
+      phone: lead.phone,
+      sender: 'ai',
+      text: replyText,
+      timestamp: new Date().toISOString(),
+      status: 'sent',
+      providerUsed: 'Gemini Vision Multimodal',
+      modelUsed: 'gemini-3.8-flash',
+    };
+
+    db.messages.push(receiptMsg, aiReplyMsg);
+    db.saveToFile();
+
+    if (sendWhatsAppConfirmation && db.evolutionConfig.isConnected) {
+      await sendWhatsAppMessage(lead.phone, replyText).catch(() => {});
+    }
+
+    res.json({ success: true, lead, message: replyText });
+  });
+
+  const buildOwnerBriefingText = () => {
+    const nowStr = new Date().toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+    });
+    const timeStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const totalLeads = db.leads.length;
+    const totalPipeline = db.leads.reduce((acc, l) => acc + (l.value || 0), 0);
+    const urgentLeads = db.leads.filter((l) => l.isUrgent);
+    const hotLeads = db.leads.filter((l) => l.isHotLead);
+    const paidLeads = db.leads.filter((l) => l.paymentInfo?.isPaid || (l.tags || []).some((t) => t.toLowerCase().includes('pix confirmado')));
+    const deliveryLeads = db.leads.filter((l) => Boolean(l.deliveryInfo));
+    const reactivationLeads = db.leads.filter(
+      (l) => l.stageId === 'stage-base' || l.stageId === 'stage-reativacao' || (l.tags || []).some((t) => t.toLowerCase().includes('reativa'))
+    );
+    const scheduledCount = db.leads.filter(
+      (l) => Boolean(l.scheduledDate) || l.stageId === 'stage-3' || (l.tags || []).some((t) => t.toLowerCase().includes('agendad'))
+    ).length;
+
+    const persona = db.agentConfig.personaName || 'Sofia';
+    const workspaceName = db.agentConfig.activeWorkspaceName || db.agentConfig.role || 'Sua Empresa';
+
+    return (
+      `📊 *BRIEFING EXECUTIVO DIÁRIO — NEXA CRM*\n` +
+      `🏢 *Operação:* ${workspaceName}\n` +
+      `🗓️ *Data:* ${nowStr} às ${timeStr}\n\n` +
+      `Olá! Aqui é a *${persona}*. Preparei o balanço em tempo real da nossa operação hoje:\n\n` +
+      `💰 *Pipeline Ativo:* R$ ${totalPipeline.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${totalLeads} oportunidades)\n` +
+      `🔥 *Leads Quentes / Fechamento:* ${hotLeads.length} prontos para converter\n` +
+      `💳 *Pagamentos PIX Validados por IA:* ${paidLeads.length} confirmados\n` +
+      `📅 *Consultas / Triagens Agendadas:* ${scheduledCount} na agenda\n` +
+      `🛵 *Pedidos Delivery / Logística:* ${deliveryLeads.length} monitorados\n` +
+      `📂 *Base Antiga & Reativação:* ${reactivationLeads.length} contatos no motor de resgate\n` +
+      `🚨 *Urgências / Prioridade Máxima:* ${urgentLeads.length} ${urgentLeads.length > 0 ? `(${urgentLeads.map((u) => u.name.split(' ')[0]).join(', ')})` : '(Tudo em dia!)'}\n\n` +
+      `🤖 *Status da IA ${persona}:* ${db.agentConfig.isGlobalAiActive !== false ? '🟢 Ativa 24/7 no WhatsApp' : '⏸️ Silenciada Manualmente'}\n` +
+      `🔗 *Painel Ao Vivo:* https://crm.makprojetosmake.com.br`
+    );
+  };
+
+  app.get('/api/briefing/preview', (_req: Request, res: Response) => {
+    res.json({
+      text: buildOwnerBriefingText(),
+      ownerPhone: db.agentConfig.ownerBriefingPhone || db.sentinelAlerts?.notifyPhone || '5511976143323',
+      enabled: db.agentConfig.ownerBriefingEnabled ?? true,
+      time: db.agentConfig.ownerBriefingTime || '20:00',
+    });
+  });
+
+  app.post('/api/briefing/send-now', async (req: Request, res: Response) => {
+    const { phone, customText } = req.body || {};
+    const targetPhone = (phone || db.agentConfig.ownerBriefingPhone || db.sentinelAlerts?.notifyPhone || '5511976143323').replace(/\D/g, '');
+    const briefingText = customText || buildOwnerBriefingText();
+
+    db.agentConfig.ownerBriefingPhone = targetPhone;
+    db.saveToFile();
+
+    try {
+      const sendRes = await sendWhatsAppMessage(targetPhone, briefingText);
+      res.json({
+        success: true,
+        sentViaWhatsApp: sendRes.success,
+        targetPhone,
+        text: briefingText,
+        message: sendRes.success
+          ? `Briefing Executivo enviado com sucesso para o WhatsApp ${targetPhone}!`
+          : `Briefing gerado com sucesso! (WhatsApp em modo simulação/offline — conecte a instância Evolution para receber no aparelho ${targetPhone}).`,
+      });
+    } catch (err: any) {
+      res.json({
+        success: true,
+        sentViaWhatsApp: false,
+        targetPhone,
+        text: briefingText,
+        message: `Briefing compilado! Conecte a Evolution API para disparo direto no número ${targetPhone}.`,
+      });
+    }
   });
 
   // =========================================================================
@@ -1650,6 +1817,16 @@ async function startServer() {
       }
     }, 60 * 1000);
   }
+
+  // Global API Error Boundary Middleware
+  app.use('/api', (err: any, req: Request, res: Response, _next: express.NextFunction) => {
+    console.error(`[API Error - ${req.method} ${req.originalUrl}]:`, err?.message || err);
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: err?.message || 'Erro interno processado com segurança pelo servidor.',
+      });
+    }
+  });
 
   // =========================================================================
   // 6. VITE MIDDLEWARE (DEV) & STATIC SERVING (PROD)

@@ -281,8 +281,8 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
   // Handle Logout / Disconnect
   const handleLogoutInstance = async () => {
-    if (!confirm(`Deseja desconectar o WhatsApp da instância "${config.instanceName}"?`)) return;
     setIsLoggingOut(true);
+    setCreateFeedback(null);
     try {
       const res = await fetch('/api/evolution/logout', {
         method: 'POST',
@@ -291,13 +291,14 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
       });
       const data = await res.json();
       if (data.success) {
-        alert('Instância desconectada com sucesso! O QR Code poderá ser lido novamente.');
+        setCreateFeedback('✅ Instância desconectada com sucesso! O QR Code poderá ser lido novamente.');
+        setQrStatusText('Instância desconectada. Clique em "Atualizar QR Code" para ler novamente.');
         loadQrCode(config.instanceName);
       } else {
-        alert('Erro ao desconectar: ' + (data.error || 'Erro desconhecido'));
+        setCreateFeedback('Erro ao desconectar: ' + (data.error || 'Erro desconhecido'));
       }
     } catch (err: any) {
-      alert('Erro ao desconectar: ' + err.message);
+      setCreateFeedback('Erro ao desconectar: ' + (err.message || 'Falha de conexão'));
     } finally {
       setIsLoggingOut(false);
     }

@@ -31,6 +31,10 @@ export const SupabaseSettings: React.FC<SupabaseSettingsProps> = ({
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
+    setConfig(supabaseConfig);
+  }, [supabaseConfig]);
+
+  useEffect(() => {
     fetch('/api/supabase/schema')
       .then((res) => res.text())
       .then((data) => setSqlScript(data))

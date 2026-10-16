@@ -45,6 +45,7 @@ interface HeaderProps {
   onOpenAdminAuth?: () => void;
   onLockAdmin?: () => void;
   onToggleGlobalAi?: () => void;
+  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -62,6 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAdminAuth,
   onLockAdmin,
   onToggleGlobalAi,
+  onSwitchWorkspace,
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showClientLinkModal, setShowClientLinkModal] = useState(false);
@@ -334,8 +336,31 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </nav>
 
-          {/* Clean Top Action Buttons (IA toggle & Admin) */}
-          <div className="flex items-center gap-2 pt-1 md:pt-0 md:pl-2 md:border-l border-slate-200 shrink-0">
+          {/* Clean Top Action Buttons (Workspace Switcher, IA toggle & Admin) */}
+          <div className="flex flex-wrap items-center gap-2 pt-1 md:pt-0 md:pl-2 md:border-l border-slate-200 shrink-0">
+            {onSwitchWorkspace && (
+              <select
+                id="header-workspace-switcher"
+                value={
+                  agentConfig.followUpNiche === 'restaurant_delivery'
+                    ? 'delivery'
+                    : agentConfig.followUpNiche === 'retail'
+                    ? 'ecommerce'
+                    : agentConfig.followUpNiche === 'sales'
+                    ? 'b2b'
+                    : 'clinic'
+                }
+                onChange={(e) => onSwitchWorkspace(e.target.value as 'clinic' | 'delivery' | 'ecommerce' | 'b2b')}
+                className="bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-300 rounded-md px-2.5 py-1 text-xs font-bold focus:outline-hidden cursor-pointer transition-colors"
+                title="Arquitetura Multi-Tenant: Alternar ambiente da empresa em 1 clique"
+              >
+                <option value="clinic">🦷 Ambiente: Clínica & Saúde</option>
+                <option value="delivery">🍕 Ambiente: Pizzaria & Delivery</option>
+                <option value="ecommerce">🛍️ Ambiente: E-commerce & Varejo</option>
+                <option value="b2b">💼 Ambiente: Comercial B2B</option>
+              </select>
+            )}
+
             {onToggleGlobalAi && (
               <button
                 onClick={onToggleGlobalAi}

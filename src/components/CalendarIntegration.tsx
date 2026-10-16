@@ -225,10 +225,11 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
         await loadAppointments();
         if (token) await loadGoogleCalendarEvents();
         if (onRefreshLeads) onRefreshLeads();
-        alert(`✅ Agendamento criado com sucesso!${googleSyncStatus}`);
+        setSaveSuccessMsg(true);
+        setTimeout(() => setSaveSuccessMsg(false), 4000);
       }
     } catch (err: any) {
-      alert('Erro ao salvar agendamento: ' + err.message);
+      setAuthError('Erro ao salvar agendamento: ' + (err.message || 'Falha na requisição'));
     } finally {
       setIsSavingAppointment(false);
     }
@@ -258,7 +259,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
 
       setEventToDelete(null);
     } catch (err: any) {
-      alert('Erro ao excluir agendamento: ' + err.message);
+      setAuthError('Erro ao excluir agendamento: ' + (err.message || 'Falha na requisição'));
     } finally {
       setIsDeleting(false);
     }

@@ -163,6 +163,21 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesSubLabel: 'confirmados',
     actionButtonText: 'Ver no Kanban',
   },
+  restaurant_delivery: {
+    id: 'restaurant_delivery',
+    name: 'Restaurantes / Pizzarias / Delivery',
+    shortName: 'Restaurante/Delivery',
+    icon: '🍕',
+    urgencyCardTitle: 'Pedidos c/ Atraso ou Prioridade',
+    urgencyBadge: 'Pedido Prioritário',
+    urgencyDescription: 'Pedidos na cozinha ou em rota que exigem atenção imediata',
+    urgencyEmptyTitle: 'Todas as entregas dentro do prazo!',
+    urgencyEmptyDesc: 'Nenhum pedido com alerta de atraso no momento.',
+    leadsCategoryLabel: 'Clientes & Pedidos',
+    triagesTitle: 'Pedidos em Rota / Entregues',
+    triagesSubLabel: 'pedidos ativos',
+    actionButtonText: 'Ver Pedidos',
+  },
 };
 
 interface ExecutiveDashboardProps {
@@ -197,6 +212,57 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
 
   const [showResetModal, setShowResetModal] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
+
+  // Daily Owner WhatsApp Briefing state
+  const [showBriefingModal, setShowBriefingModal] = useState(false);
+  const [briefingPhone, setBriefingPhone] = useState(agentConfig.ownerBriefingPhone || '5511976143323');
+  const [briefingTime, setBriefingTime] = useState(agentConfig.ownerBriefingTime || '20:00');
+  const [briefingText, setBriefingText] = useState('');
+  const [isSendingBriefing, setIsSendingBriefing] = useState(false);
+  const [briefingFeedback, setBriefingFeedback] = useState<string | null>(null);
+
+  const handleOpenBriefingPreview = async () => {
+    setShowBriefingModal(true);
+    setBriefingFeedback(null);
+    try {
+      const res = await fetch('/api/briefing/preview');
+      if (res.ok) {
+        const data = await res.json();
+        setBriefingText(data.text || '');
+        if (data.ownerPhone) setBriefingPhone(data.ownerPhone);
+      }
+    } catch (err) {
+      console.error('Erro ao carregar preview do briefing:', err);
+    }
+  };
+
+  const handleDispatchBriefingNow = async () => {
+    setIsSendingBriefing(true);
+    setBriefingFeedback(null);
+    try {
+      const res = await fetch('/api/briefing/send-now', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: briefingPhone, customText: briefingText }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBriefingFeedback(data.message || 'Briefing Executivo processado com sucesso!');
+        if (onUpdateAgentConfig) {
+          onUpdateAgentConfig({
+            ...agentConfig,
+            ownerBriefingEnabled: true,
+            ownerBriefingPhone: briefingPhone,
+            ownerBriefingTime: briefingTime,
+          });
+        }
+      }
+    } catch (err: any) {
+      setBriefingFeedback('Erro ao disparar briefing: ' + (err.message || 'Falha de conexão'));
+    } finally {
+      setIsSendingBriefing(false);
+    }
+  };
 
   const handleNicheChange = (newNiche: BusinessNiche) => {
     if (onUpdateAgentConfig) {
@@ -649,6 +715,137 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Relatório Executivo Diário no WhatsApp do Dono (Morning / Evening Briefing) */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+            <Smartphone className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-900">
+                📲 Relatório Diário no WhatsApp do Proprietário (Morning / Evening Briefing)
+              </h3>
+              <span className="text-[11px] text-emerald-700 font-semibold">
+                · Disparo Automático às {briefingTime}h
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              A Sofia compila o balanço do dia (Pipeline R$, Pagamentos PIX validados por IA, Agendamentos, Entregas e Urgências) e envia direto no celular do dono.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            type="button"
+            id="btn-open-owner-briefing"
+            onClick={handleOpenBriefingPreview}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+          >
+            <Zap className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Ver & Disparar Briefing no WhatsApp Agora</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Modal de Preview e Disparo do Briefing Executivo Diário */}
+      {showBriefingModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Briefing Executivo no WhatsApp do Dono
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Resumo estratégico diário enviado pela IA Sofia no celular do proprietário
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBriefingModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  WhatsApp do Proprietário / Gestor (com DDD)
+                </label>
+                <input
+                  type="text"
+                  value={briefingPhone}
+                  onChange={(e) => setBriefingPhone(e.target.value)}
+                  placeholder="5511999998888"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 focus:outline-hidden focus:border-slate-900"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  Horário do Disparo Diário Automático
+                </label>
+                <select
+                  value={briefingTime}
+                  onChange={(e) => setBriefingTime(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-hidden focus:border-slate-900"
+                >
+                  <option value="08:00">08:00 (Morning Briefing — Abertura do Dia)</option>
+                  <option value="18:00">18:00 (Fechamento Comercial)</option>
+                  <option value="20:00">20:00 (Balanço Noturno Completo)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-1.5">
+              <label className="block text-[11px] font-bold text-slate-700">
+                Prévia da Mensagem em Tempo Real (Editável):
+              </label>
+              <textarea
+                rows={10}
+                value={briefingText}
+                onChange={(e) => setBriefingText(e.target.value)}
+                className="w-full bg-emerald-950/95 text-emerald-50 font-mono text-xs p-3.5 rounded-xl border border-emerald-800 leading-relaxed focus:outline-hidden"
+              />
+            </div>
+
+            {briefingFeedback && (
+              <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl px-3.5 py-2.5 text-xs font-semibold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{briefingFeedback}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowBriefingModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                Fechar
+              </button>
+              <button
+                type="button"
+                disabled={isSendingBriefing}
+                onClick={handleDispatchBriefingNow}
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>{isSendingBriefing ? 'Disparando no WhatsApp...' : 'Enviar Agora no WhatsApp'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showExecutiveGuide && (
         <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-indigo-500/20 relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
           {/* Subtle glow / background flair */}

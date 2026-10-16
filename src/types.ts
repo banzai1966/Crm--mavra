@@ -42,12 +42,38 @@ export interface Lead {
     motoboyPhone?: string;
     motoboyPlate?: string;
     deliveryAddress?: string;
+    deliveryNeighborhood?: string;
+    subtotalValue?: number;
+    deliveryFee?: number;
     etaMinutes?: number;
     dispatchedAt?: string;
     status?: 'preparing' | 'dispatched' | 'arriving' | 'delivered';
     verificationCode?: string;
     trackingUrl?: string;
   };
+  paymentInfo?: {
+    isPaid?: boolean;
+    paidAmount?: number;
+    paidAt?: string;
+    method?: 'pix' | 'cartao' | 'dinheiro' | 'convenio';
+    receiptSummary?: string;
+    pixPayload?: string;
+  };
+  cognitiveProfile?: {
+    preferences?: string[];
+    restrictionsOrObjections?: string[];
+    recurringHabits?: string;
+    vipNotes?: string;
+    updatedAt?: string;
+  };
+}
+
+export interface DeliveryZoneRule {
+  id: string;
+  regionName: string;
+  keywords: string;
+  fee: number;
+  etaMinutes: number;
 }
 
 export interface PreRecordedAudio {
@@ -133,7 +159,8 @@ export type BusinessNiche =
   | 'general'
   | 'custom'
   | 'saas_tech'
-  | 'nexa_sales';
+  | 'nexa_sales'
+  | 'restaurant_delivery';
 
 export interface AgentConfig {
   personaName: string;
@@ -207,6 +234,14 @@ export interface AgentConfig {
     tokenExpiresAt?: string;
     accessToken?: string;
   };
+  // Calculadora Inteligente de Frete & Taxas por Bairro/CEP
+  deliveryZones?: DeliveryZoneRule[];
+  freeShippingMinimum?: number;
+  // Relatório Executivo Diário no WhatsApp do Dono (Morning / Evening Briefing)
+  ownerBriefingEnabled?: boolean;
+  ownerBriefingPhone?: string;
+  ownerBriefingTime?: string;
+  activeWorkspaceName?: string;
 }
 
 export interface AppointmentSlot {

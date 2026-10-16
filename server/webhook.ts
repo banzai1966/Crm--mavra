@@ -776,6 +776,115 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       }
     }
 
+    // 7c. Update Long-Term Episodic Customer Memory ("DNA Cognitivo do Cliente")
+    if (aiResult.cognitiveProfile) {
+      const prevDna = lead.cognitiveProfile || {};
+      const mergedPrefs = Array.from(
+        new Set([...(prevDna.preferences || []), ...(aiResult.cognitiveProfile.preferences || [])].filter(Boolean))
+      ).slice(0, 8);
+      const mergedRestrictions = Array.from(
+        new Set([
+          ...(prevDna.restrictionsOrObjections || []),
+          ...(aiResult.cognitiveProfile.restrictionsOrObjections || []),
+        ].filter(Boolean))
+      ).slice(0, 6);
+
+      lead.cognitiveProfile = {
+        preferences: mergedPrefs,
+        restrictionsOrObjections: mergedRestrictions,
+        recurringHabits: aiResult.cognitiveProfile.recurringHabits || prevDna.recurringHabits,
+        vipNotes: aiResult.cognitiveProfile.vipNotes || prevDna.vipNotes,
+        updatedAt: new Date().toISOString(),
+      };
+    }
+
+    // 7d. Handle Automatic Pix Payment / Receipt Verification (Multimodal Vision / PDF / Confirmation)
+    const isReceiptTextMatch =
+      /\b(comprovante|pix enviado|paguei|acabei de pagar|pagamento realizado|transferência realizada)\b/i.test(messageText) &&
+      (isImageAnalyzed || isDocumentAnalyzed || /\b(r\$|reais|pix|comprovante)\b/i.test(messageText));
+
+    if (aiResult.paymentConfirmation?.isPixPaid || isReceiptTextMatch) {
+      const paidVal = aiResult.paymentConfirmation?.paidAmount || lead.value || 0;
+      lead.paymentInfo = {
+        isPaid: true,
+        paidAmount: paidVal,
+        paidAt: new Date().toISOString(),
+        method: 'pix',
+        receiptSummary:
+          aiResult.paymentConfirmation?.receiptSummary ||
+          `Comprovante PIX validado automaticamente pela IA (${paidVal > 0 ? `R$ ${paidVal}` : 'Valor integral'})`,
+      };
+      if (!lead.tags.includes('✅ Pix Confirmado IA')) {
+        lead.tags.push('✅ Pix Confirmado IA');
+      }
+      if (!lead.deliveryInfo) {
+        lead.stageId = 'stage-4'; // Fechado / Ganho / Pago
+      }
+      lead.notes = `${lead.notes || ''}\n💳 [PAGAMENTO PIX VALIDADO PELA IA ${new Date().toLocaleTimeString('pt-BR')}]: ${lead.paymentInfo.receiptSummary}`;
+      console.log(`[Webhook 💳 PIX VALIDADO PELA IA] Lead ${lead.name} (${cleanPhone}) teve o comprovante validado automaticamente!`);
+    }
+
+    // Handle Automatic Delivery / Food Order Detection & Smart Freight Calculation
+    const isFoodOrDeliveryContext =
+      aiResult.deliveryOrder?.isDeliveryOrder ||
+      (db.agentConfig.followUpNiche === 'restaurant_delivery') ||
+      (db.agentConfig.personaName?.toLowerCase().includes('pizzaria') || (db.agentConfig.role || '').toLowerCase().includes('delivery') || (db.agentConfig.role || '').toLowerCase().includes('restaurante')) ||
+      /\b(pedido|pizza|burger|hambúrguer|lanche|combo|marmita|marmitex|sushi|temaki|refrigerante|coca|guaraná|batata|borda|delivery|endereço|rua|entregar)\b/i.test(messageText);
+
+    if (isFoodOrDeliveryContext && (aiResult.deliveryOrder?.itemsDescription || /\b(pedido|pizza|burger|hambúrguer|combo|marmita|marmitex|sushi|porção)\b/i.test(messageText))) {
+      const defaultPin = cleanPhone.slice(-4) || '1234';
+      const addressText = (aiResult.deliveryOrder?.deliveryAddress || messageText || '').toLowerCase();
+      const zones = db.agentConfig.deliveryZones || [];
+      const matchedZone = zones.find((z) =>
+        z.keywords
+          .toLowerCase()
+          .split(',')
+          .map((k) => k.trim())
+          .filter(Boolean)
+          .some((kw) => addressText.includes(kw))
+      );
+
+      const subtotal = aiResult.deliveryOrder?.subtotalValue || aiResult.deliveryOrder?.orderValue || lead.value || 65;
+      const freeAbove = db.agentConfig.freeShippingMinimum || 0;
+      const calculatedFee =
+        freeAbove > 0 && subtotal >= freeAbove
+          ? 0
+          : aiResult.deliveryOrder?.deliveryFee ?? (matchedZone ? matchedZone.fee : 8);
+      const totalWithFee = subtotal + calculatedFee;
+
+      if (!lead.deliveryInfo) {
+        lead.deliveryInfo = {
+          orderNumber: aiResult.deliveryOrder?.orderNumber || `PED-${Math.floor(1000 + Math.random() * 9000)}`,
+          itemsDescription: aiResult.deliveryOrder?.itemsDescription || aiResult.extractedInfo?.interest || lead.interest || 'Pedido Delivery Recebido',
+          deliveryAddress: aiResult.deliveryOrder?.deliveryAddress || 'Endereço informado no WhatsApp',
+          deliveryNeighborhood: aiResult.deliveryOrder?.deliveryNeighborhood || matchedZone?.regionName || 'Região Central',
+          subtotalValue: subtotal,
+          deliveryFee: calculatedFee,
+          motoboyName: 'Carlos Motoboy',
+          motoboyPhone: '5511999887766',
+          motoboyPlate: 'ABC-1234',
+          etaMinutes: aiResult.deliveryOrder?.etaMinutes || matchedZone?.etaMinutes || 25,
+          dispatchedAt: new Date().toISOString(),
+          status: 'preparing',
+          verificationCode: defaultPin,
+        };
+        if (!lead.tags.includes('🍔 Restaurante/Delivery')) {
+          lead.tags.push('🍔 Restaurante/Delivery');
+        }
+        if (!lead.tags.includes('📦 Na Cozinha')) {
+          lead.tags.push('📦 Na Cozinha');
+        }
+        if (lead.stageId === 'stage-1') {
+          lead.stageId = 'stage-2'; // Na Cozinha / Preparo
+        }
+        lead.value = totalWithFee;
+        lead.notes = `${lead.notes || ''}\n🍕 [PEDIDO DELIVERY AUTOMÁTICO ${new Date().toLocaleTimeString('pt-BR')}]: Pedido #${lead.deliveryInfo.orderNumber} (Subtotal: R$ ${subtotal.toFixed(2)} + Entrega: R$ ${calculatedFee.toFixed(2)} = R$ ${totalWithFee.toFixed(2)}) enviado para a cozinha! PIN: ${defaultPin}`;
+        console.log(`[Webhook 🍕 NOVO PEDIDO DELIVERY] Lead ${lead.name} (${cleanPhone}) gerou pedido #${lead.deliveryInfo.orderNumber} na cozinha!`);
+      } else if (aiResult.deliveryOrder?.deliveryAddress && (!lead.deliveryInfo.deliveryAddress || lead.deliveryInfo.deliveryAddress.includes('confirmar') || lead.deliveryInfo.deliveryAddress.includes('informado'))) {
+        lead.deliveryInfo.deliveryAddress = aiResult.deliveryOrder.deliveryAddress;
+      }
+    }
+
     // 8. Register AI reply in chat history
     const aiMsg: ChatMessage = {
       id: 'msg-' + Date.now() + '-ai',

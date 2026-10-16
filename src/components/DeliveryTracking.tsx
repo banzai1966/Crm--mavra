@@ -32,13 +32,16 @@ import {
   List,
   ChevronRight,
 } from 'lucide-react';
-import { Lead, EvolutionConfig } from '../types';
+import { Lead, EvolutionConfig, AgentConfig, DeliveryZoneRule } from '../types';
 
 interface DeliveryTrackingProps {
   leads: Lead[];
   onSaveLead: (leadData: Partial<Lead>, leadId?: string) => void;
   onOpenChat: (leadId: string) => void;
   evolutionConfig?: EvolutionConfig;
+  agentConfig?: AgentConfig;
+  onUpdateAgentConfig?: (updated: Partial<AgentConfig>) => Promise<void> | void;
+  onConfirmPixReceipt?: (leadId: string, paidAmount?: number) => Promise<void> | void;
 }
 
 export type DeliveryStatus = 'preparing' | 'dispatched' | 'arriving' | 'delivered';
@@ -102,6 +105,9 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
   onSaveLead,
   onOpenChat,
   evolutionConfig,
+  agentConfig,
+  onUpdateAgentConfig,
+  onConfirmPixReceipt,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'kanban' | 'grid'>('kanban');
@@ -110,6 +116,49 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
   // Modal states
   const [selectedLeadForModal, setSelectedLeadForModal] = useState<Lead | null>(null);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
+  const [showZonesModal, setShowZonesModal] = useState(false);
+
+  // Delivery Zones (Calculadora de Frete IA) state
+  const defaultZones: DeliveryZoneRule[] = [
+    { id: 'zone-1', regionName: 'Centro & Bairros Próximos (Até 3km)', keywords: 'centro, paulista, jardins, vila mariana, bela vista, consolação', fee: 6.0, etaMinutes: 20 },
+    { id: 'zone-2', regionName: 'Zona Sul / Zona Oeste (3km a 7km)', keywords: 'moema, itaim, pinheiros, perdizes, santana, tatuapé, vila olímpia', fee: 12.0, etaMinutes: 35 },
+    { id: 'zone-3', regionName: 'Regiões Afastadas / Condomínios (+7km)', keywords: 'alphaville, granja, interlagos, morumbi, barra funda, osasco', fee: 18.0, etaMinutes: 45 },
+  ];
+  const [zones, setZones] = useState<DeliveryZoneRule[]>(
+    agentConfig?.deliveryZones && agentConfig.deliveryZones.length > 0 ? agentConfig.deliveryZones : defaultZones
+  );
+  const [freeShippingMin, setFreeShippingMin] = useState<number>(agentConfig?.freeShippingMinimum ?? 120);
+  const [simAddressInput, setSimAddressInput] = useState('Av. Paulista, 1000 - Jardins');
+  const [simSubtotalInput, setSimSubtotalInput] = useState('78.00');
+
+  useEffect(() => {
+    if (agentConfig?.deliveryZones && agentConfig.deliveryZones.length > 0) {
+      setZones(agentConfig.deliveryZones);
+    }
+    if (agentConfig?.freeShippingMinimum !== undefined) {
+      setFreeShippingMin(agentConfig.freeShippingMinimum);
+    }
+  }, [agentConfig?.deliveryZones, agentConfig?.freeShippingMinimum]);
+
+  // Helper to calculate shipping fee & ETA from address
+  const calculateZoneForAddress = (address: string, subtotal = 0) => {
+    const clean = (address || '').toLowerCase();
+    const matched = zones.find((z) =>
+      z.keywords
+        .split(',')
+        .map((k) => k.trim().toLowerCase())
+        .filter(Boolean)
+        .some((kw) => clean.includes(kw))
+    ) || zones[0] || { id: 'default', regionName: 'Taxa Padrão Urbana', keywords: '', fee: 8.0, etaMinutes: 25 };
+
+    const isFree = freeShippingMin > 0 && subtotal >= freeShippingMin;
+    return {
+      zone: matched,
+      fee: isFree ? 0 : matched.fee,
+      etaMinutes: matched.etaMinutes,
+      isFree,
+    };
+  };
 
   // Edit/New Form fields
   const [orderNumber, setOrderNumber] = useState('');
@@ -135,13 +184,30 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
   // WhatsApp Sending state
   const [sendingMsgId, setSendingMsgId] = useState<string | null>(null);
   const [autoTimerActive, setAutoTimerActive] = useState(true);
+  const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setFeedbackNotice(msg);
+    setTimeout(() => setFeedbackNotice(null), 3500);
+  };
+
+  const handleSaveZonesConfig = async () => {
+    if (onUpdateAgentConfig) {
+      await onUpdateAgentConfig({
+        deliveryZones: zones,
+        freeShippingMinimum: freeShippingMin,
+      });
+    }
+    showToast('✅ Tabela de Frete Inteligente por Bairro/CEP salva e sincronizada com a IA Sofia!');
+    setShowZonesModal(false);
+  };
 
   // Filter leads that have delivery info
   const deliveryLeads = leads.filter((l) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
-      l.name.toLowerCase().includes(term) ||
-      l.phone.includes(term) ||
+      (l.name || '').toLowerCase().includes(term) ||
+      (l.phone || '').includes(term) ||
       (l.deliveryInfo?.orderNumber && l.deliveryInfo.orderNumber.toLowerCase().includes(term)) ||
       (l.deliveryInfo?.motoboyName && l.deliveryInfo.motoboyName.toLowerCase().includes(term)) ||
       (l.deliveryInfo?.itemsDescription && l.deliveryInfo.itemsDescription.toLowerCase().includes(term));
@@ -241,7 +307,7 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
     await onSaveLead(
       {
         deliveryInfo: updatedDeliveryInfo,
-        tags: Array.from(new Set([...selectedLeadForModal.tags, '🍔 Restaurante/Delivery', '📦 Pedido Ativo'])),
+        tags: Array.from(new Set([...(selectedLeadForModal.tags || []), '🍔 Restaurante/Delivery', '📦 Pedido Ativo'])),
       },
       selectedLeadForModal.id
     );
@@ -250,8 +316,8 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
   };
 
   const handleCreateNewOrder = async () => {
-    if (!customerName || !customerPhone) {
-      alert('Por favor, informe ao menos o nome e o WhatsApp do cliente!');
+    if (!customerName.trim() || !customerPhone.trim()) {
+      showToast('⚠️ Por favor, informe ao menos o nome e o WhatsApp do cliente!');
       return;
     }
 
@@ -402,7 +468,17 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start md:self-center">
+        <div className="flex flex-wrap items-center gap-2.5 self-start md:self-center">
+          <button
+            type="button"
+            id="btn-delivery-zones-config"
+            onClick={() => setShowZonesModal(true)}
+            className="bg-indigo-600/90 hover:bg-indigo-500 text-white border border-indigo-400/40 font-bold px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg transition-all cursor-pointer whitespace-nowrap"
+          >
+            <MapPin className="w-4 h-4 text-amber-300" />
+            <span>Taxas de Entrega & Bairros (IA)</span>
+          </button>
+
           <button
             onClick={() => {
               resetNewOrderForm();
@@ -415,6 +491,15 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
           </button>
         </div>
       </div>
+
+      {feedbackNotice && (
+        <div className="mb-3 bg-emerald-900 text-white px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between shadow-md animate-in fade-in duration-150">
+          <span>{feedbackNotice}</span>
+          <button onClick={() => setFeedbackNotice(null)} className="text-emerald-200 hover:text-white ml-3 cursor-pointer">
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Action Bar: Search, View Mode Toggle & Metrics */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 shrink-0">
@@ -563,6 +648,33 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
                             <KeyRound className="w-3 h-3" />
                             <span>PIN: {info.verificationCode || lead.phone.slice(-4)}</span>
                           </div>
+                        </div>
+
+                        {/* Status PIX Validado por IA (Visão Computacional) */}
+                        <div className="flex items-center justify-between bg-slate-50 border border-slate-200/70 rounded-lg px-2 py-1 text-[10px]">
+                          {lead.paymentInfo?.isPaid ? (
+                            <span className="text-emerald-800 font-bold flex items-center gap-1">
+                              <Sparkles className="w-3 h-3 text-emerald-600" />
+                              💳 PIX Validado pela IA ✅
+                            </span>
+                          ) : (
+                            <>
+                              <span className="text-slate-600 font-medium">💳 Aguardando PIX</span>
+                              {onConfirmPixReceipt && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    onConfirmPixReceipt(lead.id, lead.value);
+                                    showToast(`✅ Comprovante PIX do pedido #${info.orderNumber} validado por IA!`);
+                                  }}
+                                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 rounded text-[9px] cursor-pointer transition-colors"
+                                  title="Validar comprovante PIX automaticamente com Visão Computacional IA"
+                                >
+                                  Validar PIX IA
+                                </button>
+                              )}
+                            </>
+                          )}
                         </div>
 
                         {/* GPS Tracking & Stage Buttons */}
@@ -920,11 +1032,11 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`https://crm.makprojetosmake.com.br/track/${trackingLeadModal.deliveryInfo?.orderNumber}`);
-                    alert('Link de rastreamento copiado com sucesso! 📋');
+                    showToast('Link de rastreamento copiado com sucesso! 📋');
                   }}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" /> Copiar Link do Rastreio
+                  <ExternalLink className="w-3.5 h-3.5" /> {feedbackNotice ? 'Link Copiado! ✅' : 'Copiar Link do Rastreio'}
                 </button>
               </div>
             </div>
@@ -1137,14 +1249,33 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Endereço de Entrega</label>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Endereço de Entrega (Calcula Taxa & Tempo por Bairro Automaticamente)
+                </label>
                 <input
                   type="text"
-                  placeholder="Ex: Av. Paulista, 1000 - Apto 42 - SP"
+                  placeholder="Ex: Av. Paulista, 1000 - Jardins - SP"
                   value={deliveryAddress}
-                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  onChange={(e) => {
+                    const addr = e.target.value;
+                    setDeliveryAddress(addr);
+                    if (addr.trim().length > 3) {
+                      const calc = calculateZoneForAddress(addr, parseFloat(orderValue) || 0);
+                      setEtaMinutes(String(calc.etaMinutes));
+                    }
+                  }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-900"
                 />
+                {deliveryAddress.trim().length > 3 && (
+                  <div className="mt-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-[11px] text-indigo-950 flex items-center justify-between">
+                    <span>
+                      📍 <strong>{calculateZoneForAddress(deliveryAddress, parseFloat(orderValue) || 0).zone.regionName}</strong>
+                    </span>
+                    <span className="font-mono font-bold text-emerald-700">
+                      Frete: R$ {calculateZoneForAddress(deliveryAddress, parseFloat(orderValue) || 0).fee.toFixed(2)} (~{etaMinutes} min)
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -1182,6 +1313,210 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
               >
                 <Check className="w-4 h-4 stroke-[3]" />
                 <span>Salvar no Kanban de Pedidos</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Calculadora Inteligente de Frete & Taxas por Bairro/CEP (IA Sofia) */}
+      {showZonesModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-indigo-600" /> Calculadora Inteligente de Frete por Bairro & CEP (IA Sofia)
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Configure as taxas de entrega de cada região. Quando o cliente informa o endereço no WhatsApp, a IA calcula o frete, soma com os produtos e envia o PIX exato automaticamente.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowZonesModal(false)}
+                className="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+              {/* Regra de Frete Grátis */}
+              <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="font-bold text-emerald-950 block">🎁 Gatilho de Frete Grátis Automático (Upsell IA)</span>
+                  <span className="text-[11px] text-emerald-800">
+                    Acima deste valor em compras, a Sofia zera a taxa de entrega para incentivar carrinhos maiores (0 = desativado).
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-xs font-bold text-emerald-900">R$</span>
+                  <input
+                    type="number"
+                    value={freeShippingMin}
+                    onChange={(e) => setFreeShippingMin(Number(e.target.value) || 0)}
+                    className="w-24 bg-white border border-emerald-300 rounded-lg px-2.5 py-1.5 font-mono font-bold text-emerald-900 text-xs focus:outline-hidden"
+                  />
+                </div>
+              </div>
+
+              {/* Lista de Zonas de Entrega */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px]">
+                    Zonas & Bairros Atendidos ({zones.length})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setZones((prev) => [
+                        ...prev,
+                        {
+                          id: 'zone-' + Date.now(),
+                          regionName: 'Nova Região / Bairro',
+                          keywords: 'bairro1, bairro2',
+                          fee: 10.0,
+                          etaMinutes: 30,
+                        },
+                      ])
+                    }
+                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Adicionar Zona
+                  </button>
+                </div>
+
+                {zones.map((zone, idx) => (
+                  <div key={zone.id} className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Nome da Região / Faixa</label>
+                        <input
+                          type="text"
+                          value={zone.regionName}
+                          onChange={(e) => {
+                            const next = [...zones];
+                            next[idx] = { ...zone, regionName: e.target.value };
+                            setZones(next);
+                          }}
+                          className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-900"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Taxa de Entrega (R$)</label>
+                        <input
+                          type="number"
+                          step="0.50"
+                          value={zone.fee}
+                          onChange={(e) => {
+                            const next = [...zones];
+                            next[idx] = { ...zone, fee: parseFloat(e.target.value) || 0 };
+                            setZones(next);
+                          }}
+                          className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-emerald-700"
+                        />
+                      </div>
+                      <div className="flex items-end gap-2">
+                        <div className="flex-1">
+                          <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Prazo Médio (min)</label>
+                          <input
+                            type="number"
+                            value={zone.etaMinutes}
+                            onChange={(e) => {
+                              const next = [...zones];
+                              next[idx] = { ...zone, etaMinutes: parseInt(e.target.value) || 20 };
+                              setZones(next);
+                            }}
+                            className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-amber-700"
+                          />
+                        </div>
+                        {zones.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setZones(zones.filter((_, i) => i !== idx))}
+                            className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs cursor-pointer"
+                            title="Remover região"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 mb-0.5">
+                        Bairros, Ruas ou Prefixos de CEP (separados por vírgula)
+                      </label>
+                      <input
+                        type="text"
+                        value={zone.keywords}
+                        onChange={(e) => {
+                          const next = [...zones];
+                          next[idx] = { ...zone, keywords: e.target.value };
+                          setZones(next);
+                        }}
+                        className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-700"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Simulador de Cotação Instantânea */}
+              <div className="bg-indigo-950 text-white rounded-xl p-4 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold flex items-center gap-1.5 text-indigo-200">
+                    <Sparkles className="w-4 h-4 text-amber-400" /> Simulador de Resposta da IA no WhatsApp
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div className="sm:col-span-2">
+                    <label className="block text-[10px] text-indigo-300 mb-0.5">Endereço digitado pelo cliente no WhatsApp:</label>
+                    <input
+                      type="text"
+                      value={simAddressInput}
+                      onChange={(e) => setSimAddressInput(e.target.value)}
+                      className="w-full bg-white/10 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-indigo-300 mb-0.5">Valor dos Itens (R$):</label>
+                    <input
+                      type="number"
+                      value={simSubtotalInput}
+                      onChange={(e) => setSimSubtotalInput(e.target.value)}
+                      className="w-full bg-white/10 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-mono text-emerald-300 font-bold"
+                    />
+                  </div>
+                </div>
+                {(() => {
+                  const sub = parseFloat(simSubtotalInput) || 0;
+                  const sim = calculateZoneForAddress(simAddressInput, sub);
+                  const total = sub + sim.fee;
+                  return (
+                    <div className="bg-black/30 border border-white/10 rounded-lg p-3 text-[11px] font-mono text-emerald-200 leading-relaxed">
+                      🤖 <strong>Sofia IA:</strong> &quot;Perfeito! Para o endereço em <strong>{sim.zone.regionName}</strong>, a taxa de entrega é{' '}
+                      <strong>{sim.isFree ? 'GRÁTIS 🎁' : `R$ ${sim.fee.toFixed(2)}`}</strong> (tempo médio: ~{sim.etaMinutes} min). Somando com seu pedido de R$ {sub.toFixed(2)}, o <strong>Total Final fica R$ {total.toFixed(2)}</strong>. Assim que enviar o comprovante PIX aqui, já libero seu pedido na hora!&quot;
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowZonesModal(false)}
+                className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold text-xs cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveZonesConfig}
+                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Check className="w-4 h-4" />
+                <span>Salvar Tabela de Frete na IA</span>
               </button>
             </div>
           </div>

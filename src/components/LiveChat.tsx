@@ -55,8 +55,10 @@ interface LiveChatProps {
   onUpdateLeadNotes: (leadId: string, notes: string) => void;
   onResolveUrgency?: (leadId: string) => void;
   onConfirmTriage?: (leadId: string, dateStr: string) => Promise<void>;
+  onConfirmPixReceipt?: (leadId: string, paidAmount?: number) => Promise<void> | void;
   onDeleteLead?: (leadId: string) => void;
   personaName?: string;
+  pixKey?: string;
 }
 
 const COMMON_EMOJIS = [
@@ -77,8 +79,10 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   onUpdateLeadNotes,
   onResolveUrgency,
   onConfirmTriage,
+  onConfirmPixReceipt,
   onDeleteLead,
   personaName = 'Sofia',
+  pixKey = 'financeiro@nexacrm.com.br',
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
@@ -429,8 +433,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
         setRecordingSeconds((prev) => prev + 1);
       }, 1000);
     } catch (err) {
-      console.error('Não foi possível acessar o microfone:', err);
-      alert('Permissão de microfone negada ou indisponível no navegador.');
+      console.warn('Não foi possível acessar o microfone no navegador:', err);
+      setIsRecording(false);
     }
   };
 
@@ -1416,6 +1420,9 @@ export const LiveChat: React.FC<LiveChatProps> = ({
             onMoveLead={onMoveLead}
             onResolveUrgency={onResolveUrgency}
             onConfirmTriage={onConfirmTriage}
+            onConfirmPixReceipt={onConfirmPixReceipt}
+            onRefreshChat={() => fetchMessages(activeLead.id)}
+            pixKey={pixKey}
             onUpdateLeadNotes={onUpdateLeadNotes}
             onRequestDelete={() =>
               setDeleteTarget({
@@ -1455,6 +1462,9 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               onMoveLead={onMoveLead}
               onResolveUrgency={onResolveUrgency}
               onConfirmTriage={onConfirmTriage}
+              onConfirmPixReceipt={onConfirmPixReceipt}
+              onRefreshChat={() => fetchMessages(activeLead.id)}
+              pixKey={pixKey}
               onUpdateLeadNotes={onUpdateLeadNotes}
               onRequestDelete={() =>
                 setDeleteTarget({
@@ -1542,6 +1552,9 @@ interface DetailsContentProps {
   onMoveLead: (leadId: string, stageId: string) => void;
   onResolveUrgency?: (leadId: string) => void;
   onConfirmTriage?: (leadId: string, dateStr: string) => Promise<void>;
+  onConfirmPixReceipt?: (leadId: string, paidAmount?: number) => Promise<void> | void;
+  onRefreshChat?: () => void;
+  pixKey?: string;
   onUpdateLeadNotes: (leadId: string, notes: string) => void;
   onRequestDelete?: () => void;
   onRequestClear?: () => void;
@@ -1553,10 +1566,28 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
   onMoveLead,
   onResolveUrgency,
   onConfirmTriage,
+  onConfirmPixReceipt,
+  onRefreshChat,
+  pixKey = 'financeiro@nexacrm.com.br',
   onUpdateLeadNotes,
   onRequestDelete,
   onRequestClear,
 }) => {
+  const [triageDateInput, setTriageDateInput] = useState('Quinta-feira às 14:30');
+  const [isValidatingPix, setIsValidatingPix] = useState(false);
+  const [copiedPix, setCopiedPix] = useState(false);
+
+  const handleTriggerPixAi = async () => {
+    if (!onConfirmPixReceipt) return;
+    setIsValidatingPix(true);
+    try {
+      await onConfirmPixReceipt(activeLead.id, activeLead.value);
+      onRefreshChat?.();
+    } finally {
+      setIsValidatingPix(false);
+    }
+  };
+
   return (
     <>
       <div>
@@ -1611,6 +1642,104 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
           </div>
         </div>
       </div>
+
+      {/* 💳 Visão Computacional IA — Fechamento & Validação PIX */}
+      <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 space-y-2.5">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Fechamento PIX & Visão IA</span>
+          </h3>
+          <span
+            className={`text-[10px] px-2 py-0.5 rounded font-bold ${
+              activeLead.paymentInfo?.isPaid
+                ? 'bg-emerald-600 text-white'
+                : 'bg-amber-100 text-amber-800'
+            }`}
+          >
+            {activeLead.paymentInfo?.isPaid ? 'Pago ✅' : 'Aguardando PIX'}
+          </span>
+        </div>
+
+        <div className="text-[11px] text-emerald-900 space-y-1">
+          <div className="flex items-center justify-between bg-white/90 border border-emerald-200 rounded-lg px-2.5 py-1.5">
+            <span className="font-mono text-[10px] truncate pr-2">{pixKey}</span>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(pixKey);
+                setCopiedPix(true);
+                setTimeout(() => setCopiedPix(false), 2500);
+              }}
+              className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 shrink-0 cursor-pointer"
+            >
+              {copiedPix ? 'Copiado!' : 'Copiar PIX'}
+            </button>
+          </div>
+          {activeLead.paymentInfo?.receiptSummary && (
+            <p className="text-[10px] text-emerald-800 bg-emerald-100/70 p-2 rounded-lg font-medium">
+              {activeLead.paymentInfo.receiptSummary}
+            </p>
+          )}
+        </div>
+
+        {onConfirmPixReceipt && !activeLead.paymentInfo?.isPaid && (
+          <button
+            type="button"
+            disabled={isValidatingPix}
+            onClick={handleTriggerPixAi}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold py-2 px-2.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>
+              {isValidatingPix
+                ? 'Validando Comprovante...'
+                : 'Simular & Validar Comprovante PIX (IA)'}
+            </span>
+          </button>
+        )}
+      </div>
+
+      {/* 🧠 Memória Cognitiva de Longo Prazo (DNA do Cliente) */}
+      {activeLead.cognitiveProfile && (
+        <div className="bg-indigo-50/70 border border-indigo-200 rounded-xl p-3.5 space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+              <Bot className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Memória Cognitiva (DNA IA)</span>
+            </h3>
+            <span className="text-[9px] bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded font-bold">
+              Ativo
+            </span>
+          </div>
+
+          {activeLead.cognitiveProfile.preferences && activeLead.cognitiveProfile.preferences.length > 0 && (
+            <div>
+              <span className="text-[10px] font-bold text-indigo-700 block">Preferências Memorizadas:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {activeLead.cognitiveProfile.preferences.map((pref, i) => (
+                  <span key={i} className="text-[10px] bg-white border border-indigo-200 text-indigo-900 px-2 py-0.5 rounded-md font-medium">
+                    ✓ {pref}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeLead.cognitiveProfile.recurringHabits && (
+            <div className="text-[11px] text-indigo-950">
+              <span className="text-[10px] font-bold text-indigo-700 block">Hábito / Recorrência:</span>
+              <span>{activeLead.cognitiveProfile.recurringHabits}</span>
+            </div>
+          )}
+
+          {activeLead.cognitiveProfile.vipNotes && (
+            <div className="text-[10px] bg-white/80 border border-indigo-100 text-indigo-900 p-2 rounded-lg font-medium">
+              💡 <strong>Insight p/ Sofia:</strong> {activeLead.cognitiveProfile.vipNotes}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Urgency Alert if marked */}
       {activeLead.isUrgent && (
@@ -1674,22 +1803,27 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
             )}
 
             {onConfirmTriage && activeLead.triage.status !== 'confirmed' && (
-              <button
-                type="button"
-                onClick={() => {
-                  const datePrompt = window.prompt(
-                    'Informe a data e horário confirmado para enviar ao paciente no WhatsApp:',
-                    'Quinta-feira às 10:30'
-                  );
-                  if (datePrompt) {
-                    onConfirmTriage(activeLead.id, datePrompt);
-                  }
-                }}
-                className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-2 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
-              >
-                <CalendarCheck className="w-3.5 h-3.5" />
-                <span>Confirmar e Disparar no WhatsApp</span>
-              </button>
+              <div className="pt-2 space-y-1.5 border-t border-indigo-200/60">
+                <input
+                  type="text"
+                  value={triageDateInput}
+                  onChange={(e) => setTriageDateInput(e.target.value)}
+                  placeholder="Ex: Quinta-feira às 14:30"
+                  className="w-full bg-white border border-indigo-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 focus:outline-hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (triageDateInput.trim()) {
+                      onConfirmTriage(activeLead.id, triageDateInput.trim());
+                    }
+                  }}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-2 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                >
+                  <CalendarCheck className="w-3.5 h-3.5" />
+                  <span>Confirmar e Disparar no WhatsApp</span>
+                </button>
+              </div>
             )}
           </div>
         </div>

@@ -106,7 +106,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
       setTestSentMsg('Configurações do Sentinela salvas com sucesso!');
       setTimeout(() => setTestSentMsg(null), 3000);
     } catch (err: any) {
-      alert('Erro: ' + err.message);
+      setError('Erro ao salvar alertas: ' + (err.message || 'Falha de conexão'));
     } finally {
       setIsSavingAlerts(false);
     }
@@ -188,7 +188,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
 
           <div className="flex items-center gap-2">
             <button
-              onClick={fetchMetrics}
+              onClick={() => fetchMetrics(false)}
               disabled={isLoading}
               className="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
               title="Atualizar agora"

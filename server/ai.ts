@@ -37,6 +37,29 @@ export interface AIResponseResult {
     channelOrigin?: 'mentoria_vip' | 'consultorio_clinica' | 'geral';
     tag?: string;
   };
+  deliveryOrder?: {
+    isDeliveryOrder?: boolean;
+    orderNumber?: string;
+    itemsDescription?: string;
+    deliveryAddress?: string;
+    deliveryNeighborhood?: string;
+    subtotalValue?: number;
+    deliveryFee?: number;
+    orderValue?: number;
+    etaMinutes?: number;
+  };
+  paymentConfirmation?: {
+    isPixPaid?: boolean;
+    paidAmount?: number;
+    payerName?: string;
+    receiptSummary?: string;
+  };
+  cognitiveProfile?: {
+    preferences?: string[];
+    restrictionsOrObjections?: string[];
+    recurringHabits?: string;
+    vipNotes?: string;
+  };
   dispatchPreRecordedAudioId?: string | null;
 }
 
@@ -563,6 +586,26 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
     (config.personaName || '').toLowerCase().includes('alex') ||
     (config.followUpNiche === 'nexa_sales');
 
+  const existingDna = lead.cognitiveProfile;
+  const cognitiveMemorySection = existingDna
+    ? `=== 🧠 MEMÓRIA EPISÓDICA DE LONGO PRAZO DO CLIENTE (DNA COGNITIVO) ===
+- Preferências já conhecidas: ${(existingDna.preferences || []).join(', ') || 'Em construção'}
+- Restrições / Objeções anteriores: ${(existingDna.restrictionsOrObjections || []).join(', ') || 'Nenhuma registrada'}
+- Hábitos recorrentes: ${existingDna.recurringHabits || 'Não mapeado'}
+- Notas VIP: ${existingDna.vipNotes || 'Nenhuma'}
+(Use sutilmente essa memória para personalizar e encantar o cliente, demonstrando que você lembra dele!)`
+    : '';
+
+  const deliveryZonesList = (config.deliveryZones || [])
+    .map((z) => `- Região/Bairros: ${z.regionName} (${z.keywords}) ➔ Taxa de Entrega: R$ ${z.fee.toFixed(2)} | Prazo médio: ${z.etaMinutes} min`)
+    .join('\n');
+  const deliveryZonesSection = deliveryZonesList
+    ? `=== 📍 TABELA OFICIAL DE TAXAS DE ENTREGA & FRETE POR BAIRRO/CEP ===
+${deliveryZonesList}
+${config.freeShippingMinimum ? `- FRETE GRÁTIS automático para pedidos com subtotal acima de R$ ${config.freeShippingMinimum.toFixed(2)}!` : ''}
+(Sempre que o cliente informar o bairro/endereço em um pedido de Delivery ou E-commerce, some o Subtotal dos itens + Taxa de Entrega da região e informe o Total Final detalhado!)`
+    : '';
+
   const systemInstruction = `Você é ${config.personaName}, atuando como ${config.role}.
 Seu tom de voz é: ${config.toneOfVoice}.
 Seu objetivo comercial primordial é: ${config.salesGoal}.
@@ -583,6 +626,8 @@ O lead com quem você está conversando é:
 - Estágio atual do funil: ${stages.find((s) => s.id === lead.stageId)?.name || 'Desconhecido'} (ID: ${lead.stageId})
 - Interesse atual: ${lead.interest || 'Não especificado'}
 
+${cognitiveMemorySection}
+
 === BASE DE CONHECIMENTO OFICIAL (VERDADE ABSOLUTA) ===
 [FAQ]
 ${config.knowledgeFaq}
@@ -595,6 +640,8 @@ ${config.knowledgePricing}
 
 [REGRAS DE NEGÓCIO E LIMITES]
 ${config.knowledgeRules}
+
+${deliveryZonesSection}
 
 ${documentsContext ? `[DOCUMENTOS ANEXOS]\n${documentsContext}` : ''}
 
@@ -724,6 +771,27 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
     "value": 0 ou valor numérico estimado se aplicável (ou null),
     "channelOrigin": "mentoria_vip" ou "consultorio_clinica" ou "geral",
     "tag": "Mentoria VIP" ou "Paciente Consultório" ou null
+  },
+  "deliveryOrder": {
+    "isDeliveryOrder": true ou false (true se o cliente fez ou confirmou pedido de comida/restaurante/delivery/e-commerce),
+    "itemsDescription": "Itens pedidos (ex: 1x Pizza Calabresa + 1x Coca-Cola, ou null)",
+    "deliveryAddress": "Endereço completo de entrega fornecido pelo cliente (rua, número, complemento, bairro), ou null",
+    "deliveryNeighborhood": "Bairro ou região identificada (ou null)",
+    "subtotalValue": valor dos itens em reais sem frete (ou null),
+    "deliveryFee": valor da taxa de entrega aplicada em reais (ou null),
+    "orderValue": valor total final em reais (subtotal + frete) ou null
+  },
+  "paymentConfirmation": {
+    "isPixPaid": true ou false (true se a mensagem/imagem/documento enviado pelo cliente for um comprovante de pagamento PIX ou confirmação de pagamento realizada),
+    "paidAmount": valor pago identificado no comprovante em reais (ou null),
+    "payerName": "Nome do pagador identificado ou null",
+    "receiptSummary": "Resumo do comprovante validado (ex: 'PIX R$ 89,90 confirmado') ou null"
+  },
+  "cognitiveProfile": {
+    "preferences": ["Lista de gostos/preferências específicas do cliente identificadas na conversa, ex: 'Sem cebola', 'Atendimento após 18h'"],
+    "restrictionsOrObjections": ["Restrições, alergias, receios ou objeções comerciais do cliente"],
+    "recurringHabits": "Hábito ou perfil observado (ex: 'Pede aos finais de semana', 'Paciente preventivo semestral') ou null",
+    "vipNotes": "Observação estratégica importante de longo prazo sobre o cliente ou null"
   }
 }`;
 
@@ -1317,6 +1385,9 @@ function parseAIJsonOutput(rawText: string, provider: string, model: string): AI
       humanHandoffReason: parsed.humanHandoffReason || undefined,
       triage: parsed.triage || undefined,
       extractedInfo: parsed.extractedInfo || undefined,
+      deliveryOrder: parsed.deliveryOrder || undefined,
+      paymentConfirmation: parsed.paymentConfirmation || undefined,
+      cognitiveProfile: parsed.cognitiveProfile || undefined,
       dispatchPreRecordedAudioId: parsed.dispatchPreRecordedAudioId || null,
     };
   } catch (err) {

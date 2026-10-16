@@ -147,7 +147,6 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
   // Run the batch sequence
   const startCampaign = async () => {
     if (selectedLeadIds.length === 0) {
-      alert('Selecione ao menos um contato para iniciar o disparo.');
       return;
     }
 
@@ -276,15 +275,13 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
   };
 
   const handleStop = () => {
-    if (confirm('Tem certeza que deseja interromper o disparo dos contatos restantes?')) {
-      abortControllerRef.current = true;
-      pauseRef.current = false;
-      setIsRunning(false);
-      setIsPaused(false);
-      setCountdown(0);
-      if (onLeadsUpdated) {
-        onLeadsUpdated();
-      }
+    abortControllerRef.current = true;
+    pauseRef.current = false;
+    setIsRunning(false);
+    setIsPaused(false);
+    setCountdown(0);
+    if (onLeadsUpdated) {
+      onLeadsUpdated();
     }
   };
 
@@ -318,13 +315,11 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
           <button
             onClick={() => {
               if (isRunning) {
-                if (confirm('O disparo está em andamento. Deseja realmente fechar e interromper?')) {
-                  abortControllerRef.current = true;
-                  onClose();
-                }
-              } else {
-                onClose();
+                abortControllerRef.current = true;
+                pauseRef.current = false;
+                setIsRunning(false);
               }
+              onClose();
             }}
             className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
