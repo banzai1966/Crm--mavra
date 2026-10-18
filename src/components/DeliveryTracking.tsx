@@ -34,6 +34,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Lead, EvolutionConfig, AgentConfig, DeliveryZoneRule } from '../types';
+import { ReactivationCampaignModal } from './ReactivationCampaignModal';
 
 interface DeliveryTrackingProps {
   leads: Lead[];
@@ -118,6 +119,7 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
   const [selectedLeadForModal, setSelectedLeadForModal] = useState<Lead | null>(null);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
   const [showZonesModal, setShowZonesModal] = useState(false);
+  const [showReactivationModal, setShowReactivationModal] = useState(false);
 
   // Delivery Zones (Calculadora de Frete IA) state
   const defaultZones: DeliveryZoneRule[] = [
@@ -214,6 +216,31 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
       (l.deliveryInfo?.itemsDescription && l.deliveryInfo.itemsDescription.toLowerCase().includes(term));
     return matchesSearch && l.deliveryInfo;
   });
+
+  // Inactive customers for reactivation (last order >20d or in inactive stage)
+  const deliveryInactiveLeads = leads.filter(
+    (l) =>
+      (l.deliveryInfo ||
+        (l.tags || []).some(
+          (t) =>
+            t.toLowerCase().includes('delivery') ||
+            t.toLowerCase().includes('pizza') ||
+            t.toLowerCase().includes('burger') ||
+            t.toLowerCase().includes('restaurante') ||
+            t.toLowerCase().includes('lanche')
+        )) &&
+      (l.stageId === 'stage-base' ||
+        l.stageId === 'rest-inativos' ||
+        l.stageId === 'stage-reativacao' ||
+        l.stageId === 'rest-reativacao' ||
+        (l.tags || []).some(
+          (t) =>
+            t.toLowerCase().includes('base inativa') ||
+            t.toLowerCase().includes('base antiga') ||
+            t.toLowerCase().includes('inativo') ||
+            t.toLowerCase().includes('sem pedir')
+        ))
+  );
 
   // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent, leadId: string) => {
@@ -490,6 +517,17 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
           >
             <MapPin className="w-4 h-4 text-amber-300" />
             <span>Taxas de Entrega & Bairros (IA)</span>
+          </button>
+
+          <button
+            type="button"
+            id="btn-delivery-reactivation"
+            onClick={() => setShowReactivationModal(true)}
+            className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white border border-orange-400/40 font-bold px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg transition-all cursor-pointer whitespace-nowrap"
+            title="Disparar campanha de resgate para clientes que não pedem há mais de 20 dias com cupom e mimo"
+          >
+            <Flame className="w-4 h-4 text-amber-300 animate-bounce" />
+            <span>🔥 Reativar Clientes Sumidos ({deliveryInactiveLeads.length})</span>
           </button>
 
           <button
@@ -1560,6 +1598,17 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
           </div>
         </div>
       )}
+
+      {/* Reativação da Base Inativa de Delivery */}
+      <ReactivationCampaignModal
+        isOpen={showReactivationModal}
+        onClose={() => setShowReactivationModal(false)}
+        baseLeads={deliveryInactiveLeads}
+        initialNiche="delivery"
+        onLeadsUpdated={() => {
+          // optionally refresh
+        }}
+      />
     </div>
   );
 };

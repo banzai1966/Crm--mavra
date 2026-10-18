@@ -164,6 +164,7 @@ export type BusinessNiche =
   | 'restaurant_delivery';
 
 export interface AgentConfig {
+  businessName?: string;
   personaName: string;
   role: string;
   toneOfVoice: string;
@@ -190,6 +191,7 @@ export interface AgentConfig {
   voiceResponseMode?: 'smart_discernment' | 'always_audio' | 'only_text';
   voiceEngine?: 'native_sofia' | 'google_cloud_tts' | 'elevenlabs';
   voiceVoiceName?: string;
+  voiceSpeed?: number; // e.g. 0.80, 0.85, 0.90, 0.95, 1.0 (default 0.90 for natural pauses)
   maxConsecutiveAudios?: number;
   maxAudioChars?: number;
   googleTtsApiKey?: string;

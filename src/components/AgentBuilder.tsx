@@ -911,6 +911,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           apiKey: keyToSend,
           voiceName: config.voiceVoiceName || 'pt-BR-FranciscaNeural',
           engine: config.voiceEngine || 'native_sofia',
+          speed: config.voiceSpeed !== undefined ? config.voiceSpeed : 0.90,
         }),
       });
       const data = await res.json();
@@ -2048,7 +2049,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               Com o <b>Google Cloud Text-to-Speech (Vozes Neural2 & Journey)</b>, a Sofia gera áudios em português brasileiro com entonação humana, natural e fluida em menos de 800ms, enviando diretamente no WhatsApp do lead como nota de voz original (PTT com ondas sonoras).
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Modo de Resposta */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">
@@ -2118,6 +2119,24 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                       <option value="pt-BR-NicolauNeural">Diretor Comercial (pt-BR - Masculina Grave & Segura)</option>
                     </>
                   )}
+                </select>
+              </div>
+
+              {/* Velocidade / Cadência de Fala */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Cadência & Pausas (Dicção)
+                </label>
+                <select
+                  value={config.voiceSpeed !== undefined ? config.voiceSpeed : 0.90}
+                  onChange={(e) => setConfig({ ...config, voiceSpeed: parseFloat(e.target.value) })}
+                  className="w-full bg-white border border-violet-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-violet-400 font-medium"
+                >
+                  <option value="0.80">🐢 0.80x (Muito Pausada & Acolhedora)</option>
+                  <option value="0.85">🍃 0.85x (Pausada, Suave & Clara)</option>
+                  <option value="0.90">✨ 0.90x (Cadência Humana Natural - Recomendado)</option>
+                  <option value="0.95">⏱️ 0.95x (Fluida & Direta)</option>
+                  <option value="1.00">⚡ 1.00x (Padrão Original)</option>
                 </select>
               </div>
             </div>

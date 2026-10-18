@@ -37,12 +37,14 @@ import { ImportLeadsModal } from './ImportLeadsModal';
 import { ReactivationCampaignModal } from './ReactivationCampaignModal';
 
 export const RESTAURANT_KANBAN_STAGES: KanbanStage[] = [
-  { id: 'rest-novo', name: '📥 Novo Pedido (WhatsApp)', color: '#3b82f6', order: 1 },
-  { id: 'rest-cozinha', name: '🍳 Na Cozinha (Em Preparo)', color: '#f59e0b', order: 2 },
-  { id: 'rest-rota', name: '🛵 Saiu p/ Entrega (Em Rota)', color: '#6366f1', order: 3 },
-  { id: 'rest-chegando', name: '⏱️ Chegando no Local (~5 min)', color: '#ea580c', order: 4 },
-  { id: 'rest-entregue', name: '✅ Entregue & Concluído (PIN)', color: '#10b981', order: 5 },
-  { id: 'rest-cancelado', name: '❌ Cancelado', color: '#ef4444', order: 6 },
+  { id: 'rest-inativos', name: '📂 Clientes Inativos (+20d sem pedir)', color: '#6366f1', order: 1 },
+  { id: 'rest-reativacao', name: '⚡ Em Reativação (Sofia IA - Mimo)', color: '#ec4899', order: 2 },
+  { id: 'rest-novo', name: '📥 Novo Pedido (WhatsApp)', color: '#3b82f6', order: 3 },
+  { id: 'rest-cozinha', name: '🍳 Na Cozinha (Em Preparo)', color: '#f59e0b', order: 4 },
+  { id: 'rest-rota', name: '🛵 Saiu p/ Entrega (Em Rota)', color: '#6366f1', order: 5 },
+  { id: 'rest-chegando', name: '⏱️ Chegando no Local (~5 min)', color: '#ea580c', order: 6 },
+  { id: 'rest-entregue', name: '✅ Entregue & Concluído (PIN)', color: '#10b981', order: 7 },
+  { id: 'rest-cancelado', name: '❌ Cancelado', color: '#ef4444', order: 8 },
 ];
 
 export const HEALTH_KANBAN_STAGES: KanbanStage[] = [
@@ -162,6 +164,26 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   // Delivery / restaurant leads count
   const restaurantLeadsCount = leads.filter(isDeliveryOrRestaurantLead).length;
+  const restaurantBaseLeadsCount = leads.filter(
+    (l) =>
+      isDeliveryOrRestaurantLead(l) &&
+      (l.stageId === 'stage-base' ||
+        l.stageId === 'rest-inativos' ||
+        l.tags?.some((t) =>
+          t.toLowerCase().includes('base antiga') ||
+          t.toLowerCase().includes('base inativa') ||
+          t.toLowerCase().includes('inativo') ||
+          t.toLowerCase().includes('sem pedir')
+        ))
+  ).length;
+  const restaurantReactivationLeadsCount = leads.filter(
+    (l) =>
+      isDeliveryOrRestaurantLead(l) &&
+      (l.stageId === 'stage-reativacao' ||
+        l.stageId === 'rest-reativacao' ||
+        l.tags?.some((t) => t.toLowerCase().includes('reativação') || t.toLowerCase().includes('reativacao')))
+  ).length;
+
   const healthLeadsCount = leads.filter(isHealthLead).length;
   const healthBaseLeadsCount = leads.filter(
     (l) =>
@@ -188,6 +210,23 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   // Base Antiga leads eligible for reactivation campaigns
   const baseLeads = leads.filter((l) => {
+    if (nicheFilter === 'restaurant') {
+      return (
+        isDeliveryOrRestaurantLead(l) &&
+        (l.stageId === 'stage-base' ||
+          l.stageId === 'stage-reativacao' ||
+          l.stageId === 'rest-inativos' ||
+          l.stageId === 'rest-reativacao' ||
+          l.tags?.some(
+            (t) =>
+              t.toLowerCase().includes('base antiga') ||
+              t.toLowerCase().includes('base inativa') ||
+              t.toLowerCase().includes('reativação') ||
+              t.toLowerCase().includes('sem pedir') ||
+              t.toLowerCase().includes('inativo')
+          ))
+      );
+    }
     if (nicheFilter === 'health') {
       return (
         isHealthLead(l) &&
@@ -207,14 +246,45 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     return (
       l.stageId === 'stage-base' ||
       l.stageId === 'stage-reativacao' ||
-      l.tags.includes('Base Antiga') ||
-      l.tags.includes('Reativação')
+      l.stageId === 'health-base' ||
+      l.stageId === 'rest-inativos' ||
+      l.tags.some((t) =>
+        t.toLowerCase().includes('base antiga') ||
+        t.toLowerCase().includes('base inativa') ||
+        t.toLowerCase().includes('reativação') ||
+        t.toLowerCase().includes('sem pedir')
+      )
     );
   });
 
   // Map lead to stageId according to the selected niche funnel
   const getLeadStageIdForNiche = (lead: Lead): string => {
     if (nicheFilter === 'restaurant') {
+      if (
+        lead.stageId === 'stage-base' ||
+        lead.stageId === 'rest-inativos' ||
+        lead.tags?.some(
+          (t) =>
+            t.toLowerCase().includes('inativo') ||
+            t.toLowerCase().includes('base inativa') ||
+            t.toLowerCase().includes('base antiga') ||
+            t.toLowerCase().includes('sem pedir')
+        )
+      ) {
+        return 'rest-inativos';
+      }
+      if (
+        lead.stageId === 'stage-reativacao' ||
+        lead.stageId === 'rest-reativacao' ||
+        lead.tags?.some(
+          (t) =>
+            t.toLowerCase().includes('em reativação') ||
+            t.toLowerCase().includes('reativação disparada') ||
+            t.toLowerCase().includes('reativacao')
+        )
+      ) {
+        return 'rest-reativacao';
+      }
       const status = lead.deliveryInfo?.status;
       if (status === 'preparing') return 'rest-cozinha';
       if (status === 'dispatched') return 'rest-rota';
@@ -639,6 +709,51 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Restaurant & Delivery Specialized Reativação Banner */}
+      {nicheFilter === 'restaurant' && (
+        <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-orange-950 border border-orange-800/80 rounded-2xl p-4 mb-4 text-white shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="p-2.5 rounded-xl bg-orange-500/20 border border-orange-400/30 text-orange-300 shrink-0">
+              <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                  <UtensilsCrossed className="w-4 h-4 text-amber-400" />
+                  <span>Base Inativa & Reativação da Pizzaria / Delivery (Sofia IA)</span>
+                </h4>
+                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-orange-500/30 border border-orange-400/40 text-orange-200">
+                  {restaurantBaseLeadsCount} Clientes Inativos (+20d) • {restaurantReactivationLeadsCount} em Reativação
+                </span>
+              </div>
+              <p className="text-xs text-orange-100/80 mt-1 max-w-2xl">
+                Clientes que não pedem há mais de 20 ou 30 dias. A Sofia relembra a pizza ou prato favorito deles, dispara uma mensagem carinhosa com cupom da noite e mimo (borda recheada/sobremesa) sem pagar 27% de comissão para o iFood!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <button
+              id="btn-restaurant-campaign-launch"
+              onClick={() => setShowCampaignModal(true)}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+              title="Disparar campanha de reativação para clientes sumidos da pizzaria e delivery"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Disparar Resgate de Clientes ({restaurantBaseLeadsCount + restaurantReactivationLeadsCount})</span>
+            </button>
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              title="Importar lista de clientes antigos da pizzaria (CSV ou lista)"
+            >
+              <Database className="w-3.5 h-3.5 text-orange-200" />
+              <span>Importar Base de Clientes</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Clinic & Health Specialized Reativação Banner */}
       {nicheFilter === 'health' && (
@@ -1263,6 +1378,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         isOpen={showCampaignModal}
         onClose={() => setShowCampaignModal(false)}
         baseLeads={baseLeads}
+        initialNiche={nicheFilter === 'restaurant' ? 'delivery' : nicheFilter === 'health' ? 'health' : 'all'}
         onLeadsUpdated={async () => {
           if (onRefreshLeads) await onRefreshLeads();
         }}

@@ -459,22 +459,48 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   };
 
   // Toggle Audio Playback in Chat Bubbles
-  const handleToggleAudioPlay = (msgId: string, audioUrl?: string) => {
+  const handleToggleAudioPlay = (msgId: string, audioUrl?: string, fallbackText?: string) => {
     if (playingAudioId === msgId) {
       audioPlayerRef.current?.pause();
       setPlayingAudioId(null);
     } else {
-      if (audioUrl) {
+      if (audioUrl && audioUrl.length > 20) {
         if (!audioPlayerRef.current) {
           audioPlayerRef.current = new Audio(audioUrl);
         } else {
           audioPlayerRef.current.src = audioUrl;
         }
-        audioPlayerRef.current.play();
+        audioPlayerRef.current.play().catch((err) => {
+          console.warn('Erro ao reproduzir áudio no navegador:', err);
+        });
         setPlayingAudioId(msgId);
         audioPlayerRef.current.onended = () => {
           setPlayingAudioId(null);
         };
+      } else if (fallbackText) {
+        // Fallback: Sintetiza na hora para poder ouvir mesmo mensagens antigas ou simuladas!
+        const cleanContent = fallbackText.replace(/^[🎙️🎤]\s*\[[^\]]+\]:\s*/, '').replace(/^"|"$/g, '').trim();
+        if (!cleanContent) return;
+        fetch('/api/test-voice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: cleanContent }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.audioBase64) {
+              const url = `data:audio/mp3;base64,${data.audioBase64}`;
+              if (!audioPlayerRef.current) {
+                audioPlayerRef.current = new Audio(url);
+              } else {
+                audioPlayerRef.current.src = url;
+              }
+              audioPlayerRef.current.play().catch((e) => console.warn('Erro de áudio:', e));
+              setPlayingAudioId(msgId);
+              audioPlayerRef.current.onended = () => setPlayingAudioId(null);
+            }
+          })
+          .catch((e) => console.warn('Falha ao obter áudio:', e));
       }
     }
   };
@@ -927,7 +953,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                             }`}>
                               <button
                                 type="button"
-                                onClick={() => handleToggleAudioPlay(msg.id, msg.mediaUrl)}
+                                onClick={() => handleToggleAudioPlay(msg.id, msg.mediaUrl, msg.text)}
                                 className={`w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 cursor-pointer ${
                                   playingAudioId === msg.id ? 'bg-purple-700 animate-pulse' : 'bg-purple-600 hover:bg-purple-700'
                                 }`}

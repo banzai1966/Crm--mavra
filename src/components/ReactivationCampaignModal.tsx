@@ -15,6 +15,11 @@ import {
   FileText,
   ChevronRight,
   Info,
+  BookmarkPlus,
+  Trash2,
+  Plus,
+  Star,
+  Check,
 } from 'lucide-react';
 import { Lead } from '../types';
 
@@ -23,6 +28,7 @@ interface ReactivationCampaignModalProps {
   onClose: () => void;
   baseLeads: Lead[];
   onLeadsUpdated?: () => void;
+  initialNiche?: 'all' | 'delivery' | 'auto' | 'health' | 'retail' | 'b2b';
 }
 
 interface DispatchLog {
@@ -34,36 +40,137 @@ interface DispatchLog {
   timestamp?: string;
 }
 
-const TEMPLATE_PRESETS = [
+export type TemplateCategory = 'all' | 'delivery' | 'auto' | 'health' | 'retail' | 'b2b' | 'custom';
+
+export interface TemplatePreset {
+  id: string;
+  category: 'delivery' | 'auto' | 'health' | 'retail' | 'b2b' | 'custom';
+  categoryLabel: string;
+  name: string;
+  text: string;
+}
+
+export const TEMPLATE_PRESETS: TemplatePreset[] = [
+  // 🍕 1. PIZZARIA, HAMBURGUERIA & GASTRONOMIA
+  {
+    id: 'delivery_pizza_nostalgia',
+    category: 'delivery',
+    categoryLabel: '🍕 Pizzaria & Delivery',
+    name: '🍕 Pizzaria (Saudade da Pizza Favorita + Borda Recheada Grátis)',
+    text: 'Olá {nome}, tudo bem? Sentimos sua falta por aqui! 😋 Notamos que já faz um tempinho do seu último pedido de {pizza_favorita}. Hoje no forno à lenha preparamos um mimo para o seu retorno: pedindo qualquer pizza grande, a borda recheada de Catupiry ou o Guaraná 2L é por nossa conta! Bora jantar bem hoje? 🍕✨',
+  },
+  {
+    id: 'delivery_burger_sextou',
+    category: 'delivery',
+    categoryLabel: '🍕 Pizzaria & Delivery',
+    name: '🍔 Hamburgueria & Lanches (Sextou VIP / Cupom 15% OFF)',
+    text: 'Fala {nome}! Tudo bem? Sexta-feira oficial pede aquele burger artesanal quentinho! 🍔 Como faz um tempinho que você não pede no {restaurante}, liberamos um cupom exclusivo de 15% OFF só pra você hoje: use o cupom {cupom} no seu pedido. Quer dar uma olhada no cardápio de hoje?',
+  },
+  {
+    id: 'delivery_sumido_mimo',
+    category: 'delivery',
+    categoryLabel: '🍕 Pizzaria & Delivery',
+    name: '🎁 Delivery Geral (Cliente Sumido +30 dias + Sobremesa Cortesia)',
+    text: 'Oi {nome}, tudo bem? Passando para te dar um oi e saber como você está! Vimos que faz mais de um mês que você não pede no {restaurante}. Aconteceu algo ou podemos melhorar em algum detalhe? Preparamos uma sobremesa cortesia exclusiva no seu próximo pedido! Podemos te enviar o cardápio atualizado? 🍰✨',
+  },
+  {
+    id: 'delivery_combo_familia',
+    category: 'delivery',
+    categoryLabel: '🍕 Pizzaria & Delivery',
+    name: '👨‍👩‍👧‍👦 Delivery (Combo Família / Domingo à Noite com Entrega Grátis)',
+    text: 'Olá {nome}! Domingo à noite ninguém quer ir pro fogão, né? Preparamos o Combo Família Especial no {restaurante} com entrega grátis no seu endereço hoje! Que tal garantir o jantar da galera com aquela pizza quentinha saindo do forno? Posso anotar o seu pedido? 🍕🛵',
+  },
+
+  // 🚗 2. AUTOPEÇAS, OFICINAS MECÂNICAS & AUTOMOTIVO
+  {
+    id: 'auto_oleo_revisao',
+    category: 'auto',
+    categoryLabel: '🚗 Autopeças & Oficina',
+    name: '🚗 Autopeças & Oficina (Revisão Periódica & Troca de Óleo +6m)',
+    text: 'Olá {nome}, tudo bem? Estávamos revisando o histórico aqui na {empresa} e notamos que já se passaram quase 6 meses da última manutenção preventiva do seu veículo ({veiculo}). Rodar com óleo vencido desgasta o motor e eleva o consumo. Gostaria de agendar um horário rápido para a troca esta semana? 🚗🔧',
+  },
+  {
+    id: 'auto_pneus_freios',
+    category: 'auto',
+    categoryLabel: '🚗 Autopeças & Oficina',
+    name: '🛞 Freios, Pneus & Alinhamento (Check-up Preventivo Gratuito)',
+    text: 'Olá {nome}! Tudo bem? Passando para te lembrar que a checagem periódica das pastilhas de freio e o alinhamento dos pneus são essenciais para a sua segurança e economia. Estamos com check-up gratuito de 15 itens de segurança aqui na oficina esta semana. Vamos agendar para você passar aqui? 🛞⚙️',
+  },
+  {
+    id: 'auto_peca_estoque',
+    category: 'auto',
+    categoryLabel: '🚗 Autopeças & Oficina',
+    name: '📦 Autopeças (Orçamento Cotado / Peça em Promoção)',
+    text: 'Olá {nome}! Tudo bem? Aquele orçamento da peça {peca} que você cotou conosco chegou em um lote especial de fábrica com desconto de 15% à vista aqui na {empresa}. Ainda tem interesse para eu segurar essa peça no balcão para você? 📦🔩',
+  },
+
+  // 🩺 3. ODONTOLOGIA, CLÍNICAS & HARMONIZAÇÃO
   {
     id: 'dental_checkup',
-    name: '🦷 Odontologia (Revisão Preventiva & Check-up Semestral)',
+    category: 'health',
+    categoryLabel: '🩺 Clínicas & Odonto',
+    name: '🦷 Odontologia (Revisão Preventiva & Check-up Semestral Dra. Lucy)',
     text: 'Olá {nome}, tudo bem por aí? Passando rapidinho para saber como está a sua saúde bucal e te lembrar da importância da avaliação preventiva semestral com a Dra. Lucy Murata. Nossa equipe tem horários especiais abertos esta semana aqui no Euroville Mall! 🌿✨',
   },
   {
     id: 'dental_prophylaxis',
+    category: 'health',
+    categoryLabel: '🩺 Clínicas & Odonto',
     name: '🦷 Odontologia (Limpeza & Profilaxia Preventiva Vencida)',
     text: 'Olá {nome}! Tudo bem? Estávamos revisando sua ficha clínica e notamos que já se passaram mais de 6 meses desde a sua última profilaxia e remoção de biofilme. A prevenção é o segredo para manter o sorriso impecável. Gostaria que eu verificasse os horários disponíveis com a Dra. Lucy esta semana? 🦷✨',
   },
   {
     id: 'dental_treatment',
+    category: 'health',
+    categoryLabel: '🩺 Clínicas & Odonto',
     name: '🦷 Odontologia (Retomada de Tratamento / Implante / Alinhador)',
     text: 'Olá {nome}! Tudo bem? A equipe da Dra. Lucy Murata estava revisando os prontuários e lembramos de você. Conseguiu verificar a continuidade do seu tratamento de {procedimento}? Estamos com condições especiais de retomada esta semana! 🦷',
   },
   {
     id: 'aesthetic_care',
+    category: 'health',
+    categoryLabel: '🩺 Clínicas & Odonto',
     name: '💆‍♀️ Estética & Harmonização Facial (Retorno Semestral)',
     text: 'Olá {nome}, querida! Tudo bem? Passando para lembrar que já completamos 6 meses da sua última aplicação e estamos no período ideal para o retoque do bioestimulador e toxina botulínica. Vamos realçar ainda mais a sua beleza natural? ✨💖',
   },
   {
     id: 'medical_routine',
+    category: 'health',
+    categoryLabel: '🩺 Clínicas & Odonto',
     name: '🩺 Clínica Médica (Exames de Rotina & Check-up Anual)',
     text: 'Olá {nome}! Como você tem passado? Passando para saber como está a sua saúde e se você já realizou os seus exames de rotina deste ano. Acompanhar preventivamente é fundamental para o seu bem-estar. Gostaria de verificar os horários de consulta para esta semana? 🩺',
   },
+
+  // 🛒 4. VAREJO, MODA & E-COMMERCE
   {
-    id: 'commercial_followup',
-    name: '💼 Comercial / Geral',
-    text: 'Olá {nome}! Tudo bem? Passando para saber se você conseguiu avaliar o que conversamos e se ficou alguma dúvida sobre {interesse}. Posso te ajudar a avançar com condições especiais esta semana?',
+    id: 'retail_novidades',
+    category: 'retail',
+    categoryLabel: '🛒 Varejo & Moda',
+    name: '🛍️ Varejo & Moda (Coleção Nova + Cupom de Boas-Vindas)',
+    text: 'Olá {nome}! Tudo bem? Sentimos sua falta aqui na {empresa}! Acabou de chegar uma coleção linda com lançamentos que combinam perfeitamente com o seu estilo. Liberamos o cupom especial {cupom} com 10% OFF + Frete Grátis só para você matar a saudade hoje. Quer que eu te mande o catálogo? 🛍️✨',
+  },
+  {
+    id: 'retail_carrinho',
+    category: 'retail',
+    categoryLabel: '🛒 Varejo & Moda',
+    name: '🛒 Varejo (Interesse em Aberto / Poucas Unidades)',
+    text: 'Olá {nome}! Tudo bem? Notamos que você tinha se interessado por {interesse}. Conseguimos uma condição especial de parcelamento sem juros para você finalizar hoje. Ainda tem interesse para eu reservar para você?',
+  },
+
+  // 💼 5. B2B & SERVIÇOS
+  {
+    id: 'b2b_proposta',
+    category: 'b2b',
+    categoryLabel: '💼 B2B & Serviços',
+    name: '💼 Comercial B2B (Retomada de Proposta Comercial Parada)',
+    text: 'Olá {nome}! Tudo bem? Passando para saber se você conseguiu avaliar a proposta de {interesse} e se ficou alguma dúvida com a sua diretoria. Conseguimos viabilizar uma condição especial e bônus de implantação se fecharmos ainda este mês. Consegue falar 5 minutinhos hoje?',
+  },
+  {
+    id: 'b2b_followup',
+    category: 'b2b',
+    categoryLabel: '💼 B2B & Serviços',
+    name: '💼 Consultoria & Serviços (Follow-up de Resultados & Novos Projetos)',
+    text: 'Olá {nome}! Tudo bem por aí? Passando para saber como estão os resultados e o ritmo dos negócios na sua empresa neste trimestre. Estamos com uma nova solução focada em aumento de produtividade que pode somar muito para o seu time. Posso te apresentar um resumo?',
   },
 ];
 
@@ -72,9 +179,36 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
   onClose,
   baseLeads,
   onLeadsUpdated,
+  initialNiche = 'all',
 }) => {
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
-  const [messageTemplate, setMessageTemplate] = useState<string>(TEMPLATE_PRESETS[0].text);
+  const [selectedCategory, setSelectedCategory] = useState<TemplateCategory>(initialNiche);
+  
+  // Custom templates stored locally
+  const [customTemplates, setCustomTemplates] = useState<TemplatePreset[]>(() => {
+    try {
+      const saved = localStorage.getItem('nexa_custom_reactivation_templates_v2');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [showSaveCustomModal, setShowSaveCustomModal] = useState<boolean>(false);
+  const [newModelName, setNewModelName] = useState<string>('');
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
+
+  // Default to appropriate template based on initialNiche
+  const getDefaultTemplate = () => {
+    if (initialNiche === 'delivery') return TEMPLATE_PRESETS[0].text;
+    if (initialNiche === 'auto') return TEMPLATE_PRESETS[4].text;
+    if (initialNiche === 'health') return TEMPLATE_PRESETS[7].text;
+    if (initialNiche === 'retail') return TEMPLATE_PRESETS[12].text;
+    if (initialNiche === 'b2b') return TEMPLATE_PRESETS[14].text;
+    return TEMPLATE_PRESETS[0].text;
+  };
+
+  const [messageTemplate, setMessageTemplate] = useState<string>(getDefaultTemplate());
   const [delaySeconds, setDelaySeconds] = useState<number>(25);
   const [sendAsVoice, setSendAsVoice] = useState<boolean>(false);
   const [customLimit, setCustomLimit] = useState<string>('');
@@ -90,9 +224,18 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
   const abortControllerRef = useRef<boolean>(false);
   const pauseRef = useRef<boolean>(false);
 
+  // All combined presets
+  const allPresets = [...customTemplates, ...TEMPLATE_PRESETS];
+  const displayedPresets = allPresets.filter(
+    (p) => selectedCategory === 'all' || p.category === selectedCategory
+  );
+
   // Initialize selected leads
   useEffect(() => {
     if (isOpen) {
+      if (initialNiche && initialNiche !== 'all') {
+        setSelectedCategory(initialNiche);
+      }
       const initialIds = baseLeads.map((l) => l.id);
       setSelectedLeadIds(initialIds);
       setLogs(
@@ -111,7 +254,7 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
       abortControllerRef.current = false;
       pauseRef.current = false;
     }
-  }, [isOpen, baseLeads]);
+  }, [isOpen, baseLeads, initialNiche]);
 
   if (!isOpen) return null;
 
@@ -145,14 +288,61 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
     setMessageTemplate((prev) => prev + ' ' + variable);
   };
 
+  const handleSaveCustomTemplate = () => {
+    if (!newModelName.trim() || !messageTemplate.trim()) return;
+    const newPreset: TemplatePreset = {
+      id: 'custom_' + Date.now(),
+      category: 'custom',
+      categoryLabel: '⭐ Modelo Personalizado',
+      name: `⭐ ${newModelName.trim()}`,
+      text: messageTemplate.trim(),
+    };
+    const updated = [newPreset, ...customTemplates];
+    setCustomTemplates(updated);
+    try {
+      localStorage.setItem('nexa_custom_reactivation_templates_v2', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Could not save template to localStorage', e);
+    }
+    setNewModelName('');
+    setShowSaveCustomModal(false);
+    setSelectedCategory('custom');
+    setSaveSuccessMsg('Modelo salvo com sucesso na sua lista!');
+    setTimeout(() => setSaveSuccessMsg(null), 3500);
+  };
+
+  const handleDeleteCustomTemplate = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = customTemplates.filter((t) => t.id !== id);
+    setCustomTemplates(updated);
+    try {
+      localStorage.setItem('nexa_custom_reactivation_templates_v2', JSON.stringify(updated));
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   // Preview generated message for the first selected lead
   const previewLead = baseLeads.find((l) => selectedLeadIds.includes(l.id)) || baseLeads[0];
   const previewText = previewLead
     ? messageTemplate
-        .replace(/\{nome\}/gi, (previewLead.name || 'Paciente').split(' ')[0])
+        .replace(/\{nome\}/gi, (previewLead.name || 'Cliente').split(' ')[0])
         .replace(/\{procedimento\}/gi, previewLead.triage?.procedure || previewLead.interest || 'atendimento')
-        .replace(/\{interesse\}/gi, previewLead.interest || 'nossos tratamentos')
+        .replace(/\{interesse\}/gi, previewLead.interest || 'nossos produtos')
         .replace(/\{clinica\}/gi, 'clínica da Dra. Lucy Murata')
+        .replace(/\{restaurante\}|\{pizzaria\}/gi, previewLead.deliveryInfo ? 'Pizzaria Bella Gourmet' : 'nossa Pizzaria & Restaurante')
+        .replace(/\{empresa\}/gi, 'nossa empresa')
+        .replace(
+          /\{ultimo_pedido\}|\{pizza_favorita\}|\{preferencia\}/gi,
+          previewLead.deliveryInfo?.itemsDescription || previewLead.interest || 'sua pizza favorita'
+        )
+        .replace(/\{cupom\}/gi, 'VOLTA15')
+        .replace(
+          /\{veiculo\}/gi,
+          previewLead.notes?.match(/veículo:\s*([^).\n]+)/i)?.[1]?.trim() || 'seu veículo (Corolla 2021)'
+        )
+        .replace(/\{peca\}/gi, previewLead.interest || 'Kit Pastilhas de Freio')
+        .replace(/\{dias_sem_pedir\}/gi, 'mais de 20 dias')
     : messageTemplate;
 
   // Run the batch sequence
@@ -528,51 +718,157 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
             <div className="space-y-6">
               {/* Presets and Template Editor */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-indigo-600" />
-                    <span>Modelos de Mensagem Validados para Alta Conversão</span>
-                  </label>
-                  <span className="text-[11px] text-slate-500">
-                    Escolha um modelo ou digite o seu
-                  </span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <FileText className="w-4 h-4 text-indigo-600" />
+                      <span>Modelos de Mensagem Validados para Alta Conversão</span>
+                    </label>
+                    <span className="text-[11px] text-slate-500">
+                      Selecione um modelo pronto por nicho ou digite e salve seu próprio texto
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowSaveCustomModal(!showSaveCustomModal)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-colors cursor-pointer"
+                      title="Salvar o texto atual como um novo modelo permanente"
+                    >
+                      <BookmarkPlus className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Salvar Meu Modelo</span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {TEMPLATE_PRESETS.map((preset) => (
+                {/* Save Custom Template Popover / Inline Box */}
+                {showSaveCustomModal && (
+                  <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-2 animate-in fade-in duration-150">
+                    <span className="text-xs font-bold text-indigo-950 block">
+                      Salvar Mensagem Atual como Novo Modelo
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newModelName}
+                        onChange={(e) => setNewModelName(e.target.value)}
+                        placeholder="Nome do modelo (Ex: Quarta da Pizza com Borda Grátis)..."
+                        className="flex-1 bg-white border border-indigo-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSaveCustomTemplate}
+                        disabled={!newModelName.trim()}
+                        className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer"
+                      >
+                        Salvar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowSaveCustomModal(false)}
+                        className="text-slate-400 hover:text-slate-600 text-xs px-2 cursor-pointer"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {saveSuccessMsg && (
+                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{saveSuccessMsg}</span>
+                  </div>
+                )}
+
+                {/* Category Pills Filter */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+                  {[
+                    { id: 'all', label: '🌟 Todos os Nichos' },
+                    { id: 'delivery', label: '🍕 Pizzaria & Delivery' },
+                    { id: 'auto', label: '🚗 Autopeças & Oficina' },
+                    { id: 'health', label: '🩺 Clínicas & Odonto' },
+                    { id: 'retail', label: '🛒 Varejo & Moda' },
+                    { id: 'b2b', label: '💼 B2B & Serviços' },
+                    { id: 'custom', label: `⭐ Meus Modelos (${customTemplates.length})` },
+                  ].map((cat) => (
                     <button
-                      key={preset.id}
+                      key={cat.id}
                       type="button"
-                      onClick={() => setMessageTemplate(preset.text)}
-                      className={`text-left p-2.5 rounded-xl border text-xs transition-all cursor-pointer ${
-                        messageTemplate === preset.text
-                          ? 'border-indigo-600 bg-indigo-50/80 text-indigo-900 shadow-2xs ring-1 ring-indigo-500'
-                          : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                      onClick={() => setSelectedCategory(cat.id as TemplateCategory)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                        selectedCategory === cat.id
+                          ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
-                      <span className="font-bold block text-slate-900 text-[11px] mb-0.5">
-                        {preset.name}
-                      </span>
-                      <p className="line-clamp-2 text-[11px] text-slate-500">{preset.text}</p>
+                      {cat.label}
                     </button>
                   ))}
                 </div>
 
-                {/* Variable Tags */}
+                {/* Presets Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                  {displayedPresets.length === 0 ? (
+                    <div className="col-span-2 text-center py-6 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-slate-500 text-xs">
+                      Nenhum modelo personalizado salvo ainda. Digite sua mensagem no campo abaixo e clique em <b>"Salvar Meu Modelo"</b>!
+                    </div>
+                  ) : (
+                    displayedPresets.map((preset) => (
+                      <div
+                        key={preset.id}
+                        onClick={() => setMessageTemplate(preset.text)}
+                        className={`text-left p-2.5 rounded-xl border text-xs transition-all cursor-pointer relative group flex flex-col justify-between ${
+                          messageTemplate === preset.text
+                            ? 'border-indigo-600 bg-indigo-50/80 text-indigo-900 shadow-2xs ring-1 ring-indigo-500'
+                            : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="font-bold text-slate-900 text-[11px] line-clamp-1">
+                              {preset.name}
+                            </span>
+                            {preset.category === 'custom' && (
+                              <button
+                                type="button"
+                                onClick={(e) => handleDeleteCustomTemplate(preset.id, e)}
+                                className="text-slate-400 hover:text-rose-600 p-0.5 rounded cursor-pointer opacity-80 group-hover:opacity-100"
+                                title="Excluir este modelo personalizado"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                          <p className="line-clamp-2 text-[11px] text-slate-500">{preset.text}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Variable Tags Inserter */}
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   <span className="text-[11px] font-semibold text-slate-500 mr-1">Inserir:</span>
                   {[
-                    { label: '{nome}', tip: 'Primeiro nome do paciente' },
-                    { label: '{procedimento}', tip: 'Procedimento de interesse' },
-                    { label: '{interesse}', tip: 'Interesse cadastrado' },
-                    { label: '{clinica}', tip: 'Nome da clínica' },
+                    { label: '{nome}', tip: 'Primeiro nome do cliente ou paciente' },
+                    { label: '{pizza_favorita}', tip: 'Pizza ou prato favorito (ex: Pizza Calabresa)' },
+                    { label: '{ultimo_pedido}', tip: 'Descrição do último pedido de delivery' },
+                    { label: '{cupom}', tip: 'Código de cupom especial (ex: VOLTA15)' },
+                    { label: '{restaurante}', tip: 'Nome da sua pizzaria ou restaurante' },
+                    { label: '{veiculo}', tip: 'Modelo do veículo (ex: Corolla 2021)' },
+                    { label: '{peca}', tip: 'Peça ou produto cotado anteriormente' },
+                    { label: '{procedimento}', tip: 'Procedimento clínico ou consulta' },
+                    { label: '{clinica}', tip: 'Nome da clínica (Dra. Lucy Murata)' },
+                    { label: '{empresa}', tip: 'Nome fantasia da empresa' },
                   ].map((tag) => (
                     <button
                       key={tag.label}
                       type="button"
                       onClick={() => insertVariable(tag.label)}
                       title={tag.tip}
-                      className="px-2 py-1 bg-slate-100 hover:bg-indigo-100 hover:text-indigo-800 text-slate-700 border border-slate-200 rounded-md text-[11px] font-mono font-semibold transition-colors cursor-pointer"
+                      className="px-2 py-0.5 bg-slate-100 hover:bg-indigo-100 hover:text-indigo-800 text-slate-700 border border-slate-200 rounded-md text-[11px] font-mono font-semibold transition-colors cursor-pointer"
                     >
                       +{tag.label}
                     </button>

@@ -322,6 +322,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
   let isImageAnalyzed = false;
   let isDocumentAnalyzed = false;
 
+  let incomingAudioDataUrl: string | undefined = undefined;
+
   if (!messageText.trim() && isAudioMessage && db.agentConfig.autoTranscribeAudio !== false) {
     console.log(`[Webhook] Mensagem de áudio recebida de ${cleanPhone}. Processando transcrição de voz com Gemini...`);
     let base64Audio =
@@ -351,6 +353,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     }
 
     if (base64Audio) {
+      incomingAudioDataUrl = base64Audio.startsWith('data:') ? base64Audio : `data:${mimeType};base64,${base64Audio}`;
       try {
         const transcribedText = await transcribeAudioWithGemini(base64Audio, mimeType);
         if (transcribedText) {
@@ -566,6 +569,8 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     phone: cleanPhone,
     sender: 'lead',
     text: displayText,
+    mediaType: isAudioMessage ? 'audio' : undefined,
+    mediaUrl: incomingAudioDataUrl,
     timestamp: new Date().toISOString(),
     status: 'delivered',
   };
@@ -973,6 +978,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
         const speechRes = await synthesizeSpeech(aiResult.replyText, {
           engine: db.agentConfig.voiceEngine || 'native_sofia',
           voiceName: db.agentConfig.voiceVoiceName || 'pt-BR-FranciscaNeural',
+          speed: db.agentConfig.voiceSpeed || 0.90,
           apiKey:
             db.agentConfig.voiceEngine === 'elevenlabs'
               ? db.agentConfig.elevenLabsApiKey
@@ -983,6 +989,10 @@ async function executeWebhookPipeline(body: any): Promise<void> {
           const voiceSendResult = await sendWhatsAppVoiceAudio(cleanPhone, speechRes.audioBase64, incomingInstance);
           if (voiceSendResult.success) {
             aiMsg.text = `🎙️ [Áudio de Voz Enviado]: "${aiResult.replyText}"`;
+            aiMsg.mediaType = 'audio';
+            aiMsg.mediaUrl = speechRes.audioBase64.startsWith('data:')
+              ? speechRes.audioBase64
+              : `data:audio/mp3;base64,${speechRes.audioBase64}`;
             aiMsg.status = 'delivered';
           } else {
             console.warn('[Webhook] Envio de áudio na Evolution não teve sucesso. Disparando texto como garantia:', voiceSendResult.error);

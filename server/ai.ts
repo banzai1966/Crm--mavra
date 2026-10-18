@@ -314,27 +314,53 @@ export function sanitizeTextForSpeech(rawText: string): string {
 }
 
 /**
+ * Converts numeric speed (e.g. 0.80, 0.85, 0.90, 1.0) to EdgeTTS rate percentage string.
+ * Default is -10% (0.90x), which delivers a natural, human conversational cadence with breathing room.
+ */
+export function speedToEdgeRate(speed?: number): string {
+  if (speed === undefined || speed === null) {
+    const configuredSpeed = db.agentConfig?.voiceSpeed ?? 0.90;
+    return speedToEdgeRate(configuredSpeed);
+  }
+  if (speed <= 0.80) return '-20%';
+  if (speed <= 0.85) return '-15%';
+  if (speed <= 0.90) return '-10%';
+  if (speed <= 0.95) return '-5%';
+  if (speed === 1.0) return '+0%';
+  if (speed >= 1.10) return '+10%';
+  return '-10%';
+}
+
+/**
  * Ultra-realistic Neural Brazilian Portuguese speech generator powered by Microsoft Azure Neural voices (Edge TTS).
  * Sounds completely human, natural, conversational, with proper pauses, breathing, and zero robotic tone.
  * 100% Free, zero configuration or OAuth2 needed.
  */
-export async function generateNeuralSpeech(cleanSpeechText: string, voiceName?: string): Promise<string | null> {
+export async function generateNeuralSpeech(
+  cleanSpeechText: string,
+  voiceName?: string,
+  speed?: number,
+  rate?: string
+): Promise<string | null> {
   const tmpFile = path.join(os.tmpdir(), `sofia-neural-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.mp3`);
   try {
     const speechText = sanitizeTextForSpeech(cleanSpeechText);
     if (!speechText) return null;
 
     const selectedVoice = voiceName?.startsWith('pt-BR-') ? voiceName : 'pt-BR-FranciscaNeural';
+    const effectiveRate = rate || speedToEdgeRate(speed);
+
     const tts = new EdgeTTS({
       voice: selectedVoice,
       lang: 'pt-BR',
-      outputFormat: 'audio-24khz-48kbitrate-mono-mp3'
+      outputFormat: 'audio-24khz-48kbitrate-mono-mp3',
+      rate: effectiveRate,
     });
     
-    // Strict 5-second timeout on speech generation
+    // Strict 6-second timeout on speech generation
     const ttsPromise = tts.ttsPromise(speechText, tmpFile);
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout de 5000ms excedido no EdgeTTS')), 5000)
+      setTimeout(() => reject(new Error('Timeout de 6000ms excedido no EdgeTTS')), 6000)
     );
 
     await Promise.race([ttsPromise, timeoutPromise]);
@@ -364,6 +390,8 @@ export async function synthesizeSpeech(
     apiKey?: string;
     voiceName?: string;
     engine?: 'native_sofia' | 'google_cloud_tts' | 'elevenlabs';
+    speed?: number;
+    rate?: string;
   }
 ): Promise<{ success: boolean; audioBase64?: string; error?: string; engineUsed?: string; notice?: string }> {
   // Sanitize text: remove emojis, markdown, and symbols so speech sounds 100% human without reading emoji names
@@ -375,12 +403,13 @@ export async function synthesizeSpeech(
 
   const engine = options?.engine || db.agentConfig.voiceEngine || 'native_sofia';
   const voiceName = options?.voiceName || db.agentConfig.voiceVoiceName || 'pt-BR-FranciscaNeural';
+  const effectiveSpeed = options?.speed ?? db.agentConfig.voiceSpeed ?? 0.90;
   const googleApiKey = (options?.apiKey || db.agentConfig.googleTtsApiKey || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
   const elevenApiKey = (options?.apiKey || db.agentConfig.elevenLabsApiKey || '').trim();
 
   // 1. Motor Neural Sofia (Hiper-realista, Humano, Gratuito, Sem OAuth2)
   if (engine === 'native_sofia') {
-    const neuralAudio = await generateNeuralSpeech(cleanSpeechText, voiceName);
+    const neuralAudio = await generateNeuralSpeech(cleanSpeechText, voiceName, effectiveSpeed, options?.rate);
     if (neuralAudio) {
       return { success: true, audioBase64: neuralAudio, engineUsed: 'native_sofia' };
     }

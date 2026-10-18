@@ -1282,13 +1282,14 @@ async function startServer() {
 
   // Voice synthesis testing endpoint for instant audio preview in UI
   app.post('/api/test-voice', async (req: Request, res: Response) => {
-    const { text, apiKey, voiceName, engine } = req.body;
-    const testText = text || 'Olá! Aqui é a Sofia da MAVRA. Tudo bem com você? Como posso te ajudar hoje?';
+    const { text, apiKey, voiceName, engine, speed } = req.body;
+    const testText = text || 'Olá! Aqui é a Sofia. Tudo bem com você? Estou enviando este áudio com pausas naturais para você ver como a minha voz soa humana e atenciosa.';
     try {
       const result = await synthesizeSpeech(testText, {
         apiKey,
         voiceName,
         engine,
+        speed: typeof speed === 'number' ? speed : db.agentConfig.voiceSpeed || 0.90,
       });
       if (result.success && result.audioBase64) {
         res.json({ success: true, audioBase64: result.audioBase64, engineUsed: result.engineUsed, notice: result.notice });
@@ -1500,7 +1501,21 @@ async function startServer() {
   // =========================================================================
   app.get('/api/campaigns/base-leads', (req: Request, res: Response) => {
     const baseLeads = db.leads.filter(
-      (l) => l.stageId === 'stage-base' || l.stageId === 'stage-reativacao' || l.tags.includes('Base Antiga') || l.tags.includes('Reativação')
+      (l) =>
+        l.stageId === 'stage-base' ||
+        l.stageId === 'stage-reativacao' ||
+        l.stageId === 'health-base' ||
+        l.stageId === 'health-reativacao' ||
+        l.stageId === 'rest-inativos' ||
+        l.stageId === 'rest-reativacao' ||
+        l.tags.some((t) =>
+          t.toLowerCase().includes('base antiga') ||
+          t.toLowerCase().includes('base inativa') ||
+          t.toLowerCase().includes('reativação') ||
+          t.toLowerCase().includes('inativo') ||
+          t.toLowerCase().includes('sem pedir') ||
+          t.toLowerCase().includes('sem consulta')
+        )
     );
     res.json({ count: baseLeads.length, leads: baseLeads });
   });
@@ -1513,11 +1528,28 @@ async function startServer() {
     }
 
     const firstName = (lead.name || 'tudo bem').split(' ')[0];
+    const favoriteItem = lead.deliveryInfo?.itemsDescription || lead.interest || 'sua preferência';
+    const bizName = db.agentConfig.businessName || 'nossa equipe';
+
+    // Extract vehicle if notes mention one
+    let vehicleName = 'seu veículo';
+    if (lead.notes && lead.notes.toLowerCase().includes('veículo:')) {
+      const vMatch = lead.notes.match(/veículo:\s*([^).\n]+)/i);
+      if (vMatch && vMatch[1]) vehicleName = vMatch[1].trim();
+    }
+
     const customizedText = (messageTemplate || 'Olá {nome}, tudo bem? Passando para te dar um oi!')
       .replace(/\{nome\}/gi, firstName)
       .replace(/\{procedimento\}/gi, lead.triage?.procedure || lead.interest || 'atendimento')
-      .replace(/\{interesse\}/gi, lead.interest || 'nossos serviços')
-      .replace(/\{clinica\}/gi, 'clínica da Dra. Lucy Murata');
+      .replace(/\{interesse\}/gi, lead.interest || 'nossos produtos')
+      .replace(/\{clinica\}/gi, 'clínica da Dra. Lucy Murata')
+      .replace(/\{restaurante\}|\{pizzaria\}/gi, db.agentConfig.businessName || 'nossa Pizzaria')
+      .replace(/\{empresa\}/gi, bizName)
+      .replace(/\{ultimo_pedido\}|\{pizza_favorita\}|\{preferencia\}/gi, favoriteItem)
+      .replace(/\{cupom\}/gi, 'VOLTA15')
+      .replace(/\{veiculo\}/gi, vehicleName)
+      .replace(/\{peca\}/gi, lead.interest || 'a peça cotada')
+      .replace(/\{dias_sem_pedir\}/gi, 'mais de 20 dias');
 
     try {
       let messageSentType = 'text';
@@ -1526,28 +1558,52 @@ async function startServer() {
         const voiceResult = await synthesizeSpeech(customizedText, {
           voiceName: db.agentConfig.voiceVoiceName || 'pt-BR-FranciscaNeural',
           engine: db.agentConfig.voiceEngine || 'native_sofia',
+          speed: db.agentConfig.voiceSpeed || 0.90,
         });
         if (voiceResult.success && voiceResult.audioBase64) {
           await sendWhatsAppVoiceAudio(lead.phone, voiceResult.audioBase64);
           messageSentType = 'voice';
+          // Record in messages
+          const msgObj: ChatMessage = {
+            id: 'msg-' + Date.now() + '-reactivation',
+            leadId: lead.id,
+            phone: lead.phone,
+            sender: 'ai',
+            text: `🎙️ [Áudio de Reativação Enviado]: ${customizedText}`,
+            mediaType: 'audio',
+            mediaUrl: voiceResult.audioBase64.startsWith('data:')
+              ? voiceResult.audioBase64
+              : `data:audio/mp3;base64,${voiceResult.audioBase64}`,
+            timestamp: new Date().toISOString(),
+            status: 'delivered',
+          };
+          db.messages.push(msgObj);
         } else {
           await sendWhatsAppMessage(lead.phone, customizedText);
+          const msgObj: ChatMessage = {
+            id: 'msg-' + Date.now() + '-reactivation',
+            leadId: lead.id,
+            phone: lead.phone,
+            sender: 'ai',
+            text: customizedText,
+            timestamp: new Date().toISOString(),
+            status: 'delivered',
+          };
+          db.messages.push(msgObj);
         }
       } else {
         await sendWhatsAppMessage(lead.phone, customizedText);
+        const msgObj: ChatMessage = {
+          id: 'msg-' + Date.now() + '-reactivation',
+          leadId: lead.id,
+          phone: lead.phone,
+          sender: 'ai',
+          text: customizedText,
+          timestamp: new Date().toISOString(),
+          status: 'delivered',
+        };
+        db.messages.push(msgObj);
       }
-
-      // Record in messages
-      const msgObj: ChatMessage = {
-        id: 'msg-' + Date.now() + '-reactivation',
-        leadId: lead.id,
-        phone: lead.phone,
-        sender: 'ai',
-        text: messageSentType === 'voice' ? `🎙️ [Áudio de Reativação Enviado]: ${customizedText}` : customizedText,
-        timestamp: new Date().toISOString(),
-        status: 'delivered',
-      };
-      db.messages.push(msgObj);
 
       // Update lead
       lead.lastInteraction = new Date().toISOString();

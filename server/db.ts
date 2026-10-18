@@ -159,7 +159,89 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
       status: 'pending_confirmation',
     },
   },
-
+  {
+    id: 'lead-delivery-base-1',
+    name: 'Renato Siqueira (Cliente Fiel)',
+    phone: '5511984561234',
+    email: 'renato.siqueira@gmail.com',
+    stageId: 'stage-base',
+    value: 120,
+    interest: 'Pizza Especial de Calabresa & 4 Queijos + Guaraná 2L',
+    tags: ['🍕 Pizzaria/Delivery', '📂 Base Inativa', 'Último Pedido > 28d', 'Cliente VIP'],
+    notes: 'Cliente que costumava pedir toda semana. Faz 28 dias do último pedido. Preferência: Pizza Calabresa com borda recheada de Catupiry.',
+    aiPaused: false,
+    isHotLead: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 60 * 24 * 28).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90).toISOString(),
+    unreadCount: 0,
+    deliveryInfo: {
+      orderNumber: 'PED-0890',
+      itemsDescription: '1x Pizza Grande Calabresa Artesanal com Borda Vulcão Catupiry + 1x Guaraná Antarctica 2L',
+      motoboyName: 'Carlos Motoboy',
+      motoboyPhone: '5511999887766',
+      motoboyPlate: 'ABC-1234',
+      deliveryAddress: 'Rua Pamplona, 650 - Apto 32 - Jardim Paulista, SP',
+      etaMinutes: 0,
+      dispatchedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 28).toISOString(),
+      deliveredAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 28).toISOString(),
+      status: 'delivered',
+      verificationCode: '8899',
+    },
+    cognitiveProfile: {
+      preferences: ['Pizza Calabresa com Borda Catupiry', 'Guaraná 2L bem gelado', 'Massa fina crocante'],
+      recurringHabits: 'Costuma pedir sexta-feira ou domingo à noite',
+      vipNotes: 'Adora mimos e borda recheada cortesia',
+    },
+  },
+  {
+    id: 'lead-delivery-base-2',
+    name: 'Beatriz Mendes',
+    phone: '5511973216549',
+    email: 'beatriz.mendes@design.com',
+    stageId: 'stage-base',
+    value: 85,
+    interest: '2x Smash Burger Bacon Duplo com Cheddar + Batata Rústica',
+    tags: ['🍔 Restaurante/Delivery', '📂 Base Inativa', 'Último Pedido > 32d'],
+    notes: 'Pediu com frequência durante 3 meses, mas faz 32 dias que não pede. Preferência: Burger artesanal ao ponto.',
+    aiPaused: false,
+    isHotLead: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 60 * 24 * 32).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 75).toISOString(),
+    unreadCount: 0,
+    deliveryInfo: {
+      orderNumber: 'PED-0842',
+      itemsDescription: '2x Smash Burger Bacon Duplo com Cheddar Cremoso + 1x Batata Rústica com Maionese Verde',
+      motoboyName: 'Felipe Express',
+      motoboyPhone: '5541988776655',
+      motoboyPlate: 'KTM-5544',
+      deliveryAddress: 'Av. Brigadeiro Luís Antônio, 2200 - Apto 101 - Bela Vista, SP',
+      etaMinutes: 0,
+      dispatchedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 32).toISOString(),
+      deliveredAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 32).toISOString(),
+      status: 'delivered',
+      verificationCode: '3322',
+    },
+    cognitiveProfile: {
+      preferences: ['Smash Burger Bacon Duplo', 'Maionese verde artesanal'],
+      recurringHabits: 'Pede nas noites de quinta-feira',
+    },
+  },
+  {
+    id: 'lead-auto-base-1',
+    name: 'Marcos Vinícius (Oficina & Frota)',
+    phone: '5511991122334',
+    email: 'marcos.vinicius@transportes.com.br',
+    stageId: 'stage-base',
+    value: 950,
+    interest: 'Revisão Periódica, Pastilhas de Freio & Troca de Óleo 5W30',
+    tags: ['🚗 Autopeças/Oficina', '📂 Base Antiga', 'Revisão Vencida (+6m)'],
+    notes: 'Trocou óleo e pastilhas há 185 dias (Veículo: Corolla 2021). Ciclo de km atingido para nova manutenção preventiva.',
+    aiPaused: false,
+    isHotLead: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 60 * 24 * 185).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+    unreadCount: 0,
+  },
   {
     id: 'lead-1',
     name: 'Dr. Roberto Silva',
@@ -550,6 +632,7 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     voiceResponseMode: 'smart_discernment',
     voiceEngine: 'native_sofia',
     voiceVoiceName: 'pt-BR-FranciscaNeural',
+    voiceSpeed: 0.90,
     maxConsecutiveAudios: 4,
     maxAudioChars: 500,
     googleTtsApiKey: '',
@@ -914,7 +997,14 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
 
           this.stages = loadedStages;
         }
-        if (data.leads && Array.isArray(data.leads)) this.leads = data.leads;
+        if (data.leads && Array.isArray(data.leads)) {
+          this.leads = data.leads;
+          for (const demoLead of DEFAULT_DEMO_LEADS) {
+            if (!this.leads.some((l) => l.id === demoLead.id)) {
+              this.leads.push(demoLead);
+            }
+          }
+        }
         if (data.messages && Array.isArray(data.messages)) this.messages = data.messages;
         if (data.agentConfig) {
           const loadedMaxChars = data.agentConfig.maxAudioChars;
