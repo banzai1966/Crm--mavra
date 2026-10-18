@@ -526,6 +526,80 @@ async function startServer() {
     res.send(csvContent);
   });
 
+  // Public Order Tracking Endpoint (iFood / Mercado Livre / Uber Eats Style)
+  app.get('/api/public/tracking/:orderNumber', (req: Request, res: Response) => {
+    const { orderNumber } = req.params;
+    const cleanNum = (orderNumber || '').trim().toLowerCase();
+
+    // Find lead by orderNumber or leadId
+    const lead = db.leads.find(
+      (l) =>
+        (l.deliveryInfo?.orderNumber && l.deliveryInfo.orderNumber.toLowerCase() === cleanNum) ||
+        (l.id && l.id.toLowerCase() === cleanNum)
+    );
+
+    const storeName = db.agentConfig?.activeWorkspaceName || 'NEXA Gourmet & Delivery';
+
+    if (!lead || !lead.deliveryInfo) {
+      // Sample/Demo preview fallback if random or PED-1024 tested
+      if (cleanNum.includes('1024') || cleanNum === 'demo' || cleanNum === 'teste' || cleanNum === '') {
+        return res.json({
+          found: true,
+          isSample: true,
+          orderNumber: 'PED-1024',
+          customerName: 'Cliente NEXA',
+          status: 'dispatched',
+          items: '1x Pizza Artesanal Calabresa Especial + 1x Coca-Cola 2L',
+          motoboyName: 'Carlos Silva',
+          motoboyPhone: '5511999887766',
+          motoboyPlate: 'ABC-1234',
+          deliveryAddress: 'Av. Paulista, 1000 - Jardins - São Paulo, SP',
+          etaMinutes: 12,
+          verificationCode: '4321',
+          dispatchedAt: new Date(Date.now() - 10 * 60000).toISOString(),
+          value: 78.0,
+          subtotalValue: 70.0,
+          deliveryFee: 8.0,
+          pixConfirmed: true,
+          storeName,
+          storePhone: db.agentConfig?.ownerBriefingPhone || '5511999887766',
+        });
+      }
+      return res.status(404).json({
+        found: false,
+        error: 'Pedido não localizado ou já arquivado',
+        orderNumber,
+      });
+    }
+
+    const info = lead.deliveryInfo;
+    const subtotal = info.subtotalValue || lead.value || 0;
+    const fee = info.deliveryFee ?? 0;
+    const total = lead.value || subtotal + fee;
+
+    res.json({
+      found: true,
+      orderNumber: info.orderNumber,
+      customerName: lead.name.split(' ')[0] + ' ' + (lead.name.split(' ')[1] || '').charAt(0) + '.',
+      status: info.status || 'preparing',
+      items: info.itemsDescription || lead.interest || 'Pedido Especial',
+      motoboyName: info.motoboyName || 'Carlos Motoboy',
+      motoboyPhone: info.motoboyPhone || '5511999887766',
+      motoboyPlate: info.motoboyPlate || 'ABC-1234',
+      deliveryAddress: info.deliveryAddress || 'Endereço cadastrado',
+      etaMinutes: info.etaMinutes || 20,
+      verificationCode: info.verificationCode || lead.phone.replace(/\D/g, '').slice(-4) || '4321',
+      dispatchedAt: info.dispatchedAt,
+      deliveredAt: info.deliveredAt,
+      value: total,
+      subtotalValue: subtotal,
+      deliveryFee: fee,
+      pixConfirmed: lead.paymentInfo?.isPaid || (lead.tags || []).some((t) => t.toLowerCase().includes('pix confirmado')),
+      storeName,
+      storePhone: db.agentConfig?.ownerBriefingPhone || '',
+    });
+  });
+
   // =========================================================================
   // 2B. AI PIX RECEIPT VERIFICATION & DAILY OWNER WHATSAPP BRIEFING
   // =========================================================================

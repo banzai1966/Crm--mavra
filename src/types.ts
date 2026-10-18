@@ -47,6 +47,7 @@ export interface Lead {
     deliveryFee?: number;
     etaMinutes?: number;
     dispatchedAt?: string;
+    deliveredAt?: string;
     status?: 'preparing' | 'dispatched' | 'arriving' | 'delivered';
     verificationCode?: string;
     trackingUrl?: string;

@@ -23,6 +23,7 @@ import {
   RefreshCw,
   Layers,
   Check,
+  Copy,
   Play,
   Timer,
   Flame,
@@ -372,7 +373,8 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
         verificationCode: lead.phone.replace(/\D/g, '').slice(-4) || '4321',
       };
 
-      const trackingLink = `https://crm.makprojetosmake.com.br/track/${info.orderNumber || '1024'}`;
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const trackingLink = `${origin}/?rastreio=${info.orderNumber || 'PED-1024'}`;
 
       let messageText = '';
       if (status === 'preparing') {
@@ -469,6 +471,17 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 self-start md:self-center">
+          <a
+            href="/?rastreio=PED-1024"
+            target="_blank"
+            rel="noreferrer"
+            className="bg-slate-800 hover:bg-slate-700 text-indigo-300 hover:text-white border border-indigo-400/40 font-bold px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg transition-all cursor-pointer whitespace-nowrap"
+            title="Abrir tela que o cliente vê no celular ao clicar no link de rastreamento do WhatsApp"
+          >
+            <Navigation className="w-4 h-4 text-emerald-400 animate-pulse" />
+            <span>📱 Testar Tela do Cliente (iFood)</span>
+          </a>
+
           <button
             type="button"
             id="btn-delivery-zones-config"
@@ -687,6 +700,15 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
                               <Navigation className="w-3 h-3 text-indigo-600" />
                               <span>Rota GPS</span>
                             </button>
+                            <a
+                              href={`/?rastreio=${info.orderNumber || 'PED-1024'}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center justify-center p-1.5 text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors cursor-pointer"
+                              title="Abrir tela de rastreamento do cliente em nova aba"
+                            >
+                              <ExternalLink className="w-3 h-3 text-indigo-600" />
+                            </a>
                             <button
                               onClick={() => onOpenChat(lead.id)}
                               className="flex items-center justify-center p-1.5 text-slate-600 hover:text-emerald-700 bg-slate-100 hover:bg-emerald-50 rounded-lg border border-slate-200 transition-colors cursor-pointer"
@@ -1027,17 +1049,33 @@ export const DeliveryTracking: React.FC<DeliveryTrackingProps> = ({
                 </div>
               </div>
 
-              <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10 text-xs">
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10 text-xs">
                 <span className="text-slate-300">Link para o Cliente no WhatsApp:</span>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`https://crm.makprojetosmake.com.br/track/${trackingLeadModal.deliveryInfo?.orderNumber}`);
-                    showToast('Link de rastreamento copiado com sucesso! 📋');
-                  }}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" /> {feedbackNotice ? 'Link Copiado! ✅' : 'Copiar Link do Rastreio'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+                      const fullLink = `${origin}/?rastreio=${trackingLeadModal.deliveryInfo?.orderNumber || 'PED-1024'}`;
+                      navigator.clipboard.writeText(fullLink);
+                      showToast('Link de rastreamento copiado com sucesso! 📋');
+                    }}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{feedbackNotice ? 'Copiado! ✅' : 'Copiar Link'}</span>
+                  </button>
+
+                  <a
+                    href={`/?rastreio=${trackingLeadModal.deliveryInfo?.orderNumber || 'PED-1024'}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Ver Tela do Cliente ↗️</span>
+                  </a>
+                </div>
               </div>
             </div>
 

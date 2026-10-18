@@ -10,6 +10,7 @@ import { AdminAuthModal } from './components/AdminAuthModal';
 import { CalendarIntegration } from './components/CalendarIntegration';
 import { SalesPlaybook } from './components/SalesPlaybook';
 import { DeliveryTracking } from './components/DeliveryTracking';
+import { PublicOrderTracking } from './components/PublicOrderTracking';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import {
   Lead,
@@ -599,6 +600,39 @@ export default function App() {
   const urgentCount = leads.filter((l) => l.isUrgent).length;
   const hotCount = leads.filter((l) => l.isHotLead).length;
   const deliveryOrdersCount = leads.filter((l) => Boolean(l.deliveryInfo)).length;
+
+  // Check if current URL is in public order tracking mode (?rastreio=PED-XXX or ?track=PED-XXX)
+  const [publicTrackingOrder, setPublicTrackingOrder] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const trackingCode = params.get('rastreio') || params.get('track') || params.get('pedido');
+      if (trackingCode) return trackingCode;
+      if (window.location.pathname.startsWith('/track/')) {
+        return window.location.pathname.replace('/track/', '');
+      }
+    }
+    return null;
+  });
+
+  if (publicTrackingOrder) {
+    return (
+      <PublicOrderTracking
+        orderNumber={publicTrackingOrder}
+        onBackToCrm={
+          isAdminUnlocked
+            ? () => {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('rastreio');
+                url.searchParams.delete('track');
+                url.searchParams.delete('pedido');
+                window.history.pushState({}, '', url.pathname + (url.search ? url.search : ''));
+                setPublicTrackingOrder(null);
+              }
+            : undefined
+        }
+      />
+    );
+  }
 
   if (isLoading) {
     return (
