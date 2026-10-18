@@ -870,15 +870,49 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
         const raw = fs.readFileSync(STORAGE_FILE, 'utf-8');
         const data = JSON.parse(raw);
         if (data.stages && Array.isArray(data.stages)) {
-          const hasBaseStage = data.stages.some((s: any) => s.id === 'stage-base' || s.name?.toLowerCase().includes('reativação') || s.name?.toLowerCase().includes('base antiga'));
+          let loadedStages: KanbanStage[] = [...data.stages];
+          const hasBaseStage = loadedStages.some(
+            (s: any) => s.id === 'stage-base' || s.name?.toLowerCase().includes('base antiga')
+          );
+
           if (!hasBaseStage) {
-            this.stages = [
-              { id: 'stage-base', name: 'Base Antiga / Reativação', color: '#6366f1', order: 0 },
-              ...data.stages,
-            ];
+            loadedStages.unshift({
+              id: 'stage-base',
+              name: '📂 Base Antiga / Inativos',
+              color: '#6366f1',
+              order: 0,
+            });
           } else {
-            this.stages = data.stages;
+            // Normalize name to avoid confusion with merged reactivacao
+            loadedStages = loadedStages.map((s) => {
+              if (s.id === 'stage-base' && (s.name === 'Base Antiga / Reativação' || s.name === 'Base Antiga')) {
+                return { ...s, name: '📂 Base Antiga / Inativos' };
+              }
+              return s;
+            });
           }
+
+          // Ensure stage-reativacao exists in loaded stages
+          const hasReactivacaoStage = loadedStages.some(
+            (s: any) => s.id === 'stage-reativacao' || s.name?.toLowerCase().includes('em reativação')
+          );
+
+          if (!hasReactivacaoStage) {
+            const baseIndex = loadedStages.findIndex((s: any) => s.id === 'stage-base');
+            const reactivationStage: KanbanStage = {
+              id: 'stage-reativacao',
+              name: '⚡ Em Reativação (Disparo IA)',
+              color: '#ec4899',
+              order: 1,
+            };
+            if (baseIndex >= 0) {
+              loadedStages.splice(baseIndex + 1, 0, reactivationStage);
+            } else {
+              loadedStages.unshift(reactivationStage);
+            }
+          }
+
+          this.stages = loadedStages;
         }
         if (data.leads && Array.isArray(data.leads)) this.leads = data.leads;
         if (data.messages && Array.isArray(data.messages)) this.messages = data.messages;
