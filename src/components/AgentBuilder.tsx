@@ -2244,12 +2244,28 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div className="text-[11px] text-rose-800 bg-rose-50 border border-rose-200 rounded-lg p-2.5 space-y-1">
                   <div className="flex items-center gap-2 font-bold">
                     <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                    <span>Não foi possível sintetizar a voz com essa chave:</span>
+                    <span>
+                      {config.voiceEngine === 'native_sofia'
+                        ? 'Não foi possível gerar a voz da Sofia no momento:'
+                        : config.voiceEngine === 'elevenlabs'
+                        ? 'Erro na chave ou limite da ElevenLabs:'
+                        : 'Não foi possível sintetizar a voz no Google Cloud:'}
+                    </span>
                   </div>
-                  <p className="font-mono text-[10px] pl-6">{voiceTestError}</p>
-                  <p className="text-[10px] text-rose-700 pl-6">
-                    💡 Dica: Certifique-se de que a API <b>Cloud Text-to-Speech API</b> está ativada no seu Google Cloud Console na mesma conta da sua chave.
-                  </p>
+                  <p className="font-mono text-[10px] pl-6 break-words">{voiceTestError}</p>
+                  {config.voiceEngine === 'google_cloud_tts' ? (
+                    <p className="text-[10px] text-rose-700 pl-6">
+                      💡 Dica: Certifique-se de que a API <b>Cloud Text-to-Speech API</b> está ativada no seu Google Cloud Console na mesma conta da sua chave e configurada para aceitar API Keys.
+                    </p>
+                  ) : config.voiceEngine === 'elevenlabs' ? (
+                    <p className="text-[10px] text-rose-700 pl-6">
+                      💡 Dica: Verifique se sua chave <b>xi-api-key</b> da ElevenLabs possui créditos ativos na sua conta.
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-rose-700 pl-6">
+                      💡 Dica: O Motor Neural Sofia utiliza conexão direta e a chave Gemini configurada no painel. Certifique-se de que o backend foi atualizado com a última versão.
+                    </p>
+                  )}
                 </div>
               )}
 

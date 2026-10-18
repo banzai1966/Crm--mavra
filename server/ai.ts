@@ -381,6 +381,59 @@ export async function generateNeuralSpeech(
 }
 
 /**
+ * Synthesizes speech using Google Gemini 3.8 Flash Lite TTS.
+ * Uses the user's standard GEMINI_API_KEY without requiring OAuth2 or GCP service accounts!
+ */
+export async function generateGeminiSpeech(
+  cleanSpeechText: string,
+  apiKey?: string,
+  voiceName?: string
+): Promise<string | null> {
+  const geminiKey = (apiKey || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
+  if (!geminiKey) return null;
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: geminiKey });
+    // Map voice name to Gemini prebuilt voices: 'Puck', 'Charon', 'Kore', 'Fenrir', 'Zephyr'
+    const prebuiltVoice = (voiceName && voiceName.toLowerCase().includes('antonio')) ? 'Fenrir' : 'Kore';
+    
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash-lite-tts',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: cleanSpeechText,
+              speechMetadata: {
+                style: 'Voz acolhedora, humana, pausada, simpática e profissional, em português brasileiro',
+              },
+            },
+          ],
+        },
+      ],
+      config: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: prebuiltVoice },
+          },
+        },
+      },
+    });
+
+    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (base64Audio) {
+      console.log(`[Gemini TTS] Áudio neural humano gerado com sucesso (${base64Audio.length} bytes base64)`);
+      return base64Audio;
+    }
+  } catch (err: any) {
+    console.warn('[Gemini TTS] Falha ao sintetizar áudio com Gemini TTS:', err.message);
+  }
+  return null;
+}
+
+/**
  * Synthesizes crystal-clear, ultra-realistic human speech using Sofia Neural Engine,
  * ElevenLabs, or Google Cloud Text-to-Speech.
  */
@@ -407,16 +460,36 @@ export async function synthesizeSpeech(
   const googleApiKey = (options?.apiKey || db.agentConfig.googleTtsApiKey || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
   const elevenApiKey = (options?.apiKey || db.agentConfig.elevenLabsApiKey || '').trim();
 
-  // 1. Motor Neural Sofia (Hiper-realista, Humano, Gratuito, Sem OAuth2)
+  // 1. Motor Neural Sofia (Hiper-realista, Humano, Gratuito, Sem necessidade de OAuth2)
   if (engine === 'native_sofia') {
+    // Tentativa 1: Microsoft Edge Neural TTS (100% gratuito e ultra-rápido)
     const neuralAudio = await generateNeuralSpeech(cleanSpeechText, voiceName, effectiveSpeed, options?.rate);
     if (neuralAudio) {
       return { success: true, audioBase64: neuralAudio, engineUsed: 'native_sofia' };
     }
+
+    // Tentativa 2: Gemini 3.8 Flash Lite TTS com a chave do Gemini (sem OAuth2 de GCP!)
+    const geminiAudio = await generateGeminiSpeech(cleanSpeechText, googleApiKey, voiceName);
+    if (geminiAudio) {
+      return {
+        success: true,
+        audioBase64: geminiAudio,
+        engineUsed: 'native_sofia',
+        notice: 'Áudio sintetizado com sucesso com a Voz Neural da Sofia!',
+      };
+    }
+
+    return {
+      success: false,
+      error: 'Não foi possível gerar a voz neural no momento. Verifique sua chave do Gemini em Configurações > Agente IA.',
+    };
   }
 
   // 2. ElevenLabs (Voz Ultra-Humana / Clonada)
-  if (engine === 'elevenlabs' && elevenApiKey) {
+  if (engine === 'elevenlabs') {
+    if (!elevenApiKey) {
+      return { success: false, error: 'Chave de API da ElevenLabs não configurada.' };
+    }
     try {
       console.log(`[ElevenLabs] Sintetizando voz para ${cleanSpeechText.length} caracteres...`);
       const voiceId = voiceName && !voiceName.includes('pt-BR') ? voiceName : '21m00Tcm4TlvDq8ikWAM';
@@ -445,20 +518,19 @@ export async function synthesizeSpeech(
       } else {
         const errText = await res.text();
         console.warn('[ElevenLabs] Erro na API:', errText);
-        if (options?.apiKey) {
-          return { success: false, error: `ElevenLabs: ${errText.slice(0, 150)}` };
-        }
+        return { success: false, error: `ElevenLabs: ${errText.slice(0, 150)}` };
       }
     } catch (err: any) {
       console.warn('[ElevenLabs] Falha na requisição:', err.message);
-      if (options?.apiKey) {
-        return { success: false, error: `ElevenLabs: ${err.message}` };
-      }
+      return { success: false, error: `ElevenLabs: ${err.message}` };
     }
   }
 
-  // 3. Google Cloud Text-to-Speech (Neural2 / Journey / Wavenet)
-  if (engine === 'google_cloud_tts' && googleApiKey) {
+  // 3. Google Cloud Text-to-Speech (Neural2 / Journey / Wavenet - Requer OAuth2 ou Conta de Serviço GCP)
+  if (engine === 'google_cloud_tts') {
+    if (!googleApiKey) {
+      return { success: false, error: 'Chave do Google Cloud não configurada.' };
+    }
     try {
       console.log(`[Google Cloud TTS] Sintetizando voz (${voiceName}) para ${cleanSpeechText.length} caracteres...`);
       const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(googleApiKey)}`;
@@ -474,7 +546,7 @@ export async function synthesizeSpeech(
           },
           audioConfig: {
             audioEncoding: 'MP3',
-            speakingRate: 1.0,
+            speakingRate: effectiveSpeed,
             pitch: 0.0,
           },
         }),
@@ -483,38 +555,30 @@ export async function synthesizeSpeech(
       if (res.ok) {
         const data = await res.json();
         if (data.audioContent) {
-          console.log(`[Google Cloud TTS] Áudio de alta qualidade (${voiceName}) gerado com sucesso!`);
+          console.log(`[Google Cloud TTS] Áudio (${voiceName}) gerado com sucesso!`);
           return { success: true, audioBase64: data.audioContent, engineUsed: 'google_cloud_tts' };
         }
       } else {
         const errJson = await res.json().catch(() => null);
         const errMsg = errJson?.error?.message || `HTTP ${res.status}: ${res.statusText}`;
-        console.warn(`[Google Cloud TTS] Erro da API do Google:`, errMsg);
+        console.warn(`[Google Cloud TTS] Erro da API do Google Cloud:`, errMsg);
         
-        // Ativar motor neural humano automaticamente
-        console.log('[TTS Engine] Ativando Motor Neural Sofia para voz humana imediata...');
-        const fallbackAudio = await generateNeuralSpeech(cleanSpeechText, voiceName);
-        if (fallbackAudio) {
+        // Se a chave falhar no GCP por falta de OAuth2, fallback gracioso para o Gemini TTS
+        const fallbackGemini = await generateGeminiSpeech(cleanSpeechText, googleApiKey, voiceName);
+        if (fallbackGemini) {
           return {
             success: true,
-            audioBase64: fallbackAudio,
+            audioBase64: fallbackGemini,
             engineUsed: 'native_sofia',
-            notice: 'O Google Cloud bloqueou a chave por exigir OAuth2. O áudio foi gerado com sucesso com a Voz Neural Humana da Sofia!',
+            notice: 'O Google Cloud exigiu OAuth2. O áudio foi gerado com sucesso com a Voz Neural da Sofia!',
           };
         }
-        if (options?.apiKey) {
-          return { success: false, error: `Google Cloud TTS: ${errMsg}` };
-        }
+        return { success: false, error: `Google Cloud TTS: ${errMsg}` };
       }
     } catch (err: any) {
       console.warn('[Google Cloud TTS] Falha na requisição:', err.message);
+      return { success: false, error: `Google Cloud TTS: ${err.message}` };
     }
-  }
-
-  // Fallback geral: motor neural humano
-  const fallbackNeural = await generateNeuralSpeech(cleanSpeechText, voiceName);
-  if (fallbackNeural) {
-    return { success: true, audioBase64: fallbackNeural, engineUsed: 'native_sofia' };
   }
 
   return { success: false, error: 'Nenhum motor de voz pôde gerar o áudio' };
