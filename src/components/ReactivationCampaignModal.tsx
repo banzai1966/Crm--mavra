@@ -77,6 +77,7 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
   const [messageTemplate, setMessageTemplate] = useState<string>(TEMPLATE_PRESETS[0].text);
   const [delaySeconds, setDelaySeconds] = useState<number>(25);
   const [sendAsVoice, setSendAsVoice] = useState<boolean>(false);
+  const [customLimit, setCustomLimit] = useState<string>('');
 
   // Execution state
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -128,6 +129,16 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
     } else {
       setSelectedLeadIds(baseLeads.map((l) => l.id));
     }
+  };
+
+  const selectBatchLimit = (limit: number) => {
+    if (isRunning) return;
+    if (limit <= 0) {
+      setSelectedLeadIds([]);
+      return;
+    }
+    const sliced = baseLeads.slice(0, limit).map((l) => l.id);
+    setSelectedLeadIds(sliced);
   };
 
   const insertVariable = (variable: string) => {
@@ -655,17 +666,63 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
 
               {/* Lead Selection Table */}
               <div className="border-t border-slate-200 pt-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-800">
-                    Contatos da Base ({selectedLeadIds.length} selecionados)
-                  </span>
-                  <button
-                    type="button"
-                    onClick={toggleSelectAll}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold cursor-pointer"
-                  >
-                    {selectedLeadIds.length === baseLeads.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
-                  </button>
+                {/* Batch Limit Selection Bar */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Definir Lote de Envio ({selectedLeadIds.length} de {baseLeads.length} selecionados)</span>
+                    </span>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Selecione a quantidade de contatos que deseja ativar hoje:
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[20, 50, 100, 200].map((count) => (
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => selectBatchLimit(count)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
+                          selectedLeadIds.length === Math.min(count, baseLeads.length) && baseLeads.length > 0
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-indigo-700'
+                        }`}
+                        title={`Selecionar os primeiros ${count} contatos`}
+                      >
+                        {count} leads
+                      </button>
+                    ))}
+
+                    <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-2 py-0.5">
+                      <span className="text-[10px] text-slate-400 font-medium">Qtd:</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max={baseLeads.length}
+                        placeholder="Ex: 30"
+                        value={customLimit}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomLimit(val);
+                          const num = parseInt(val, 10);
+                          if (!isNaN(num) && num > 0) {
+                            selectBatchLimit(num);
+                          }
+                        }}
+                        className="w-14 text-xs font-bold text-slate-800 focus:outline-hidden"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={toggleSelectAll}
+                      className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200 cursor-pointer transition-colors"
+                    >
+                      {selectedLeadIds.length === baseLeads.length ? 'Desmarcar' : 'Todos'}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="border border-slate-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
