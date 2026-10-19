@@ -151,6 +151,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>('all');
+
+  // Force nicheFilter to 'all' in client mode (!isAdmin)
+  React.useEffect(() => {
+    if (!isAdmin) {
+      setNicheFilter('all');
+    }
+  }, [isAdmin]);
+
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterHotOnly, setFilterHotOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -661,53 +669,55 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           </div>
         </div>
 
-        {/* 3 Niches Switcher Buttons */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200 self-start md:self-auto overflow-x-auto">
-          <button
-            onClick={() => setNicheFilter('restaurant')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              nicheFilter === 'restaurant'
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'text-slate-700 hover:text-amber-900 hover:bg-white'
-            }`}
-          >
-            <UtensilsCrossed className="w-3.5 h-3.5" />
-            <span>🍔 Restaurantes & Delivery ({restaurantLeadsCount})</span>
-          </button>
-
-          <button
-            onClick={() => setNicheFilter('health')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              nicheFilter === 'health'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-700 hover:text-blue-900 hover:bg-white'
-            }`}
-          >
-            <Stethoscope className="w-3.5 h-3.5" />
-            <span>🏥 Clínicas & Saúde ({healthLeadsCount})</span>
-          </button>
-
-          <button
-            onClick={() => setNicheFilter('all')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              nicheFilter === 'all'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white'
-            }`}
-          >
-            <span>💼 Vendas & Geral ({leads.length})</span>
-          </button>
-
-          {onNavigateToDelivery && (
+        {/* 3 Niches Switcher Buttons (Admin Only) */}
+        {isAdmin && (
+          <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200 self-start md:self-auto overflow-x-auto">
             <button
-              onClick={onNavigateToDelivery}
-              className="ml-1 flex items-center gap-1 text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+              onClick={() => setNicheFilter('restaurant')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                nicheFilter === 'restaurant'
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : 'text-slate-700 hover:text-amber-900 hover:bg-white'
+              }`}
             >
-              <Bike className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Painel Motoboys ➔</span>
+              <UtensilsCrossed className="w-3.5 h-3.5" />
+              <span>🍔 Restaurantes & Delivery ({restaurantLeadsCount})</span>
             </button>
-          )}
-        </div>
+
+            <button
+              onClick={() => setNicheFilter('health')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                nicheFilter === 'health'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-700 hover:text-blue-900 hover:bg-white'
+              }`}
+            >
+              <Stethoscope className="w-3.5 h-3.5" />
+              <span>🏥 Clínicas & Saúde ({healthLeadsCount})</span>
+            </button>
+
+            <button
+              onClick={() => setNicheFilter('all')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                nicheFilter === 'all'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white'
+              }`}
+            >
+              <span>💼 Vendas & Geral ({leads.length})</span>
+            </button>
+
+            {onNavigateToDelivery && (
+              <button
+                onClick={onNavigateToDelivery}
+                className="ml-1 flex items-center gap-1 text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+              >
+                <Bike className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Painel Motoboys ➔</span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Restaurant & Delivery Specialized Reativação Banner */}
