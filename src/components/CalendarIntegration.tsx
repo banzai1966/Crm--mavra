@@ -59,7 +59,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   // New Appointment Modal Form State
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState<string>('');
-  const [formSummary, setFormSummary] = useState(agentConfig.calendarDefaultTitle || 'Consulta de Avaliação Integrativa');
+  const [formSummary, setFormSummary] = useState(agentConfig.calendarDefaultTitle || 'Reunião Técnica & Alinhamento de Plasma');
   const [formDate, setFormDate] = useState<string>(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -68,7 +68,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   const [formTime, setFormTime] = useState<string>('14:00');
   const [formDuration, setFormDuration] = useState<number>(agentConfig.calendarDefaultDurationMinutes || 45);
   const [formDescription, setFormDescription] = useState('');
-  const [formLocation, setFormLocation] = useState(agentConfig.calendarDefaultLocation || '');
+  const [formLocation, setFormLocation] = useState(agentConfig.calendarDefaultLocation || 'Laboratório Surface Test (Campinas/SP) & Google Meet');
   const [isSavingAppointment, setIsSavingAppointment] = useState(false);
 
   // Destructive Delete Confirmation Modal
@@ -83,8 +83,8 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   const [calendarEnabled, setCalendarEnabled] = useState(agentConfig.calendarEnabled ?? true);
   const [allowAiBooking, setAllowAiBooking] = useState(agentConfig.calendarAllowAiBooking ?? true);
   const [defaultDuration, setDefaultDuration] = useState(agentConfig.calendarDefaultDurationMinutes || 45);
-  const [defaultTitle, setDefaultTitle] = useState(agentConfig.calendarDefaultTitle || 'Consulta de Avaliação Integrativa');
-  const [defaultLocation, setDefaultLocation] = useState(agentConfig.calendarDefaultLocation || '');
+  const [defaultTitle, setDefaultTitle] = useState(agentConfig.calendarDefaultTitle || 'Reunião Técnica & Alinhamento de Plasma');
+  const [defaultLocation, setDefaultLocation] = useState(agentConfig.calendarDefaultLocation || 'Laboratório Surface Test (Campinas/SP) & Google Meet');
   const [showInMenu, setShowInMenu] = useState(agentConfig.showCalendarModuleInMenu ?? true);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
 

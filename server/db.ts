@@ -431,8 +431,8 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     calendarEnabled: false,
     calendarConnectedEmail: '',
     calendarDefaultDurationMinutes: 45,
-    calendarDefaultTitle: 'Consulta de Avaliação Integrativa',
-    calendarDefaultLocation: 'Euroville Mall - Torre II - Praça Maastricht, 200 - Sala 103, Bragança Paulista/SP',
+    calendarDefaultTitle: 'Reunião Técnica & Alinhamento de Plasma',
+    calendarDefaultLocation: 'Laboratório Surface Test (Campinas/SP) & Google Meet',
     calendarAllowAiBooking: true,
     showCalendarModuleInMenu: true,
     instagramConfig: {
