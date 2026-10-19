@@ -76,7 +76,7 @@ export default function App() {
 
   // Restrict tabs in client mode (!isAdminUnlocked)
   React.useEffect(() => {
-    if (!isAdminUnlocked && (activeTab === 'dashboard' || activeTab === 'sales' || activeTab === 'agent' || activeTab === 'evolution' || activeTab === 'supabase')) {
+    if (!isAdminUnlocked && (activeTab === 'sales' || activeTab === 'agent' || activeTab === 'evolution' || activeTab === 'supabase')) {
       setActiveTab('kanban');
     }
   }, [isAdminUnlocked, activeTab]);

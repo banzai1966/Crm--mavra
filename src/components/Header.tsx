@@ -335,21 +335,19 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Center Section: Core Operational Navigation (Clean & uncluttered) */}
         <nav className="flex items-center gap-1 overflow-visible relative" id="main-navigation">
-          {/* 1. Dashboard Executivo (Admin Only) */}
-          {isAdminUnlocked && (
-            <button
-              id="nav-tab-dashboard"
-              onClick={() => setActiveTab('dashboard')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                activeTab === 'dashboard'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Dashboard</span>
-            </button>
-          )}
+          {/* 1. Dashboard Executivo & Conexão WhatsApp */}
+          <button
+            id="nav-tab-dashboard"
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'dashboard'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Dashboard</span>
+          </button>
 
           {/* 2. CRM Kanban */}
           <button
