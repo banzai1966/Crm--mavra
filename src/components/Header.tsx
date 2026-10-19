@@ -24,6 +24,8 @@ import {
   UtensilsCrossed,
   ShoppingBag,
   Building2,
+  Zap,
+  FileText,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
@@ -44,7 +46,7 @@ interface HeaderProps {
   onOpenAdminAuth?: () => void;
   onLockAdmin?: () => void;
   onToggleGlobalAi?: () => void;
-  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b') => void;
+  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -158,6 +160,8 @@ export const Header: React.FC<HeaderProps> = ({
       ? 'delivery'
       : agentConfig.followUpNiche === 'retail'
       ? 'ecommerce'
+      : agentConfig.followUpNiche === 'b2b_services' || agentConfig.personaName?.toLowerCase().includes('surface')
+      ? 'surfacebrasil'
       : agentConfig.followUpNiche === 'sales'
       ? 'b2b'
       : 'clinic';
@@ -167,7 +171,8 @@ export const Header: React.FC<HeaderProps> = ({
     delivery: { label: 'Pizzaria & Delivery', icon: UtensilsCrossed, badge: 'Delivery' },
     ecommerce: { label: 'E-commerce & Varejo', icon: ShoppingBag, badge: 'Varejo' },
     b2b: { label: 'Comercial B2B', icon: Building2, badge: 'B2B' },
-  }[currentNiche];
+    surfacebrasil: { label: 'Surfacebrasil (Plasma)', icon: Zap, badge: 'Indústria' },
+  }[currentNiche] || { label: 'Comercial B2B', icon: Building2, badge: 'B2B' };
 
   const CurrentNicheIcon = nicheMeta.icon;
 
@@ -294,6 +299,25 @@ export const Header: React.FC<HeaderProps> = ({
                         {currentNiche === 'b2b' && <span className="text-[10px] text-indigo-600 font-bold">(Ativo)</span>}
                       </div>
                       <p className="text-[10px] text-slate-400 font-normal">Foco: Qualificação, propostas & fechamento</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onSwitchWorkspace('surfacebrasil');
+                      setShowWorkspaceDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                      currentNiche === 'surfacebrasil' ? 'bg-sky-50/70 font-bold text-sky-900' : 'text-slate-700'
+                    }`}
+                  >
+                    <Zap className="w-4 h-4 text-sky-600" />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span>Surfacebrasil (Plasma)</span>
+                        {currentNiche === 'surfacebrasil' && <span className="text-[10px] text-sky-600 font-bold">(Ativo)</span>}
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-normal">Foco: Tratamento por plasma, SAP02 & testes</p>
                     </div>
                   </button>
                 </div>
@@ -448,8 +472,8 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 <div className="py-1">
-                  {/* Secondary niche module option */}
-                  {!isDeliveryPrimary ? (
+                  {/* Secondary niche module option - only if delivery niche or if orders exist */}
+                  {(isDeliveryPrimary || deliveryOrdersCount > 0) && (
                     <button
                       onClick={() => {
                         setActiveTab('delivery');
@@ -463,22 +487,6 @@ export const Header: React.FC<HeaderProps> = ({
                       <div>
                         <p className="font-semibold">Pedidos & Entregas</p>
                         <p className="text-[10px] text-slate-400 font-normal">Acompanhar fila de delivery</p>
-                      </div>
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setActiveTab('calendar');
-                        setShowMoreModulesDropdown(false);
-                      }}
-                      className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-slate-50 transition-colors cursor-pointer ${
-                        activeTab === 'calendar' ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-700'
-                      }`}
-                    >
-                      <CalendarIcon className="w-4 h-4 text-blue-600" />
-                      <div>
-                        <p className="font-semibold">Agendamentos & Agenda</p>
-                        <p className="text-[10px] text-slate-400 font-normal">Calendário e compromissos</p>
                       </div>
                     </button>
                   )}

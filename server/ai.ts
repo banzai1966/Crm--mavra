@@ -394,24 +394,26 @@ export async function generateGeminiSpeech(
 
   try {
     const ai = new GoogleGenAI({ apiKey: geminiKey });
-    // Map voice name to Gemini prebuilt voices: 'Puck', 'Charon', 'Kore', 'Fenrir', 'Zephyr'
-    const prebuiltVoice = (voiceName && voiceName.toLowerCase().includes('antonio')) ? 'Fenrir' : 'Kore';
+    // Map voice name to Gemini prebuilt voices: 'Kore', 'Aoede', 'Fenrir', 'Puck', 'Charon'
+    let prebuiltVoice = 'Kore';
+    if (voiceName) {
+      const v = voiceName.toLowerCase();
+      if (v.includes('aoede')) {
+        prebuiltVoice = 'Aoede';
+      } else if (v.includes('fenrir') || v.includes('antonio')) {
+        prebuiltVoice = 'Fenrir';
+      } else if (v.includes('puck')) {
+        prebuiltVoice = 'Puck';
+      } else if (v.includes('charon')) {
+        prebuiltVoice = 'Charon';
+      } else {
+        prebuiltVoice = 'Kore';
+      }
+    }
     
     const response = await ai.models.generateContent({
       model: 'gemini-3.8-flash-lite-tts',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            {
-              text: cleanSpeechText,
-              speechMetadata: {
-                style: 'Voz acolhedora, humana, pausada, simpática e profissional, em português brasileiro',
-              },
-            },
-          ],
-        },
-      ],
+      contents: cleanSpeechText,
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
@@ -424,7 +426,7 @@ export async function generateGeminiSpeech(
 
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     if (base64Audio) {
-      console.log(`[Gemini TTS] Áudio neural humano gerado com sucesso (${base64Audio.length} bytes base64)`);
+      console.log(`[Gemini TTS] Áudio neural humano (${prebuiltVoice}) gerado com sucesso (${base64Audio.length} bytes base64)`);
       return base64Audio;
     }
   } catch (err: any) {
@@ -462,6 +464,19 @@ export async function synthesizeSpeech(
 
   // 1. Motor Neural Sofia (Hiper-realista, Humano, Gratuito, Sem necessidade de OAuth2)
   if (engine === 'native_sofia') {
+    // Se a voz selecionada for explicitamente da família Gemini (Kore ou Aoede)
+    if (voiceName.startsWith('gemini-')) {
+      const geminiAudio = await generateGeminiSpeech(cleanSpeechText, googleApiKey, voiceName);
+      if (geminiAudio) {
+        return {
+          success: true,
+          audioBase64: geminiAudio,
+          engineUsed: 'native_sofia',
+          notice: 'Áudio sintetizado com sucesso com a Voz Neural da Sofia!',
+        };
+      }
+    }
+
     // Tentativa 1: Microsoft Edge Neural TTS (100% gratuito e ultra-rápido)
     const neuralAudio = await generateNeuralSpeech(cleanSpeechText, voiceName, effectiveSpeed, options?.rate);
     if (neuralAudio) {

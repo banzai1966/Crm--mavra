@@ -10,6 +10,8 @@ import {
   Smartphone,
   Layers,
   Lock,
+  FileText,
+  Zap,
 } from 'lucide-react';
 
 interface ClientLinkModalProps {
@@ -22,14 +24,14 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({ isOpen, onClos
 
   if (!isOpen) return null;
 
-  // Derive the cleanest public URL
+  // Derive the cleanest public URL from the current domain/VPS
   let clientUrl = '';
   try {
     const origin = window.location.origin;
     const pathname = window.location.pathname;
     clientUrl = `${origin}${pathname}?modo=cliente`;
   } catch {
-    clientUrl = 'https://ais-pre-jzarqr4svxoptyu6k7dkrk-51327969358.us-east1.run.app/?modo=cliente';
+    clientUrl = '/?modo=cliente';
   }
 
   const handleCopy = () => {

@@ -157,6 +157,8 @@ export type BusinessNiche =
   | 'real_estate'
   | 'legal'
   | 'services'
+  | 'b2b_services'
+  | 'surfacebrasil'
   | 'general'
   | 'custom'
   | 'saas_tech'

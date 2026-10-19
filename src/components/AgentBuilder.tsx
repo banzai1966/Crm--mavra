@@ -48,8 +48,9 @@ import {
   Headphones,
   Plus,
   Music,
-  ChevronDown,
   Building,
+  Zap,
+  ChevronDown,
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider, PreRecordedAudio, ClientProfileSummary } from '../types';
 import { AiTestingLabModal } from './AiTestingLabModal';
@@ -73,6 +74,87 @@ export interface AgentPreset {
 }
 
 export const AGENT_PRESETS: AgentPreset[] = [
+  {
+    id: 'surface_brasil_plasma',
+    name: 'Surfacebrasil – Tratamento de Superfície por Plasma & Soluções em Adesão',
+    category: 'Indústria & Engenharia de Superfície',
+    tag: 'Surfacebrasil Plasma',
+    description: 'Especialista técnica e comercial em tratamento por plasma atmosférico a frio para indústrias: qualifica falhas de adesão em polímeros (PP, PEAD, PET, XLPE) e metais, apresenta os equipamentos SAP02 e Mesa 3 Eixos CNC, e agenda reuniões técnicas e testes no laboratório Surface Test em Campinas/SP.',
+    personaName: 'Sofia da Surfacebrasil',
+    role: 'Consultora Técnica e Especialista em Tratamento de Superfície por Plasma da Surfacebrasil',
+    toneOfVoice: 'Altamente técnica, consultiva, profissional, acolhedora, objetiva e focada em engenharia de aplicação e solução definitiva de problemas de ancoragem, pintura e adesão.',
+    salesGoal: 'Identificar o substrato/material do cliente e o tipo de falha de adesão, entender a velocidade e o volume da linha fabril, e agendar uma reunião técnica com os engenheiros de aplicação ou o envio de amostras para testes no laboratório Surface Test em Campinas/SP.',
+    followUpNiche: 'b2b_services',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a viabilidade do tratamento por plasma para as peças da sua fábrica. Nossos engenheiros de aplicação estão com a bancada do Surface Test disponível esta semana para testar suas amostras de material ou agendar uma rápida conversa técnica online. Como está sua disponibilidade? ⚡🔬',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (SURFACEBRASIL - TRATAMENTO DE SUPERFÍCIE POR PLASMA):
+
+P: O que é a Surfacebrasil e qual é a sua especialidade?
+R: A Surfacebrasil (fundada em 2010, em Campinas/SP) é pioneira no desenvolvimento e fabricação de equipamentos para tratamento de superfície por plasma atmosférico a frio (tecnologia 100% brasileira com presença em 7 países e membro do cluster alemão BalticNet-PlasmaTec). Resolvemos problemas e falhas de adesão em adesivação, pintura, colagem e impressão em plásticos difíceis (PP, PEAD, PET, XLPE, Silicone) e metais (Alumínio).
+
+P: Como funciona o tratamento de superfície por plasma atmosférico a frio?
+R: O plasma é o quarto estado da matéria. Utilizando apenas ar comprimido e eletricidade, o bico injetor gera uma descarga de plasma que quebra as cadeias de hidrocarbonetos inertes na superfície do plástico e implanta grupos polares (oxigênio e nitrogênio). Isso eleva a energia superficial (tensão de Dyne) de ~28 dynas/cm para mais de 50 a 70 dynas/cm, criando ancoragem molecular perfeita para tintas, adesivos e vernizes.
+
+P: Por que o plasma substitui os tradicionais flambadores a gás com enormes vantagens?
+R: Flambadores a gás utilizam fogo direto e gás combustível inflamável (GLP), oferecendo sério risco de incêndio/explosão na fábrica, encarecendo o seguro patrimonial e deformando/derretendo as paredes finas de peças plásticas. O plasma da Surfacebrasil é um "flambador eletrônico" a frio: opera com ar comprimido, não utiliza combustível inflamável, é infinitamente mais seguro e não deforma a geometria da peça.
+
+P: O plasma substitui primers químicos promotores de aderência?
+R: Sim! O uso de primers químicos envolve solventes tóxicos, vapores perigosos ao operador (compostos orgânicos voláteis - VOC), custo recorrente altíssimo por litro e necessidade de tempo de secagem/evaporação. O plasma elimina os químicos, não oferece risco à saúde do operador e permite uso imediato da peça na linha contínua.
+
+P: O processo é rápido? Aguenta a velocidade da minha linha de produção?
+R: Sim, o tratamento é instantâneo. Em processos contínuos de extrusão de fios, cabos de fibra óptica e tubos plásticos, o sistema da Surfacebrasil acompanha linhas de produção com velocidades de até 1.000 metros por minuto.
+
+P: Quais materiais podem ser tratados com os equipamentos da Surfacebrasil?
+R: Polipropileno (PP), Polietileno de Alta Densidade (PEAD) e Baixa Densidade (PEBD), PET, XLPE, HEPR, Borrachas técnicas, Silicone, Alumínio, Alumínio anodizado, chapas metálicas, vidro e papelão resinado de baixo índice Cobb.
+
+P: O que é o laboratório Surface Test?
+R: É o centro de validação técnica da Surfacebrasil em Campinas/SP. O cliente envia amostras das suas peças e nossa equipe de engenharia realiza ensaios práticos de tensão de Dyne, arrancamento de tinta e testes de colagem, emitindo um Relatório Técnico de Viabilidade completo antes da compra do equipamento.`,
+    knowledgeCatalog: `PORTFÓLIO DE EQUIPAMENTOS & SOLUÇÕES SURFACEBRASIL:
+
+1. EQUIPAMENTO SAP02 (SISTEMA COMPACTO PLUG & PLAY):
+- Conceito: Flambador eletrônico industrial de alta eficiência.
+- Alimentação: Apenas ar comprimido seco industrial e energia elétrica comum (sem necessidade de gases especiais).
+- Características: Simples, robusto, seguro e com baixo custo de manutenção.
+- Aplicações: Pintura em polímeros (PP, PEAD, PET), substituição de primers na adesivação e datação inkjet em fios, cabos e perfis.
+
+2. MESA DE APLICAÇÃO AUTOMATIZADA 3 EIXOS (CNC X-Y-Z):
+- Conceito: Tratamento robotizado de peças tridimensionais, peças com relevos complexos ou chapas planas.
+- Recursos: Controle de altura micrométrico, controle digital de velocidade e receitas de repetição automática salvas na memória.
+- Fabricação: Área de trabalho e cursos dos eixos sob medida para o gabarito do cliente.
+
+3. APLICADORES ESPECIAIS & BICOS CUSTOMIZADOS:
+- Desenvolvimento de bicos lineares, multi-jatos e aplicadores circulares de 360 graus para atender geometrias complexas em linhas contínuas de alta velocidade.
+
+4. CENTRO DE ENSAIOS "SURFACE TEST":
+- Envio de amostras para análise laboratorial em Campinas/SP com laudo técnico e validação de aderência.`,
+    knowledgePricing: `POLÍTICA COMERCIAL & DIMENSIONAMENTO DE PROPOSTAS:
+
+- Por que os preços não são fixos de prateleira:
+Como são equipamentos industriais de alta precisão, cada projeto é dimensionado sob medida considerando:
+1. A velocidade da sua linha de produção (m/min);
+2. A largura e o formato da área a ser tratada (bico concentrado, leque linear ou 3D);
+3. O polímero e aditivos utilizados na sua fábrica;
+4. O modelo de equipamento necessário (módulo SAP02 para linha existente ou Mesa CNC 3 Eixos automatizada).
+
+- Como funciona a elaboração da proposta:
+A Surfacebrasil realiza uma avaliação técnica inicial sem compromisso:
+1. Reunião online com engenharia de aplicação para mapear os parâmetros da linha; OU
+2. Envio de amostras do seu material para o laboratório Surface Test em Campinas/SP para testes práticos de aderência. A partir disso, emitimos a proposta técnica e comercial exata para a sua necessidade.`,
+    knowledgeRules: `DIRETRIZES DE ATENDIMENTO DA SOFIA (SURFACEBRASIL):
+
+1. POSICIONAMENTO: Você é a Sofia, consultora técnica especialista da Surfacebrasil. Seja altamente profissional, cordial, transmita domínio científico da tecnologia de plasma atmosférico a frio e segurança sobre a eliminação definitiva de falhas de colagem/pintura.
+2. NUNCA invente preços ou passe valores genéricos de equipamentos. Explique gentilmente que os equipamentos são dimensionados sob medida conforme a velocidade da linha, geometria da peça e material.
+3. ROTEIRO DE QUALIFICAÇÃO (Faça perguntas inteligentes e objetivas):
+   - Pergunta 1 (Substrato): "Qual é o material ou polímero da sua peça? (ex: PP, PEAD, PET, Alumínio, Borracha, etc.)"
+   - Pergunta 2 (Processo/Problema): "Qual processo está com falha de adesão? (Pintura, Colagem com adesivo/fita, Tampografia ou Datação Inkjet)?"
+   - Pergunta 3 (Linha/Velocidade): "Qual é a velocidade média da sua linha de produção ou o processo é realizado em peças unitárias?"
+4. CONVITE PARA AGENDAMENTO:
+   - Ofereça o agendamento de uma reunião online com os engenheiros de aplicação da Surfacebrasil para dimensionar o projeto; OU
+   - Ofereça o envio de amostras para teste gratuito no laboratório Surface Test em Campinas/SP.
+5. DADOS DA EMPRESA:
+   - Matriz: Rua Vitório Casellato, 30 – Campinas/SP
+   - Telefone comercial: (19) 3365-2506 | E-mail: contato@surfacebrasil.com.br
+   - Representação Sul: Carlos Barbosa/RS | E-mail: sul@surfacebrasil.com.br`
+  },
   {
     id: 'nexa_crm',
     name: 'NEXA CRM - Inteligência Conversacional & Automação Comercial (Oficial)',
@@ -741,6 +823,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
 
   const handleApplyPreset = async (preset: AgentPreset) => {
     const isNexa = preset.id === 'nexa_crm';
+    const isSurface = preset.id === 'surface_brasil_plasma';
     const updatedConfig: AgentConfig = {
       ...config,
       personaName: preset.personaName,
@@ -753,13 +836,18 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
-      catalogPdfName: isNexa ? 'Apresentacao_NEXA_CRM.pdf' : 'Apresentacao_Dra_Lucy_Murata.pdf',
+      preRecordedAudiosEnabled: isSurface ? false : config.preRecordedAudiosEnabled,
+      catalogPdfName: isSurface
+        ? 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf'
+        : isNexa
+        ? 'Apresentacao_NEXA_CRM.pdf'
+        : 'Apresentacao_Dra_Lucy_Murata.pdf',
     };
     setConfig(updatedConfig);
     setSelectedPresetModal(null);
     setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
 
-    const instanceName = isNexa ? 'nexa-crm' : 'dra-lucy-murata';
+    const instanceName = isSurface ? 'surface-brasil' : isNexa ? 'nexa-crm' : 'dra-lucy-murata';
     try {
       const res = await fetch('/api/agent/apply-niche', {
         method: 'POST',
@@ -1803,6 +1891,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           {/* Cards dos Nichos */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {AGENT_PRESETS.map((preset) => {
+              const isSurface = preset.id === 'surface_brasil_plasma';
               const isDental = preset.id === 'dental' || preset.id === 'dental_integrative' || preset.id === 'dental_general';
               const isMedical = preset.id === 'medical' || preset.id === 'medical_clinic';
               const isRealEstate = preset.id === 'real_estate';
@@ -1817,7 +1906,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div
                   key={preset.id}
                   className={`border rounded-xl p-4 flex flex-col justify-between hover:shadow-xs transition-all group ${
-                    preset.id === 'nexa_crm'
+                    preset.id === 'surface_brasil_plasma'
+                      ? 'bg-gradient-to-b from-sky-50/70 to-white border-sky-300 ring-1 ring-sky-200'
+                      : preset.id === 'nexa_crm'
                       ? 'bg-gradient-to-b from-indigo-50/60 to-white border-indigo-300 ring-1 ring-indigo-200'
                       : preset.id === 'restaurant_delivery'
                       ? 'bg-gradient-to-b from-amber-50/40 to-white border-amber-300 hover:border-amber-400'
@@ -1827,15 +1918,18 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                        preset.id === 'nexa_crm'
+                        preset.id === 'surface_brasil_plasma'
+                          ? 'text-sky-900 bg-sky-100 border-sky-300 font-bold'
+                          : preset.id === 'nexa_crm'
                           ? 'text-indigo-900 bg-indigo-100/90 border-indigo-300 ring-1 ring-indigo-300 font-mono'
                           : preset.id === 'restaurant_delivery'
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-semibold'
                           : 'text-indigo-700 bg-indigo-50 border-indigo-100'
                       }`}>
-                        {preset.id === 'nexa_crm' ? '🚀 OFICIAL NEXA CRM' : (preset.category || 'Nicho')}
+                        {preset.id === 'surface_brasil_plasma' ? '⚡ SURFACEBRASIL PLASMA' : preset.id === 'nexa_crm' ? '🚀 OFICIAL NEXA CRM' : (preset.category || 'Nicho')}
                       </span>
                       <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                        {isSurface && <Zap className="w-4 h-4 text-sky-600" />}
                         {isDental && <Stethoscope className="w-4 h-4" />}
                         {isMedical && <HeartHandshake className="w-4 h-4" />}
                         {isRealEstate && <Building2 className="w-4 h-4" />}
@@ -1845,7 +1939,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                         {isAuto && <Car className="w-4 h-4" />}
                         {isSaaS && <Bot className="w-4 h-4" />}
                         {isRestaurant && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
-                        {!isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
+                        {!isSurface && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
                           <SparklesIcon className="w-4 h-4" />
                         )}
                       </div>
@@ -2112,11 +2206,17 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                     </>
                   ) : (
                     <>
-                      <option value="pt-BR-FranciscaNeural">Sofia Neural Humana (pt-BR - Mais Realista, Fluida & Empática)</option>
-                      <option value="pt-BR-ThalitaNeural">Sofia Jovem & Comercial (pt-BR - Dinâmica e Descontraída)</option>
-                      <option value="pt-BR-BrendaNeural">Sofia Acolhedora (pt-BR - Suave, Calma e Educada)</option>
-                      <option value="pt-BR-AntonioNeural">Executivo Comercial (pt-BR - Masculina Firme & Confiante)</option>
-                      <option value="pt-BR-NicolauNeural">Diretor Comercial (pt-BR - Masculina Grave & Segura)</option>
+                      <optgroup label="🆓 Vozes 100% Gratuitas (Custo R$ 0,00 - Sem Limite)">
+                        <option value="pt-BR-FranciscaNeural">Sofia Neural Humana (Francisca - pt-BR) [Grátis]</option>
+                        <option value="pt-BR-ThalitaNeural">Sofia Jovem & Comercial (Thalita - pt-BR) [Grátis]</option>
+                        <option value="pt-BR-BrendaNeural">Sofia Acolhedora (Brenda - pt-BR) [Grátis]</option>
+                        <option value="pt-BR-AntonioNeural">Executivo Comercial (Antonio Masculino - pt-BR) [Grátis]</option>
+                        <option value="pt-BR-NicolauNeural">Diretor Comercial (Nicolau Masculino - pt-BR) [Grátis]</option>
+                      </optgroup>
+                      <optgroup label="✨ Vozes Gemini Live (Consome Tokens da API Gemini)">
+                        <option value="gemini-kore">✨ Sofia Gemini Live (Kore - Feminina Executiva) [Gemini API]</option>
+                        <option value="gemini-aoede">✨ Sofia Gemini Live (Aoede - Feminina Expressiva) [Gemini API]</option>
+                      </optgroup>
                     </>
                   )}
                 </select>
@@ -2849,6 +2949,33 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               <FileCheck className="w-3.5 h-3.5" />
               <span>Regras de Negócio</span>
             </button>
+          </div>
+
+          {/* Quick link to Surfacebrasil Dossier / PDF Manual */}
+          <div className="bg-gradient-to-r from-sky-50 via-white to-blue-50 border border-sky-200/90 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <span className="text-xl">📄</span>
+              <div>
+                <p className="text-xs font-bold text-sky-950 flex items-center gap-2">
+                  <span>Dossiê & Manual Técnico Surfacebrasil (Tratamento por Plasma)</span>
+                  <span className="text-[10px] bg-sky-100 text-sky-800 font-semibold px-2 py-0.5 rounded-md border border-sky-200">
+                    PDF Pronto
+                  </span>
+                </p>
+                <p className="text-[11px] text-sky-700 mt-0.5">
+                  Manual completo com física do plasma, tabelas comparativas, casos industriais e roteiro de qualificação de leads.
+                </p>
+              </div>
+            </div>
+            <a
+              href="/surfacebrasil-manual"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0 self-start sm:self-center"
+            >
+              <span>Abrir & Salvar em PDF</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
 
           {/* Active Tab Textarea */}

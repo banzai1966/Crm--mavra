@@ -740,6 +740,38 @@ Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurg
       uploadedAt: new Date().toISOString(),
     },
     {
+      id: 'doc-surfacebrasil-plasma',
+      name: 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
+      type: 'pdf',
+      size: 18500,
+      contentText: `DOSSIÊ TÉCNICO & MANUAL COMERCIAL COMPLETO — SURFACEBRASIL
+Website Oficial: https://surfacebrasil.com.br/
+Sede: Rua Vitório Casellato, 30 – Campinas/SP | Tel: (19) 3365-2506 | contato@surfacebrasil.com.br
+Unidades: Campinas/SP, Carlos Barbosa/RS, Estados Unidos (Maryland) e Argentina (Buenos Aires).
+
+1. TECNOLOGIA DE TRATAMENTO DE SUPERFÍCIE POR PLASMA ATMOSFÉRICO A FRIO:
+- O plasma é o quarto estado da matéria. Utilizando apenas ar comprimido industrial e energia elétrica, o bico injetor gera uma descarga de plasma que atua em nível molecular sobre a superfície de polímeros inertes (PP, PEAD, PEBD, PET, XLPE, Silicone, Borrachas) e metais (Alumínio).
+- Aumenta a energia superficial (tensão superficial de Dyne) de ~28 dynas/cm para mais de 50 a 70 dynas/cm.
+- Garante ancoragem definitiva para tintas automotivas/industriais, colas, vernizes, fitas adesivas e datação inkjet.
+- Vantagem radical sobre flambador a gás: não usa fogo direto, elimina risco de incêndio/explosão fabril, barateia seguros e NÃO deforma ou derrete peças plásticas.
+- Vantagem sobre primers químicos: processo 100% ecológico, sem solventes tóxicos (Zero VOC), sem tempo de secagem/cura e sem custo recorrente por litro.
+
+2. EQUIPAMENTOS E SOLUÇÕES:
+- SAP02 (Flambador Eletrônico Compacto Plug & Play): sistema industrial robusto, de fácil instalação em linhas contínuas de extrusão (fios, cabos, perfis plásticos) suportando velocidades de até 1.000 metros por minuto.
+- Mesa Automatizada CNC 3 Eixos (X-Y-Z): tratamento robotizado para peças tridimensionais, geometrias complexas, bandejas e peças automotivas com receitas salvas na memória.
+- Bicos e Aplicadores Customizados: desenvolvimento sob medida para linhas de embalagens, farmacêutica, médica e cosmética.
+
+3. LABORATÓRIO SURFACE TEST:
+- Centro avançado em Campinas/SP para testes práticos de aderência. Os clientes industriais podem enviar amostras das suas peças plásticas para ensaios de Dyne e teste de arrancamento, recebendo um Laudo Técnico de Viabilidade gratuito antes de investir no equipamento.
+
+4. DIRETRIZES DE ATENDIMENTO DA SOFIA:
+- Qualificar o material da peça (PP, PEAD, Alumínio, etc.).
+- Identificar o processo e tipo de falha (descolamento de fita, descascamento de tinta, datação borrada).
+- Perguntar a velocidade da linha ou se é peça unitária.
+- Agendar reunião online com engenharia de aplicação ou agendar envio de amostras para o Surface Test.`,
+      uploadedAt: new Date().toISOString(),
+    },
+    {
       id: 'doc-1',
       name: 'Guia_Institucional_NEXA.txt',
       type: 'txt',
@@ -1083,6 +1115,41 @@ Subtítulo: Programa de mentoria executiva VIP em Odontologia Biológica, Cirurg
               uploadedAt: new Date().toISOString(),
             };
             this.documents.unshift(defaultMentoriaDoc);
+          }
+          const hasSurfaceDoc = this.documents.some((d) => d.id === 'doc-surfacebrasil-plasma' || d.name?.includes('Surfacebrasil'));
+          if (!hasSurfaceDoc) {
+            this.documents.unshift({
+              id: 'doc-surfacebrasil-plasma',
+              name: 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
+              type: 'pdf',
+              size: 18500,
+              contentText: `DOSSIÊ TÉCNICO & MANUAL COMERCIAL COMPLETO — SURFACEBRASIL
+Website Oficial: https://surfacebrasil.com.br/
+Sede: Rua Vitório Casellato, 30 – Campinas/SP | Tel: (19) 3365-2506 | contato@surfacebrasil.com.br
+Unidades: Campinas/SP, Carlos Barbosa/RS, Estados Unidos (Maryland) e Argentina (Buenos Aires).
+
+1. TECNOLOGIA DE TRATAMENTO DE SUPERFÍCIE POR PLASMA ATMOSFÉRICO A FRIO:
+- O plasma é o quarto estado da matéria. Utilizando apenas ar comprimido industrial e eletricidade, gera descarga que atua em nível molecular em polímeros inertes (PP, PEAD, PEBD, PET, XLPE, Silicone) e metais (Alumínio).
+- Aumenta a energia superficial (tensão superficial de Dyne) de ~28 dynas/cm para mais de 50 a 70 dynas/cm.
+- Garante ancoragem definitiva para tintas automotivas/industriais, colas, vernizes, fitas adesivas e datação inkjet.
+- Vantagem radical sobre flambador a gás: não usa fogo direto, elimina risco de incêndio/explosão fabril e NÃO deforma ou derrete peças plásticas.
+- Vantagem sobre primers químicos: processo ecológico, sem solventes tóxicos (Zero VOC), sem tempo de secagem/cura e sem custo recorrente por litro.
+
+2. EQUIPAMENTOS E SOLUÇÕES:
+- SAP02 (Flambador Eletrônico Compacto Plug & Play): sistema industrial robusto para linhas contínuas de extrusão (fios, cabos, perfis plásticos) até 1.000 m/min.
+- Mesa Automatizada CNC 3 Eixos (X-Y-Z): tratamento robotizado para peças tridimensionais, geometrias complexas e bandejas com receitas programadas.
+- Bicos e Aplicadores Customizados: desenvolvimento sob medida para linhas fabris.
+
+3. LABORATÓRIO SURFACE TEST:
+- Centro em Campinas/SP para testes práticos de aderência. Os clientes enviam amostras de peças plásticas para ensaios de Dyne e teste de arrancamento, recebendo Laudo Técnico gratuito antes da compra.
+
+4. DIRETRIZES DE ATENDIMENTO DA SOFIA:
+- Qualificar material da peça (PP, PEAD, Alumínio, etc.).
+- Identificar o processo e tipo de falha (descolamento de fita, descascamento de tinta, datação borrada).
+- Perguntar a velocidade da linha ou se é peça unitária.
+- Agendar reunião online com engenharia ou agendar envio de amostras para o Surface Test.`,
+              uploadedAt: new Date().toISOString(),
+            });
           }
         }
         if (data.evolutionConfig) {

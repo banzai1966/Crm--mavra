@@ -42,7 +42,10 @@ export function normalizeInstanceName(inst?: string): string {
   if (raw === 'dra-lucy-morata' || raw === 'dra-lucy-murata') {
     return 'dra-lucy-murata';
   }
-  return raw || 'dra-lucy-murata';
+  if (raw === 'surface-brasil' || raw === 'surfacebrasil' || raw === 'surfice') {
+    return 'surfacebrasil';
+  }
+  return raw || 'surfacebrasil';
 }
 
 export interface EvolutionSendResult {

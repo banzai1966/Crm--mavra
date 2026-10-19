@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dossiê Técnico & Comercial Completo | Surfacebrasil - Tratamento por Plasma</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --secondary: #0f172a;
+      --accent: #2563eb;
+      --success: #16a34a;
+      --text: #334155;
+      --text-muted: #64748b;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background-color: #f8fafc;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 24px;
+    }
+
+    /* Print Toolbar */
+    .toolbar {
+      position: sticky;
+      top: 15px;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .toolbar-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-badge {
+      background: #0284c7;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .btn-print {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    /* Document Sheet */
+    .document {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 28px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .header-brand h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--secondary);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-brand h1 span {
+      color: var(--primary);
+    }
+
+    .header-brand p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .header-badges {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .badge-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      display: inline-block;
+    }
+
+    .badge-pill.dark {
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    /* Section Styles */
+    section {
+      margin-bottom: 36px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 4px solid var(--primary);
+      padding-left: 10px;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 18px 0 8px;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #475569;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Grid & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .card.highlight {
+      background: #f0f9ff;
+      border-color: #bae6fd;
+    }
+
+    .card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 6px;
+    }
+
+    .card p {
+      font-size: 13px;
+      margin-bottom: 0;
+      color: #475569;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    tr:nth-child(even) td {
+      background-color: #fafafa;
+    }
+
+    .tag-success {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .tag-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Callout Box */
+    .callout {
+      border-left: 4px solid #0284c7;
+      background: #f0f9ff;
+      padding: 16px;
+      border-radius: 0 10px 10px 0;
+      margin: 18px 0;
+    }
+
+    .callout p {
+      margin: 0;
+      font-size: 13.5px;
+      color: #0369a1;
+      font-weight: 500;
+    }
+
+    /* Contacts Footer */
+    .contact-box {
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+
+    .contact-box h3 {
+      color: #38bdf8;
+      font-size: 16px;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      font-size: 13px;
+    }
+
+    .contact-item strong {
+      color: #94a3b8;
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .contact-item span {
+      color: #f8fafc;
+      font-weight: 500;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .toolbar {
+        display: none !important;
+      }
+      .document {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        border-radius: 0;
+      }
+      .card, table, .contact-box {
+        break-inside: avoid;
+      }
+      h2 {
+        break-after: avoid;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .document {
+        padding: 20px;
+      }
+      .grid-2, .grid-3, .contact-grid {
+        grid-template-columns: 1fr;
+      }
+      .header {
+        flex-direction: column;
+      }
+      .header-badges {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Sticky Printable Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-title">
+        <span>📄 Dossiê & Base de Conhecimento Surfacebrasil</span>
+        <span class="toolbar-badge">Pronto para PDF</span>
+      </div>
+      <button class="btn-print" onclick="window.print()">
+        🖨️ Imprimir / Salvar em PDF
+      </button>
+    </div>
+
+    <!-- Main Document -->
+    <main class="document">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-brand">
+          <h1>Surface<span>brasil</span></h1>
+          <p>Engenharia de Superfícies & Tratamento por Plasma Atmosférico a Frio</p>
+          <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Fundada em 2010 • Campinas/SP • Selo Made in Brazil • BalticNet-PlasmaTec</p>
+        </div>
+        <div class="header-badges">
+          <span class="badge-pill dark">Tecnologia 100% Ecológica</span>
+          <span class="badge-pill">Presença em 7 Países</span>
+          <span class="badge-pill">Zero Gás Inflamável & Primers</span>
+        </div>
+      </header>
+
+      <!-- 1. Visão Geral -->
+      <section>
+        <h2>1. Identificação & Posicionamento Institucional</h2>
+        <p>A <strong>Surfacebrasil</strong> (Surface – Plasma Engineering and Solutions Ltda) é uma empresa brasileira de base tecnológica pioneira no desenvolvimento e fabricação de equipamentos para tratamento de superfícies por <strong>plasma atmosférico a frio</strong>. Desde 2010, atua resolvendo falhas críticas de adesão, pintura, colagem e impressão em polímeros de difícil ancoragem e metais.</p>
+        
+        <div class="grid-3">
+          <div class="card">
+            <h4>P&D & Academia</h4>
+            <p>Mais de 50 acadêmicos apoiados, formação de mestres e doutores, fornecedora de universidades de ponta.</p>
+          </div>
+          <div class="card">
+            <h4>Reconhecimento Global</h4>
+            <p>Prêmios de inovação no Brasil e no exterior, membro do cluster alemão <em>BalticNet-PlasmaTec</em>.</p>
+          </div>
+          <div class="card">
+            <h4>Spin-Off Médica</h4>
+            <p>Criadora da <em>Surface Medica</em>, aplicando plasma na aceleração de cicatrização e odontologia.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. O Problema da Adesão -->
+      <section>
+        <h2>2. O Problema Industrial: Por que Materiais Falham na Adesão?</h2>
+        <p>Materiais como <strong>Polipropileno (PP)</strong>, <strong>Polietileno (PEAD/PEBD)</strong>, <strong>PET</strong>, <strong>XLPE</strong>, <strong>Silicone</strong> e <strong>Alumínio</strong> possuem baixíssima energia superficial (geralmente abaixo de 30 a 32 dynas/cm). Fisicamente, isso significa que tintas, adesivos líquidos e vernizes "empoçam" e não molham a superfície.</p>
+
+        <div class="callout">
+          <p><strong>A Solução da Surfacebrasil:</strong> O jato de plasma atmosférico quebra as cadeias moleculares de hidrocarbonetos na superfície e implanta grupos polares (oxigênio e nitrogênio). Isso eleva a energia superficial imediatamente para <strong>50 a mais de 72 dynas/cm</strong>, permitindo que a cola ou tinta forme ligações químicas permanentes.</p>
+        </div>
+      </section>
+
+      <!-- 3. Comparativo com Métodos Tradicionais -->
+      <section>
+        <h2>3. Comparativo: Plasma vs. Flambador a Gás vs. Primers Químicos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Critério de Avaliação</th>
+              <th>Plasma Surfacebrasil (SAP02)</th>
+              <th>Flambador a Gás (Chama)</th>
+              <th>Primers Químicos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Segurança Fabril</strong></td>
+              <td><span class="tag-success">Máxima</span> (Ar + Eletricidade)</td>
+              <td><span class="tag-danger">Risco de Explosão</span> (Gás GLP)</td>
+              <td><span class="tag-danger">Tóxico / Inflamável</span> (Solventes)</td>
+            </tr>
+            <tr>
+              <td><strong>Deformação da Peça</strong></td>
+              <td><span class="tag-success">Zero</span> (Plasma frio de alta precisão)</td>
+              <td><span class="tag-danger">Alta</span> (Empena e derrete paredes)</td>
+              <td><span class="tag-success">Não deforma</span></td>
+            </tr>
+            <tr>
+              <td><strong>Tempo de Secagem / Cura</strong></td>
+              <td><span class="tag-success">Imediato</span> (Uso em linha contínua)</td>
+              <td>Espera de resfriamento</td>
+              <td><span class="tag-danger">Demorado</span> (Tempo de evaporação)</td>
+            </tr>
+            <tr>
+              <td><strong>Custo Operacional Recorrente</strong></td>
+              <td><span class="tag-success">Baixíssimo</span> (Apenas kWh e ar)</td>
+              <td>Alto (Consumo contínuo de botijões)</td>
+              <td><span class="tag-danger">Muito Alto</span> (Insumos químicos caros)</td>
+            </tr>
+            <tr>
+              <td><strong>Velocidade de Linha</strong></td>
+              <td><span class="tag-success">Até 1.000 m/min</span></td>
+              <td>Limitada</td>
+              <td>Lenta (Etapa manual ou imersão)</td>
+            </tr>
+            <tr>
+              <td><strong>Impacto no Seguro da Fábrica</strong></td>
+              <td><span class="tag-success">Pode Reduzir Apólice</span></td>
+              <td>Aumenta prêmio de risco</td>
+              <td>Exige licenças ambientais e exaustão</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 4. Equipamentos e Soluções -->
+      <section>
+        <h2>4. Portfólio de Equipamentos Fabricados</h2>
+
+        <div class="grid-2">
+          <div class="card highlight">
+            <h4>1. Equipamento SAP02 (Plug & Play)</h4>
+            <ul>
+              <li><strong>Alimentação:</strong> Apenas energia elétrica padrão e ar comprimido seco/limpo.</li>
+              <li><strong>Conceito:</strong> "Flambador eletrônico" a frio, substitui maçaricos a gás e primers.</li>
+              <li><strong>Produtividade:</strong> Alta velocidade para esteiras contínuas e extrusoras.</li>
+              <li><strong>Robustez:</strong> Projetado para operação industrial contínua 24/7.</li>
+              <li><strong>Integração:</strong> Fácil acoplamento em braços robóticos, esteiras ou estandes móveis.</li>
+            </ul>
+          </div>
+
+          <div class="card highlight">
+            <h4>2. Mesa de Aplicação 3 Eixos (CNC X-Y-Z)</h4>
+            <ul>
+              <li><strong>Automatização:</strong> Tratamento automatizado de chapas planas ou peças 3D.</li>
+              <li><strong>Controle de Altura:</strong> Ajuste micrométrico para acompanhar relevos e curvas.</li>
+              <li><strong>Receitas de Repetição:</strong> Memória para salvar parâmetros de velocidade e trajeto.</li>
+              <li><strong>Sob Medida:</strong> Dimensões e cursos dos eixos fabricados conforme a necessidade do cliente.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h4>3. Aplicadores Personalizados & Bicos Especiais</h4>
+          <p>Para indústrias com formatos atípicos (como cabos elétricos cilíndricos de alta velocidade, tubos corrugados, tampas plásticas, frascos ou caixas de papelão resinado), a Surfacebrasil projeta e constrói bocais customizados, assegurando uniformidade de 360° no tratamento.</p>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h4>4. Centro de Testes Laboratoriais "Surface Test" (Campinas/SP)</h4>
+          <p>A Surfacebrasil possui laboratório completo onde clientes de todo o Brasil enviam amostras de suas peças e materiais. A equipe de engenharia realiza:</p>
+          <ul>
+            <li>Medição de tensão superficial antes e após o plasma (soluções de Dyne padronizadas).</li>
+            <li>Ensaios práticos de arrancamento de tinta (cross-hatch test / grade adesiva).</li>
+            <li>Testes de colagem com adesivos estruturais e colas hot-melt.</li>
+            <li>Emissão de <strong>Relatório Técnico de Viabilidade</strong> com parâmetros ideais de velocidade e potência.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 5. Cases Industriais -->
+      <section>
+        <h2>5. Principais Cases de Sucesso Resolvidos</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Adesivação em Tubos de PP</h4>
+            <p>O plasma substituiu os tradicionais flambadores a gás. Vantagem: velocidade total da linha sem deformar as paredes dos tubos.</p>
+          </div>
+          <div class="card">
+            <h4>Datação Inkjet (Cabos, Fibras & XLPE)</h4>
+            <p>Gravação de datas e lotes em cabos de alta complexidade (PP, PEAD, XLPE, Silicone). Velocidade de até 1.000 metros/minuto com fixação indelével.</p>
+          </div>
+          <div class="card">
+            <h4>Caixas de Papelão Resinado (Baixo Cobb)</h4>
+            <p>Substituição de lixadores mecânicos. O plasma abre a microporosidade sem gerar pó residual, garantindo colagem perfeita.</p>
+          </div>
+          <div class="card">
+            <h4>Tampografia & Serigrafia em Peças Plásticas</h4>
+            <p>Maior eficácia que o efeito corona em geometrias tridimensionais, eliminando o desprendimento da impressão.</p>
+          </div>
+          <div class="card">
+            <h4>Colagem Estrutural em Borrachas</h4>
+            <p>Eliminação total de primers e promotores de aderência tóxicos, com alta resistência à tração e cisalhamento.</p>
+          </div>
+          <div class="card">
+            <h4>Limpeza & Pintura de Discos de Alumínio</h4>
+            <p>Limpeza a seco e remoção de contaminantes orgânicos, proporcionando acabamento homogêneo e sem falhas na pintura.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Guia de Atendimento e Qualificação Sofia -->
+      <section>
+        <h2>6. Roteiro de Qualificação & Agendamento para a Sofia (WhatsApp)</h2>
+        <p>Como os equipamentos de tratamento de plasma são industriais e dimensionados para a realidade de cada fábrica, os preços variam conforme:</p>
+        <ol>
+          <li>A <strong>velocidade da linha</strong> (metros por minuto);</li>
+          <li>A <strong>geometria e largura</strong> da área a ser tratada (milímetros ou 3D);</li>
+          <li>O <strong>tipo de polímero/metal</strong> e aditivos da resina;</li>
+          <li>O <strong>grau de automação</strong> desejado (sistema SAP02 integrado à linha existente ou Mesa 3 Eixos CNC).</li>
+        </ol>
+
+        <div class="callout">
+          <p><strong>Diretriz Comercial da Sofia:</strong> A Sofia não passa um valor genérico inventado. Ela acolhe o cliente, demonstra alto domínio técnico, faz 3 perguntas de triagem e convida para agendar uma reunião técnica com os engenheiros ou enviar amostras para o laboratório <em>Surface Test</em> em Campinas!</p>
+        </div>
+
+        <h3>Perguntas-Chave de Qualificação da Sofia:</h3>
+        <ul>
+          <li><strong>Material:</strong> "Qual é o material ou polímero da sua peça? (ex: Polipropileno, PEAD, PET, Alumínio, Borracha)?"</li>
+          <li><strong>Problema:</strong> "Qual processo está apresentando falha de adesão? (Pintura, Colagem/Adesivação ou Marcação Inkjet/Tampografia)?"</li>
+          <li><strong>Linha de Produção:</strong> "Qual é a velocidade aproximada da sua esteira/extrusora ou o processo é feito em peças unitárias?"</li>
+          <li><strong>Agendamento:</strong> "Para dimensionarmos o aplicador ideal e enviarmos uma proposta precisa, prefere agendar uma rápida reunião online com nossa engenharia ou deseja enviar amostras das suas peças para fazermos o teste gratuito no laboratório da fábrica em Campinas?"</li>
+        </ul>
+      </section>
+
+      <!-- Contatos e Matriz -->
+      <footer class="contact-box">
+        <h3>🏢 Informações de Contato & Unidades</h3>
+        <div class="contact-grid">
+          <div class="contact-item">
+            <strong>Matriz Fabril (Brasil)</strong>
+            <span>Rua Vitório Casellato, 30 – Campinas - SP - Brasil</span>
+          </div>
+          <div class="contact-item">
+            <strong>Telefone / WhatsApp Comercial</strong>
+            <span>+55 19 3365 2506 | contato@surfacebrasil.com.br</span>
+          </div>
+          <div class="contact-item">
+            <strong>Representação Região Sul</strong>
+            <span>Carlos Barbosa - RS | sul@surfacebrasil.com.br</span>
+          </div>
+          <div class="contact-item">
+            <strong>Representações Internacionais</strong>
+            <span>EUA: Maryland (usa@surfacebrasil.com.br) | Argentina: Buenos Aires (argentina@surfacebrasil.com.br)</span>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+</body>
+</html>

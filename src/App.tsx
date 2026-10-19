@@ -553,7 +553,7 @@ export default function App() {
     }
   };
 
-  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b') => {
+  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil') => {
     const presets: Record<string, Partial<AgentConfig>> = {
       clinic: {
         activeWorkspaceName: 'Clínica & Saúde Integrativa',
@@ -583,10 +583,32 @@ export default function App() {
         followUpNiche: 'sales',
         salesGoal: 'Qualificar decisores, contornar objeções, apresentar ROI e agendar reunião ou fechar contrato via PIX',
       },
+      surfacebrasil: {
+        activeWorkspaceName: 'Surfacebrasil – Tratamento por Plasma',
+        personaName: 'Sofia da Surfacebrasil',
+        role: 'Consultora Técnica e Especialista em Tratamento de Superfície por Plasma da Surfacebrasil',
+        toneOfVoice: 'Altamente técnica, consultiva, profissional, acolhedora, objetiva e focada em engenharia de aplicação e solução definitiva de problemas de ancoragem, pintura e adesão.',
+        salesGoal: 'Identificar o substrato/material do cliente e o tipo de falha de adesão, entender a velocidade e o volume da linha fabril, e agendar uma reunião técnica com os engenheiros de aplicação ou o envio de amostras para testes no laboratório Surface Test em Campinas/SP.',
+        followUpNiche: 'b2b_services',
+        catalogPdfName: 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
+        preRecordedAudiosEnabled: false,
+        followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a viabilidade do tratamento por plasma para as peças da sua fábrica. Nossos engenheiros de aplicação estão com a bancada do Surface Test disponível esta semana para testar suas amostras de material ou agendar uma rápida conversa técnica online. Como está sua disponibilidade? ⚡🔬',
+      },
     };
     const chosen = presets[workspaceId];
     if (chosen) {
       await handleSaveAgentConfig(chosen);
+      if (workspaceId === 'surfacebrasil') {
+        const updatedEvo = { ...evolutionConfig, instanceName: 'surfacebrasil' };
+        setEvolutionConfig(updatedEvo);
+        try {
+          await fetch('/api/evolution-config', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedEvo),
+          });
+        } catch (e) {}
+      }
       if (workspaceId === 'delivery') {
         setActiveTab('delivery');
       } else {

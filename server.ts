@@ -98,6 +98,15 @@ async function startServer() {
   app.post('/api/webhook', webhookHandler);
   app.post('/api/whatsapp/webhook', webhookHandler);
 
+  // Route to view and print the Surfacebrasil PDF / Dossier
+  app.get('/surfacebrasil-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'surfacebrasil_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual da Surfacebrasil não encontrado.');
+  });
+
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
     const { phone, message, pushName, mediaType, fileName } = req.body;
