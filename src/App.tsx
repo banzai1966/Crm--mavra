@@ -73,6 +73,14 @@ export default function App() {
     }
     return localStorage.getItem('nexa_admin_unlocked') === 'true';
   });
+
+  // Restrict tabs in client mode (!isAdminUnlocked)
+  React.useEffect(() => {
+    if (!isAdminUnlocked && (activeTab === 'dashboard' || activeTab === 'sales' || activeTab === 'agent' || activeTab === 'evolution' || activeTab === 'supabase')) {
+      setActiveTab('kanban');
+    }
+  }, [isAdminUnlocked, activeTab]);
+
   const [showAdminAuthModal, setShowAdminAuthModal] = useState(false);
 
   const handleUnlockAdmin = () => {
