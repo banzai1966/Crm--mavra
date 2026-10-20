@@ -36,6 +36,12 @@ import {
   Volume2,
   Sparkle,
   ArrowRight,
+  CreditCard,
+  Send,
+  Layers,
+  Shield,
+  Info,
+  ExternalLink,
 } from 'lucide-react';
 import { Lead, KanbanStage, AgentConfig, EvolutionConfig, BusinessNiche } from '../types';
 import { ResetDataModal } from './ResetDataModal';
@@ -186,7 +192,7 @@ interface ExecutiveDashboardProps {
   agentConfig: AgentConfig;
   evolutionConfig: EvolutionConfig;
   onOpenChat: (leadId: string) => void;
-  onNavigateToTab: (tab: 'kanban' | 'chat' | 'agent' | 'evolution') => void;
+  onNavigateToTab: (tab: 'kanban' | 'chat' | 'agent' | 'evolution' | 'calendar' | 'delivery') => void;
   onUpdateEvolutionConfig?: (config: EvolutionConfig) => void;
   onUpdateAgentConfig?: (config: AgentConfig) => void;
   onClearAllLeads?: () => Promise<void> | void;
@@ -224,6 +230,11 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   const [briefingText, setBriefingText] = useState('');
   const [isSendingBriefing, setIsSendingBriefing] = useState(false);
   const [briefingFeedback, setBriefingFeedback] = useState<string | null>(null);
+
+  // Advanced Guide & Educational Modals state
+  const [guideTab, setGuideTab] = useState<'kanban_flow' | 'reativacao' | 'agendamento' | 'atendimento_24h'>('kanban_flow');
+  const [showReactivationExplainModal, setShowReactivationExplainModal] = useState(false);
+  const [showAppointmentExplainModal, setShowAppointmentExplainModal] = useState(false);
 
   const handleOpenBriefingPreview = async () => {
     setShowBriefingModal(true);
@@ -663,59 +674,167 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
       </div>
 
       {/* Reativação de Base de Pacientes Inativos KPI Highlight */}
-      <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-start sm:items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 flex items-center justify-center shrink-0 shadow-inner">
-            <Sparkles className="w-6 h-6 text-indigo-400" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
-                Campanha de Resgate
-              </span>
-              <h3 className="text-sm font-bold text-white tracking-tight">
-                Reativação de Base & Pacientes Inativos
-              </h3>
+      <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 text-white shadow-lg space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 flex items-center justify-center shrink-0 shadow-inner">
+              <Sparkles className="w-6 h-6 text-indigo-400" />
             </div>
-            <p className="text-xs text-slate-300 mt-1">
-              Pacientes antigos resgatados da planilha ou agenda do WhatsApp através da abordagem humanizada da Sofia.
-            </p>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                  Resgate do "Dinheiro na Gaveta"
+                </span>
+                <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  🛡️ Cadência Segura Anti-Bloqueio (25-45s)
+                </span>
+              </div>
+              <h3 className="text-base font-bold text-white tracking-tight mt-1 flex items-center gap-2">
+                Reativação de Base & Clientes Inativos (Campanhas com IA)
+              </h3>
+              <p className="text-xs text-slate-300 mt-0.5 max-w-2xl leading-relaxed">
+                Aborda contatos que não compram ou consultam há mais de 30/60/180 dias com mensagens humanizadas personalizadas (com nome ou áudio falado). Quando o cliente responde "oi, tudo bem", a Sofia retoma a conversa e fecha!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowReactivationExplainModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer border border-white/10"
+              title="Ver explicação passo a passo com exemplo de WhatsApp"
+            >
+              <Info className="w-3.5 h-3.5 text-indigo-300" />
+              <span>Como Funciona o Resgate</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigateToTab('kanban')}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+            >
+              <span>Ver Base no Kanban</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 sm:gap-6 shrink-0 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
+        {/* Métricas da Reativação */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
           <div className="text-center sm:text-left">
             <span className="text-[10px] text-slate-400 uppercase font-semibold block">Na Fila de Resgate</span>
-            <span className="text-base font-extrabold text-indigo-300 font-mono">
-              {baseAntigaLeads.length} pacientes
+            <span className="text-base sm:text-lg font-extrabold text-indigo-300 font-mono">
+              {baseAntigaLeads.length} contatos
             </span>
+            <span className="text-[10px] text-slate-400 block">Clientes antigos mapeados</span>
           </div>
 
-          <div className="h-8 w-px bg-white/10" />
-
-          <div className="text-center sm:text-left">
+          <div className="text-center sm:text-left border-l border-white/10 pl-3">
             <span className="text-[10px] text-slate-400 uppercase font-semibold block">Resgatados / Ativos</span>
-            <span className="text-base font-extrabold text-emerald-400 font-mono">
+            <span className="text-base sm:text-lg font-extrabold text-emerald-400 font-mono">
               {reactivatedLeads.length} ({reactivatedRate}%)
             </span>
+            <span className="text-[10px] text-emerald-300/80 block">Responderam & retomaram</span>
           </div>
 
-          <div className="h-8 w-px bg-white/10" />
-
-          <div className="text-center sm:text-left">
+          <div className="text-center sm:text-left border-l border-white/10 pl-3 col-span-2 sm:col-span-1">
             <span className="text-[10px] text-slate-400 uppercase font-semibold block">Receita Resgatada</span>
-            <span className="text-base font-extrabold text-amber-300 font-mono">
+            <span className="text-base sm:text-lg font-extrabold text-amber-300 font-mono">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(reactivatedRevenue)}
             </span>
+            <span className="text-[10px] text-amber-300/80 block">Vendas que estavam perdidas</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Central de Agendamentos & Confirmação Anti-Falta (Anti-No-Show) */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-violet-50 border border-violet-200 text-violet-700 flex items-center justify-center shrink-0">
+              <Calendar className="w-6 h-6 text-violet-600" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200">
+                  Agenda Otimizada
+                </span>
+                <span className="text-[10px] text-violet-700 font-bold bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
+                  🛡️ Anti-No-Show Ativo (Zero Cadeira Vazia)
+                </span>
+              </div>
+              <h3 className="text-base font-bold text-slate-900 tracking-tight mt-1 flex items-center gap-2">
+                Central de Agendamentos & Lembretes Anti-Falta no WhatsApp
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5 max-w-2xl leading-relaxed">
+                A Sofia faz a triagem do paciente (procedimento, particular vs convênio e turno preferido), agenda o horário e dispara lembretes automáticos 24h e 2h antes com confirmação rápida, reduzindo faltas em até 70%!
+              </p>
+            </div>
           </div>
 
-          <button
-            onClick={() => onNavigateToTab('kanban')}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
-          >
-            <span>Ver Base</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowAppointmentExplainModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer border border-slate-200"
+              title="Entenda como a Sofia faz a triagem e confirma horários"
+            >
+              <Info className="w-3.5 h-3.5 text-slate-500" />
+              <span>Como Funciona o Agendamento</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigateToTab('calendar')}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Abrir Agenda de Consultas</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 3 Pilares do Agendamento Inteligente */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1 border-t border-slate-100">
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-md bg-violet-100 text-violet-700 text-[10px] font-mono flex items-center justify-center font-bold">1</span>
+                Triagem no WhatsApp
+              </span>
+              <span className="text-[10px] text-violet-600 font-semibold">{triagedLeads.length} Triados</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Descobre procedimento de interesse, turno desejado (manhã/tarde) e tipo de atendimento sem a secretária precisar digitar.
+            </p>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-md bg-emerald-100 text-emerald-700 text-[10px] font-mono flex items-center justify-center font-bold">2</span>
+                Confirmação de Presença
+              </span>
+              <span className="text-[10px] text-emerald-600 font-semibold">{confirmedAppointments.length} Confirmados</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              O paciente recebe lembrete no WhatsApp 24h antes e clica para confirmar. Se desmarcar, a recepção é avisada na mesma hora para remanejar a vaga.
+            </p>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-mono flex items-center justify-center font-bold">3</span>
+                Pós-Consulta & Retorno
+              </span>
+              <span className="text-[10px] text-amber-600 font-semibold">Automático</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Pesquisa de satisfação e agendamento de retornos periódicos (profilaxia, revisão, novas etapas) sem esforço manual.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -888,159 +1007,340 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             </div>
           </div>
 
-          {/* 3 Interactive Pillars / Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-6 relative z-10">
-            {/* Pilar 1: Como se Conecta */}
-            <div className="bg-white/5 border border-white/10 hover:border-emerald-500/40 rounded-2xl p-5 backdrop-blur-xs transition-all flex flex-col justify-between group">
-              <div className="space-y-3.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-black text-sm">
+          {/* Navegação entre os 4 Módulos Operacionais */}
+          <div className="flex flex-wrap items-center gap-2 pt-5 pb-3 border-b border-white/10 relative z-10">
+            <button
+              type="button"
+              onClick={() => setGuideTab('kanban_flow')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                guideTab === 'kanban_flow'
+                  ? 'bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400'
+                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5 text-indigo-400" />
+              <span>1. Kanban Automático & Limite Seguro</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setGuideTab('reativacao')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                guideTab === 'reativacao'
+                  ? 'bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400'
+                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>2. Reativação de Base Antiga (Resgate)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setGuideTab('agendamento')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                guideTab === 'agendamento'
+                  ? 'bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400'
+                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+              <span>3. Agendamentos & Anti-Falta (No-Show)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setGuideTab('atendimento_24h')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                guideTab === 'atendimento_24h'
+                  ? 'bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400'
+                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Volume2 className="w-3.5 h-3.5 text-sky-400" />
+              <span>4. Atendimento 24/7, Voz & Chave PIX</span>
+            </button>
+          </div>
+
+          {/* TAB 1: KANBAN AUTOMÁTICO & ONDE ENTRA O HUMANO */}
+          {guideTab === 'kanban_flow' && (
+            <div className="pt-6 relative z-10 space-y-5 animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Lado 1: O Que a IA Faz 100% Sozinha */}
+                <div className="bg-white/5 border border-emerald-500/30 rounded-2xl p-5 space-y-3.5 bg-gradient-to-br from-white/5 to-emerald-950/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-extrabold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      ⚡ 100% Automático
+                    </span>
+                    <span className="text-[11px] text-emerald-400 font-mono font-bold">Autonomia Comercial</span>
+                  </div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                    O que a IA Move e Fecha Sozinha no Funil
+                  </h3>
+                  <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">1</span>
+                      <span><strong>Entrada Imediata:</strong> Qualquer cliente que manda mensagem no WhatsApp vira um cartão sozinho na coluna <em>"Novos Leads"</em>.</span>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">2</span>
+                      <span><strong>Triagem e Avanço de Estágio:</strong> A Sofia descobre interesse, turno de preferência e forma de pagamento, movendo o cartão sozinho para <em>"Em Atendimento"</em> e <em>"Triagem Concluída"</em>.</span>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">3</span>
+                      <span><strong>Fechamento com PIX ou Pedidos Tabelados:</strong> Se for produto com preço fixo (cardápios, taxas de entrega tabeladas, planos ou itens cadastrados), ou se o cliente pedir a chave PIX, a Sofia envia a chave oficial, lê o comprovante com visão computacional e move o cartão para <em>"Ganho / Pago"</em>!</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lado 2: Onde a IA NÃO Fecha no Escuro (Segurança do Negócio) */}
+                <div className="bg-white/5 border border-indigo-500/30 rounded-2xl p-5 space-y-3.5 bg-gradient-to-br from-white/5 to-indigo-950/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-extrabold tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      🛡️ Limite Seguro da Automação
+                    </span>
+                    <span className="text-[11px] text-indigo-400 font-mono font-bold">Zero Risco Financeiro</span>
+                  </div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-indigo-400 shrink-0" />
+                    O que Exige Conversa ou Avaliação Humana
+                  </h3>
+                  <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">1</span>
+                      <span><strong>Orçamentos Sob Medida & Procedimentos Clínicos:</strong> Tratamentos como implantes, próteses, harmonização facial, reformas ou peças industriais sob encomenda dependem de <strong>exame clínico ou avaliação técnica</strong>.</span>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">2</span>
+                      <span><strong>A IA Não Chuta Valores:</strong> A Sofia <strong>NUNCA inventa preços</strong> nem fecha no escuro o que precisa de exame! Ela qualifica, tira dúvidas de localização/horários e <strong>agenda a Avaliação Presencial</strong>, deixando o valor final para o profissional fechar cara a cara.</span>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">3</span>
+                      <span><strong>Assumir Atendimento a Qualquer Momento:</strong> Na Central de Chat, você clica em <em>"Assumir Atendimento"</em> e conversa manualmente sempre que quiser negociar condições especiais.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
+                <span className="text-xs text-slate-400">
+                  💡 O Kanban funciona como um piloto automático inteligente: cuida de 90% da rotina e deixa as negociações de alto valor mastigadas para você.
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onNavigateToTab('kanban')}
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2 px-3.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <span>Abrir Kanban</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => onNavigateToTab('chat')}
+                    className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2 px-3.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Central de Chat</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: REATIVAÇÃO DE BASE ANTIGA */}
+          {guideTab === 'reativacao' && (
+            <div className="pt-6 relative z-10 space-y-5 animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-xs">
                     1
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-                    30 Segundos
-                  </span>
+                  <h4 className="text-sm font-bold text-white">Mapeamento dos Inativos</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Clientes ou pacientes antigos que não compram há mais de 30, 60 ou 180 dias. O sistema puxa os nomes e históricos automaticamente.
+                  </p>
                 </div>
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Smartphone className="w-4 h-4 text-emerald-400" />
-                    Como se Conecta
-                  </h3>
-                  <p className="text-[11px] text-emerald-400/90 font-medium">Fácil como conectar no WhatsApp Web</p>
-                </div>
-                <div className="space-y-2 text-xs text-slate-300 leading-relaxed pt-1">
-                  <div className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-white/10 text-white font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
-                    <span>Abra o <strong>WhatsApp</strong> no celular da clínica/empresa.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-white/10 text-white font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
-                    <span>Toque nos 3 pontinhos (ou Ajustes) e vá em <strong>Aparelhos Conectados</strong>.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-white/10 text-white font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
-                    <span>Toque em <strong>Conectar um aparelho</strong> e aponte a câmera para o QR Code aqui na tela.</span>
-                  </div>
-                </div>
-                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-[11px] text-emerald-200 leading-relaxed">
-                  🛡️ <strong>Zero aplicativo para instalar:</strong> Não precisa baixar nada no celular. A Sofia assume o atendimento direto na nuvem com total segurança e criptografia ponta a ponta.
-                </div>
-              </div>
 
-              <div className="pt-4 mt-3 border-t border-white/10">
-                <button
-                  onClick={handleOpenQrModal}
-                  className="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <QrCode className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>{evolutionConfig.isConnected || isConnectedLive ? 'Ver Status da Conexão' : 'Abrir QR Code Agora'}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Pilar 2: Como Acompanha no CRM */}
-            <div className="bg-white/5 border border-white/10 hover:border-indigo-500/40 rounded-2xl p-5 backdrop-blur-xs transition-all flex flex-col justify-between group">
-              <div className="space-y-3.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-black text-sm">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">
                     2
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                    Controle Total
-                  </span>
+                  <h4 className="text-sm font-bold text-white">Cadência Segura Anti-Ban</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Disparos em intervalos aleatórios de <strong>25 a 45 segundos</strong> com o nome personalizado (<code className="text-amber-300 font-mono text-[11px]">&#123;nome&#125;</code>) ou áudio humano. O WhatsApp reconhece como conversa real.
+                  </p>
                 </div>
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-indigo-400" />
-                    Como Acompanhar no CRM
-                  </h3>
-                  <p className="text-[11px] text-indigo-400/90 font-medium">Visibilidade em tempo real para toda a equipe</p>
-                </div>
-                <div className="space-y-2.5 text-xs text-slate-300 leading-relaxed pt-1">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
-                    <span><strong>Kanban Automático:</strong> Cada cliente que manda mensagem vira um cartão no funil e avança de estágio sozinho conforme demonstra interesse.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
-                    <span><strong>Ficha de Triagem Pronta:</strong> A IA já anota procedimento, turno preferido (manhã/tarde), dia da semana e forma de pagamento.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
-                    <span><strong>Intervenção Humana:</strong> Na Central de Chat, você clica em <em>"Assumir Atendimento"</em> e conversa manualmente se preferir.</span>
-                  </div>
-                </div>
-                <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-[11px] text-indigo-200 leading-relaxed">
-                  👥 <strong>Portal da Cliente:</strong> A doutora ou secretária usa o link exclusivo (<em>?modo=cliente</em>) para ver tudo sem perigo de alterar chaves ou configurações técnicas.
-                </div>
-              </div>
 
-              <div className="pt-4 mt-3 border-t border-white/10 grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => onNavigateToTab('kanban')}
-                  className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 px-2 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                >
-                  <span>Ver Kanban</span>
-                  <ArrowRight className="w-3 h-3 text-indigo-400" />
-                </button>
-                <button
-                  onClick={() => onNavigateToTab('chat')}
-                  className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 px-2 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                >
-                  <MessageSquare className="w-3 h-3 text-indigo-400" />
-                  <span>Chat ao Vivo</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Pilar 3: O Que Esperar */}
-            <div className="bg-white/5 border border-white/10 hover:border-amber-500/40 rounded-2xl p-5 backdrop-blur-xs transition-all flex flex-col justify-between group">
-              <div className="space-y-3.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center font-black text-sm">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs">
                     3
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
-                    Efeito UAU
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    O Que Esperar
-                  </h3>
-                  <p className="text-[11px] text-amber-400/90 font-medium">Resultados práticos no dia a dia</p>
-                </div>
-                <div className="space-y-2.5 text-xs text-slate-300 leading-relaxed pt-1">
-                  <div className="flex items-start gap-2">
-                    <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                    <span><strong>Atendimento 24/7 em &lt;10s:</strong> Ninguém fica sem resposta à noite, fins de semana ou feriados. A clínica nunca dorme.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Volume2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                    <span><strong>Áudios com Voz Humana:</strong> Se o cliente mandar áudio, a Sofia ouve com atenção e responde com áudio caloroso e empático.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                    <span><strong>Anti-Vácuo Automático:</strong> Se o paciente parar de responder no meio da conversa, o sistema resgata após 4h com gentileza.</span>
-                  </div>
-                </div>
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-[11px] text-amber-200 leading-relaxed">
-                  📈 <strong>Mais Consultas Fechadas:</strong> Ao responder na hora e recuperar contatos frios, a taxa de agendamento chega a triplicar!
+                  <h4 className="text-sm font-bold text-white">Resposta "Oi, tudo bem"</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Quando o cliente responde, a Sofia lê a mensagem que ela mesma mandou antes, acolhe o cliente com simpatia e conduz para o fechamento!
+                  </p>
                 </div>
               </div>
 
-              <div className="pt-4 mt-3 border-t border-white/10">
-                <div className="flex items-center justify-between text-[11px] text-slate-300 font-mono">
-                  <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    Sofia com Gemini 3.8
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-200">
+                <div className="space-y-1">
+                  <span className="font-bold flex items-center gap-1.5 text-amber-300">
+                    <Sparkles className="w-4 h-4" />
+                    Como funciona na prática quando você clica em disparar:
                   </span>
-                  <span className="text-slate-400">Zero Erros / 100% Blindado</span>
+                  <p className="text-slate-300">
+                    Você pode selecionar 20, 50 ou 100 contatos da lista, escolher um modelo de texto ou áudio falado, e o robô cuida de todo o envio em segundo plano.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => setShowReactivationExplainModal(true)}
+                    className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer shadow-xs"
+                  >
+                    Ver Simulação de Conversa
+                  </button>
+                  <button
+                    onClick={() => onNavigateToTab('kanban')}
+                    className="bg-white/10 hover:bg-white/20 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer"
+                  >
+                    Ver Base Inativa
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* TAB 3: AGENDAMENTOS & ANTI-FALTA */}
+          {guideTab === 'agendamento' && (
+            <div className="pt-6 relative z-10 space-y-5 animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-violet-500/20 text-violet-300 flex items-center justify-center font-bold text-xs">
+                    1
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Triagem no WhatsApp</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    A Sofia pergunta o procedimento ou queixa, se é particular ou convênio, e o turno desejado (manhã ou tarde). Ficha pronta para a recepção.
+                  </p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">
+                    2
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Encaixe na Agenda</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    O horário cai direto no painel de Agendamentos e no Google Agenda, organizando os consultórios e profissionais sem conflitos de horário.
+                  </p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs">
+                    3
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Lembrete Anti-Falta (24h & 2h)</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Mensagem no WhatsApp no dia anterior com botões rápidos: <strong>[Confirmar]</strong> ou <strong>[Remarcar]</strong>. Se desmarcar, a vaga é liberada na hora.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-violet-200">
+                <div className="space-y-1">
+                  <span className="font-bold flex items-center gap-1.5 text-violet-300">
+                    <Calendar className="w-4 h-4" />
+                    O Maior Vilão dos Consultórios: A Cadeira Vazia
+                  </span>
+                  <p className="text-slate-300">
+                    Em média, 25% a 35% dos pacientes faltam sem avisar. O sistema de confirmação ativa reduz essa taxa para menos de 8%!
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => setShowAppointmentExplainModal(true)}
+                    className="bg-violet-600 hover:bg-violet-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer shadow-xs"
+                  >
+                    Como Funciona o Anti-Falta
+                  </button>
+                  <button
+                    onClick={() => onNavigateToTab('calendar')}
+                    className="bg-white/10 hover:bg-white/20 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer"
+                  >
+                    Abrir Agenda
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: ATENDIMENTO 24/7, VOZ & CHAVE PIX */}
+          {guideTab === 'atendimento_24h' && (
+            <div className="pt-6 relative z-10 space-y-5 animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-bold text-xs">
+                    ⚡
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Resposta em &lt;10s (24/7)</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Nenhum lead fica esperando. Atende na madrugada, feriados e fins de semana, momento em que concorrentes estão fechados.
+                  </p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">
+                    🎙️
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Voz Humana com Respiração</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Se o cliente mandar áudio no WhatsApp, a Sofia escuta, transcreve e responde com áudio falado natural e empático.
+                  </p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5 space-y-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-xs">
+                    💳
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Chave PIX & Comprovante</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Quando o cliente pede PIX para fechar, a IA envia a chave cadastrada pronta para copiar e valida o comprovante com visão computacional.
+                  </p>
+                </div>
+              </div>
+
+              {/* Status da Chave PIX */}
+              <div className="bg-slate-900/80 border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Chave PIX Cadastrada no Sistema</span>
+                    <span className="text-xs font-mono font-bold text-emerald-300">
+                      {agentConfig.pixKey ? `${agentConfig.pixKey} (${agentConfig.pixKeyType || 'E-mail'})` : 'Nenhuma chave cadastrada ainda'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {isAdmin && (
+                    <button
+                      onClick={() => onNavigateToTab('agent')}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer shadow-xs"
+                    >
+                      Configurar Chave PIX
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onNavigateToTab('chat')}
+                    className="bg-white/10 hover:bg-white/20 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer"
+                  >
+                    Testar no Chat ao Vivo
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1588,6 +1888,222 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Educativo: Como Funciona a Reativação de Base */}
+      {showReactivationExplainModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">
+                    Como Funciona o Resgate de Base & Clientes Inativos
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    O passo a passo para transformar contatos esquecidos em faturamento real
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowReactivationExplainModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-xs text-slate-600 leading-relaxed">
+              <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-4 space-y-2">
+                <span className="font-bold text-indigo-900 text-sm flex items-center gap-2">
+                  <span>💡 O Conceito do "Dinheiro na Gaveta"</span>
+                </span>
+                <p className="text-indigo-950">
+                  Conquistar um novo cliente custa de 5 a 7 vezes mais caro do que vender para quem já conhece sua empresa. Toda empresa tem dezenas ou centenas de contatos que já compraram ou consultaram uma vez, mas que esfriaram por falta de tempo da equipe de mandar mensagem um por um.
+                </p>
+              </div>
+
+              {/* 3 Etapas */}
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-indigo-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">1</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Seleção dos Contatos Inativos</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      Você pode filtrar quem não compra há 30, 60 ou 180 dias. Na tela de campanhas, basta escolher quantos quer disparar hoje (ex: 20, 50 ou 100).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-emerald-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">2</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Disparo com Cadência Segura Anti-Bloqueio (25 a 45s)</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      O sistema <strong>não dispara tudo de uma vez</strong>. Ele envia uma mensagem, espera de 25 a 45 segundos (simulando digitação humana) e envia a próxima. Isso garante que o WhatsApp nunca considere sua conta como spam!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-amber-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">3</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Personalização com Nome e Retomada Natural da Sofia</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      O robô troca a tag <code className="bg-amber-100 text-amber-800 px-1 py-0.5 rounded font-mono">&#123;nome&#125;</code> pelo primeiro nome de cada cliente. Quando a pessoa responde, a Sofia já assume a conversa na hora!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Exemplo de Conversa no WhatsApp */}
+              <div className="space-y-1.5 pt-1">
+                <span className="font-bold text-slate-800 block">Exemplo Real de Conversa de Resgate:</span>
+                <div className="bg-emerald-950/90 rounded-2xl p-4 space-y-3 font-sans border border-emerald-900">
+                  <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
+                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA da Clínica):</span>
+                    Olá Roberto, tudo bem? Passando para te dar um oi! Consegue falar 5 minutinhos hoje?
+                  </div>
+
+                  <div className="bg-white text-slate-900 p-3 rounded-xl rounded-tl-xs max-w-sm mr-auto text-xs shadow-xs">
+                    <span className="text-[10px] text-slate-400 font-bold block mb-0.5">Roberto (Cliente Antigo):</span>
+                    oi, tudo bem
+                  </div>
+
+                  <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
+                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA da Clínica):</span>
+                    Tudo ótimo por aqui, Roberto! 😊 Estava revisando nossos atendimentos e lembrei de você. Como estão as coisas? Me conta: você gostaria de agendar uma avaliação preventiva essa semana ou prefere no início do próximo mês?
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowReactivationExplainModal(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 cursor-pointer"
+              >
+                Fechar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowReactivationExplainModal(false);
+                  onNavigateToTab('kanban');
+                }}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <span>Ver Base de Inativos no Kanban</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Educativo: Como Funciona o Agendamento & Anti-Falta */}
+      {showAppointmentExplainModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-violet-50 border border-violet-200 text-violet-700 rounded-xl">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">
+                    Como Funciona o Agendamento & Confirmação Anti-Falta
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Triagem inteligente no WhatsApp e fim do no-show (cadeira vazia)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAppointmentExplainModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-xs text-slate-600 leading-relaxed">
+              <div className="bg-violet-50/70 border border-violet-200/80 rounded-2xl p-4 space-y-2">
+                <span className="font-bold text-violet-900 text-sm flex items-center gap-2">
+                  <span>🛡️ A Dor das Clínicas: Pacientes que Faltam sem Avisar</span>
+                </span>
+                <p className="text-violet-950">
+                  Em clínicas e consultórios, de 20% a 35% dos horários agendados são perdidos porque o paciente simplesmente esquece ou surge um imprevisto e ele não avisa a recepção a tempo. A Sofia resolve isso através de confirmações automáticas ativas no WhatsApp.
+                </p>
+              </div>
+
+              {/* Fluxo em 3 Etapas */}
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-violet-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">1</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Triagem Inicial na Conversa</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      Quando o paciente demonstra interesse em consultar, a Sofia pergunta:
+                      <br />• Procedimento ou queixa principal (ex: limpeza, clareamento, dor).
+                      <br />• Forma de pagamento (Particular ou Convênio).
+                      <br />• Preferência de turno (Manhã ou Tarde).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-emerald-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">2</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Ficha Mastigada no Calendário</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      O agendamento entra automaticamente na aba <strong>Agendamentos</strong> e sincroniza com o Google Agenda. A secretária ou recepcionista não precisa redigitar nada.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-amber-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">3</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Lembrete Automático 24h e 2h Antes no WhatsApp</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      No dia anterior, a Sofia manda uma mensagem calorosa pedindo confirmação rápida:
+                      <br />• <strong>Se confirmar:</strong> o status vira "Confirmado" e o profissional tem garantia de atendimento.
+                      <br />• <strong>Se desmarcar:</strong> a secretária é notificada na hora para encaixar outro paciente da lista de espera!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAppointmentExplainModal(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 cursor-pointer"
+              >
+                Fechar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAppointmentExplainModal(false);
+                  onNavigateToTab('calendar');
+                }}
+                className="bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Abrir Calendário de Agendamentos</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
