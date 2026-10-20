@@ -562,7 +562,7 @@ export default function App() {
     }
   };
 
-  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil') => {
+  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel') => {
     const presets: Record<string, Partial<AgentConfig>> = {
       clinic: {
         activeWorkspaceName: 'Clínica & Saúde Integrativa',
@@ -603,12 +603,24 @@ export default function App() {
         preRecordedAudiosEnabled: false,
         followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a viabilidade do tratamento por plasma para as peças da sua fábrica. Nossos engenheiros de aplicação estão com a bancada do Surface Test disponível esta semana para testar suas amostras de material ou agendar uma rápida conversa técnica online. Como está sua disponibilidade? ⚡🔬',
       },
+      verzel: {
+        activeWorkspaceName: 'Verzel – Fábrica de Software & AI',
+        personaName: 'Sofia da Verzel',
+        role: 'Consultora Comercial & Estrategista de Soluções de TI da Verzel',
+        toneOfVoice: 'Executiva, consultiva, altamente técnica, orientada a valor de negócio, agilidade e excelência em engenharia de software.',
+        salesGoal: 'Identificar a necessidade do cliente (novo software sob medida, app mobile iOS/Android, alocação de AI Talent Hub, integração de sistemas ou sustentação 24/7), entender o estágio e prazo, e agendar uma reunião técnica de Discovery com os arquitetos e diretores da Verzel.',
+        followUpNiche: 'b2b_services',
+        catalogPdfName: 'Dossie_Tecnico_Verzel_Sistemas.pdf',
+        preRecordedAudiosEnabled: false,
+        followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀',
+      },
     };
     const chosen = presets[workspaceId];
     if (chosen) {
       await handleSaveAgentConfig(chosen);
-      if (workspaceId === 'surfacebrasil') {
-        const updatedEvo = { ...evolutionConfig, instanceName: 'surfacebrasil' };
+      if (workspaceId === 'surfacebrasil' || workspaceId === 'verzel') {
+        const targetInst = workspaceId === 'surfacebrasil' ? 'surfacebrasil' : 'verzel';
+        const updatedEvo = { ...evolutionConfig, instanceName: targetInst };
         setEvolutionConfig(updatedEvo);
         try {
           await fetch('/api/evolution-config', {

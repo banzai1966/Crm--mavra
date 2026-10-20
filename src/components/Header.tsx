@@ -25,6 +25,7 @@ import {
   ShoppingBag,
   Building2,
   Zap,
+  Code2,
   FileText,
   HelpCircle,
 } from 'lucide-react';
@@ -47,7 +48,7 @@ interface HeaderProps {
   onOpenAdminAuth?: () => void;
   onLockAdmin?: () => void;
   onToggleGlobalAi?: () => void;
-  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil') => void;
+  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel') => void;
   onShowGuide?: () => void;
 }
 
@@ -159,7 +160,11 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Determine current niche
   const currentNiche =
-    agentConfig.followUpNiche === 'restaurant_delivery'
+    agentConfig.personaName?.toLowerCase().includes('verzel') ||
+    agentConfig.role?.toLowerCase().includes('verzel') ||
+    agentConfig.followUpCustomMessage?.toLowerCase().includes('verzel')
+      ? 'verzel'
+      : agentConfig.followUpNiche === 'restaurant_delivery'
       ? 'delivery'
       : agentConfig.followUpNiche === 'retail'
       ? 'ecommerce'
@@ -175,6 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
     ecommerce: { label: 'E-commerce & Varejo', icon: ShoppingBag, badge: 'Varejo' },
     b2b: { label: 'Comercial B2B', icon: Building2, badge: 'B2B' },
     surfacebrasil: { label: 'Surfacebrasil (Plasma)', icon: Zap, badge: 'Indústria' },
+    verzel: { label: 'Verzel (Software & AI)', icon: Code2, badge: 'Tech' },
   }[currentNiche] || { label: 'Comercial B2B', icon: Building2, badge: 'B2B' };
 
   const CurrentNicheIcon = nicheMeta.icon;
@@ -322,6 +328,25 @@ export const Header: React.FC<HeaderProps> = ({
                           {currentNiche === 'surfacebrasil' && <span className="text-[10px] text-sky-600 font-bold">(Ativo)</span>}
                         </div>
                         <p className="text-[10px] text-slate-400 font-normal">Foco: Tratamento por plasma, SAP02 & testes</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onSwitchWorkspace('verzel');
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                        currentNiche === 'verzel' ? 'bg-indigo-50/80 font-bold text-indigo-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <Code2 className="w-4 h-4 text-indigo-600" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>Verzel (Software House & AI)</span>
+                          {currentNiche === 'verzel' && <span className="text-[10px] text-indigo-600 font-bold">(Ativo)</span>}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-normal">Foco: Fábrica de software, Apps, AI Talent Hub & Shell</p>
                       </div>
                     </button>
                   </div>

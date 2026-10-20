@@ -50,6 +50,7 @@ import {
   Music,
   Building,
   Zap,
+  Code2,
   ChevronDown,
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider, PreRecordedAudio, ClientProfileSummary } from '../types';
@@ -154,6 +155,87 @@ A Surfacebrasil realiza uma avaliação técnica inicial sem compromisso:
    - Matriz: Rua Vitório Casellato, 30 – Campinas/SP
    - Telefone comercial: (19) 3365-2506 | E-mail: contato@surfacebrasil.com.br
    - Representação Sul: Carlos Barbosa/RS | E-mail: sul@surfacebrasil.com.br`
+  },
+  {
+    id: 'verzel_software_consultoria',
+    name: 'Verzel – Fábrica de Software Sob Medida, Apps Mobile & AI Talent Hub',
+    category: 'Tecnologia & Fábrica de Software',
+    tag: 'Verzel Sistemas & AI',
+    description: 'Especialista executiva em engenharia de software sob medida, desenvolvimento de aplicativos mobile (iOS/Android), integração de APIs e alocação de squads ágeis com o AI Talent Hub. Qualifica demandas de novos projetos, modernização de sistemas legados e agenda reuniões de Discovery com a diretoria técnica da Verzel.',
+    personaName: 'Sofia da Verzel',
+    role: 'Consultora Comercial & Estrategista de Soluções de TI da Verzel',
+    toneOfVoice: 'Executiva, consultiva, altamente técnica, orientada a valor de negócio, agilidade e excelência em engenharia de software.',
+    salesGoal: 'Identificar a necessidade do cliente (novo software sob medida, app mobile iOS/Android, alocação de AI Talent Hub, integração de sistemas ou sustentação 24/7), entender o estágio e prazo, e agendar uma reunião técnica de Discovery com os arquitetos e diretores da Verzel.',
+    followUpNiche: 'b2b_services',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (VERZEL - FÁBRICA DE SOFTWARE & SISTEMAS):
+
+P: O que é a Verzel e qual é a sua história no mercado?
+R: A Verzel Soluções em Sistemas (fundada em abril de 2010, com 16 anos de mercado e CNPJ 11.845.885/0001-46) é uma software house e consultoria de tecnologia de grande porte com atuação no Brasil e Europa (São Paulo, Rio de Janeiro, Lisboa e Berlim). Desenvolvemos softwares corporativos sob medida, aplicativos móveis (iOS/Android) e squads potencializados por Inteligência Artificial (AI Talent Hub) para marcas como Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida e AON. Também somos mantenedores da iniciativa educacional Devaria.
+
+P: Quais são os principais serviços prestados pela Verzel?
+R: 1) Fábrica de Software Sob Medida (Web, portais corporativos, plataformas SaaS e microsserviços); 2) Desenvolvimento de Aplicativos Mobile (iOS e Android nativos ou híbridos com Flutter/React Native); 3) AI Talent Hub & IA Aplicada (desenvolvimento acelerado por inteligência artificial e agentes autônomos); 4) Integração de Sistemas & APIs (conexão de ERPs como SAP, Totvs, gateways bancários e modernização de legados); 5) Discovery & Prototipagem de MVP Rápido; 6) Sustentação, DevOps e Suporte 24/7 com SLA rígido.
+
+P: Quais tecnologias e linguagens a Verzel utiliza?
+R: Utilizamos as tecnologias mais sólidas e modernas do mercado mundial: React, Next.js, Node.js, TypeScript, Python, Java, Go, Flutter, React Native, Swift, Kotlin, PostgreSQL, MongoDB, Redis, Docker, Kubernetes e provedores de nuvem líderes (AWS, Google Cloud e Microsoft Azure).
+
+P: Quais são os modelos de contratação disponíveis?
+R: Oferecemos flexibilidade total para o modelo ideal do cliente:
+1. Squad Dedicado (Alocação Ágil): time completo exclusivo (Product Owner, Tech Lead, Desenvolvedores, QA e Designer UX/UI) trabalhando em sprints contínuas, sem encargos de contratação interna.
+2. Escopo Fechado (Turnkey): projeto com prazo, custo e entregáveis pré-fixados em contrato, ideal para novos produtos ou MVPs.
+3. Sustentação & Suporte 24/7: contrato mensal para manutenção preventiva, evolutiva e plantão para sistemas críticos com SLA garantido.
+
+P: O que é o AI Talent Hub da Verzel?
+R: É a nossa metodologia que potencializa nossos desenvolvedores seniores com ferramentas de Inteligência Artificial generativa, automação e agentes inteligentes. Isso acelera o ciclo de desenvolvimento em até 40%, reduzindo o tempo de lançamento (time-to-market) e otimizando os custos do projeto sem abrir mão da qualidade de código.
+
+P: Como funciona a Reunião Técnica de Discovery?
+R: É um diagnóstico inicial online e sem custo com nossos arquitetos de software e diretores técnicos. Mapeamos as regras de negócio, a infraestrutura atual, os requisitos de segurança e desenhamos a melhor solução técnica, entregando uma estimativa precisa de cronograma e investimento.`,
+    knowledgeCatalog: `PORTFÓLIO DE SOLUÇÕES & SERVIÇOS VERZEL:
+
+1. FÁBRICA DE SOFTWARE SOB MEDIDA (WEB & CLOUD):
+- Portais corporativos, plataformas B2B/B2C, sistemas de gestão e dashboards analíticos de alta performance.
+- Arquitetura de microsserviços escaláveis, tolerantes a falhas e prontos para milhões de acessos.
+- Tecnologias: React, Next.js, Node.js, TypeScript, Python, PostgreSQL, AWS e Docker.
+
+2. APLICATIVOS MOBILE (IOS & ANDROID):
+- Aplicativos nativos e cross-platform em Flutter e React Native com UX/UI de nível internacional.
+- Gestão completa de publicação e aprovação na Apple App Store e Google Play Store.
+
+3. AI TALENT HUB & IA APLICADA:
+- Desenvolvimento acelerado por IA e automação inteligente de processos.
+- Construção de fluxos conversacionais inteligentes e agentes autônomos integrados aos sistemas da sua empresa.
+
+4. INTEGRAÇÃO DE SISTEMAS & APIS:
+- Conexão segura entre ERPs de grande porte (SAP, Totvs, Senior, Sankhya), CRMs corporativos e gateways de pagamento (Pix instantâneo com conciliação automática).
+- Camada de modernização de sistemas legados sem paralisação da operação.
+
+5. SUSTENTAÇÃO, DEVOPS & SUPORTE 24/7:
+- Suporte contínuo, correção de bugs, monitoramento ativo e resposta com SLA rigoroso para operações que operam sem interrupção.`,
+    knowledgePricing: `POLÍTICA COMERCIAL & ORÇAMENTO DE PROJETOS:
+
+- Por que projetos de software não possuem tabela fixa de prateleira:
+Cada sistema de software corporativo varia amplamente conforme:
+1. Complexidade de regras de negócio e número de fluxos/interfaces;
+2. Plataformas alvo (Web, Mobile iOS/Android, ou ambos);
+3. Necessidade de integração com sistemas legados ou ERPs externos;
+4. Modelo escolhido (Squad dedicado alocado por mês vs Escopo fechado de entrega).
+
+- Próximo passo para obter a proposta precisa:
+A Verzel realiza uma Reunião Técnica de Discovery (gratuita e sem compromisso) de 30 minutos com nossos arquitetos de soluções. A partir dela, desenhamos a arquitetura ideal e enviamos a proposta comercial e o cronograma executivo detalhado.`,
+    knowledgeRules: `DIRETRIZES DE ATENDIMENTO DA SOFIA (VERZEL):
+
+1. POSICIONAMENTO: Você é a Sofia, consultora técnica e comercial da Verzel. Mantenha tom executivo, consultivo, acolhedor, profissional e com profundo conhecimento do ecossistema de software e tecnologia.
+2. NUNCA chute preços aleatórios de desenvolvimento. Explique gentilmente que orçamentos de software dependem do escopo e requisitos técnicos, e que a Verzel dimensiona a melhor proposta através de uma Reunião de Discovery gratuita.
+3. ROTEIRO DE QUALIFICAÇÃO (Faça perguntas chave para qualificar o lead):
+   - Pergunta 1 (Tipo de Demanda): "O projeto seria o desenvolvimento de um novo software/app do zero, a modernização de um sistema existente ou a contratação de um squad dedicado?"
+   - Pergunta 2 (Plataforma): "Será voltado para Web (painel/portal), aplicativo para celular (iOS/Android) ou ambos?"
+   - Pergunta 3 (Estágio & Prazo): "Vocês já possuem protótipos/documentação desenhados ou precisam da nossa fase de Discovery e requisitos? Qual a previsão desejada de início?"
+4. CONVITE PARA AGENDAMENTO:
+   - Apresente autoridade destacando clientes como Shell Brasil, Mutant e Zignet.
+   - Convide o cliente para uma Reunião Online de Discovery sem compromisso com os arquitetos e diretores técnicos da Verzel.
+5. DADOS INSTITUCIONAIS:
+   - Sede SP: Rua Aníbal Benévolo, 94 - 2º Andar, Santana — São Paulo/SP
+   - Site Oficial: https://www.verzel.com.br/pt/`
   },
   {
     id: 'nexa_crm',
@@ -824,6 +906,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const handleApplyPreset = async (preset: AgentPreset) => {
     const isNexa = preset.id === 'nexa_crm';
     const isSurface = preset.id === 'surface_brasil_plasma';
+    const isVerzel = preset.id === 'verzel_software_consultoria';
     const updatedConfig: AgentConfig = {
       ...config,
       personaName: preset.personaName,
@@ -836,9 +919,11 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
-      preRecordedAudiosEnabled: isSurface ? false : config.preRecordedAudiosEnabled,
+      preRecordedAudiosEnabled: isSurface || isVerzel ? false : config.preRecordedAudiosEnabled,
       catalogPdfName: isSurface
         ? 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf'
+        : isVerzel
+        ? 'Dossie_Tecnico_Verzel_Sistemas.pdf'
         : isNexa
         ? 'Apresentacao_NEXA_CRM.pdf'
         : 'Apresentacao_Dra_Lucy_Murata.pdf',
@@ -847,7 +932,13 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     setSelectedPresetModal(null);
     setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
 
-    const instanceName = isSurface ? 'surface-brasil' : isNexa ? 'nexa-crm' : 'dra-lucy-murata';
+    const instanceName = isSurface
+      ? 'surface-brasil'
+      : isVerzel
+      ? 'verzel'
+      : isNexa
+      ? 'nexa-crm'
+      : 'dra-lucy-murata';
     try {
       const res = await fetch('/api/agent/apply-niche', {
         method: 'POST',
@@ -1892,6 +1983,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {AGENT_PRESETS.map((preset) => {
               const isSurface = preset.id === 'surface_brasil_plasma';
+              const isVerzel = preset.id === 'verzel_software_consultoria';
               const isDental = preset.id === 'dental' || preset.id === 'dental_integrative' || preset.id === 'dental_general';
               const isMedical = preset.id === 'medical' || preset.id === 'medical_clinic';
               const isRealEstate = preset.id === 'real_estate';
@@ -1908,6 +2000,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   className={`border rounded-xl p-4 flex flex-col justify-between hover:shadow-xs transition-all group ${
                     preset.id === 'surface_brasil_plasma'
                       ? 'bg-gradient-to-b from-sky-50/70 to-white border-sky-300 ring-1 ring-sky-200'
+                      : preset.id === 'verzel_software_consultoria'
+                      ? 'bg-gradient-to-b from-indigo-50/70 via-slate-50 to-white border-indigo-300 ring-1 ring-indigo-200'
                       : preset.id === 'nexa_crm'
                       ? 'bg-gradient-to-b from-indigo-50/60 to-white border-indigo-300 ring-1 ring-indigo-200'
                       : preset.id === 'restaurant_delivery'
@@ -1920,16 +2014,19 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
                         preset.id === 'surface_brasil_plasma'
                           ? 'text-sky-900 bg-sky-100 border-sky-300 font-bold'
+                          : preset.id === 'verzel_software_consultoria'
+                          ? 'text-indigo-900 bg-indigo-100 border-indigo-300 font-bold'
                           : preset.id === 'nexa_crm'
                           ? 'text-indigo-900 bg-indigo-100/90 border-indigo-300 ring-1 ring-indigo-300 font-mono'
                           : preset.id === 'restaurant_delivery'
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-semibold'
                           : 'text-indigo-700 bg-indigo-50 border-indigo-100'
                       }`}>
-                        {preset.id === 'surface_brasil_plasma' ? '⚡ SURFACEBRASIL PLASMA' : preset.id === 'nexa_crm' ? '🚀 OFICIAL NEXA CRM' : (preset.category || 'Nicho')}
+                        {preset.id === 'surface_brasil_plasma' ? '⚡ SURFACEBRASIL PLASMA' : preset.id === 'verzel_software_consultoria' ? '💻 VERZEL SOFTWARE & AI' : preset.id === 'nexa_crm' ? '🚀 OFICIAL NEXA CRM' : (preset.category || 'Nicho')}
                       </span>
                       <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
                         {isSurface && <Zap className="w-4 h-4 text-sky-600" />}
+                        {isVerzel && <Code2 className="w-4 h-4 text-indigo-600" />}
                         {isDental && <Stethoscope className="w-4 h-4" />}
                         {isMedical && <HeartHandshake className="w-4 h-4" />}
                         {isRealEstate && <Building2 className="w-4 h-4" />}
@@ -1939,7 +2036,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                         {isAuto && <Car className="w-4 h-4" />}
                         {isSaaS && <Bot className="w-4 h-4" />}
                         {isRestaurant && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
-                        {!isSurface && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
+                        {!isSurface && !isVerzel && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
                           <SparklesIcon className="w-4 h-4" />
                         )}
                       </div>
@@ -2954,7 +3051,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           {/* Quick link to Surfacebrasil Dossier / PDF Manual */}
           <div className="bg-gradient-to-r from-sky-50 via-white to-blue-50 border border-sky-200/90 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-start sm:items-center gap-2.5">
-              <span className="text-xl">📄</span>
+              <span className="text-xl">⚡</span>
               <div>
                 <p className="text-xs font-bold text-sky-950 flex items-center gap-2">
                   <span>Dossiê & Manual Técnico Surfacebrasil (Tratamento por Plasma)</span>
@@ -2972,6 +3069,33 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0 self-start sm:self-center"
+            >
+              <span>Abrir & Salvar em PDF</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Quick link to Verzel Dossier / PDF Manual */}
+          <div className="bg-gradient-to-r from-indigo-50 via-white to-slate-50 border border-indigo-200/90 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <span className="text-xl">💻</span>
+              <div>
+                <p className="text-xs font-bold text-indigo-950 flex items-center gap-2">
+                  <span>Dossiê & Manual Técnico Verzel (Fábrica de Software, Apps & AI)</span>
+                  <span className="text-[10px] bg-indigo-100 text-indigo-800 font-semibold px-2 py-0.5 rounded-md border border-indigo-200">
+                    PDF Pronto
+                  </span>
+                </p>
+                <p className="text-[11px] text-indigo-700 mt-0.5">
+                  Manual completo com serviços, cases (Shell, Mutant, Zignet), modelos de contratação (squad vs escopo) e script da Sofia.
+                </p>
+              </div>
+            </div>
+            <a
+              href="/verzel-manual"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0 self-start sm:self-center"
             >
               <span>Abrir & Salvar em PDF</span>
               <ExternalLink className="w-3.5 h-3.5" />

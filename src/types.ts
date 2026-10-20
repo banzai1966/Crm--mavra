@@ -159,6 +159,7 @@ export type BusinessNiche =
   | 'services'
   | 'b2b_services'
   | 'surfacebrasil'
+  | 'verzel'
   | 'general'
   | 'custom'
   | 'saas_tech'

@@ -107,6 +107,15 @@ async function startServer() {
     res.status(404).send('Manual da Surfacebrasil não encontrado.');
   });
 
+  // Route to view and print the Verzel PDF / Dossier
+  app.get('/verzel-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'verzel_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual da Verzel não encontrado.');
+  });
+
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
     const { phone, message, pushName, mediaType, fileName } = req.body;

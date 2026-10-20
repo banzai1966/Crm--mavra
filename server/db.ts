@@ -115,9 +115,79 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 180).toISOString(),
     unreadCount: 1,
   },
+  {
+    id: 'lead-verzel-1',
+    name: 'Diretoria de Inovação - Grupo Logística S.A.',
+    phone: '5511985443322',
+    email: 'inovacao@grupologistica.com.br',
+    stageId: 'stage-1',
+    value: 145000,
+    interest: 'Novo App Mobile iOS/Android para Motoristas & Integração SAP',
+    tags: ['💻 Verzel Software', 'AI Talent Hub', '🔥 LEAD QUENTE'],
+    notes: 'Solicitou reunião de Discovery com arquitetos da Verzel para escopo de aplicativo mobile com tracking em tempo real e integração ERP SAP.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Solicitou sessão de Discovery técnica com arquiteto de software da Verzel',
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    unreadCount: 1,
+  },
+  {
+    id: 'lead-verzel-2',
+    name: 'CTO Fintech GlobalPay Brasil',
+    phone: '5511971224488',
+    email: 'ti@globalpayfintech.com.br',
+    stageId: 'stage-3',
+    value: 98000,
+    interest: 'Squad Dedicado de Engenharia Backend (Node/Python) com AI Talent Hub',
+    tags: ['💻 Verzel Squad', 'Fintech', 'Shell / Zignet Ref'],
+    notes: 'Interessado no modelo de contratação de Squad Dedicado com metodologia ágil e acelerado pelo AI Talent Hub.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Validou referências corporativas (Shell e Zignet) e aguarda proposta de Squad',
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+    unreadCount: 0,
+  },
 ];
 
 export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
+  {
+    id: 'msg-v-1',
+    leadId: 'lead-verzel-1',
+    phone: '5511985443322',
+    sender: 'lead',
+    text: 'Olá! Sou diretor de operações de um grupo logístico. Estamos precisando desenvolver um aplicativo mobile para nossos 400 motoristas com integração ao nosso ERP SAP. A Verzel tem experiência nesse tipo de projeto?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+    status: 'read',
+  },
+  {
+    id: 'msg-v-2',
+    leadId: 'lead-verzel-1',
+    phone: '5511985443322',
+    sender: 'ai',
+    text: 'Olá! Que excelente iniciativa! Sou a Sofia, consultora técnica da Verzel. Há mais de 16 anos desenvolvemos sistemas sob medida e aplicativos móveis de alta performance para empresas como Shell Brasil, Mutant e Zignet. Temos vasta experiência em apps corporativos com conectividade offline e integração profunda com ERPs de grande porte como SAP e Totvs. O app precisa rodar tanto em Android quanto iOS?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+    status: 'read',
+  },
+  {
+    id: 'msg-v-3',
+    leadId: 'lead-verzel-1',
+    phone: '5511985443322',
+    sender: 'lead',
+    text: 'Sim, a maioria dos motoristas usa Android mas os coordenadores usam iPhone. Queremos também saber sobre prazos e se vocês usam inteligência artificial.',
+    timestamp: new Date(Date.now() - 1000 * 60 * 16).toISOString(),
+    status: 'read',
+  },
+  {
+    id: 'msg-v-4',
+    leadId: 'lead-verzel-1',
+    phone: '5511985443322',
+    sender: 'ai',
+    text: 'Perfeito! Para esse cenário híbrido recomendamos Flutter ou React Native, garantindo uma única base de código nativa, fluida e com custo otimizado. E sobre inteligência artificial: com o nosso AI Talent Hub, nossos squads seniores utilizam IA generativa em todo o ciclo de desenvolvimento, acelerando as entregas em até 40%! Para desenharmos o escopo e a estimativa precisa, podemos marcar uma Reunião Técnica de Discovery online (gratuita e sem compromisso) com nossos arquitetos de software? Qual o melhor horário para você esta semana?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
+    status: 'delivered',
+  },
   {
     id: 'msg-1',
     leadId: 'lead-1',
@@ -520,6 +590,39 @@ Unidades: Campinas/SP, Carlos Barbosa/RS, Estados Unidos (Maryland) e Argentina 
       uploadedAt: new Date().toISOString(),
     },
     {
+      id: 'doc-verzel-software',
+      name: 'Dossie_Tecnico_Verzel_Sistemas.pdf',
+      type: 'pdf',
+      size: 21500,
+      contentText: `DOSSIÊ TÉCNICO & MANUAL COMERCIAL COMPLETO — VERZEL SOLUÇÕES EM SISTEMAS
+Website Oficial: https://www.verzel.com.br/pt/
+CNPJ: 11.845.885/0001-46 (Fundada em 2010 — 16 anos de mercado)
+Sede SP: Rua Aníbal Benévolo, 94 - 2º Andar, Santana — São Paulo/SP
+Hubs: São Paulo, Rio de Janeiro, Lisboa (Portugal) e Berlim (Alemanha)
+Braço Educacional: Devaria (formação de talentos tech)
+Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR COM.
+
+1. PORTFÓLIO DE SOLUÇÕES & SERVIÇOS:
+- Fábrica de Software Sob Medida: desenvolvimento web, portais corporativos, plataformas SaaS e microsserviços escaláveis (React, Next.js, Node.js, Python, Java, AWS, GCP, Docker/Kubernetes).
+- Aplicativos Mobile: apps nativos e híbridos para iOS e Android (Flutter, React Native, Swift, Kotlin), design UX/UI centrado no usuário e publicação nas lojas.
+- AI Talent Hub & IA Aplicada: desenvolvimento acelerado por inteligência artificial (até 40% mais rápido com redução de custos) e construção de fluxos com agentes de IA autônomos.
+- Integração de Sistemas & APIs: conexão de ERPs (SAP, Totvs, Senior, Sankhya), CRMs (Salesforce, HubSpot), gateways de pagamento (Pix instantâneo) e modernização de legados.
+- Sustentação & Suporte 24/7: monitoramento proativo, manutenção preventiva/evolutiva e SLA corporativo para sistemas críticos.
+
+2. MODELOS DE CONTRATAÇÃO:
+- Squad Dedicado (Alocação Ágil): time multidisciplinar exclusivo (PO, Tech Lead, Devs, QA, UX/UI) com sprints quinzenais e sem passivo trabalhista.
+- Escopo Fechado (Turnkey): projetos com escopo, prazo e investimento pré-definidos para novos softwares ou MVPs rápidos.
+- Sustentação Contínua: banco de horas e plantão com SLA garantido.
+
+3. DIRETRIZES DA SOFIA (VERZEL):
+- Atuar como consultora executiva técnica e cordial.
+- Qualificar o tipo de projeto (novo software/app do zero, modernização de legado ou alocação de squad dedicado).
+- Identificar plataforma (web, mobile iOS/Android ou ambos) e estágio (ideia/requisitos ou protótipo pronto).
+- Destacar autoridade com clientes como Shell Brasil, Mutant e Zignet.
+- Agendar Reunião Técnica de Discovery (online, gratuita e sem compromisso) com os arquitetos e diretores técnicos da Verzel.`,
+      uploadedAt: new Date().toISOString(),
+    },
+    {
       id: 'doc-1',
       name: 'Guia_Institucional_NEXA.txt',
       type: 'txt',
@@ -896,6 +999,42 @@ Unidades: Campinas/SP, Carlos Barbosa/RS, Estados Unidos (Maryland) e Argentina 
 - Identificar o processo e tipo de falha (descolamento de fita, descascamento de tinta, datação borrada).
 - Perguntar a velocidade da linha ou se é peça unitária.
 - Agendar reunião online com engenharia ou agendar envio de amostras para o Surface Test.`,
+              uploadedAt: new Date().toISOString(),
+            });
+          }
+          const hasVerzelDoc = this.documents.some((d) => d.id === 'doc-verzel-software' || d.name?.includes('Verzel'));
+          if (!hasVerzelDoc) {
+            this.documents.unshift({
+              id: 'doc-verzel-software',
+              name: 'Dossie_Tecnico_Verzel_Sistemas.pdf',
+              type: 'pdf',
+              size: 21500,
+              contentText: `DOSSIÊ TÉCNICO & MANUAL COMERCIAL COMPLETO — VERZEL SOLUÇÕES EM SISTEMAS
+Website Oficial: https://www.verzel.com.br/pt/
+CNPJ: 11.845.885/0001-46 (Fundada em 2010 — 16 anos de mercado)
+Sede SP: Rua Aníbal Benévolo, 94 - 2º Andar, Santana — São Paulo/SP
+Hubs: São Paulo, Rio de Janeiro, Lisboa (Portugal) e Berlim (Alemanha)
+Braço Educacional: Devaria (formação de talentos tech)
+Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR COM.
+
+1. PORTFÓLIO DE SOLUÇÕES & SERVIÇOS:
+- Fábrica de Software Sob Medida: desenvolvimento web, portais corporativos, plataformas SaaS e microsserviços escaláveis (React, Next.js, Node.js, Python, Java, AWS, GCP, Docker/Kubernetes).
+- Aplicativos Mobile: apps nativos e híbridos para iOS e Android (Flutter, React Native, Swift, Kotlin), design UX/UI centrado no usuário e publicação nas lojas.
+- AI Talent Hub & IA Aplicada: desenvolvimento acelerado por inteligência artificial (até 40% mais rápido com redução de custos) e construção de fluxos com agentes de IA autônomos.
+- Integração de Sistemas & APIs: conexão de ERPs (SAP, Totvs, Senior, Sankhya), CRMs (Salesforce, HubSpot), gateways de pagamento (Pix instantâneo) e modernização de legados.
+- Sustentação & Suporte 24/7: monitoramento proativo, manutenção preventiva/evolutiva e SLA corporativo para sistemas críticos.
+
+2. MODELOS DE CONTRATAÇÃO:
+- Squad Dedicado (Alocação Ágil): time multidisciplinar exclusivo (PO, Tech Lead, Devs, QA, UX/UI) com sprints quinzenais e sem passivo trabalhista.
+- Escopo Fechado (Turnkey): projetos com escopo, prazo e investimento pré-definidos para novos softwares ou MVPs rápidos.
+- Sustentação Contínua: banco de horas e plantão com SLA garantido.
+
+3. DIRETRIZES DA SOFIA (VERZEL):
+- Atuar como consultora executiva técnica e cordial.
+- Qualificar o tipo de projeto (novo software/app do zero, modernização de legado ou alocação de squad dedicado).
+- Identificar plataforma (web, mobile iOS/Android ou ambos) e estágio (ideia/requisitos ou protótipo pronto).
+- Destacar autoridade com clientes como Shell Brasil, Mutant e Zignet.
+- Agendar Reunião Técnica de Discovery (online, gratuita e sem compromisso) com os arquitetos e diretores técnicos da Verzel.`,
               uploadedAt: new Date().toISOString(),
             });
           }

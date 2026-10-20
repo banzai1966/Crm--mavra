@@ -24,7 +24,8 @@ import {
   X,
   Plus,
   LogOut,
-  Smartphone
+  Smartphone,
+  Code2,
 } from 'lucide-react';
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
@@ -224,11 +225,13 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   const [presetNotice, setPresetNotice] = useState<string | null>(null);
 
   // Handle Switch Instance Tab
-  const handleSelectInstanceTab = (inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'custom', customName?: string) => {
+  const handleSelectInstanceTab = (inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'custom', customName?: string) => {
     setSelectedInstanceTab(inst);
     let targetName = 'dra-lucy-murata';
     if (inst === 'agente-ia') targetName = 'agente-ia';
     if (inst === 'demo-ao-vivo') targetName = 'demo-ao-vivo';
+    if (inst === 'verzel') targetName = 'verzel';
+    if (inst === 'surfacebrasil') targetName = 'surfacebrasil';
     if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
 
     // Lookup saved apiKey for this target instance
@@ -522,13 +525,65 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Tab 1: Instância Dra. Lucy Murata */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Tab 1: Instância Verzel */}
+            <div
+              onClick={() => handleSelectInstanceTab('verzel')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'verzel'
+                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Code2 className="w-3.5 h-3.5 text-indigo-600" />
+                  Verzel Sistemas
+                </span>
+                {config.instanceName === 'verzel' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-indigo-700">verzel</strong>
+              </p>
+              <span className="inline-block text-[10px] text-indigo-800 font-semibold bg-indigo-100/70 px-2 py-0.5 rounded mt-2">
+                Fábrica de Software & AI
+              </span>
+            </div>
+
+            {/* Tab 2: Instância Surface Brasil */}
+            <div
+              onClick={() => handleSelectInstanceTab('surfacebrasil')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'surfacebrasil'
+                  ? 'border-sky-600 bg-sky-50/50 ring-1 ring-sky-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-sky-600" />
+                  Surface Brasil
+                </span>
+                {config.instanceName === 'surfacebrasil' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-sky-700">surfacebrasil</strong>
+              </p>
+              <span className="inline-block text-[10px] text-sky-800 font-semibold bg-sky-100/70 px-2 py-0.5 rounded mt-2">
+                Tratamento por Plasma
+              </span>
+            </div>
+
+            {/* Tab 3: Instância Dra. Lucy Murata */}
             <div
               onClick={() => handleSelectInstanceTab('dra-lucy-murata')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                 config.instanceName === 'dra-lucy-murata'
-                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
+                  ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600 shadow-xs'
                   : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
               }`}
             >
@@ -539,24 +594,24 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                 )}
               </div>
               <p className="text-[11px] text-slate-500 mt-1 font-mono">
-                Instância: <strong className="text-indigo-700">dra-lucy-murata</strong>
+                Instância: <strong className="text-emerald-700">dra-lucy-murata</strong>
               </p>
               <span className="inline-block text-[10px] text-emerald-800 font-semibold bg-emerald-100/70 px-2 py-0.5 rounded mt-2">
-                Odontologia Integrativa (Ativa)
+                Odontologia Integrativa
               </span>
             </div>
 
-            {/* Tab 2: Instância Marco Duarte (Oficial) */}
+            {/* Tab 4: Instância Marco Duarte (Oficial) */}
             <div
               onClick={() => handleSelectInstanceTab('agente-ia')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                 config.instanceName === 'agente-ia'
-                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
+                  ? 'border-slate-700 bg-slate-100 ring-1 ring-slate-700 shadow-xs'
                   : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900">Marco Duarte (Oficial)</span>
+                <span className="text-xs font-bold text-slate-900">Marco Duarte</span>
                 {config.instanceName === 'agente-ia' && (
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                 )}
@@ -564,34 +619,8 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               <p className="text-[11px] text-slate-500 mt-1 font-mono">
                 Instância: <strong className="text-slate-700">agente-ia</strong>
               </p>
-              <span className="inline-block text-[10px] text-indigo-700 font-semibold bg-indigo-100/70 px-2 py-0.5 rounded mt-2">
+              <span className="inline-block text-[10px] text-slate-700 font-semibold bg-slate-200/70 px-2 py-0.5 rounded mt-2">
                 Número Comercial
-              </span>
-            </div>
-
-            {/* Tab 3: Outro Cliente / Personalizada */}
-            <div
-              onClick={() => {
-                const target = customInstanceInput.trim() || (config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' ? config.instanceName : 'demo-ao-vivo');
-                handleSelectInstanceTab('custom', target);
-              }}
-              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia'
-                  ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600'
-                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900">Outra Instância / Demo</span>
-                {config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                )}
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1 font-mono">
-                Instância: <strong className="text-indigo-700">{config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' ? config.instanceName : 'demo-ao-vivo'}</strong>
-              </p>
-              <span className="inline-block text-[10px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded mt-2">
-                {config.instanceName !== 'dra-lucy-murata' && config.instanceName !== 'agente-ia' ? 'Instância Ativa' : 'Clique para alternar'}
               </span>
             </div>
           </div>

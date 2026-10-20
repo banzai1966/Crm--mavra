@@ -37,11 +37,11 @@ import {
   Sparkle,
   ArrowRight,
   CreditCard,
-  Send,
-  Layers,
-  Shield,
   Info,
   ExternalLink,
+  Code2,
+  Layers,
+  Shield,
 } from 'lucide-react';
 import { Lead, KanbanStage, AgentConfig, EvolutionConfig, BusinessNiche } from '../types';
 import { ResetDataModal } from './ResetDataModal';
@@ -1516,13 +1516,37 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                         {evolutionConfig.instanceName || 'agente-ia'}
                       </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectInstance('verzel')}
+                        className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                          evolutionConfig.instanceName === 'verzel'
+                            ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs ring-1 ring-indigo-400'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <Code2 className="w-3 h-3" />
+                        Verzel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectInstance('surfacebrasil')}
+                        className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                          evolutionConfig.instanceName === 'surfacebrasil'
+                            ? 'bg-sky-600 text-white border-sky-700 shadow-xs ring-1 ring-sky-400'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <Zap className="w-3 h-3" />
+                        Surface Brasil
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleSelectInstance('agente-ia')}
                         className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
                           evolutionConfig.instanceName === 'agente-ia'
-                            ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
+                            ? 'bg-slate-800 text-white border-slate-900 shadow-xs'
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
@@ -1530,20 +1554,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleSelectInstance('demo-ao-vivo')}
+                        onClick={() => handleSelectInstance('dra-lucy-murata')}
                         className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
-                          evolutionConfig.instanceName === 'demo-ao-vivo'
-                            ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
-                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                        }`}
-                      >
-                        Demo ao Vivo
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSelectInstance(customInstanceName.trim() || 'dra-lucy-murata')}
-                        className={`text-[10px] font-bold py-1.5 px-2 rounded-lg border transition-all cursor-pointer ${
-                          evolutionConfig.instanceName !== 'agente-ia' && evolutionConfig.instanceName !== 'demo-ao-vivo'
+                          evolutionConfig.instanceName === 'dra-lucy-murata'
                             ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}

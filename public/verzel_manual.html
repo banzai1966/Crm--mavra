@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dossiê Técnico & Comercial Completo | Verzel - Fábrica de Software & AI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #e0e7ff;
+      --emerald: #059669;
+      --secondary: #0f172a;
+      --accent: #2563eb;
+      --text: #334155;
+      --text-muted: #64748b;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background-color: #f8fafc;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 30px 24px;
+    }
+
+    /* Print Toolbar */
+    .toolbar {
+      position: sticky;
+      top: 15px;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .toolbar-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Document Sheet */
+    .document {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 28px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .header-brand h1 {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--secondary);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-brand h1 span {
+      color: var(--primary);
+    }
+
+    .header-brand p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .header-meta {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-meta .status {
+      display: inline-block;
+      background: #ecfdf5;
+      color: var(--emerald);
+      border: 1px solid #a7f3d0;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+
+    /* Section Styles */
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--secondary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 4px solid var(--primary);
+      padding-left: 12px;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #475569;
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .info-card .label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .info-card .value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-top: 4px;
+    }
+
+    .info-card .sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Clients Bar */
+    .clients-badge-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .client-chip {
+      background: #f1f5f9;
+      color: #1e293b;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Services Grid */
+    .service-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .service-box:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+    }
+
+    .service-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .service-desc {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .tags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-item {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      margin: 16px 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--secondary);
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: #475569;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .highlight-cell {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Callout & Scripts */
+    .callout {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .callout-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .script-quote {
+      font-style: italic;
+      font-size: 13.5px;
+      color: #1e1b4b;
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff;
+        padding-bottom: 0;
+      }
+      .toolbar {
+        display: none !important;
+      }
+      .container {
+        max-width: 100%;
+        padding: 0;
+      }
+      .document {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      .service-box {
+        break-inside: avoid;
+      }
+      table {
+        break-inside: avoid;
+      }
+      .callout {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Floating Print / Action Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-title">
+        <span>VERZEL // DOSSIÊ TÉCNICO & MANUAL COMERCIAL</span>
+        <span class="toolbar-badge">Pronto para PDF</span>
+      </div>
+      <div class="toolbar-actions">
+        <a href="/" class="btn-action btn-secondary">
+          ← Voltar ao CRM
+        </a>
+        <button class="btn-action" onclick="window.print()">
+          🖨️ Salvar em PDF / Imprimir
+        </button>
+      </div>
+    </div>
+
+    <!-- Main White Document -->
+    <div class="document">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-brand">
+          <h1>VERZEL <span>SOLUÇÕES</span></h1>
+          <p>Fábrica de Software Sob Medida, Apps Mobile & AI Talent Hub</p>
+        </div>
+        <div class="header-meta">
+          <div class="status">● OPERAÇÃO ATIVA — 16 ANOS</div>
+          <div>CNPJ: 11.845.885/0001-46</div>
+          <div>Versão Oficial de Qualificação Comercial</div>
+        </div>
+      </div>
+
+      <!-- 1. Identificação Corporativa -->
+      <div class="section">
+        <h2 class="section-title">1. Identificação Corporativa & Presença Global</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="label">Fundação & Mercado</div>
+            <div class="value">2010 (16 Anos)</div>
+            <div class="sub">Mais de uma década e meia de solidez técnica</div>
+          </div>
+          <div class="info-card">
+            <div class="label">Matriz São Paulo</div>
+            <div class="value">Santana - SP</div>
+            <div class="sub">Rua Aníbal Benévolo, 94 - 2º Andar</div>
+          </div>
+          <div class="info-card">
+            <div class="label">Hubs Internacionais</div>
+            <div class="value">SP, RJ, Lisboa & Berlim</div>
+            <div class="sub">Operações no Brasil e Europa</div>
+          </div>
+          <div class="info-card">
+            <div class="label">Braço Educacional</div>
+            <div class="value">Devaria</div>
+            <div class="sub">Formação e capacitação contínua de devs</div>
+          </div>
+        </div>
+
+        <p><strong>Grandes Clientes e Empresas que Confiam na Verzel:</strong></p>
+        <div class="clients-badge-container">
+          <span class="client-chip">⛽ Shell Brasil</span>
+          <span class="client-chip">🎧 Mutant (CX & Atendimento)</span>
+          <span class="client-chip">💳 Zignet (Fintech & Débitos)</span>
+          <span class="client-chip">📦 Bunzl (Distribuição Global)</span>
+          <span class="client-chip">🛍️ Grupo Avenida (Varejo)</span>
+          <span class="client-chip">🛡️ AON (Gestão de Riscos)</span>
+          <span class="client-chip">📡 BR COM (Telecom)</span>
+        </div>
+      </div>
+
+      <!-- 2. Portfólio de Serviços -->
+      <div class="section">
+        <h2 class="section-title">2. Portfólio de Soluções & Serviços</h2>
+
+        <div class="service-box">
+          <div class="service-title">💻 1. Fábrica de Software Sob Medida (Web & Cloud)</div>
+          <div class="service-desc">
+            Desenvolvimento de portais corporativos, plataformas SaaS, sistemas de backoffice e dashboards de alto desempenho. Arquitetura moderna em nuvem, tolerante a falhas e pronta para escalar de milhares a milhões de acessos simultâneos.
+          </div>
+          <div class="tags-list">
+            <span class="tag-item">React</span>
+            <span class="tag-item">Next.js</span>
+            <span class="tag-item">Node.js</span>
+            <span class="tag-item">TypeScript</span>
+            <span class="tag-item">Python</span>
+            <span class="tag-item">AWS / GCP</span>
+            <span class="tag-item">Docker / K8s</span>
+          </div>
+        </div>
+
+        <div class="service-box">
+          <div class="service-title">📱 2. Aplicativos Mobile (iOS & Android)</div>
+          <div class="service-desc">
+            Criação de aplicativos nativos e híbridos com foco obsessivo em UX/UI, estabilidade e fluidez. Da prototipagem no Figma até a homologação e publicação completa na Apple App Store e Google Play Store.
+          </div>
+          <div class="tags-list">
+            <span class="tag-item">Flutter</span>
+            <span class="tag-item">React Native</span>
+            <span class="tag-item">Swift</span>
+            <span class="tag-item">Kotlin</span>
+            <span class="tag-item">Push Notifications</span>
+            <span class="tag-item">Offline First</span>
+          </div>
+        </div>
+
+        <div class="service-box">
+          <div class="service-title">⚡ 3. AI Talent Hub & Inteligência Artificial Aplicada</div>
+          <div class="service-desc">
+            Squads de desenvolvimento potencializados por ferramentas de IA generativa. Redução de até 40% no tempo de entrega com redução de custos, além da construção de fluxos com agentes de IA autônomos integrados aos processos da sua empresa.
+          </div>
+          <div class="tags-list">
+            <span class="tag-item">AI Talent Hub</span>
+            <span class="tag-item">Agentes Autônomos</span>
+            <span class="tag-item">LLMs Integradas</span>
+            <span class="tag-item">Automação Inteligente</span>
+          </div>
+        </div>
+
+        <div class="service-box">
+          <div class="service-title">🔌 4. Integração de Sistemas & APIs</div>
+          <div class="service-desc">
+            Conexão fluida entre ERPs legados (SAP, Totvs, Senior, Sankhya), CRMs corporativos (Salesforce, HubSpot), plataformas de e-commerce e gateways de pagamento bancário (Pix instantâneo, conciliação e split).
+          </div>
+          <div class="tags-list">
+            <span class="tag-item">REST / GraphQL</span>
+            <span class="tag-item">Webhooks</span>
+            <span class="tag-item">SAP / Totvs</span>
+            <span class="tag-item">PIX API</span>
+            <span class="tag-item">Segurança Bancária</span>
+          </div>
+        </div>
+
+        <div class="service-box">
+          <div class="service-title">🛠️ 5. Sustentação, DevOps & Suporte 24/7</div>
+          <div class="service-desc">
+            Manutenção contínua, correção preventiva, melhorias evolutivas e resposta rápida a incidentes sob rigoroso acordo de nível de serviço (SLA) para sistemas que não podem parar.
+          </div>
+          <div class="tags-list">
+            <span class="tag-item">Plantão 24/7</span>
+            <span class="tag-item">SLA Rigoroso</span>
+            <span class="tag-item">CI/CD Pipelines</span>
+            <span class="tag-item">Monitoramento Datadog/Grafana</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Modelos de Contratação -->
+      <div class="section">
+        <h2 class="section-title">3. Modelos de Contratação & Flexibilidade</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Modelo</th>
+                <th>Ideal Para</th>
+                <th>Diferencial Comercial</th>
+                <th>Governança</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="highlight-cell">Squad Dedicado (Alocação Ágil)</td>
+                <td>Projetos contínuos, expansão rápida e startups escalando</td>
+                <td>Time completo exclusivo (PO, Tech Lead, Devs, QA, UX/UI). Zero passivo trabalhista</td>
+                <td>Sprints quinzenais, dailies e controle de entregáveis</td>
+              </tr>
+              <tr>
+                <td class="highlight-cell">Escopo Fechado (Turnkey)</td>
+                <td>Novos softwares com requisitos claros e MVPs rápidos</td>
+                <td>Custo e prazo pré-fixados com entrega garantida</td>
+                <td>Marcos de entrega com homologação formal do cliente</td>
+              </tr>
+              <tr>
+                <td class="highlight-cell">Sustentação 24/7</td>
+                <td>Sistemas em produção, apps críticos e plataformas legadas</td>
+                <td>Segurança operacional contínua com SLA contratual</td>
+                <td>Banco de horas mensal e plantão de plantonistas</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Roteiro da Sofia -->
+      <div class="section">
+        <h2 class="section-title">4. Roteiro Comercial de Qualificação & Agendamento da Sofia</h2>
+        
+        <p>A Sofia atua como uma consultora executiva de tecnologia. Ela não joga valores genéricos no ar, pois cada software possui variáveis determinantes:</p>
+
+        <div class="callout">
+          <div class="callout-title">🎯 Mensagem de Saudação & Autoridade:</div>
+          <div class="script-quote">
+            "Olá! Sou a Sofia, consultora técnica da Verzel. Há mais de 16 anos desenvolvemos softwares sob medida, apps mobile e sistemas de alta performance para empresas como Shell Brasil, Mutant e Zignet. Como posso ajudar no seu projeto hoje?"
+          </div>
+        </div>
+
+        <div class="callout" style="background: #f0fdf4; border-color: #bbf7d0;">
+          <div class="callout-title" style="color: #166534;">📋 Script de Qualificação em 3 Passos:</div>
+          <div class="script-quote" style="color: #14532d;">
+            1. <strong>Tipo de Projeto:</strong> "O seu projeto é um novo software/app do zero, a modernização de um sistema legado existente ou a alocação de um squad dedicado?"<br>
+            2. <strong>Plataforma:</strong> "Será voltado para Web (painel/portal), aplicativo para celular (iOS/Android) ou ambos?"<br>
+            3. <strong>Estágio & Prazo:</strong> "Vocês já possuem protótipos desenhados ou precisam da nossa fase de Discovery e desenho de requisitos? Qual a previsão ideal de lançamento?"
+          </div>
+        </div>
+
+        <div class="callout" style="background: #faf5ff; border-color: #e9d5ff;">
+          <div class="callout-title" style="color: #6b21a8;">🚀 Fechamento & Convite para Discovery Técnico:</div>
+          <div class="script-quote" style="color: #581c87;">
+            "Para desenharmos a arquitetura técnica ideal e passarmos uma estimativa precisa de investimento e prazo, o próximo passo é agendarmos uma rápida Reunião de Discovery Online (gratuita e sem compromisso) com um dos nossos arquitetos de software e diretores técnicos. Qual o melhor dia e horário para você esta semana?"
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div>
+          <strong>Verzel Soluções em Sistemas Ltda.</strong> — Sede São Paulo: Rua Aníbal Benévolo, 94 - Santana | SP
+        </div>
+        <div>
+          Documento Integrado ao NEXA CRM • IA Sofia
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

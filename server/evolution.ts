@@ -45,6 +45,9 @@ export function normalizeInstanceName(inst?: string): string {
   if (raw === 'surface-brasil' || raw === 'surfacebrasil' || raw === 'surfice') {
     return 'surfacebrasil';
   }
+  if (raw === 'verzel' || raw === 'verzel-sistemas' || raw === 'verzel-software') {
+    return 'verzel';
+  }
   return raw || 'surfacebrasil';
 }
 
