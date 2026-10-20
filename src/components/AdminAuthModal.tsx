@@ -32,7 +32,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onClose,
       onSuccess();
       onClose();
     } else {
-      setError('PIN de Administrador incorreto. Digite "marco2026" ou "admin123".');
+      setError('PIN ou senha de Administrador incorreto.');
     }
   };
 
@@ -46,7 +46,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onClose,
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-base">Acesso Admin Mestre</h3>
+              <h3 className="font-bold text-slate-900 text-base">Acesso de Administrador</h3>
               <p className="text-xs text-slate-500">Área restrita de infraestrutura e inteligência</p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onClose,
             <div className="flex items-start gap-2">
               <Lock className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
               <p className="leading-relaxed">
-                Esta área protege os prompts profundos da <strong>Sofia</strong>, credenciais da <strong>Evolution API</strong> e <strong>Banco de Dados</strong> contra alterações acidentais de clientes ou operadores.
+                Esta área protege os prompts da <strong>Sofia</strong>, credenciais da <strong>Evolution API</strong> e <strong>Banco de Dados</strong> contra alterações não autorizadas.
               </p>
             </div>
           </div>
@@ -85,7 +85,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onClose,
                   setPin(e.target.value);
                   if (error) setError('');
                 }}
-                placeholder="Ex: admin123 ou marco2026"
+                placeholder="Digite o PIN de segurança"
                 className="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
               />
               <button
@@ -102,9 +102,6 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onClose,
                 <span>{error}</span>
               </div>
             )}
-            <p className="text-[11px] text-slate-400">
-              Dica rápida: a senha mestre padrão é <code className="text-indigo-600 font-bold bg-indigo-50 px-1 py-0.5 rounded">admin123</code> ou <code className="text-indigo-600 font-bold bg-indigo-50 px-1 py-0.5 rounded">marco2026</code>.
-            </p>
           </div>
 
           <div className="pt-3 flex items-center justify-end gap-2.5">

@@ -704,19 +704,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               )}
             </div>
-          ) : (
-            /* Admin Locked: Discreet unlock button */
-            onOpenAdminAuth && (
-              <button
-                onClick={onOpenAdminAuth}
-                className="flex items-center gap-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 px-2 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors"
-                title="Acesso do Administrador (Ctrl+Shift+A ou clique 3x no logo)"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Acesso Restrito</span>
-              </button>
-            )
-          )}
+          ) : null}
         </div>
       </div>
 
