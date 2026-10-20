@@ -26,6 +26,7 @@ import {
   Building2,
   Zap,
   FileText,
+  HelpCircle,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
@@ -47,6 +48,7 @@ interface HeaderProps {
   onLockAdmin?: () => void;
   onToggleGlobalAi?: () => void;
   onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil') => void;
+  onShowGuide?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -65,6 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
   onLockAdmin,
   onToggleGlobalAi,
   onSwitchWorkspace,
+  onShowGuide,
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showClientLinkModal, setShowClientLinkModal] = useState(false);
@@ -594,6 +597,22 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
 
                     <div className="py-1">
+                      <button
+                        onClick={() => {
+                          onShowGuide?.();
+                          setActiveTab('dashboard');
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                          setShowAdminDropdown(false);
+                        }}
+                        className="w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors text-slate-700 cursor-pointer"
+                      >
+                        <HelpCircle className="w-4 h-4 text-indigo-500" />
+                        <div>
+                          <p className="font-semibold">Manual & Guia de IA</p>
+                          <p className="text-[10px] text-slate-400 font-normal">Como conectar e operar o sistema</p>
+                        </div>
+                      </button>
+
                       <button
                         onClick={() => {
                           setActiveTab('agent');

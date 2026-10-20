@@ -192,6 +192,8 @@ interface ExecutiveDashboardProps {
   onClearAllLeads?: () => Promise<void> | void;
   onRestoreDemoLeads?: () => Promise<void> | void;
   isAdmin?: boolean;
+  showExecutiveGuide: boolean;
+  setShowExecutiveGuide: (show: boolean) => void;
 }
 
 export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
@@ -206,6 +208,8 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   onClearAllLeads,
   onRestoreDemoLeads,
   isAdmin = false,
+  showExecutiveGuide,
+  setShowExecutiveGuide,
 }) => {
   const currentNicheKey = agentConfig.followUpNiche || 'dental';
   const currentNiche: NichePreset = NICHE_PRESETS[currentNicheKey] || NICHE_PRESETS.general;
@@ -324,8 +328,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   const [isCreatingOnVps, setIsCreatingOnVps] = useState(false);
   const [createFeedback, setCreateFeedback] = useState<string | null>(null);
 
-  // Executive Guide & Onboarding state
-  const [showExecutiveGuide, setShowExecutiveGuide] = useState(true);
+  // Executive Guide & Onboarding state (moved to App.tsx)
   const [modalTab, setModalTab] = useState<'qr' | 'crm_flow' | 'benefits'>('qr');
 
   const handleSelectInstance = (targetInstance: string) => {

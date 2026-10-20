@@ -59,7 +59,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   // New Appointment Modal Form State
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState<string>('');
-  const [formSummary, setFormSummary] = useState(agentConfig.calendarDefaultTitle || 'Reunião Técnica & Alinhamento de Plasma');
+  const [formSummary, setFormSummary] = useState(agentConfig.calendarDefaultTitle || '');
   const [formDate, setFormDate] = useState<string>(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -68,7 +68,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   const [formTime, setFormTime] = useState<string>('14:00');
   const [formDuration, setFormDuration] = useState<number>(agentConfig.calendarDefaultDurationMinutes || 45);
   const [formDescription, setFormDescription] = useState('');
-  const [formLocation, setFormLocation] = useState(agentConfig.calendarDefaultLocation || 'Laboratório Surface Test (Campinas/SP) & Google Meet');
+  const [formLocation, setFormLocation] = useState(agentConfig.calendarDefaultLocation || '');
   const [isSavingAppointment, setIsSavingAppointment] = useState(false);
 
   // Destructive Delete Confirmation Modal
@@ -83,8 +83,8 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   const [calendarEnabled, setCalendarEnabled] = useState(agentConfig.calendarEnabled ?? true);
   const [allowAiBooking, setAllowAiBooking] = useState(agentConfig.calendarAllowAiBooking ?? true);
   const [defaultDuration, setDefaultDuration] = useState(agentConfig.calendarDefaultDurationMinutes || 45);
-  const [defaultTitle, setDefaultTitle] = useState(agentConfig.calendarDefaultTitle || 'Reunião Técnica & Alinhamento de Plasma');
-  const [defaultLocation, setDefaultLocation] = useState(agentConfig.calendarDefaultLocation || 'Laboratório Surface Test (Campinas/SP) & Google Meet');
+  const [defaultTitle, setDefaultTitle] = useState(agentConfig.calendarDefaultTitle || '');
+  const [defaultLocation, setDefaultLocation] = useState(agentConfig.calendarDefaultLocation || '');
   const [showInMenu, setShowInMenu] = useState(agentConfig.showCalendarModuleInMenu ?? true);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
 
@@ -426,7 +426,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
                 type="text"
                 value={defaultTitle}
                 onChange={(e) => setDefaultTitle(e.target.value)}
-                placeholder="Ex: Consulta de Avaliação Integrativa"
+                placeholder="Ex: Reunião Técnica ou Alinhamento Comercial"
                 className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
               />
             </div>
@@ -456,7 +456,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
                 type="text"
                 value={defaultLocation}
                 onChange={(e) => setDefaultLocation(e.target.value)}
-                placeholder="Ex: Euroville Mall - Sala 103 ou Reunião Google Meet"
+                placeholder="Ex: Endereço da Empresa ou Link do Google Meet"
                 className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
               />
             </div>

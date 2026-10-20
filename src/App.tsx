@@ -82,6 +82,7 @@ export default function App() {
   }, [isAdminUnlocked, activeTab]);
 
   const [showAdminAuthModal, setShowAdminAuthModal] = useState(false);
+  const [showExecutiveGuide, setShowExecutiveGuide] = useState(true);
 
   const handleUnlockAdmin = () => {
     setIsAdminUnlocked(true);
@@ -692,6 +693,7 @@ export default function App() {
         onLockAdmin={handleLockAdmin}
         onToggleGlobalAi={handleToggleGlobalAi}
         onSwitchWorkspace={handleSwitchWorkspacePreset}
+        onShowGuide={() => setShowExecutiveGuide(true)}
       />
 
       {/* Main Content Modules */}
@@ -710,6 +712,8 @@ export default function App() {
               onClearAllLeads={handleClearAllLeads}
               onRestoreDemoLeads={handleRestoreDemoLeads}
               isAdmin={isAdminUnlocked}
+              showExecutiveGuide={showExecutiveGuide}
+              setShowExecutiveGuide={setShowExecutiveGuide}
             />
           </ErrorBoundary>
         )}

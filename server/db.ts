@@ -431,8 +431,8 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
     calendarEnabled: false,
     calendarConnectedEmail: '',
     calendarDefaultDurationMinutes: 45,
-    calendarDefaultTitle: 'Reunião Técnica & Alinhamento de Plasma',
-    calendarDefaultLocation: 'Laboratório Surface Test (Campinas/SP) & Google Meet',
+    calendarDefaultTitle: '',
+    calendarDefaultLocation: '',
     calendarAllowAiBooking: true,
     showCalendarModuleInMenu: true,
     instagramConfig: {
