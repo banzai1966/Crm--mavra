@@ -284,8 +284,39 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
     setSelectedLeadIds(sliced);
   };
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const insertVariable = (variable: string) => {
-    setMessageTemplate((prev) => prev + ' ' + variable);
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      setMessageTemplate((prev) => (prev ? prev + ' ' + variable : variable));
+      return;
+    }
+
+    const start = textarea.selectionStart ?? messageTemplate.length;
+    const end = textarea.selectionEnd ?? messageTemplate.length;
+    const text = messageTemplate;
+
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+
+    // Format spaces cleanly around variable
+    const needsLeadingSpace = start > 0 && !before.endsWith(' ') && !before.endsWith('\n');
+    const needsTrailingSpace = after.length > 0 && !after.startsWith(' ') && !after.startsWith('\n') && !after.startsWith('!') && !after.startsWith('?') && !after.startsWith('.') && !after.startsWith(',');
+
+    const insertion = (needsLeadingSpace ? ' ' : '') + variable + (needsTrailingSpace ? ' ' : '');
+    const newText = before + insertion + after;
+
+    setMessageTemplate(newText);
+
+    // Reposition cursor immediately after inserted variable
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        const newCursorPos = start + insertion.length;
+        textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+      }
+    }, 10);
   };
 
   const handleSaveCustomTemplate = () => {
@@ -322,28 +353,26 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
     }
   };
 
-  // Preview generated message for the first selected lead
+  // Preview generated message for the first selected lead, or realistic sample if empty
   const previewLead = baseLeads.find((l) => selectedLeadIds.includes(l.id)) || baseLeads[0];
-  const previewText = previewLead
-    ? messageTemplate
-        .replace(/\{nome\}/gi, (previewLead.name || 'Cliente').split(' ')[0])
-        .replace(/\{procedimento\}/gi, previewLead.triage?.procedure || previewLead.interest || 'atendimento')
-        .replace(/\{interesse\}/gi, previewLead.interest || 'nossos produtos')
-        .replace(/\{clinica\}/gi, 'clínica da Dra. Lucy Murata')
-        .replace(/\{restaurante\}|\{pizzaria\}/gi, previewLead.deliveryInfo ? 'Pizzaria Bella Gourmet' : 'nossa Pizzaria & Restaurante')
-        .replace(/\{empresa\}/gi, 'nossa empresa')
-        .replace(
-          /\{ultimo_pedido\}|\{pizza_favorita\}|\{preferencia\}/gi,
-          previewLead.deliveryInfo?.itemsDescription || previewLead.interest || 'sua pizza favorita'
-        )
-        .replace(/\{cupom\}/gi, 'VOLTA15')
-        .replace(
-          /\{veiculo\}/gi,
-          previewLead.notes?.match(/veículo:\s*([^).\n]+)/i)?.[1]?.trim() || 'seu veículo (Corolla 2021)'
-        )
-        .replace(/\{peca\}/gi, previewLead.interest || 'Kit Pastilhas de Freio')
-        .replace(/\{dias_sem_pedir\}/gi, 'mais de 20 dias')
-    : messageTemplate;
+  const sampleName = previewLead?.name ? previewLead.name.split(' ')[0] : 'Carlos';
+  const sampleProcedure = previewLead?.triage?.procedure || previewLead?.interest || 'Harmonização / Consulta';
+  const sampleInterest = previewLead?.interest || 'Proposta Comercial';
+  const samplePizza = previewLead?.deliveryInfo?.itemsDescription || 'Pizza Calabresa Especial';
+  const sampleVehicle = previewLead?.notes?.match(/veículo:\s*([^).\n]+)/i)?.[1]?.trim() || 'Toyota Corolla 2021';
+
+  const previewText = messageTemplate
+    .replace(/\{nome\}/gi, sampleName)
+    .replace(/\{procedimento\}/gi, sampleProcedure)
+    .replace(/\{interesse\}/gi, sampleInterest)
+    .replace(/\{clinica\}/gi, 'clínica da Dra. Lucy Murata')
+    .replace(/\{restaurante\}|\{pizzaria\}/gi, previewLead?.deliveryInfo ? 'Pizzaria Bella Gourmet' : 'Pizzaria Bella Gourmet')
+    .replace(/\{empresa\}/gi, 'nossa empresa')
+    .replace(/\{ultimo_pedido\}|\{pizza_favorita\}|\{preferencia\}/gi, samplePizza)
+    .replace(/\{cupom\}/gi, 'VOLTA15')
+    .replace(/\{veiculo\}/gi, sampleVehicle)
+    .replace(/\{peca\}/gi, previewLead?.interest || 'Kit Pastilhas de Freio')
+    .replace(/\{dias_sem_pedir\}/gi, 'mais de 20 dias');
 
   // Run the batch sequence
   const startCampaign = async () => {
@@ -877,6 +906,7 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
 
                 {/* Textarea */}
                 <textarea
+                  ref={textareaRef}
                   rows={4}
                   value={messageTemplate}
                   onChange={(e) => setMessageTemplate(e.target.value)}
