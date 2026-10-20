@@ -223,6 +223,7 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
 
   const abortControllerRef = useRef<boolean>(false);
   const pauseRef = useRef<boolean>(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // All combined presets
   const allPresets = [...customTemplates, ...TEMPLATE_PRESETS];
@@ -283,8 +284,6 @@ export const ReactivationCampaignModal: React.FC<ReactivationCampaignModalProps>
     const sliced = baseLeads.slice(0, limit).map((l) => l.id);
     setSelectedLeadIds(sliced);
   };
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const insertVariable = (variable: string) => {
     const textarea = textareaRef.current;
