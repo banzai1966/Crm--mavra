@@ -988,13 +988,15 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     setSelectedPresetModal(null);
     setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
 
-    const instanceName = isSurface
+    const instanceName = preset.id === 'cemiterio_parque_cantareira'
+      ? 'cemiterio-cantareira'
+      : isSurface
       ? 'surface-brasil'
       : isVerzel
       ? 'verzel'
       : isNexa
       ? 'nexa-crm'
-      : 'dra-lucy-murata';
+      : preset.id.replace(/_/g, '-');
     try {
       const res = await fetch('/api/agent/apply-niche', {
         method: 'POST',
