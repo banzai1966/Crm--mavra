@@ -1178,6 +1178,11 @@ async function startServer() {
       // Auto-register webhook on Evolution API
       const webhookUrl = 'https://crm.makprojetosmake.com.br/api/webhook';
       try {
+        await createEvolutionInstance(targetInstance, webhookUrl);
+      } catch (e) {
+        console.warn('[ApplyNiche] Aviso ao criar instância no Evolution:', e);
+      }
+      try {
         await setRemoteWebhookConfig(webhookUrl, targetInstance);
       } catch (e) {
         console.warn('[ApplyNiche] Aviso ao configurar webhook:', e);
