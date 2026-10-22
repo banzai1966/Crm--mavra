@@ -988,7 +988,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     setSelectedPresetModal(null);
     setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
 
-    const instanceName = preset.id === 'cemiterio_parque_cantareira'
+    const instanceName = preset.id === 'dental_integrative'
+      ? 'dental-integrative'
+      : preset.id === 'cemiterio_parque_cantareira'
       ? 'cemiterio-cantareira'
       : isSurface
       ? 'surface-brasil'

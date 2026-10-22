@@ -578,23 +578,23 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </span>
             </div>
 
-            {/* Tab 3: Instância Dra. Lucy Murata */}
+            {/* Tab 3: Instância Saúde & Odontologia (Dra. Lucy) */}
             <div
-              onClick={() => handleSelectInstanceTab('dra-lucy-murata')}
+              onClick={() => handleSelectInstanceTab('custom', 'dental-integrative')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                config.instanceName === 'dra-lucy-murata'
+                config.instanceName === 'dental-integrative' || config.instanceName === 'dra-lucy-murata'
                   ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600 shadow-xs'
                   : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-900">Dra. Lucy Murata</span>
-                {config.instanceName === 'dra-lucy-murata' && (
+                {(config.instanceName === 'dental-integrative' || config.instanceName === 'dra-lucy-murata') && (
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-500 mt-1 font-mono">
-                Instância: <strong className="text-emerald-700">dra-lucy-murata</strong>
+                Instância: <strong className="text-emerald-700">{config.instanceName === 'dental-integrative' ? 'dental-integrative' : 'dra-lucy-murata'}</strong>
               </p>
               <span className="inline-block text-[10px] text-emerald-800 font-semibold bg-emerald-100/70 px-2 py-0.5 rounded mt-2">
                 Odontologia Integrativa
@@ -793,17 +793,6 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleApplyDraLucyInstance}
-                id="btn-apply-dra-lucy-instance"
-                className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 transition-colors cursor-pointer"
-                title="Preencher com os dados da instância dra-lucy-murata"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-slate-700" />
-                <span>Usar Dados Dra. Lucy Murata</span>
-              </button>
-
               <button
                 type="button"
                 onClick={handleClearForm}

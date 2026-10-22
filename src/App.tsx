@@ -749,6 +749,7 @@ export default function App() {
               onNavigateToDelivery={() => setActiveTab('delivery')}
               evolutionConfig={evolutionConfig}
               isAdmin={isAdminUnlocked}
+              agentConfig={agentConfig}
             />
           </ErrorBoundary>
         )}

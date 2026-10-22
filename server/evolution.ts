@@ -35,20 +35,20 @@ export function getEvolutionApiKey(): string {
  * Maps 'dra-lucy-morata' or 'dra-lucy-murata' to the actual instance 'dra-lucy-murata' on VPS
  */
 export function normalizeInstanceName(inst?: string): string {
-  const raw = (inst || db.evolutionConfig.instanceName || 'dra-lucy-murata')
+  const raw = (inst || db.evolutionConfig.instanceName || 'dental-integrative')
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9_-]/g, '-');
-  if (raw === 'dra-lucy-morata' || raw === 'dra-lucy-murata') {
+  if (raw === 'dra-lucy-morata') {
     return 'dra-lucy-murata';
   }
-  if (raw === 'surface-brasil' || raw === 'surfacebrasil' || raw === 'surfice') {
+  if (raw === 'surface-brasil' || raw === 'surfice') {
     return 'surfacebrasil';
   }
-  if (raw === 'verzel' || raw === 'verzel-sistemas' || raw === 'verzel-software') {
-    return 'verzel';
+  if (raw === 'cemiterio-cantareira' || raw === 'cantareira') {
+    return 'cemiterio-cantareira';
   }
-  return raw || 'surfacebrasil';
+  return raw || 'dental-integrative';
 }
 
 export interface EvolutionSendResult {

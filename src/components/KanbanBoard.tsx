@@ -30,11 +30,49 @@ import {
   LayoutDashboard,
   Stethoscope,
 } from 'lucide-react';
-import { Lead, KanbanStage, EvolutionConfig } from '../types';
+import { Lead, KanbanStage, EvolutionConfig, AgentConfig } from '../types';
 import { NewLeadModal } from './NewLeadModal';
 import { ResetDataModal } from './ResetDataModal';
 import { ImportLeadsModal } from './ImportLeadsModal';
 import { ReactivationCampaignModal } from './ReactivationCampaignModal';
+
+export function detectDefaultNicheFromConfig(cfg?: AgentConfig): 'all' | 'restaurant' | 'health' {
+  if (!cfg) return 'all';
+  const textToScan = `${cfg.personaName || ''} ${cfg.role || ''} ${cfg.followUpNiche || ''} ${cfg.activeWorkspaceName || ''} ${cfg.knowledgeRules || ''} ${cfg.knowledgeFaq || ''}`.toLowerCase();
+  
+  if (
+    cfg.followUpNiche === 'dental' ||
+    textToScan.includes('lucy') ||
+    textToScan.includes('murata') ||
+    textToScan.includes('odonto') ||
+    textToScan.includes('clínica') ||
+    textToScan.includes('clinica') ||
+    textToScan.includes('dentista') ||
+    textToScan.includes('saúde') ||
+    textToScan.includes('saude') ||
+    textToScan.includes('médic') ||
+    textToScan.includes('medic') ||
+    textToScan.includes('consultório') ||
+    textToScan.includes('consultorio')
+  ) {
+    return 'health';
+  }
+  
+  if (
+    cfg.followUpNiche === 'restaurant_delivery' ||
+    textToScan.includes('delivery') ||
+    textToScan.includes('pizzaria') ||
+    textToScan.includes('hambúrguer') ||
+    textToScan.includes('hamburguer') ||
+    textToScan.includes('restaurante') ||
+    textToScan.includes('cardápio') ||
+    textToScan.includes('cardapio')
+  ) {
+    return 'restaurant';
+  }
+  
+  return 'all';
+}
 
 export const RESTAURANT_KANBAN_STAGES: KanbanStage[] = [
   { id: 'rest-inativos', name: '📂 Clientes Inativos (+20d sem pedir)', color: '#6366f1', order: 1 },
@@ -129,6 +167,7 @@ interface KanbanBoardProps {
   onNavigateToDelivery?: () => void;
   evolutionConfig?: EvolutionConfig;
   isAdmin?: boolean;
+  agentConfig?: AgentConfig;
 }
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
@@ -148,16 +187,18 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onNavigateToDelivery,
   evolutionConfig = { serverUrl: '', apiKey: '', instanceName: 'dra-lucy-murata', isConnected: false, state: 'disconnected' },
   isAdmin = false,
+  agentConfig,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>('all');
+  const detectedNiche = React.useMemo(() => detectDefaultNicheFromConfig(agentConfig), [agentConfig]);
+  const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>(detectedNiche);
 
-  // Force nicheFilter to 'all' in client mode (!isAdmin)
+  // Auto-align with the active business niche (in client mode !isAdmin or when company switches)
   React.useEffect(() => {
     if (!isAdmin) {
-      setNicheFilter('all');
+      setNicheFilter(detectedNiche);
     }
-  }, [isAdmin]);
+  }, [isAdmin, detectedNiche]);
 
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterHotOnly, setFilterHotOnly] = useState(false);
