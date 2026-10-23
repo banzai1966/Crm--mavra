@@ -526,6 +526,36 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
 
   public documents: KnowledgeDocument[] = [
     {
+      id: 'doc-primo-equipamentos',
+      name: 'Catalogo_Completo_Primo_Equipamentos.txt',
+      type: 'txt',
+      size: 5100,
+      contentText: `MANUAL E CATÁLOGO COMPLETO — PRIMO EQUIPAMENTOS
+Website Oficial: https://primo-equipamentos.lojaintegrada.com.br/
+Razão Social / CNPJ: PRIMO EQUIPAMENTOS LTDA. — CNPJ: 18.154.896/0001-29
+Segmento: Equipamentos, máquinas, utensílios e soluções completas para cozinhas industriais, bares, restaurantes, lanchonetes, pizzarias, padarias e estabelecimentos comerciais.
+
+1. PORTFÓLIO DE PRODUTOS & EQUIPAMENTOS:
+- Fritadeiras Industriais: Modelos elétricos e a gás de alta performance (marcas renomadas como Croydon, Skymsen, etc.), com termostato de precisão e cestos robustos em aço inox.
+- Extratores de Suco e Liquidificadores: Extratores bivolt em alumínio/inox para lanchonetes, liquidificadores industriais de alta rotação (para vitaminas) e baixa rotação (para pastas, massas e molhos) de 2 a 25 litros.
+- Processadores de Alimentos & Fatiadores de Frios: Multiprocessadores para ralar, desfiar e fatiar legumes e queijos; fatiadores de frios profissionais com lâminas temperadas para açougues, mercados e restaurantes.
+- Masseiras, Moedores e Equipamentos de Preparo: Masseiras planetárias e espirais, moedores de carne boca 5, 8, 22 e 32, descascadores de batatas e serras fita para carne.
+- Fogões Industriais & Indução: Fogões de alta e baixa pressão em ferro fundido, chapas sanduicheiras a gás/elétricas e fogões por indução profissionais.
+- Refrigeradores e Expositores: Balcões refrigerados para açougue e frios, cervejeiras, expositores verticais e ilhas congeladas.
+- Utensílios de Inox & Cozinha: Panelas industriais, caldeirões, travessas, pegadores de gelo, kits de churrasco e utensílios gerais para operação gastronômica.
+
+2. CANAIS DE CONTATO E SUPORTE:
+- Telefone Fixo: (11) 3313-2875
+- WhatsApp Comercial: (11) 97333-4135
+- E-mail: primoequipamentos@hotmail.com
+
+3. PAGAMENTO, FRETE E ENTREGAS:
+- Formas de Pagamento: Pix com confirmação instantânea, boleto bancário e cartões de crédito/débito via intermediador seguro na Loja Integrada.
+- Frete e Prazos: O cálculo exato do frete e o prazo de entrega são realizados de forma automatizada no site ao informar o CEP de destino. Atendimento para todo o Brasil, com agilidade em envios para São Paulo e Grande SP.
+- Garantia: Equipamentos com garantia de fábrica contra defeitos de fabricação e assistência técnica especializada.`,
+      uploadedAt: new Date().toISOString(),
+    },
+    {
       id: 'doc-mentoria-dra-luci',
       name: 'Mentoria_Dra_Luci_Murata_Odontologia_Biologica_Ambulatorio_IA.txt',
       type: 'txt',
@@ -671,7 +701,7 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
   public evolutionConfig: EvolutionConfig = {
     serverUrl: process.env.EVOLUTION_API_URL || 'https://api.makprojetosmake.com.br',
     apiKey: process.env.EVOLUTION_API_KEY || 'b2efa885a71ee22edf72b597df1a0ce9',
-    instanceName: process.env.EVOLUTION_INSTANCE || 'dra-lucy-murata',
+    instanceName: process.env.EVOLUTION_INSTANCE || 'primo-equipamentos',
     isConnected: false,
     state: 'disconnected',
     lastTestedAt: new Date().toISOString(),

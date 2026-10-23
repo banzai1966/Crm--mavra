@@ -63,15 +63,19 @@ export default function App() {
   const [documents, setDocuments] = useState<KnowledgeDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Admin Mestre state (defaults to true if unlocked in localStorage, or false for clean client mode)
+  // Admin Mestre state (defaults to true unless explicitly in client mode)
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('modo') || params.has('cliente') || params.has('client')) {
+      if (params.get('modo') === 'cliente' || params.get('cliente') === 'true' || params.get('client') === 'true') {
         return false;
       }
     }
-    return localStorage.getItem('nexa_admin_unlocked') === 'true';
+    const stored = localStorage.getItem('nexa_admin_unlocked');
+    if (stored === 'false') return false;
+    // Default to true
+    localStorage.setItem('nexa_admin_unlocked', 'true');
+    return true;
   });
 
   // Restrict tabs in client mode (!isAdminUnlocked)
