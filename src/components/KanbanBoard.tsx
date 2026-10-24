@@ -38,39 +38,73 @@ import { ReactivationCampaignModal } from './ReactivationCampaignModal';
 
 export function detectDefaultNicheFromConfig(cfg?: AgentConfig): 'all' | 'restaurant' | 'health' {
   if (!cfg) return 'all';
-  const textToScan = `${cfg.personaName || ''} ${cfg.role || ''} ${cfg.followUpNiche || ''} ${cfg.activeWorkspaceName || ''} ${cfg.knowledgeRules || ''} ${cfg.knowledgeFaq || ''}`.toLowerCase();
-  
+
+  const niche = (cfg.followUpNiche || '').toLowerCase();
+  const name = `${cfg.personaName || ''} ${cfg.role || ''} ${cfg.activeWorkspaceName || ''}`.toLowerCase();
+
+  // 1. Explicit equipment / B2B sales / machinery / retail / services / tech
+  // Companies selling equipment to restaurants or kitchens are B2B SALES, NOT food delivery!
   if (
-    cfg.followUpNiche === 'dental' ||
-    textToScan.includes('lucy') ||
-    textToScan.includes('murata') ||
-    textToScan.includes('odonto') ||
-    textToScan.includes('clínica') ||
-    textToScan.includes('clinica') ||
-    textToScan.includes('dentista') ||
-    textToScan.includes('saúde') ||
-    textToScan.includes('saude') ||
-    textToScan.includes('médic') ||
-    textToScan.includes('medic') ||
-    textToScan.includes('consultório') ||
-    textToScan.includes('consultorio')
+    niche === 'sales' ||
+    niche === 'b2b_services' ||
+    niche === 'general' ||
+    niche === 'retail' ||
+    niche === 'saas_tech' ||
+    niche === 'real_estate' ||
+    niche === 'legal' ||
+    niche === 'custom' ||
+    name.includes('primo') ||
+    name.includes('equipamento') ||
+    name.includes('máquina') ||
+    name.includes('maquina') ||
+    name.includes('maquinário') ||
+    name.includes('maquinario') ||
+    name.includes('utensílio') ||
+    name.includes('utensilio') ||
+    name.includes('vendas em geral') ||
+    name.includes('vendas') ||
+    name.includes('comercial') ||
+    name.includes('b2b') ||
+    name.includes('surface') ||
+    name.includes('verzel') ||
+    name.includes('cantareira') ||
+    name.includes('software') ||
+    name.includes('loja integrada') ||
+    name.includes('distribuidora')
+  ) {
+    return 'all';
+  }
+
+  // 2. Health & Dental Clinics
+  if (
+    niche === 'dental' ||
+    niche === 'medical' ||
+    name.includes('lucy') ||
+    name.includes('murata') ||
+    name.includes('odonto') ||
+    name.includes('clínica') ||
+    name.includes('clinica') ||
+    name.includes('dentista') ||
+    name.includes('saúde') ||
+    name.includes('saude') ||
+    name.includes('médic') ||
+    name.includes('medic') ||
+    name.includes('consultório') ||
+    name.includes('consultorio')
   ) {
     return 'health';
   }
-  
+
+  // 3. Restaurant / Pizzeria Food Delivery (only if it's an actual food/delivery business)
   if (
-    cfg.followUpNiche === 'restaurant_delivery' ||
-    textToScan.includes('delivery') ||
-    textToScan.includes('pizzaria') ||
-    textToScan.includes('hambúrguer') ||
-    textToScan.includes('hamburguer') ||
-    textToScan.includes('restaurante') ||
-    textToScan.includes('cardápio') ||
-    textToScan.includes('cardapio')
+    niche === 'restaurant_delivery' ||
+    ((name.includes('pizzaria') || name.includes('hamburgueria') || name.includes('delivery')) &&
+      !name.includes('equipamento') &&
+      !name.includes('vendas'))
   ) {
     return 'restaurant';
   }
-  
+
   return 'all';
 }
 
@@ -99,9 +133,25 @@ export const HEALTH_KANBAN_STAGES: KanbanStage[] = [
 export const isDeliveryOrRestaurantLead = (l: Lead): boolean => {
   if (l.deliveryInfo) return true;
   const str = `${l.name} ${(l.tags || []).join(' ')} ${l.interest || ''} ${l.notes || ''}`.toLowerCase();
+  
+  // Equipment / B2B sales leads should NEVER be classified as food delivery orders!
+  if (
+    str.includes('equipamento') ||
+    str.includes('máquina') ||
+    str.includes('maquina') ||
+    str.includes('skymsen') ||
+    str.includes('gelopar') ||
+    str.includes('metalfrio') ||
+    str.includes('primo') ||
+    str.includes('cozinha industrial') ||
+    str.includes('utensílio') ||
+    str.includes('utensilio')
+  ) {
+    return false;
+  }
+
   return (
     str.includes('delivery') ||
-    str.includes('restaurante') ||
     str.includes('pizz') ||
     str.includes('burger') ||
     str.includes('lanche') ||
@@ -110,10 +160,7 @@ export const isDeliveryOrRestaurantLead = (l: Lead): boolean => {
     str.includes('comida') ||
     str.includes('motoboy') ||
     str.includes('ifood') ||
-    l.id === 'lead-1' ||
-    l.id === 'lead-2' ||
-    l.id === 'lead-3' ||
-    l.id === 'lead-4'
+    l.id.startsWith('lead-delivery-')
   );
 };
 
@@ -191,14 +238,33 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const detectedNiche = React.useMemo(() => detectDefaultNicheFromConfig(agentConfig), [agentConfig]);
-  const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>(detectedNiche);
-
-  // Auto-align with the active business niche (in client mode !isAdmin or when company switches)
-  React.useEffect(() => {
-    if (!isAdmin) {
-      setNicheFilter(detectedNiche);
+  const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('nexa_crm_kanban_niche');
+      if (saved === 'all' || saved === 'restaurant' || saved === 'health') {
+        // If current agent is general sales / equipment, don't stay stuck on restaurant from previous view!
+        if (detectedNiche === 'all' && saved === 'restaurant') return 'all';
+        return saved as any;
+      }
     }
-  }, [isAdmin, detectedNiche]);
+    return detectedNiche;
+  });
+
+  // Keep in sync whenever workspace or agent changes (guarantee Primo / sales profiles always show Vendas & Geral)
+  React.useEffect(() => {
+    const currentDetected = detectDefaultNicheFromConfig(agentConfig);
+    if (currentDetected === 'all') {
+      setNicheFilter('all');
+      try {
+        localStorage.setItem('nexa_crm_kanban_niche', 'all');
+      } catch {}
+    } else if (!isAdmin) {
+      setNicheFilter(currentDetected);
+      try {
+        localStorage.setItem('nexa_crm_kanban_niche', currentDetected);
+      } catch {}
+    }
+  }, [agentConfig?.activeWorkspaceName, agentConfig?.personaName, agentConfig?.followUpNiche, isAdmin]);
 
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterHotOnly, setFilterHotOnly] = useState(false);
@@ -714,7 +780,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         {isAdmin && (
           <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200 self-start md:self-auto overflow-x-auto">
             <button
-              onClick={() => setNicheFilter('restaurant')}
+              onClick={() => {
+                setNicheFilter('restaurant');
+                try { localStorage.setItem('nexa_crm_kanban_niche', 'restaurant'); } catch {}
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 nicheFilter === 'restaurant'
                   ? 'bg-amber-600 text-white shadow-xs'
@@ -726,7 +795,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             </button>
 
             <button
-              onClick={() => setNicheFilter('health')}
+              onClick={() => {
+                setNicheFilter('health');
+                try { localStorage.setItem('nexa_crm_kanban_niche', 'health'); } catch {}
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 nicheFilter === 'health'
                   ? 'bg-blue-600 text-white shadow-xs'
@@ -738,7 +810,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             </button>
 
             <button
-              onClick={() => setNicheFilter('all')}
+              onClick={() => {
+                setNicheFilter('all');
+                try { localStorage.setItem('nexa_crm_kanban_niche', 'all'); } catch {}
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 nicheFilter === 'all'
                   ? 'bg-slate-900 text-white shadow-xs'

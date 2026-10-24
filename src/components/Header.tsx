@@ -48,7 +48,7 @@ interface HeaderProps {
   onOpenAdminAuth?: () => void;
   onLockAdmin?: () => void;
   onToggleGlobalAi?: () => void;
-  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel') => void;
+  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel' | 'primo') => void;
   onShowGuide?: () => void;
 }
 
@@ -160,9 +160,13 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Determine current niche
   const currentNiche =
-    agentConfig.personaName?.toLowerCase().includes('verzel') ||
-    agentConfig.role?.toLowerCase().includes('verzel') ||
-    agentConfig.followUpCustomMessage?.toLowerCase().includes('verzel')
+    agentConfig.personaName?.toLowerCase().includes('primo') ||
+    agentConfig.role?.toLowerCase().includes('primo') ||
+    agentConfig.activeWorkspaceName?.toLowerCase().includes('primo')
+      ? 'primo'
+      : agentConfig.personaName?.toLowerCase().includes('verzel') ||
+        agentConfig.role?.toLowerCase().includes('verzel') ||
+        agentConfig.followUpCustomMessage?.toLowerCase().includes('verzel')
       ? 'verzel'
       : agentConfig.followUpNiche === 'restaurant_delivery'
       ? 'delivery'
@@ -175,13 +179,14 @@ export const Header: React.FC<HeaderProps> = ({
       : 'clinic';
 
   const nicheMeta = {
+    primo: { label: 'Primo Equipamentos', icon: Building2, badge: 'Vendas & Geral' },
     clinic: { label: 'Clínica & Saúde', icon: Stethoscope, badge: 'Saúde' },
     delivery: { label: 'Pizzaria & Delivery', icon: UtensilsCrossed, badge: 'Delivery' },
     ecommerce: { label: 'E-commerce & Varejo', icon: ShoppingBag, badge: 'Varejo' },
     b2b: { label: 'Comercial B2B', icon: Building2, badge: 'B2B' },
     surfacebrasil: { label: 'Surfacebrasil (Plasma)', icon: Zap, badge: 'Indústria' },
     verzel: { label: 'Verzel (Software & AI)', icon: Code2, badge: 'Tech' },
-  }[currentNiche] || { label: 'Comercial B2B', icon: Building2, badge: 'B2B' };
+  }[currentNiche] || { label: 'Vendas & Equipamentos', icon: Building2, badge: 'Vendas' };
 
   const CurrentNicheIcon = nicheMeta.icon;
 
@@ -347,6 +352,25 @@ export const Header: React.FC<HeaderProps> = ({
                           {currentNiche === 'verzel' && <span className="text-[10px] text-indigo-600 font-bold">(Ativo)</span>}
                         </div>
                         <p className="text-[10px] text-slate-400 font-normal">Foco: Fábrica de software, Apps, AI Talent Hub & Shell</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onSwitchWorkspace('primo');
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                        currentNiche === 'primo' ? 'bg-amber-50/80 font-bold text-amber-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <Building2 className="w-4 h-4 text-amber-600" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>Primo Equipamentos (Vendas)</span>
+                          {currentNiche === 'primo' && <span className="text-[10px] text-amber-700 font-bold">(Ativo)</span>}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-normal">Foco: Cozinhas industriais, maquinário gastronômico & televendas B2B</p>
                       </div>
                     </button>
                   </div>

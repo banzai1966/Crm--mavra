@@ -1037,8 +1037,10 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     const isNexa = preset.id === 'nexa_crm';
     const isSurface = preset.id === 'surface_brasil_plasma';
     const isVerzel = preset.id === 'verzel_software_consultoria';
+    const isPrimo = preset.id === 'primo_equipamentos';
     const updatedConfig: AgentConfig = {
       ...config,
+      activeWorkspaceName: isPrimo ? 'Primo Equipamentos (Vendas e Equipamentos)' : preset.name,
       personaName: preset.personaName,
       role: preset.role,
       toneOfVoice: preset.toneOfVoice,
@@ -1049,17 +1051,27 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
-      preRecordedAudiosEnabled: isSurface || isVerzel ? false : config.preRecordedAudiosEnabled,
+      preRecordedAudiosEnabled: isSurface || isVerzel || isPrimo ? false : config.preRecordedAudiosEnabled,
       catalogPdfName: isSurface
         ? 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf'
         : isVerzel
         ? 'Dossie_Tecnico_Verzel_Sistemas.pdf'
         : isNexa
         ? 'Apresentacao_NEXA_CRM.pdf'
+        : isPrimo
+        ? 'Catalogo_Primo_Equipamentos.pdf'
         : 'Apresentacao_Dra_Lucy_Murata.pdf',
     };
     setConfig(updatedConfig);
     setSelectedPresetModal(null);
+
+    // If general sales or equipment, ensure Kanban immediately displays 'all' (Vendas & Geral)
+    if (isPrimo || preset.followUpNiche === 'b2b_services' || preset.followUpNiche === 'sales' || preset.followUpNiche === 'general') {
+      try {
+        localStorage.setItem('nexa_crm_kanban_niche', 'all');
+      } catch {}
+    }
+
     setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
 
     const instanceName = preset.id === 'dental_integrative'
@@ -1070,6 +1082,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       ? 'surface-brasil'
       : isVerzel
       ? 'verzel'
+      : isPrimo
+      ? 'primo-equipamentos'
       : isNexa
       ? 'nexa-crm'
       : preset.id.replace(/_/g, '-');

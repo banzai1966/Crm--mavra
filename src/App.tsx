@@ -566,7 +566,7 @@ export default function App() {
     }
   };
 
-  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel') => {
+  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel' | 'primo') => {
     const presets: Record<string, Partial<AgentConfig>> = {
       clinic: {
         activeWorkspaceName: 'Clínica & Saúde Integrativa',
@@ -618,12 +618,22 @@ export default function App() {
         preRecordedAudiosEnabled: false,
         followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀',
       },
+      primo: {
+        activeWorkspaceName: 'Primo Equipamentos (Vendas e Equipamentos)',
+        personaName: 'Sofia da Primo Equipamentos',
+        role: 'Consultora Especialista em Equipamentos Gastronômicos & Cozinhas Profissionais',
+        toneOfVoice: 'Consultivo, técnico, ágil, atencioso, seguro e conhecedor prático da rotina de cozinhas comerciais e restaurantes',
+        salesGoal: 'Identificar a necessidade da cozinha ou comércio (abertura, ampliação ou reposição de maquinário), apresentar as especificações técnicas ideais (capacidade, potência e voltagem correta 110V/220V), calcular prazos/frete e direcionar para fechamento com condições no Pix ou cartão.',
+        followUpNiche: 'b2b_services',
+        preRecordedAudiosEnabled: false,
+        followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳',
+      },
     };
     const chosen = presets[workspaceId];
     if (chosen) {
       await handleSaveAgentConfig(chosen);
-      if (workspaceId === 'surfacebrasil' || workspaceId === 'verzel') {
-        const targetInst = workspaceId === 'surfacebrasil' ? 'surfacebrasil' : 'verzel';
+      if (workspaceId === 'surfacebrasil' || workspaceId === 'verzel' || workspaceId === 'primo') {
+        const targetInst = workspaceId === 'surfacebrasil' ? 'surfacebrasil' : workspaceId === 'verzel' ? 'verzel' : 'primo-equipamentos';
         const updatedEvo = { ...evolutionConfig, instanceName: targetInst };
         setEvolutionConfig(updatedEvo);
         try {
