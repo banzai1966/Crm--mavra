@@ -690,7 +690,7 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
   }
 
   const isNexaSales = 
-    (config.role || '').toLowerCase().includes('nexa') ||
+    ((config.role || '').toLowerCase().includes('nexa') && !(config.role || '').toLowerCase().includes('surface') && !(config.role || '').toLowerCase().includes('verzel') && !(config.role || '').toLowerCase().includes('primo')) ||
     (config.personaName || '').toLowerCase().includes('alex') ||
     (config.followUpNiche === 'nexa_sales');
 
@@ -1058,12 +1058,18 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   const config = db.agentConfig;
   const lowerRole = (config.role || '').toLowerCase();
   const lowerPersona = (config.personaName || '').toLowerCase();
+  const lowerWorkspace = (config.activeWorkspaceName || '').toLowerCase();
+  
   const isNexaSales = 
-    lowerRole.includes('nexa') || 
+    (lowerRole.includes('nexa') && !lowerRole.includes('surface') && !lowerRole.includes('verzel')) || 
     lowerPersona.includes('alex') || 
     (config.followUpNiche === 'nexa_sales');
 
-  const isLucyOrDental = !isNexaSales && (
+  const isSurface = lowerRole.includes('surface') || lowerPersona.includes('surface') || lowerWorkspace.includes('surface');
+  const isVerzel = lowerRole.includes('verzel') || lowerPersona.includes('verzel') || lowerWorkspace.includes('verzel');
+  const isPrimo = lowerRole.includes('primo') || lowerPersona.includes('primo') || lowerWorkspace.includes('primo');
+
+  const isLucyOrDental = !isNexaSales && !isSurface && !isVerzel && !isPrimo && (
     lowerRole.includes('lucy') || 
     lowerRole.includes('odonto') || 
     lowerRole.includes('dent') || 
