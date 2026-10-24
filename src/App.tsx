@@ -12,6 +12,8 @@ import { SalesPlaybook } from './components/SalesPlaybook';
 import { DeliveryTracking } from './components/DeliveryTracking';
 import { PublicOrderTracking } from './components/PublicOrderTracking';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { usePWA } from './hooks/usePWA';
+import { PWAUpdateBanner } from './components/PWAUpdateBanner';
 import {
   Lead,
   KanbanStage,
@@ -87,6 +89,8 @@ export default function App() {
 
   const [showAdminAuthModal, setShowAdminAuthModal] = useState(false);
   const [showExecutiveGuide, setShowExecutiveGuide] = useState(true);
+  const pwaState = usePWA();
+  const [showIOSGuideModal, setShowIOSGuideModal] = useState(false);
 
   const handleUnlockAdmin = () => {
     setIsAdminUnlocked(true);
@@ -704,7 +708,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 text-slate-900 flex flex-col selection:bg-slate-900 selection:text-white">
       {/* Global Header with Admin Controls */}
       <Header
         activeTab={activeTab}
@@ -723,6 +727,8 @@ export default function App() {
         onToggleGlobalAi={handleToggleGlobalAi}
         onSwitchWorkspace={handleSwitchWorkspacePreset}
         onShowGuide={() => setShowExecutiveGuide(true)}
+        pwaState={pwaState}
+        onOpenIOSGuide={() => setShowIOSGuideModal(true)}
       />
 
       {/* Main Content Modules */}
@@ -863,6 +869,13 @@ export default function App() {
         isOpen={showAdminAuthModal}
         onClose={() => setShowAdminAuthModal(false)}
         onSuccess={handleUnlockAdmin}
+      />
+
+      {/* PWA Version Update Banner and iOS Install Modal */}
+      <PWAUpdateBanner
+        pwaState={pwaState}
+        showIOSModal={showIOSGuideModal}
+        setShowIOSModal={setShowIOSGuideModal}
       />
     </div>
   );

@@ -28,6 +28,8 @@ import {
   Code2,
   FileText,
   HelpCircle,
+  RefreshCw,
+  Smartphone,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
@@ -50,6 +52,17 @@ interface HeaderProps {
   onToggleGlobalAi?: () => void;
   onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel' | 'primo') => void;
   onShowGuide?: () => void;
+  pwaState?: {
+    isInstallable: boolean;
+    isInstalled: boolean;
+    isIOS: boolean;
+    hasUpdate: boolean;
+    isCheckingUpdate: boolean;
+    install: () => Promise<boolean>;
+    checkForUpdates: () => Promise<boolean>;
+    reloadApp: () => void;
+  };
+  onOpenIOSGuide?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -69,6 +82,8 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleGlobalAi,
   onSwitchWorkspace,
   onShowGuide,
+  pwaState,
+  onOpenIOSGuide,
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showClientLinkModal, setShowClientLinkModal] = useState(false);
@@ -80,9 +95,6 @@ export const Header: React.FC<HeaderProps> = ({
   const adminDropdownRef = useRef<HTMLDivElement>(null);
   const moreModulesDropdownRef = useRef<HTMLDivElement>(null);
   const workspaceDropdownRef = useRef<HTMLDivElement>(null);
-
-  const logoClicksRef = useRef<number>(0);
-  const logoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -102,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Secret keyboard shortcut: Ctrl + Shift + A or Cmd + Shift + A
+  // Secret keyboard shortcut for master admin: Ctrl + Shift + A or Cmd + Shift + A (Desktop only)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
@@ -113,21 +125,6 @@ export const Header: React.FC<HeaderProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onOpenAdminAuth]);
-
-  // Secret 3-click trigger on the logo for Marco
-  const handleLogoSecretClick = () => {
-    logoClicksRef.current += 1;
-    if (logoTimerRef.current) clearTimeout(logoTimerRef.current);
-
-    if (logoClicksRef.current >= 3) {
-      logoClicksRef.current = 0;
-      onOpenAdminAuth?.();
-    } else {
-      logoTimerRef.current = setTimeout(() => {
-        logoClicksRef.current = 0;
-      }, 1400);
-    }
-  };
 
   const handleCopyClientUrl = () => {
     setShowClientLinkModal(true);
@@ -202,18 +199,16 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
         {/* Left Section: Brand Logo & Niche Switcher */}
         <div className="flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={handleLogoSecretClick}
-            className="cursor-pointer focus:outline-none flex items-center group transition-transform active:scale-95"
-            title="NEXA CRM (Clique 3x para Gestão Restrita)"
+          <div
+            className="flex items-center select-none"
+            title="NEXA CRM"
           >
             <img
               src="/logo.png"
               alt="NEXA CRM"
-              className="h-7 md:h-7.5 w-auto max-w-[125px] object-contain transition-opacity group-hover:opacity-85"
+              className="h-7 md:h-7.5 w-auto max-w-[125px] object-contain"
             />
-          </button>
+          </div>
 
           {/* Vertical divider */}
           <div className="hidden sm:block h-5 w-px bg-slate-200" />
@@ -385,8 +380,8 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Center Section: Core Operational Navigation (Clean & uncluttered) */}
-        <nav className="flex items-center gap-1 overflow-visible relative" id="main-navigation">
+        {/* Center Section: Core Operational Navigation (Desktop md: and above) */}
+        <nav className="hidden md:flex items-center gap-1 overflow-visible relative" id="main-navigation">
           {/* 1. Dashboard Executivo & Conexão WhatsApp */}
           <button
             id="nav-tab-dashboard"
@@ -575,7 +570,7 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         {/* Right Section: System Status & Admin Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Quick status on mobile */}
           <div className="flex items-center gap-1 md:hidden">
             <button
@@ -592,7 +587,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onToggleGlobalAi && (
             <button
               onClick={onToggleGlobalAi}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+              className={`flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
                 agentConfig.isGlobalAiActive !== false
                   ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
                   : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-200 animate-pulse'
@@ -614,14 +609,51 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
+          {/* PWA Update / Refresh Button (Instant Version Reload) */}
+          <button
+            type="button"
+            onClick={pwaState?.reloadApp || (() => window.location.reload())}
+            disabled={pwaState?.isCheckingUpdate}
+            className={`flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+              pwaState?.hasUpdate
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-xs animate-pulse'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-2xs'
+            }`}
+            title={pwaState?.hasUpdate ? 'Nova versão pronta! Clique para recarregar' : 'Recarregar sistema / Buscar atualizações'}
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${pwaState?.hasUpdate ? 'text-white' : 'text-emerald-600'} ${pwaState?.isCheckingUpdate ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">
+              {pwaState?.hasUpdate ? 'Atualizar Versão' : 'Atualizar'}
+            </span>
+          </button>
+
+          {/* PWA In-App Install Button (Only visible if not installed yet) */}
+          {pwaState && !pwaState.isInstalled && (pwaState.isInstallable || pwaState.isIOS) && (
+            <button
+              type="button"
+              onClick={() => {
+                if (pwaState.isInstallable) {
+                  pwaState.install();
+                } else if (pwaState.isIOS && onOpenIOSGuide) {
+                  onOpenIOSGuide();
+                }
+              }}
+              className="flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs transition-all cursor-pointer"
+              title="Instalar NEXA CRM como aplicativo no seu dispositivo"
+            >
+              <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="hidden sm:inline">Instalar App</span>
+            </button>
+          )}
+
           {/* Admin Controls: Grouped cleanly under Settings Dropdown */}
           {isAdminUnlocked ? (
-            <div className="flex items-center gap-1.5 pl-1.5 border-l border-slate-200" ref={adminDropdownRef}>
+            <div className="flex items-center gap-1 sm:gap-1.5 pl-1.5 border-l border-slate-200" ref={adminDropdownRef}>
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setShowAdminDropdown(!showAdminDropdown)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+                  className={`flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
                     isTechnicalTab || showAdminDropdown
                       ? 'bg-indigo-900 text-white border-indigo-900 shadow-xs'
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
@@ -630,7 +662,7 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Settings className="w-3.5 h-3.5" />
                   <span className="hidden md:inline">Configurações</span>
-                  <ChevronDown className="w-3 h-3 opacity-70" />
+                  <ChevronDown className="w-3 h-3 opacity-70 hidden sm:inline" />
                 </button>
 
                 {showAdminDropdown && (
@@ -745,7 +777,7 @@ export const Header: React.FC<HeaderProps> = ({
               {onLockAdmin && (
                 <button
                   onClick={onLockAdmin}
-                  className="flex items-center gap-1 bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                  className="flex items-center gap-1 bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
                   title="Bloquear Modo Administrador (proteger sistema antes de mostrar ao cliente)"
                 >
                   <Lock className="w-3.5 h-3.5" />
@@ -757,9 +789,150 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
+      {/* Mobile Navigation Bar (< md) - Clean, 100% responsive native mobile app style */}
+      <nav
+        id="mobile-navigation"
+        className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-xs px-2 py-1.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar w-full max-w-full"
+      >
+        {/* 1. Dashboard */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('dashboard')}
+          className={`flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+            activeTab === 'dashboard'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <BarChart3 className="w-4 h-4 mb-0.5 text-indigo-400" />
+          <span>Dashboard</span>
+        </button>
+
+        {/* 2. Kanban */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('kanban')}
+          className={`flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer relative whitespace-nowrap shrink-0 ${
+            activeTab === 'kanban'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <div className="relative">
+            <LayoutDashboard className="w-4 h-4 mb-0.5" />
+            {totalLeads > 0 && (
+              <span
+                className={`absolute -top-1 -right-2.5 px-1 py-0.2 rounded-full text-[9px] font-mono leading-none ${
+                  activeTab === 'kanban' ? 'bg-indigo-500 text-white' : 'bg-slate-200 text-slate-800'
+                }`}
+              >
+                {totalLeads}
+              </span>
+            )}
+          </div>
+          <span>Kanban</span>
+        </button>
+
+        {/* 3. Chat */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('chat')}
+          className={`flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer relative whitespace-nowrap shrink-0 ${
+            activeTab === 'chat'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <div className="relative">
+            <MessageSquare className="w-4 h-4 mb-0.5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-2.5 bg-emerald-600 text-white font-bold px-1 py-0.2 rounded-full text-[9px] leading-none">
+                {unreadCount}
+              </span>
+            )}
+          </div>
+          <span>Chat</span>
+        </button>
+
+        {/* 4. Contextual Niche Primary Tab (Pedidos / Agendamentos) */}
+        {isDeliveryPrimary ? (
+          <button
+            type="button"
+            onClick={() => setActiveTab('delivery')}
+            className={`flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer relative whitespace-nowrap shrink-0 ${
+              activeTab === 'delivery'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <div className="relative">
+              <Bike className="w-4 h-4 mb-0.5 text-emerald-500" />
+              {deliveryOrdersCount > 0 && (
+                <span
+                  className={`absolute -top-1 -right-2.5 px-1 py-0.2 rounded-full text-[9px] font-mono font-bold leading-none ${
+                    activeTab === 'delivery' ? 'bg-emerald-500 text-white' : 'bg-emerald-100 text-emerald-800'
+                  }`}
+                >
+                  {deliveryOrdersCount}
+                </span>
+              )}
+            </div>
+            <span>Pedidos</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setActiveTab('calendar')}
+            className={`flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'calendar'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <CalendarIcon className="w-4 h-4 mb-0.5 text-blue-500" />
+            <span>Agenda</span>
+          </button>
+        )}
+
+        {/* Show secondary if actively selected */}
+        {!isDeliveryPrimary && activeTab === 'delivery' && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('delivery')}
+            className="flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 bg-slate-900 text-white shadow-xs"
+          >
+            <Bike className="w-4 h-4 mb-0.5 text-emerald-400" />
+            <span>Pedidos</span>
+          </button>
+        )}
+
+        {isDeliveryPrimary && activeTab === 'calendar' && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('calendar')}
+            className="flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 bg-slate-900 text-white shadow-xs"
+          >
+            <CalendarIcon className="w-4 h-4 mb-0.5 text-blue-400" />
+            <span>Agenda</span>
+          </button>
+        )}
+
+        {/* If Admin is unlocked and on a technical tab, provide quick shortcut button */}
+        {isAdminUnlocked && isTechnicalTab && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('agent')}
+            className="flex-1 min-w-[62px] flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 bg-indigo-900 text-white shadow-xs"
+          >
+            <Settings className="w-4 h-4 mb-0.5 text-indigo-300" />
+            <span>Técnico</span>
+          </button>
+        )}
+      </nav>
+
       {/* Technical Admin Contextual Sub-Nav Bar (Visible only when inside Agent, Evolution or Supabase) */}
       {isAdminUnlocked && isTechnicalTab && (
-        <div className="bg-slate-900 border-t border-slate-800 px-4 py-1.5 transition-all">
+        <div className="bg-slate-900 border-t border-slate-800 px-3 md:px-4 py-1.5 transition-all overflow-x-auto no-scrollbar">
           <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-300">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">

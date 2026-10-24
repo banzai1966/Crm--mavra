@@ -273,6 +273,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [showImportModal, setShowImportModal] = useState(false);
   const [showCampaignModal, setShowCampaignModal] = useState(false);
   const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
+  const [mobileActiveStageId, setMobileActiveStageId] = useState<string>('');
+  const [mobileViewMode, setMobileViewMode] = useState<'single' | 'all'>('single');
   const [targetStageForNewLead, setTargetStageForNewLead] = useState<string | undefined>();
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -587,9 +589,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-slate-50/70 p-4 md:p-6 overflow-hidden">
       {/* Top Controls: Search, Metrics & Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
-        <div className="flex items-center gap-3">
-          <div className="relative w-72">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <div className="relative w-full sm:w-64 md:w-72">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               id="kanban-search-input"
@@ -660,7 +662,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Clear / Reset CRM Data Button (Available for Admin) */}
           {isAdmin && (
             leads.length > 0 ? (
@@ -949,9 +951,64 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </div>
       )}
 
+      {/* Mobile Stage Selector Tabs (Active only on small screens to switch columns cleanly without horizontal clipping) */}
+      <div className="md:hidden flex items-center justify-between gap-2 mb-3 bg-white p-2 rounded-xl border border-slate-200 shadow-2xs shrink-0">
+        <div className="flex-1 flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          {effectiveStages.map((stage) => {
+            const count = filteredLeads.filter((l) => getLeadStageIdForNiche(l) === stage.id).length;
+            const isSelected = (mobileActiveStageId || effectiveStages[0]?.id) === stage.id;
+            return (
+              <button
+                key={stage.id}
+                type="button"
+                onClick={() => {
+                  setMobileActiveStageId(stage.id);
+                  setMobileViewMode('single');
+                }}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                  isSelected
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ backgroundColor: stage.color }}
+                />
+                <span className="truncate max-w-[110px]">{stage.name}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-800'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* View mode toggle on mobile */}
+        <button
+          type="button"
+          onClick={() => setMobileViewMode(mobileViewMode === 'single' ? 'all' : 'single')}
+          className="px-2 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-[11px] font-bold shrink-0 cursor-pointer transition-colors whitespace-nowrap"
+          title={mobileViewMode === 'single' ? 'Alternar para visão horizontal completa' : 'Focar em uma etapa por vez'}
+        >
+          {mobileViewMode === 'single' ? 'Ver Todas' : 'Focar 1'}
+        </button>
+      </div>
+
       {/* Kanban Stages Columns */}
-      <div className="flex-1 flex gap-4 overflow-x-auto pb-4 min-h-0 items-stretch" id="kanban-columns-container">
+      <div
+        className={`flex-1 flex gap-4 overflow-x-auto pb-4 min-h-0 items-stretch ${
+          mobileViewMode === 'single' ? 'flex-col md:flex-row' : 'flex-row'
+        }`}
+        id="kanban-columns-container"
+      >
         {effectiveStages.map((stage) => {
+          const isCurrentMobileStage = (mobileActiveStageId || effectiveStages[0]?.id) === stage.id;
+          const isHiddenOnMobile = mobileViewMode === 'single' && !isCurrentMobileStage;
           const stageLeads = filteredLeads.filter((l) => getLeadStageIdForNiche(l) === stage.id);
           const stageTotalValue = stageLeads.reduce((acc, l) => acc + (l.value || 0), 0);
 
@@ -961,7 +1018,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               id={`kanban-col-${stage.id}`}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, stage.id)}
-              className="w-80 shrink-0 bg-slate-100/70 border border-slate-200/80 rounded-xl flex flex-col overflow-hidden"
+              className={`w-full md:w-80 shrink-0 bg-slate-100/70 border border-slate-200/80 rounded-xl flex flex-col overflow-hidden ${
+                isHiddenOnMobile ? 'hidden md:flex' : 'flex'
+              }`}
             >
               {/* Column Header */}
               <div className="p-3 border-b border-slate-200 flex items-center justify-between bg-white/90">

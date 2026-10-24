@@ -150,6 +150,15 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({ isOpen, onClos
             </div>
           </div>
 
+          {/* PWA App Tip */}
+          <div className="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3 flex items-start gap-2.5 text-[11px] text-indigo-900 leading-snug">
+            <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold block">Aplicativo PWA Instalável:</span>
+              O cliente pode tocar no botão <strong>"Instalar App"</strong> no topo da tela para fixar o ícone do NEXA CRM na tela inicial do celular. Abre em tela cheia (como app nativo) e com atualizações automáticas!
+            </div>
+          </div>
+
           {/* Comparison Cards: What client sees vs What is hidden */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             {/* What is visible */}

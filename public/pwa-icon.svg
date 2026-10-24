@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="nexaBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#60a5fa" />
+    </linearGradient>
+    <linearGradient id="nexaCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Card -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Outer Ring glow -->
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#3b82f6" stroke-width="3" stroke-opacity="0.3" />
+
+  <!-- Stylized NEXA 'N' Symbol -->
+  <g transform="translate(96, 96)">
+    <!-- Left vertical bar with chevron slant -->
+    <path d="M40 40 L100 40 L100 280 L40 280 Z" fill="url(#nexaBlue)" rx="16" />
+    
+    <!-- Diagonal Dynamic Connector -->
+    <path d="M80 60 L240 260 L180 260 L40 80 Z" fill="url(#nexaCyan)" opacity="0.95" />
+    
+    <!-- Right vertical bar -->
+    <path d="M220 40 L280 40 L280 280 L220 280 Z" fill="url(#nexaBlue)" rx="16" />
+    
+    <!-- Center AI Sparkle -->
+    <circle cx="160" cy="160" r="14" fill="#ffffff" filter="drop-shadow(0 0 8px #60a5fa)" />
+  </g>
+</svg>
