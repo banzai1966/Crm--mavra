@@ -990,6 +990,7 @@ export const Header: React.FC<HeaderProps> = ({
       <ClientLinkModal
         isOpen={showClientLinkModal}
         onClose={() => setShowClientLinkModal(false)}
+        currentNiche={currentNiche}
       />
 
       {/* Server Health & Resources Telemetry Modal */}

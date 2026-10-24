@@ -23,28 +23,120 @@ import {
   KnowledgeDocument,
 } from './types';
 
+export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
+  clinic: {
+    activeWorkspaceName: 'Clínica & Saúde Integrativa',
+    personaName: 'Sofia (Recepção Clínica)',
+    role: 'Coordenadora de Atendimento & Triagem Clínica',
+    followUpNiche: 'dental',
+    salesGoal: 'Acolher pacientes, realizar pré-triagem de sintomas/horários e agendar consultas e retornos da base antiga',
+  },
+  delivery: {
+    activeWorkspaceName: 'Restaurante & Pizzaria Delivery',
+    personaName: 'Sofia (Central de Pedidos)',
+    role: 'Atendente Especialista em Pedidos & Delivery Rápido',
+    followUpNiche: 'restaurant_delivery',
+    salesGoal: 'Anotar pedidos completos, sugerir bebidas/bordas, calcular taxa de entrega por bairro e validar PIX na hora',
+  },
+  ecommerce: {
+    activeWorkspaceName: 'E-commerce & Distribuidora',
+    personaName: 'Sofia (Consultora de Vendas & Logística)',
+    role: 'Especialista em Catálogo, Cotação de Frete e Fechamento PIX',
+    followUpNiche: 'retail',
+    salesGoal: 'Consultar catálogo completo em PDF, calcular frete por região/CEP, enviar chave PIX e liberar expedição',
+  },
+  b2b: {
+    activeWorkspaceName: 'NEXA B2B & Vendas Comerciais',
+    personaName: 'Sofia Mendes (Executiva B2B)',
+    role: 'Especialista em Soluções Comerciais & Fechamento',
+    followUpNiche: 'sales',
+    salesGoal: 'Qualificar decisores, contornar objeções, apresentar ROI e agendar reunião ou fechar contrato via PIX',
+  },
+  surfacebrasil: {
+    activeWorkspaceName: 'Surfacebrasil – Tratamento por Plasma',
+    personaName: 'Sofia da Surfacebrasil',
+    role: 'Consultora Técnica e Especialista em Tratamento de Superfície por Plasma da Surfacebrasil',
+    toneOfVoice: 'Altamente técnica, consultiva, profissional, acolhedora, objetiva e focada em engenharia de aplicação e solução definitiva de problemas de ancoragem, pintura e adesão.',
+    salesGoal: 'Identificar o substrato/material do cliente e o tipo de falha de adesão, entender a velocidade e o volume da linha fabril, e agendar uma reunião técnica com os engenheiros de aplicação ou o envio de amostras para testes no laboratório Surface Test em Campinas/SP.',
+    followUpNiche: 'b2b_services',
+    catalogPdfName: 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a viabilidade do tratamento por plasma para as peças da sua fábrica. Nossos engenheiros de aplicação estão com a bancada do Surface Test disponível esta semana para testar suas amostras de material ou agendar uma rápida conversa técnica online. Como está sua disponibilidade? ⚡🔬',
+  },
+  verzel: {
+    activeWorkspaceName: 'Verzel – Fábrica de Software & AI',
+    personaName: 'Sofia da Verzel',
+    role: 'Consultora Comercial & Estrategista de Soluções de TI da Verzel',
+    toneOfVoice: 'Executiva, consultiva, altamente técnica, orientada a valor de negócio, agilidade e excelência em engenharia de software.',
+    salesGoal: 'Identificar a necessidade do cliente (novo software sob medida, app mobile iOS/Android, alocação de AI Talent Hub, integração de sistemas ou sustentação 24/7), entender o estágio e prazo, e agendar uma reunião técnica de Discovery com os arquitetos e diretores da Verzel.',
+    followUpNiche: 'b2b_services',
+    catalogPdfName: 'Dossie_Tecnico_Verzel_Sistemas.pdf',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀',
+  },
+  primo: {
+    activeWorkspaceName: 'Primo Equipamentos (Vendas e Equipamentos)',
+    personaName: 'Sofia da Primo Equipamentos',
+    role: 'Consultora Especialista em Equipamentos Gastronômicos & Cozinhas Profissionais',
+    toneOfVoice: 'Consultivo, técnico, ágil, atencioso, seguro e conhecedor prático da rotina de cozinhas comerciais e restaurantes',
+    salesGoal: 'Identificar a necessidade da cozinha ou comércio (abertura, ampliação ou reposição de maquinário), apresentar as especificações técnicas ideais (capacidade, potência e voltagem correta 110V/220V), calcular prazos/frete e direcionar para fechamento com condições no Pix ou cartão.',
+    followUpNiche: 'b2b_services',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳',
+  },
+};
+
+export const getUrlParamNiche = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('nicho') || params.get('workspace') || params.get('empresa');
+  if (raw && WORKSPACE_PRESETS[raw.toLowerCase()]) {
+    const valid = raw.toLowerCase();
+    try {
+      localStorage.setItem('nexa_client_nicho', valid);
+    } catch {}
+    return valid;
+  }
+  try {
+    const saved = localStorage.getItem('nexa_client_nicho');
+    if (saved && WORKSPACE_PRESETS[saved]) return saved;
+  } catch {}
+  return null;
+};
+
 export default function App() {
+  const activeUrlNiche = getUrlParamNiche();
+
   const [activeTab, setActiveTab] = useState<
     'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'delivery' | 'agent' | 'evolution' | 'supabase'
-  >('kanban');
+  >(() => (activeUrlNiche === 'delivery' ? 'delivery' : 'kanban'));
 
   const [stages, setStages] = useState<KanbanStage[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 
-  const [agentConfig, setAgentConfig] = useState<AgentConfig>({
-    personaName: 'Sofia Mendes',
-    role: 'Especialista em Soluções Comerciais NEXA',
-    toneOfVoice: 'Profissional, empático, consultivo e focado em conversão',
-    salesGoal: 'Qualificar leads, tirar dúvidas pelo catálogo e conduzir fechamento',
-    activeProvider: 'gemini',
-    activeModel: 'gemini-2.5-flash',
-    knowledgeFaq: '',
-    knowledgeCatalog: '',
-    knowledgePricing: '',
-    knowledgeRules: '',
-    strictKnowledgeOnly: true,
-    autoTriggerCRMStages: true,
+  const [agentConfig, setAgentConfig] = useState<AgentConfig>(() => {
+    const base: AgentConfig = {
+      personaName: 'Sofia Mendes',
+      role: 'Especialista em Soluções Comerciais NEXA',
+      toneOfVoice: 'Profissional, empático, consultivo e focado em conversão',
+      salesGoal: 'Qualificar leads, tirar dúvidas pelo catálogo e conduzir fechamento',
+      activeProvider: 'gemini',
+      activeModel: 'gemini-2.5-flash',
+      knowledgeFaq: '',
+      knowledgeCatalog: '',
+      knowledgePricing: '',
+      knowledgeRules: '',
+      strictKnowledgeOnly: true,
+      autoTriggerCRMStages: true,
+      isGlobalAiActive: true,
+      testModeEnabled: false,
+      testNumberWhitelist: '',
+    };
+    if (activeUrlNiche && WORKSPACE_PRESETS[activeUrlNiche]) {
+      return { ...base, ...WORKSPACE_PRESETS[activeUrlNiche] };
+    }
+    return base;
   });
 
   const [evolutionConfig, setEvolutionConfig] = useState<EvolutionConfig>({
@@ -184,17 +276,33 @@ export default function App() {
             { id: 'zone-2', regionName: 'Zona Sul / Zona Oeste (3km a 7km)', keywords: 'moema, itaim, pinheiros, perdizes, santana, tatuapé', fee: 12.0, etaMinutes: 35 },
             { id: 'zone-3', regionName: 'Regiões Afastadas / Condomínios (+7km)', keywords: 'alphaville, granja, interlagos, morumbi, barra funda', fee: 18.0, etaMinutes: 45 },
           ];
-          setAgentConfig((prev) => ({
-            ...prev,
-            ...cfg,
-            deliveryZones: Array.isArray(cfg.deliveryZones) && cfg.deliveryZones.length > 0 ? cfg.deliveryZones : defaultZones,
-            freeShippingMinimum: cfg.freeShippingMinimum ?? 120,
-          }));
+          setAgentConfig((prev) => {
+            let merged = {
+              ...prev,
+              ...cfg,
+              deliveryZones: Array.isArray(cfg.deliveryZones) && cfg.deliveryZones.length > 0 ? cfg.deliveryZones : defaultZones,
+              freeShippingMinimum: cfg.freeShippingMinimum ?? 120,
+            };
+            if (activeUrlNiche && WORKSPACE_PRESETS[activeUrlNiche]) {
+              merged = { ...merged, ...WORKSPACE_PRESETS[activeUrlNiche] };
+            }
+            return merged;
+          });
         }
       }
       if (evoRes && evoRes.ok) {
         const evo = await evoRes.json();
-        if (evo && typeof evo === 'object') setEvolutionConfig((prev) => ({ ...prev, ...evo }));
+        if (evo && typeof evo === 'object') {
+          let targetInst = evo.instanceName;
+          if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
+          else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
+          else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
+          setEvolutionConfig((prev) => ({
+            ...prev,
+            ...evo,
+            ...(targetInst ? { instanceName: targetInst } : {}),
+          }));
+        }
       }
       if (supaRes && supaRes.ok) {
         const supa = await supaRes.json();
@@ -574,69 +682,7 @@ export default function App() {
   };
 
   const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel' | 'primo') => {
-    const presets: Record<string, Partial<AgentConfig>> = {
-      clinic: {
-        activeWorkspaceName: 'Clínica & Saúde Integrativa',
-        personaName: 'Sofia (Recepção Clínica)',
-        role: 'Coordenadora de Atendimento & Triagem Clínica',
-        followUpNiche: 'dental',
-        salesGoal: 'Acolher pacientes, realizar pré-triagem de sintomas/horários e agendar consultas e retornos da base antiga',
-      },
-      delivery: {
-        activeWorkspaceName: 'Restaurante & Pizzaria Delivery',
-        personaName: 'Sofia (Central de Pedidos)',
-        role: 'Atendente Especialista em Pedidos & Delivery Rápido',
-        followUpNiche: 'restaurant_delivery',
-        salesGoal: 'Anotar pedidos completos, sugerir bebidas/bordas, calcular taxa de entrega por bairro e validar PIX na hora',
-      },
-      ecommerce: {
-        activeWorkspaceName: 'E-commerce & Distribuidora',
-        personaName: 'Sofia (Consultora de Vendas & Logística)',
-        role: 'Especialista em Catálogo, Cotação de Frete e Fechamento PIX',
-        followUpNiche: 'retail',
-        salesGoal: 'Consultar catálogo completo em PDF, calcular frete por região/CEP, enviar chave PIX e liberar expedição',
-      },
-      b2b: {
-        activeWorkspaceName: 'NEXA B2B & Vendas Comerciais',
-        personaName: 'Sofia Mendes (Executiva B2B)',
-        role: 'Especialista em Soluções Comerciais & Fechamento',
-        followUpNiche: 'sales',
-        salesGoal: 'Qualificar decisores, contornar objeções, apresentar ROI e agendar reunião ou fechar contrato via PIX',
-      },
-      surfacebrasil: {
-        activeWorkspaceName: 'Surfacebrasil – Tratamento por Plasma',
-        personaName: 'Sofia da Surfacebrasil',
-        role: 'Consultora Técnica e Especialista em Tratamento de Superfície por Plasma da Surfacebrasil',
-        toneOfVoice: 'Altamente técnica, consultiva, profissional, acolhedora, objetiva e focada em engenharia de aplicação e solução definitiva de problemas de ancoragem, pintura e adesão.',
-        salesGoal: 'Identificar o substrato/material do cliente e o tipo de falha de adesão, entender a velocidade e o volume da linha fabril, e agendar uma reunião técnica com os engenheiros de aplicação ou o envio de amostras para testes no laboratório Surface Test em Campinas/SP.',
-        followUpNiche: 'b2b_services',
-        catalogPdfName: 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
-        preRecordedAudiosEnabled: false,
-        followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a viabilidade do tratamento por plasma para as peças da sua fábrica. Nossos engenheiros de aplicação estão com a bancada do Surface Test disponível esta semana para testar suas amostras de material ou agendar uma rápida conversa técnica online. Como está sua disponibilidade? ⚡🔬',
-      },
-      verzel: {
-        activeWorkspaceName: 'Verzel – Fábrica de Software & AI',
-        personaName: 'Sofia da Verzel',
-        role: 'Consultora Comercial & Estrategista de Soluções de TI da Verzel',
-        toneOfVoice: 'Executiva, consultiva, altamente técnica, orientada a valor de negócio, agilidade e excelência em engenharia de software.',
-        salesGoal: 'Identificar a necessidade do cliente (novo software sob medida, app mobile iOS/Android, alocação de AI Talent Hub, integração de sistemas ou sustentação 24/7), entender o estágio e prazo, e agendar uma reunião técnica de Discovery com os arquitetos e diretores da Verzel.',
-        followUpNiche: 'b2b_services',
-        catalogPdfName: 'Dossie_Tecnico_Verzel_Sistemas.pdf',
-        preRecordedAudiosEnabled: false,
-        followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀',
-      },
-      primo: {
-        activeWorkspaceName: 'Primo Equipamentos (Vendas e Equipamentos)',
-        personaName: 'Sofia da Primo Equipamentos',
-        role: 'Consultora Especialista em Equipamentos Gastronômicos & Cozinhas Profissionais',
-        toneOfVoice: 'Consultivo, técnico, ágil, atencioso, seguro e conhecedor prático da rotina de cozinhas comerciais e restaurantes',
-        salesGoal: 'Identificar a necessidade da cozinha ou comércio (abertura, ampliação ou reposição de maquinário), apresentar as especificações técnicas ideais (capacidade, potência e voltagem correta 110V/220V), calcular prazos/frete e direcionar para fechamento com condições no Pix ou cartão.',
-        followUpNiche: 'b2b_services',
-        preRecordedAudiosEnabled: false,
-        followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳',
-      },
-    };
-    const chosen = presets[workspaceId];
+    const chosen = WORKSPACE_PRESETS[workspaceId];
     if (chosen) {
       await handleSaveAgentConfig(chosen);
       if (workspaceId === 'surfacebrasil' || workspaceId === 'verzel' || workspaceId === 'primo') {
