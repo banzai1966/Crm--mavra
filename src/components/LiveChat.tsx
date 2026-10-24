@@ -41,6 +41,9 @@ import {
   ChevronUp,
   Smartphone,
   Copy,
+  Plus,
+  Lock,
+  MessageSquarePlus,
 } from 'lucide-react';
 import { Lead, ChatMessage, KanbanStage } from '../types';
 
@@ -57,6 +60,7 @@ interface LiveChatProps {
   onConfirmTriage?: (leadId: string, dateStr: string) => Promise<void>;
   onConfirmPixReceipt?: (leadId: string, paidAmount?: number) => Promise<void> | void;
   onDeleteLead?: (leadId: string) => void;
+  onSaveLead?: (leadData: Partial<Lead>, leadId?: string) => Promise<Lead | undefined>;
   personaName?: string;
   pixKey?: string;
 }
@@ -67,6 +71,31 @@ const COMMON_EMOJIS = [
   '📍', '💰', '💳', '📝', '📞', '🤝',
   '✅', '⭐', '❤️', '🙌', '🔔', '💬',
 ];
+
+const formatBRPhone = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  if (digits.length === 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  if (digits.startsWith('55') && digits.length >= 12) {
+    const ddd = digits.slice(2, 4);
+    const rest = digits.slice(4);
+    if (rest.length <= 8) return `+55 (${ddd}) ${rest.slice(0, 4)}-${rest.slice(4)}`;
+    return `+55 (${ddd}) ${rest.slice(0, 5)}-${rest.slice(5, 9)}`;
+  }
+  return value;
+};
+
+const normalizeToWhatsAppDigits = (raw: string) => {
+  let digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits.length === 10 || digits.length === 11) {
+    digits = `55${digits}`;
+  }
+  return digits;
+};
 
 export const LiveChat: React.FC<LiveChatProps> = ({
   leads,
@@ -81,6 +110,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   onConfirmTriage,
   onConfirmPixReceipt,
   onDeleteLead,
+  onSaveLead,
   personaName = 'Sofia',
   pixKey = 'financeiro@nexacrm.com.br',
 }) => {
@@ -92,6 +122,16 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
+
+  // New Outbound Chat Modal State
+  const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [newChatPhone, setNewChatPhone] = useState('');
+  const [newChatName, setNewChatName] = useState('');
+  const [newChatStageId, setNewChatStageId] = useState('');
+  const [newChatMessage, setNewChatMessage] = useState('');
+  const [newChatAiPaused, setNewChatAiPaused] = useState(true);
+  const [isStartingChat, setIsStartingChat] = useState(false);
+  const [newChatError, setNewChatError] = useState('');
 
   // Deletion modal state (Lead, Histórico ou Mensagem individual)
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -510,6 +550,90 @@ export const LiveChat: React.FC<LiveChatProps> = ({
     inputRef.current?.focus();
   };
 
+  const handleStartNewChat = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setNewChatError('');
+
+    const cleanDigits = normalizeToWhatsAppDigits(newChatPhone);
+    if (!cleanDigits || cleanDigits.length < 10) {
+      setNewChatError('Por favor, informe um número de WhatsApp válido com DDD (ex: 11 99999-9999).');
+      return;
+    }
+
+    setIsStartingChat(true);
+    try {
+      // 1. Check if this phone number already exists in CRM
+      const existing = leads.find((l) => {
+        const leadDigits = l.phone.replace(/\D/g, '');
+        return (
+          leadDigits === cleanDigits ||
+          leadDigits === cleanDigits.replace(/^55/, '') ||
+          (cleanDigits.startsWith('55') && cleanDigits.slice(2) === leadDigits)
+        );
+      });
+
+      let targetLeadId: string;
+
+      if (existing) {
+        targetLeadId = existing.id;
+        onSelectLead(existing.id);
+      } else {
+        // 2. Create the new lead
+        const chosenStage = newChatStageId || stages[0]?.id || 'stage-1';
+        const formattedName = newChatName.trim() || `Contato ${cleanDigits.slice(-4)}`;
+        const leadPayload: Partial<Lead> = {
+          name: formattedName,
+          phone: cleanDigits,
+          stageId: chosenStage,
+          value: 0,
+          interest: 'Iniciado via Chat Ativo',
+          tags: ['Contato Ativo', 'WhatsApp'],
+          notes: `Conversa iniciada diretamente pelo atendente em ${new Date().toLocaleString('pt-BR')}.`,
+          aiPaused: newChatAiPaused,
+        };
+
+        let createdLead: Lead | undefined;
+        if (onSaveLead) {
+          createdLead = await onSaveLead(leadPayload);
+        } else {
+          const res = await fetch('/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(leadPayload),
+          });
+          if (res.ok) {
+            createdLead = await res.json();
+          }
+        }
+
+        if (!createdLead) {
+          throw new Error('Não foi possível registrar o contato no CRM.');
+        }
+
+        targetLeadId = createdLead.id;
+        onSelectLead(createdLead.id);
+      }
+
+      // 3. If an initial message was typed, send it immediately
+      if (newChatMessage.trim()) {
+        await onSendManualMessage(targetLeadId, newChatMessage.trim(), true);
+      }
+
+      // 4. Close modal, reset form, switch to chat view
+      setShowNewChatModal(false);
+      setNewChatPhone('');
+      setNewChatName('');
+      setNewChatMessage('');
+      setNewChatError('');
+      setMobileView('chat');
+    } catch (err: any) {
+      console.error('Erro ao iniciar nova conversa:', err);
+      setNewChatError(err.message || 'Erro ao iniciar conversa. Verifique os dados e tente novamente.');
+    } finally {
+      setIsStartingChat(false);
+    }
+  };
+
   const filteredLeads = leads.filter((l) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -545,8 +669,29 @@ export const LiveChat: React.FC<LiveChatProps> = ({
           mobileView === 'list' ? 'flex' : 'hidden md:flex'
         }`}
       >
-        {/* Search header */}
-        <div className="p-3 border-b border-slate-200 bg-slate-50/70">
+        {/* Top bar with count & New Chat button */}
+        <div className="p-3 border-b border-slate-200 bg-slate-50/70 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+              Conversas ({leads.length})
+            </span>
+            <button
+              type="button"
+              id="btn-new-chat-top"
+              onClick={() => {
+                setNewChatError('');
+                setShowNewChatModal(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-lg shadow-2xs transition-colors cursor-pointer"
+              title="Iniciar nova conversa com qualquer número de WhatsApp"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Nova Conversa</span>
+            </button>
+          </div>
+
+          {/* Search input */}
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
@@ -560,85 +705,117 @@ export const LiveChat: React.FC<LiveChatProps> = ({
           </div>
         </div>
 
-        {/* Leads conversation list */}
+        {/* Leads conversation list or Empty State */}
         <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
-          {filteredLeads.map((lead) => {
-            const isSelected = activeLead?.id === lead.id;
-            const stage = stages.find((s) => s.id === lead.stageId);
-
-            return (
+          {filteredLeads.length === 0 ? (
+            <div className="p-6 text-center text-slate-400 text-xs space-y-3 flex flex-col items-center justify-center h-64">
+              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                <MessageSquare className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700 mb-1">
+                  {searchTerm ? 'Nenhum contato encontrado' : 'Nenhuma conversa ainda'}
+                </p>
+                <p className="text-[11px] text-slate-500">
+                  {searchTerm
+                    ? `Não encontramos resultados para "${searchTerm}".`
+                    : 'Inicie um atendimento direto com qualquer número de WhatsApp.'}
+                </p>
+              </div>
               <button
-                key={lead.id}
-                id={`chat-item-${lead.id}`}
+                type="button"
                 onClick={() => {
-                  onSelectLead(lead.id);
-                  setMobileView('chat');
+                  if (searchTerm && /^\d+$/.test(searchTerm.replace(/\D/g, ''))) {
+                    setNewChatPhone(formatBRPhone(searchTerm));
+                  }
+                  setNewChatError('');
+                  setShowNewChatModal(true);
                 }}
-                className={`w-full p-3.5 text-left flex items-start gap-3 transition-colors cursor-pointer ${
-                  isSelected
-                    ? 'bg-slate-100/90 border-l-4 border-slate-900'
-                    : 'hover:bg-slate-50'
-                }`}
+                className="px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-lg shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1.5"
               >
-                {/* Avatar circle */}
-                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm shrink-0 border border-slate-200">
-                  {lead.name.slice(0, 2).toUpperCase()}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-1">
-                    <h4 className="text-xs font-bold text-slate-900 truncate">{lead.name}</h4>
-                    <span className="text-[10px] text-slate-400 font-mono shrink-0">
-                      {new Date(lead.lastInteraction).toLocaleTimeString('pt-BR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono mb-1.5 truncate">
-                    <Phone className="w-2.5 h-2.5 text-slate-400 shrink-0" />
-                    <span>{lead.phone}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-1">
-                    {/* Stage badge */}
-                    <span
-                      className="text-[10px] px-1.5 py-0.5 rounded font-semibold truncate max-w-[130px]"
-                      style={{
-                        backgroundColor: `${stage?.color}15`,
-                        color: stage?.color,
-                        border: `1px solid ${stage?.color}35`,
-                      }}
-                    >
-                      {stage?.name || 'Novo Lead'}
-                    </span>
-
-                    {/* AI status pill */}
-                    <span
-                      className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-semibold flex items-center gap-1 shrink-0 border ${
-                        lead.aiPaused
-                          ? 'bg-amber-50 text-amber-800 border-amber-200'
-                          : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      }`}
-                    >
-                      {lead.aiPaused ? (
-                        <>
-                          <UserCheck className="w-2.5 h-2.5 text-amber-700" />
-                          <span>Humano</span>
-                        </>
-                      ) : (
-                        <>
-                          <Bot className="w-2.5 h-2.5 text-emerald-700" />
-                          <span>IA</span>
-                        </>
-                      )}
-                    </span>
-                  </div>
-                </div>
+                <Plus className="w-3.5 h-3.5" />
+                <span>{searchTerm ? 'Chamar este número' : 'Iniciar Nova Conversa'}</span>
               </button>
-            );
-          })}
+            </div>
+          ) : (
+            filteredLeads.map((lead) => {
+              const isSelected = activeLead?.id === lead.id;
+              const stage = stages.find((s) => s.id === lead.stageId);
+
+              return (
+                <button
+                  key={lead.id}
+                  id={`chat-item-${lead.id}`}
+                  onClick={() => {
+                    onSelectLead(lead.id);
+                    setMobileView('chat');
+                  }}
+                  className={`w-full p-3.5 text-left flex items-start gap-3 transition-colors cursor-pointer ${
+                    isSelected
+                      ? 'bg-slate-100/90 border-l-4 border-slate-900'
+                      : 'hover:bg-slate-50'
+                  }`}
+                >
+                  {/* Avatar circle */}
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm shrink-0 border border-slate-200">
+                    {lead.name.slice(0, 2).toUpperCase()}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <h4 className="text-xs font-bold text-slate-900 truncate">{lead.name}</h4>
+                      <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                        {new Date(lead.lastInteraction).toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono mb-1.5 truncate">
+                      <Phone className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                      <span>{lead.phone}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-1">
+                      {/* Stage badge */}
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded font-semibold truncate max-w-[130px]"
+                        style={{
+                          backgroundColor: `${stage?.color}15`,
+                          color: stage?.color,
+                          border: `1px solid ${stage?.color}35`,
+                        }}
+                      >
+                        {stage?.name || 'Novo Lead'}
+                      </span>
+
+                      {/* AI status pill */}
+                      <span
+                        className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-semibold flex items-center gap-1 shrink-0 border ${
+                          lead.aiPaused
+                            ? 'bg-amber-50 text-amber-800 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        }`}
+                      >
+                        {lead.aiPaused ? (
+                          <>
+                            <UserCheck className="w-2.5 h-2.5 text-amber-700" />
+                            <span>Humano</span>
+                          </>
+                        ) : (
+                          <>
+                            <Bot className="w-2.5 h-2.5 text-emerald-700" />
+                            <span>IA</span>
+                          </>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -1347,8 +1524,36 @@ export const LiveChat: React.FC<LiveChatProps> = ({
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-slate-400 text-xs">
-            Selecione uma conversa ao lado para visualizar o atendimento.
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-[#f0f2f5] select-none">
+            <div className="max-w-md w-full space-y-4">
+              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-xs border border-emerald-200">
+                <Smartphone className="w-8 h-8" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-800">Central de WhatsApp Web</h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                  Envie e receba mensagens sincronizadas diretamente pela sua instância do WhatsApp. Inicie novos contatos com qualquer número ou selecione uma conversa da lista.
+                </p>
+              </div>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  id="btn-empty-start-chat"
+                  onClick={() => {
+                    setNewChatError('');
+                    setShowNewChatModal(true);
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Iniciar Conversa com um Número</span>
+                </button>
+              </div>
+              <div className="pt-6 border-t border-slate-200/80 flex items-center justify-center gap-2 text-[11px] text-slate-400 font-mono">
+                <Lock className="w-3.5 h-3.5 text-slate-400" />
+                <span>Conexão direta ponta-a-ponta via Evolution API</span>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -1564,6 +1769,186 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                 <span>{isDeleting ? 'Excluindo...' : 'Sim, Excluir'}</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Iniciar Nova Conversa com Qualquer Número */}
+      {showNewChatModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150 border border-slate-200">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                  <MessageSquarePlus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Iniciar Nova Conversa</h3>
+                  <p className="text-[11px] text-slate-500">Envie mensagem para qualquer número no WhatsApp</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowNewChatModal(false);
+                  setNewChatError('');
+                }}
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Error banner */}
+            {newChatError && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{newChatError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleStartNewChat} className="space-y-3.5">
+              {/* WhatsApp Phone */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  Número do WhatsApp <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="(11) 99999-9999 ou 5511999999999"
+                    value={newChatPhone}
+                    onChange={(e) => setNewChatPhone(formatBRPhone(e.target.value))}
+                    className="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden transition-colors"
+                  />
+                </div>
+                <div className="flex items-center justify-between mt-1 text-[10px] text-slate-400">
+                  <span>Informe o DDD + número de celular</span>
+                  {newChatPhone && (
+                    <span className="font-mono text-emerald-700 font-medium">
+                      JID: {normalizeToWhatsAppDigits(newChatPhone)}@s.whatsapp.net
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Contact Name */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  Nome do Contato ou Empresa <span className="text-slate-400 font-normal">(Opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: João da Silva ou Primo Distribuidora"
+                  value={newChatName}
+                  onChange={(e) => setNewChatName(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden transition-colors"
+                />
+              </div>
+
+              {/* Initial Stage */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  Etapa Inicial no Funil CRM
+                </label>
+                <select
+                  value={newChatStageId || stages[0]?.id || ''}
+                  onChange={(e) => setNewChatStageId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-hidden transition-colors"
+                >
+                  {stages.map((stg) => (
+                    <option key={stg.id} value={stg.id}>
+                      {stg.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* First Message (Optional) */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-bold text-slate-700">
+                    Primeira Mensagem <span className="text-slate-400 font-normal">(Opcional)</span>
+                  </label>
+                  <span className="text-[10px] text-slate-400">Envia via WhatsApp ao criar</span>
+                </div>
+                <textarea
+                  rows={2}
+                  placeholder="Olá! Tudo bem? Estou entrando em contato referente ao seu interesse..."
+                  value={newChatMessage}
+                  onChange={(e) => setNewChatMessage(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-xl p-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden transition-colors resize-none"
+                />
+                <div className="flex items-center gap-1.5 mt-1 overflow-x-auto pb-1 text-[10px]">
+                  <span className="text-slate-400 font-medium shrink-0">Modelos rápidos:</span>
+                  <button
+                    type="button"
+                    onClick={() => setNewChatMessage(`Olá! Tudo bem? Como posso te ajudar hoje?`)}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 shrink-0 cursor-pointer"
+                  >
+                    👋 Saudação
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewChatMessage(`Olá! Vi seu interesse em nossos produtos e equipamentos. Poderia me dar mais detalhes do que precisa?`)}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 shrink-0 cursor-pointer"
+                  >
+                    💼 Comercial
+                  </button>
+                </div>
+              </div>
+
+              {/* AI Pause Toggle */}
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <UserCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">Assumir atendimento (Pausar IA)</p>
+                    <p className="text-[10px] text-slate-500">
+                      Evita que a assistente virtual {personaName} responda antes de você concluir a conversa.
+                    </p>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={newChatAiPaused}
+                  onChange={(e) => setNewChatAiPaused(e.target.checked)}
+                  className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowNewChatModal(false)}
+                  disabled={isStartingChat}
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isStartingChat || !newChatPhone.trim()}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer inline-flex items-center gap-2"
+                >
+                  {isStartingChat ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Iniciando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Iniciar Conversa & Abrir</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

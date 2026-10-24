@@ -207,7 +207,7 @@ async function startServer() {
   });
 
   app.post('/api/leads', (req: Request, res: Response) => {
-    const { name, phone, email, stageId, value, interest, tags, notes } = req.body;
+    const { name, phone, email, stageId, value, interest, tags, notes, aiPaused } = req.body;
     if (!name || !phone) {
       return res.status(400).json({ error: 'Nome e telefone são obrigatórios' });
     }
@@ -223,7 +223,7 @@ async function startServer() {
       interest: interest || '',
       tags: Array.isArray(tags) ? tags : [],
       notes: notes || '',
-      aiPaused: false,
+      aiPaused: typeof aiPaused === 'boolean' ? aiPaused : false,
       lastInteraction: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       unreadCount: 0,

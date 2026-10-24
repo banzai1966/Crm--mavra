@@ -257,7 +257,7 @@ export default function App() {
     }
   };
 
-  const handleSaveLead = async (leadData: Partial<Lead>, leadId?: string) => {
+  const handleSaveLead = async (leadData: Partial<Lead>, leadId?: string): Promise<Lead | undefined> => {
     try {
       if (leadId) {
         const res = await fetch(`/api/leads/${leadId}`, {
@@ -268,6 +268,7 @@ export default function App() {
         if (res.ok) {
           const updated = await res.json();
           setLeads((prev) => prev.map((l) => (l.id === leadId ? updated : l)));
+          return updated;
         }
       } else {
         const res = await fetch('/api/leads', {
@@ -278,11 +279,13 @@ export default function App() {
         if (res.ok) {
           const created = await res.json();
           setLeads((prev) => [created, ...prev]);
+          return created;
         }
       }
     } catch (err) {
       console.error('Erro ao salvar lead:', err);
     }
+    return undefined;
   };
 
   const handleDeleteLead = async (leadId: string) => {
@@ -783,6 +786,7 @@ export default function App() {
               onConfirmTriage={handleConfirmTriage}
               onConfirmPixReceipt={handleConfirmPixReceipt}
               onDeleteLead={handleDeleteLead}
+              onSaveLead={handleSaveLead}
               personaName={agentConfig?.personaName || 'Sofia'}
               pixKey={agentConfig?.pixKey || 'financeiro@nexacrm.com.br'}
             />
