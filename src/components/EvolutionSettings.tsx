@@ -225,13 +225,15 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   const [presetNotice, setPresetNotice] = useState<string | null>(null);
 
   // Handle Switch Instance Tab
-  const handleSelectInstanceTab = (inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'custom', customName?: string) => {
-    setSelectedInstanceTab(inst);
+  const handleSelectInstanceTab = (inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'cemiterio-cantareira' | 'custom', customName?: string) => {
+    setSelectedInstanceTab(inst as any);
     let targetName = 'dra-lucy-murata';
     if (inst === 'agente-ia') targetName = 'agente-ia';
     if (inst === 'demo-ao-vivo') targetName = 'demo-ao-vivo';
     if (inst === 'verzel') targetName = 'verzel';
     if (inst === 'surfacebrasil') targetName = 'surfacebrasil';
+    if (inst === 'primo-equipamentos') targetName = 'primo-equipamentos';
+    if (inst === 'cemiterio-cantareira') targetName = 'cemiterio-cantareira';
     if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
 
     // Lookup saved apiKey for this target instance
@@ -525,8 +527,34 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Tab 1: Instância Verzel */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {/* Tab 1: Instância Primo Equipamentos */}
+            <div
+              onClick={() => handleSelectInstanceTab('primo-equipamentos')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'primo-equipamentos'
+                  ? 'border-amber-600 bg-amber-50/50 ring-1 ring-amber-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  Primo Equipamentos
+                </span>
+                {config.instanceName === 'primo-equipamentos' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-amber-700">primo-equipamentos</strong>
+              </p>
+              <span className="inline-block text-[10px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded mt-2">
+                Sofia • Gastronomia
+              </span>
+            </div>
+
+            {/* Tab 2: Instância Verzel */}
             <div
               onClick={() => handleSelectInstanceTab('verzel')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
@@ -552,7 +580,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </span>
             </div>
 
-            {/* Tab 2: Instância Surface Brasil */}
+            {/* Tab 3: Instância Surface Brasil */}
             <div
               onClick={() => handleSelectInstanceTab('surfacebrasil')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
@@ -578,7 +606,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </span>
             </div>
 
-            {/* Tab 3: Instância Saúde & Odontologia (Dra. Lucy) */}
+            {/* Tab 4: Instância Saúde & Odontologia (Dra. Lucy) */}
             <div
               onClick={() => handleSelectInstanceTab('custom', 'dental-integrative')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
@@ -601,7 +629,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </span>
             </div>
 
-            {/* Tab 4: Instância Marco Duarte (Oficial) */}
+            {/* Tab 5: Instância Marco Duarte (Oficial) */}
             <div
               onClick={() => handleSelectInstanceTab('agente-ia')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${

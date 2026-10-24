@@ -48,6 +48,9 @@ export function normalizeInstanceName(inst?: string): string {
   if (raw === 'cemiterio-cantareira' || raw === 'cantareira') {
     return 'cemiterio-cantareira';
   }
+  if (raw === 'primo' || raw === 'primo-equipamento' || raw === 'primo-equipamentos') {
+    return 'primo-equipamentos';
+  }
   return raw || 'dental-integrative';
 }
 
