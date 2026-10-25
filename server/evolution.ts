@@ -17,17 +17,27 @@ export function sanitizeEvolutionUrl(url: string): string {
  * Returns the effective API key for Evolution API.
  * Defaults to the master key if unset, dummy, or set to the instance-restricted token.
  */
-export function getEvolutionApiKey(): string {
-  const configured = (db.evolutionConfig.apiKey || '').trim();
-  if (
-    !configured ||
-    configured === 'CE08ADFF7647-4B88-91A4-55E66D9A0620' ||
-    configured.includes('seuservidor.com') ||
-    configured.includes('exemplo')
-  ) {
-    return MASTER_EVOLUTION_KEY;
+export function getEvolutionApiKey(instanceName?: string): string {
+  const config = db.evolutionConfig;
+  const targetInstance = instanceName ? normalizeInstanceName(instanceName) : normalizeInstanceName(config.instanceName);
+
+  // 1. Check instance-specific token stored in instanceApiKeys
+  const specificKey = config.instanceApiKeys?.[targetInstance];
+  if (specificKey && specificKey.trim() && !specificKey.includes('seuservidor')) {
+    return specificKey.trim();
   }
-  return configured;
+
+  // 2. Fall back to general configured apiKey if valid
+  const configured = (config.apiKey || '').trim();
+  if (
+    configured &&
+    configured !== 'CE08ADFF7647-4B88-91A4-55E66D9A0620' &&
+    !configured.includes('seuservidor.com') &&
+    !configured.includes('exemplo')
+  ) {
+    return configured;
+  }
+  return MASTER_EVOLUTION_KEY;
 }
 
 /**
@@ -50,6 +60,9 @@ export function normalizeInstanceName(inst?: string): string {
   }
   if (raw === 'primo' || raw === 'primo-equipamento' || raw === 'primo-equipamentos') {
     return 'primo-equipamentos';
+  }
+  if (raw.startsWith('dental-integrative')) {
+    return 'dental-integrative';
   }
   return raw || 'dental-integrative';
 }
@@ -81,7 +94,7 @@ export async function sendWhatsAppMessage(
     baseUrl.includes('seuservidor.com') ||
     baseUrl.includes('exemplo');
 
-  const apiKey = getEvolutionApiKey();
+  const apiKey = getEvolutionApiKey(targetInstance);
 
   if (isDummyUrl || !apiKey) {
     console.log(
@@ -171,7 +184,7 @@ export async function sendWhatsAppMedia(
     return { success: false, error: 'Telefone ou URL do documento ausente' };
   }
 
-  const apiKey = getEvolutionApiKey();
+  const apiKey = getEvolutionApiKey(targetInstance);
   const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
   if (isDummyUrl || !apiKey) {
     console.log(`[Evolution API Simulada (${targetInstance})] Documento PDF enviado para ${cleanPhone}: "${fileName}" (${mediaUrl})`);
@@ -253,7 +266,7 @@ export async function sendWhatsAppImage(
     return { success: false, error: 'Telefone ou imagem ausente' };
   }
 
-  const apiKey = getEvolutionApiKey();
+  const apiKey = getEvolutionApiKey(targetInstance);
   const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
   if (isDummyUrl || !apiKey) {
     console.log(`[Evolution API Simulada (${targetInstance})] Foto/Imagem enviada para ${cleanPhone}`);
@@ -330,7 +343,7 @@ export async function sendWhatsAppVoiceAudio(
     return { success: false, error: 'Telefone ou áudio ausente' };
   }
 
-  const apiKey = getEvolutionApiKey();
+  const apiKey = getEvolutionApiKey(targetInstance);
   const isDummyUrl = !baseUrl || baseUrl.includes('seuservidor.com') || baseUrl.includes('exemplo');
   if (isDummyUrl || !apiKey) {
     console.log(`[Evolution API Simulada (${targetInstance})] Áudio PTT enviado para ${cleanPhone} (${base64OrUrl.length} bytes)`);
@@ -558,7 +571,7 @@ export async function checkEvolutionStatus(): Promise<{
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
   const targetInstance = normalizeInstanceName(config.instanceName);
-  const apiKey = getEvolutionApiKey();
+  const apiKey = getEvolutionApiKey(targetInstance);
 
   if (!baseUrl || baseUrl.includes('seuservidor.com') || !apiKey) {
     // In dev / unconfigured mode, keep as connected/simulated for instant testing
@@ -627,7 +640,7 @@ export async function fetchRemoteWebhookConfig(): Promise<{
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
   const targetInstance = normalizeInstanceName(config.instanceName);
-  const apiKey = getEvolutionApiKey();
+  const apiKey = getEvolutionApiKey(targetInstance);
   if (!baseUrl || !apiKey) {
     return { success: false, error: 'Credenciais não configuradas' };
   }
@@ -665,7 +678,8 @@ export async function setRemoteWebhookConfig(targetWebhookUrl: string, targetIns
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const apiKey = getEvolutionApiKey();
+  const inst = normalizeInstanceName(targetInstance || config.instanceName);
+  const apiKey = getEvolutionApiKey(inst);
   if (!baseUrl || !apiKey) {
     return { success: false, error: 'Credenciais não configuradas' };
   }
@@ -747,7 +761,7 @@ export async function getEvolutionQRCode(targetInstance?: string): Promise<{
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
   const rawInstance = normalizeInstanceName(targetInstance || config.instanceName);
   const instance = encodeURIComponent(rawInstance);
-  const apiKey = getEvolutionApiKey();
+  const apiKey = getEvolutionApiKey(rawInstance);
 
   if (!baseUrl || !apiKey) {
     return { success: false, state: 'disconnected', error: 'Servidor Evolution não configurado' };
@@ -931,8 +945,9 @@ export async function logoutEvolutionInstance(targetInstance?: string): Promise<
 }> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl);
-  const instance = encodeURIComponent(normalizeInstanceName(targetInstance || config.instanceName));
-  const apiKey = getEvolutionApiKey();
+  const rawInst = normalizeInstanceName(targetInstance || config.instanceName);
+  const instance = encodeURIComponent(rawInst);
+  const apiKey = getEvolutionApiKey(rawInst);
 
   if (!baseUrl || !apiKey) {
     return { success: false, error: 'Servidor Evolution não configurado' };

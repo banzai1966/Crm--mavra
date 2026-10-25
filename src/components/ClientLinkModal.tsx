@@ -30,24 +30,27 @@ interface CompanyOption {
   icon: React.ComponentType<{ className?: string }>;
   tag: string;
   badgeColor: string;
+  aliases?: string[];
 }
 
 const COMPANIES: CompanyOption[] = [
   {
-    id: 'primo',
-    name: 'Primo Equipamentos',
-    subtitle: 'Gastronomia & Cozinhas Profissionais',
-    icon: Building2,
-    tag: 'Vendas & Equipamentos',
-    badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+    id: 'clinic',
+    name: 'Dra. Lucy Murata',
+    subtitle: 'Odontologia Integrativa & Biológica',
+    icon: Stethoscope,
+    tag: 'Saúde & Biológica',
+    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    aliases: ['clinic', 'dra-lucy-murata', 'dra_lucy_murata', 'dra-lucy', 'dental-integrative'],
   },
   {
-    id: 'verzel',
-    name: 'Verzel Sistemas',
-    subtitle: 'Fábrica de Software & AI Talent Hub',
-    icon: Code2,
-    tag: 'Tech & Software',
-    badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    id: 'cantareira',
+    name: 'Cemitério Parque Cantareira',
+    subtitle: 'Jazigos Perpétuos & Assistência 24h',
+    icon: Building2,
+    tag: 'Parque Cantareira',
+    badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
+    aliases: ['cantareira', 'cemiterio-cantareira', 'cemiterio_parque_cantareira'],
   },
   {
     id: 'surfacebrasil',
@@ -56,14 +59,25 @@ const COMPANIES: CompanyOption[] = [
     icon: Zap,
     tag: 'Indústria Plasma',
     badgeColor: 'bg-sky-100 text-sky-800 border-sky-200',
+    aliases: ['surfacebrasil', 'surface-brasil', 'surface_brasil_plasma'],
   },
   {
-    id: 'clinic',
-    name: 'Clínica & Saúde Integrativa',
-    subtitle: 'Consultas, Exames & Triagem de Pacientes',
-    icon: Stethoscope,
-    tag: 'Saúde & Estética',
-    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    id: 'verzel',
+    name: 'Verzel Sistemas & AI',
+    subtitle: 'Fábrica de Software & AI Talent Hub',
+    icon: Code2,
+    tag: 'Tech & Software',
+    badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    aliases: ['verzel', 'verzel_software_consultoria'],
+  },
+  {
+    id: 'primo',
+    name: 'Primo Equipamentos',
+    subtitle: 'Gastronomia & Cozinhas Profissionais',
+    icon: Building2,
+    tag: 'Vendas & Equipamentos',
+    badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+    aliases: ['primo', 'primo-equipamentos'],
   },
   {
     id: 'delivery',
@@ -72,6 +86,7 @@ const COMPANIES: CompanyOption[] = [
     icon: UtensilsCrossed,
     tag: 'Alimentação',
     badgeColor: 'bg-rose-100 text-rose-800 border-rose-200',
+    aliases: ['delivery', 'restaurant_delivery'],
   },
   {
     id: 'b2b',
@@ -80,6 +95,7 @@ const COMPANIES: CompanyOption[] = [
     icon: Building2,
     tag: 'Corporativo B2B',
     badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
+    aliases: ['b2b', 'nexa_sales', 'sales'],
   },
 ];
 
@@ -89,10 +105,13 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({
   currentNiche,
 }) => {
   const [selectedNiche, setSelectedNiche] = useState<string>(() => {
-    if (currentNiche && COMPANIES.some((c) => c.id === currentNiche)) {
-      return currentNiche;
+    if (currentNiche) {
+      const match = COMPANIES.find(
+        (c) => c.id === currentNiche || (c.aliases && c.aliases.includes(currentNiche))
+      );
+      if (match) return match.id;
     }
-    return 'primo';
+    return 'clinic';
   });
 
   const [copiedLink, setCopiedLink] = useState(false);
@@ -100,7 +119,16 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({
 
   if (!isOpen) return null;
 
-  const activeCompany = COMPANIES.find((c) => c.id === selectedNiche) || COMPANIES[0];
+  const activeCompany = COMPANIES.find(
+    (c) => c.id === selectedNiche || (c.aliases && c.aliases.includes(selectedNiche))
+  ) || {
+    id: selectedNiche,
+    name: selectedNiche ? selectedNiche.toUpperCase().replace(/-/g, ' ') : 'Empresa Personalizada',
+    subtitle: 'Cliente / Empresa Registrada',
+    icon: Building2,
+    tag: 'Cliente',
+    badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+  };
 
   // Build clean link carrying mode and unique niche identifier
   let clientUrl = '';
@@ -185,45 +213,84 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({
 
         {/* Modal Body (Scrollable) */}
         <div className="p-4 sm:p-5 space-y-4 overflow-y-auto text-xs text-slate-700">
-          {/* Step 1: Company Selector */}
-          <div>
-            <label className="font-bold text-slate-800 text-xs block mb-2">
-              1. Selecione para qual cliente/empresa você quer gerar o link:
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {COMPANIES.map((company) => {
-                const isSelected = selectedNiche === company.id;
-                const Icon = company.icon;
-                return (
-                  <button
-                    key={company.id}
-                    type="button"
-                    onClick={() => setSelectedNiche(company.id)}
-                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
-                      isSelected
-                        ? 'border-indigo-600 bg-indigo-50/70 shadow-xs ring-2 ring-indigo-500/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                        <Icon className="w-3.5 h-3.5" />
+          {/* Step 1: Company Selector & Dynamic Custom Input */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                <span>1. Selecione a empresa ou digite o nome de qualquer nova empresa:</span>
+              </label>
+            </div>
+
+            {/* Dynamic Custom Slug Input for Unlimited Scale */}
+            <div className="bg-gradient-to-r from-indigo-50 to-slate-50 border border-indigo-200 rounded-xl p-3 space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-bold text-indigo-950">
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Gerador Dinâmico para Infinitas Empresas (Sem limite)</span>
+                </span>
+                <span className="text-[10px] text-indigo-600 font-semibold bg-white px-2 py-0.5 rounded border border-indigo-200">
+                  Qualquer Nome / Slug
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={selectedNiche}
+                    onChange={(e) => {
+                      const clean = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+                      setSelectedNiche(clean);
+                    }}
+                    placeholder="Digite o nome da empresa (ex: dra-lucy-murata, empresa-xyz)"
+                    className="w-full bg-white border border-indigo-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  />
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-tight">
+                💡 Digite qualquer identificador acima (ex: <code className="text-indigo-700 font-bold">dra-lucy-murata</code>, <code className="text-indigo-700 font-bold">cliente-1000</code>). O link é gerado na hora sem precisar de programação ou novos botões.
+              </p>
+            </div>
+
+            {/* Quick Atalhos / Presets */}
+            <div>
+              <span className="text-[11px] font-bold text-slate-700 block mb-1.5">
+                Ou selecione um dos atalhos rápidos ativos:
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {COMPANIES.map((company) => {
+                  const isSelected = selectedNiche === company.id || (company.aliases && company.aliases.includes(selectedNiche));
+                  const Icon = company.icon;
+                  return (
+                    <button
+                      key={company.id}
+                      type="button"
+                      onClick={() => setSelectedNiche(company.id)}
+                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                        isSelected
+                          ? 'border-indigo-600 bg-indigo-50/70 shadow-xs ring-2 ring-indigo-500/20'
+                          : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                          <Icon className="w-3.5 h-3.5" />
+                        </div>
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold border ${company.badgeColor}`}>
+                          {company.tag}
+                        </span>
                       </div>
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold border ${company.badgeColor}`}>
-                        {company.tag}
-                      </span>
-                    </div>
-                    <div>
-                      <p className={`font-bold text-[11px] leading-tight ${isSelected ? 'text-indigo-950' : 'text-slate-800'}`}>
-                        {company.name}
-                      </p>
-                      <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">
-                        {company.subtitle}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+                      <div>
+                        <p className={`font-bold text-[11px] leading-tight ${isSelected ? 'text-indigo-950' : 'text-slate-800'}`}>
+                          {company.name}
+                        </p>
+                        <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">
+                          {company.subtitle}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
