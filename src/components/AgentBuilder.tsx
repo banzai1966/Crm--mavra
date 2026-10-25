@@ -909,12 +909,36 @@ interface AgentBuilderProps {
 
 export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   agentConfig,
-  documents,
+  documents = [],
   onSaveConfig,
   onUploadDocument,
   onDeleteDocument,
 }) => {
-  const [config, setConfig] = useState<AgentConfig>(agentConfig);
+  const [config, setConfig] = useState<AgentConfig>(() => ({
+    personaName: 'Sofia',
+    role: 'Especialista em Soluções NEXA',
+    toneOfVoice: 'Profissional, empático, consultivo e focado em conversão',
+    salesGoal: 'Qualificar leads, tirar dúvidas e agendar atendimento',
+    activeProvider: 'gemini',
+    activeModel: 'gemini-2.5-flash',
+    knowledgeFaq: '',
+    knowledgeCatalog: '',
+    knowledgePricing: '',
+    knowledgeRules: '',
+    strictKnowledgeOnly: true,
+    autoTriggerCRMStages: true,
+    isGlobalAiActive: true,
+    testModeEnabled: false,
+    testNumberWhitelist: '',
+    ...(agentConfig || {}),
+  }));
+
+  useEffect(() => {
+    if (agentConfig && typeof agentConfig === 'object') {
+      setConfig((prev) => ({ ...prev, ...agentConfig }));
+    }
+  }, [agentConfig]);
+
   const [activeKnowledgeTab, setActiveKnowledgeTab] = useState<'faq' | 'catalog' | 'pricing' | 'rules'>('faq');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
