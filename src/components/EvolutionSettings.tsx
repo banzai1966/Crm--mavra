@@ -119,6 +119,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     ...KNOWN_DEFAULT_KEYS,
     ...(evolutionConfig.instanceApiKeys || {}),
   }));
+  const [dirtyKeys, setDirtyKeys] = useState<Record<string, boolean>>({});
   const [showInstanceKeyMap, setShowInstanceKeyMap] = useState<Record<string, boolean>>({});
   const [savedKeyFeedback, setSavedKeyFeedback] = useState<Record<string, boolean>>({});
   const [copiedKeyFeedback, setCopiedKeyFeedback] = useState<Record<string, boolean>>({});
@@ -127,13 +128,18 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   useEffect(() => {
     if (!isEditing) {
       setConfig(evolutionConfig);
-      setIndividualKeys((prev) => ({
-        ...KNOWN_DEFAULT_KEYS,
-        ...prev,
-        ...(evolutionConfig.instanceApiKeys || {}),
-      }));
     }
-  }, [evolutionConfig, isEditing]);
+    setIndividualKeys((prev) => {
+      const next = { ...prev };
+      const serverKeys = evolutionConfig.instanceApiKeys || {};
+      for (const [key, val] of Object.entries(serverKeys)) {
+        if (!dirtyKeys[key]) {
+          next[key] = val;
+        }
+      }
+      return next;
+    });
+  }, [evolutionConfig, isEditing, dirtyKeys]);
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
@@ -349,6 +355,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
         body: JSON.stringify({ instanceName: instName, token: cleanToken }),
       });
       if (res.ok) {
+        setDirtyKeys((prev) => ({ ...prev, [instName]: false }));
         const updatedInstanceKeys = {
           ...(config.instanceApiKeys || {}),
           [instName]: cleanToken,
@@ -1194,6 +1201,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                           onChange={(e) => {
                             const val = e.target.value;
                             setIndividualKeys((prev) => ({ ...prev, [item.instance]: val }));
+                            setDirtyKeys((prev) => ({ ...prev, [item.instance]: true }));
                           }}
                           placeholder="Cole o token da instância..."
                           className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-16 py-1.5 text-xs font-mono text-slate-900 focus:outline-hidden focus:border-slate-400"
