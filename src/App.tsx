@@ -463,18 +463,16 @@ export default function App() {
       if (evoRes && evoRes.ok) {
         const evo = await evoRes.json();
         if (evo && typeof evo === 'object') {
-          let targetInst = evo.instanceName;
-          if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
-          else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
-          else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
-          else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
-          else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
-          const targetKey = (targetInst && evo.instanceApiKeys?.[targetInst]) || evo.apiKey;
-          setEvolutionConfig((prev) => ({
-            ...prev,
-            ...evo,
-            ...(targetInst ? { instanceName: targetInst, apiKey: targetKey || prev.apiKey } : {}),
-          }));
+          setEvolutionConfig((prev) => {
+            const currentInst = prev.instanceName || evo.instanceName || 'dental-integrative';
+            const currentKey = (currentInst && evo.instanceApiKeys?.[currentInst]) || evo.apiKey;
+            return {
+              ...prev,
+              ...evo,
+              instanceName: currentInst,
+              apiKey: currentKey || prev.apiKey,
+            };
+          });
         }
       }
       if (supaRes && supaRes.ok) {
