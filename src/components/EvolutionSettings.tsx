@@ -29,6 +29,69 @@ import {
 } from 'lucide-react';
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
+const KNOWN_DEFAULT_KEYS: Record<string, string> = {
+  'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
+  'verzel': '8B4CDFF9-8C33-415D-9877-EBE5E74134F4',
+  'surfacebrasil': 'DE151DAD-79C8-49F5-BFE3-5E129987F773',
+  'dental-integrative': 'dental-integrative-oqn06i',
+  'dra-lucy-murata': 'b2efa885a71ee22edf72b597df1a0ce9',
+  'cemiterio-cantareira': 'b2efa885a71ee22edf72b597df1a0ce9',
+  'agente-ia': 'b2efa885a71ee22edf72b597df1a0ce9',
+};
+
+const MASTER_GLOBAL_TOKEN = 'b2efa885a71ee22edf72b597df1a0ce9';
+
+const MANAGED_COMPANIES = [
+  {
+    instance: 'primo-equipamentos',
+    company: 'Primo Equipamentos',
+    niche: 'Gastronomia & Cozinhas Industriais (Sofia)',
+    defaultToken: '43BF031A-3A5D-4C32-81DD-A305F6575384',
+    badge: 'bg-amber-100 text-amber-900 border-amber-300',
+    iconColor: 'text-amber-600',
+  },
+  {
+    instance: 'verzel',
+    company: 'Verzel Sistemas',
+    niche: 'Fábrica de Software & Apps (Sofia)',
+    defaultToken: '8B4CDFF9-8C33-415D-9877-EBE5E74134F4',
+    badge: 'bg-indigo-100 text-indigo-900 border-indigo-300',
+    iconColor: 'text-indigo-600',
+  },
+  {
+    instance: 'surfacebrasil',
+    company: 'Surface Brasil Plasma',
+    niche: 'Tratamento de Superfície por Plasma (Sofia)',
+    defaultToken: 'DE151DAD-79C8-49F5-BFE3-5E129987F773',
+    badge: 'bg-sky-100 text-sky-900 border-sky-300',
+    iconColor: 'text-sky-600',
+  },
+  {
+    instance: 'dental-integrative',
+    company: 'Dra. Lucy Murata',
+    niche: 'Odontologia Biológica & Saúde (Sofia)',
+    defaultToken: 'dental-integrative-oqn06i',
+    badge: 'bg-emerald-100 text-emerald-900 border-emerald-300',
+    iconColor: 'text-emerald-600',
+  },
+  {
+    instance: 'cemiterio-cantareira',
+    company: 'Cemitério Parque Cantareira',
+    niche: 'Planos & Atendimento Humanizado',
+    defaultToken: 'b2efa885a71ee22edf72b597df1a0ce9',
+    badge: 'bg-slate-100 text-slate-800 border-slate-300',
+    iconColor: 'text-slate-600',
+  },
+  {
+    instance: 'agente-ia',
+    company: 'Marco Duarte (Oficial)',
+    niche: 'Número Comercial & Demonstração NEXA',
+    defaultToken: 'b2efa885a71ee22edf72b597df1a0ce9',
+    badge: 'bg-slate-100 text-slate-800 border-slate-300',
+    iconColor: 'text-slate-600',
+  },
+];
+
 interface EvolutionSettingsProps {
   evolutionConfig: EvolutionConfig;
   onSaveConfig: (config: EvolutionConfig) => Promise<void>;
@@ -51,10 +114,24 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   const [config, setConfig] = useState<EvolutionConfig>(evolutionConfig);
   const [isEditing, setIsEditing] = useState(false);
 
+  // Individual tokens state map
+  const [individualKeys, setIndividualKeys] = useState<Record<string, string>>(() => ({
+    ...KNOWN_DEFAULT_KEYS,
+    ...(evolutionConfig.instanceApiKeys || {}),
+  }));
+  const [showInstanceKeyMap, setShowInstanceKeyMap] = useState<Record<string, boolean>>({});
+  const [savedKeyFeedback, setSavedKeyFeedback] = useState<Record<string, boolean>>({});
+  const [copiedKeyFeedback, setCopiedKeyFeedback] = useState<Record<string, boolean>>({});
+
   // Keep local config in sync with parent evolutionConfig only when not actively editing
   useEffect(() => {
     if (!isEditing) {
       setConfig(evolutionConfig);
+      setIndividualKeys((prev) => ({
+        ...KNOWN_DEFAULT_KEYS,
+        ...prev,
+        ...(evolutionConfig.instanceApiKeys || {}),
+      }));
     }
   }, [evolutionConfig, isEditing]);
   const [showApiKey, setShowApiKey] = useState(false);
@@ -225,7 +302,10 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   const [presetNotice, setPresetNotice] = useState<string | null>(null);
 
   // Handle Switch Instance Tab
-  const handleSelectInstanceTab = (inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'cemiterio-cantareira' | 'custom', customName?: string) => {
+  const handleSelectInstanceTab = (
+    inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'cemiterio-cantareira' | 'custom',
+    customName?: string
+  ) => {
     setSelectedInstanceTab(inst as any);
     let targetName = 'dra-lucy-murata';
     if (inst === 'agente-ia') targetName = 'agente-ia';
@@ -236,12 +316,16 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     if (inst === 'cemiterio-cantareira') targetName = 'cemiterio-cantareira';
     if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
 
-    // Lookup saved apiKey for this target instance
-    const existingKey = config.instanceApiKeys?.[targetName] || (targetName === 'dra-lucy-murata' ? 'b2efa885a71ee22edf72b597df1a0ce9' : config.apiKey);
+    // Specific key for this instance: NEVER overwrite with current active config.apiKey
+    const existingKey =
+      individualKeys[targetName] ||
+      config.instanceApiKeys?.[targetName] ||
+      KNOWN_DEFAULT_KEYS[targetName] ||
+      MASTER_GLOBAL_TOKEN;
 
     const updated = {
       ...config,
-      serverUrl: 'https://api.makprojetosmake.com.br',
+      serverUrl: config.serverUrl || 'https://api.makprojetosmake.com.br',
       apiKey: existingKey,
       instanceName: targetName,
       instanceApiKeys: {
@@ -251,8 +335,46 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     };
     setConfig(updated);
     onSaveConfig(updated);
-    setPresetNotice(`✅ Instância "${targetName}" ativada e carregada com sucesso!`);
+    setPresetNotice(`✅ Instância "${targetName}" ativada! Token individual (${existingKey.slice(0, 8)}...) carregado.`);
     setTimeout(() => setPresetNotice(null), 4000);
+  };
+
+  const handleSaveIndividualToken = async (instName: string, tokenVal: string) => {
+    const cleanToken = tokenVal.trim();
+    try {
+      const res = await fetch('/api/evolution/instance-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instanceName: instName, token: cleanToken }),
+      });
+      if (res.ok) {
+        const updatedInstanceKeys = {
+          ...(config.instanceApiKeys || {}),
+          [instName]: cleanToken,
+        };
+        const updatedConfig = {
+          ...config,
+          instanceApiKeys: updatedInstanceKeys,
+          ...(config.instanceName === instName ? { apiKey: cleanToken } : {}),
+        };
+        setConfig(updatedConfig);
+        await onSaveConfig(updatedConfig);
+        setSavedKeyFeedback((prev) => ({ ...prev, [instName]: true }));
+        setTimeout(() => {
+          setSavedKeyFeedback((prev) => ({ ...prev, [instName]: false }));
+        }, 3000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleCopyToken = (instName: string, tokenVal: string) => {
+    navigator.clipboard.writeText(tokenVal);
+    setCopiedKeyFeedback((prev) => ({ ...prev, [instName]: true }));
+    setTimeout(() => {
+      setCopiedKeyFeedback((prev) => ({ ...prev, [instName]: false }));
+    }, 2000);
   };
 
   // Handle Create Instance
@@ -527,7 +649,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {/* Tab 1: Instância Primo Equipamentos */}
             <div
               onClick={() => handleSelectInstanceTab('primo-equipamentos')}
@@ -629,7 +751,30 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </span>
             </div>
 
-            {/* Tab 5: Instância Marco Duarte (Oficial) */}
+            {/* Tab 5: Instância Cemitério Cantareira */}
+            <div
+              onClick={() => handleSelectInstanceTab('cemiterio-cantareira')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'cemiterio-cantareira'
+                  ? 'border-stone-600 bg-stone-50/50 ring-1 ring-stone-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900">Cemitério Cantareira</span>
+                {config.instanceName === 'cemiterio-cantareira' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-stone-700">cemiterio-cantareira</strong>
+              </p>
+              <span className="inline-block text-[10px] text-stone-700 font-semibold bg-stone-200/70 px-2 py-0.5 rounded mt-2">
+                Planos & Atendimento
+              </span>
+            </div>
+
+            {/* Tab 6: Instância Marco Duarte (Oficial) */}
             <div
               onClick={() => handleSelectInstanceTab('agente-ia')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
@@ -948,6 +1093,174 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
           )}
         </form>
+
+        {/* 2B. GESTÃO DE TOKENS INDIVIDUAIS POR INSTÂNCIA (MULTI-EMPRESAS) */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <Key className="w-4 h-4 text-amber-600" />
+              <h3 className="text-sm font-bold text-slate-900">
+                Gerenciador de Tokens por Instância (Multi-Empresas)
+              </h3>
+            </div>
+            <span className="text-[11px] text-slate-500 font-medium">
+              Chave Master Global da VPS vs Tokens Individuais Dedicados
+            </span>
+          </div>
+
+          {/* Dúvida do Usuário Respondida com Clareza */}
+          <div className="bg-gradient-to-r from-amber-50/60 to-indigo-50/60 border border-amber-200/80 rounded-xl p-4 text-xs space-y-2 text-slate-700">
+            <div className="flex items-center gap-2 font-bold text-slate-900">
+              <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Preciso colocar um por um ou continuar usando a Global? Como funciona:</span>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              <strong>Você pode usar de qualquer uma das duas formas:</strong>
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div className="bg-white/80 p-3 rounded-lg border border-slate-200/80 space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-slate-900 text-[11px]">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                  Opção 1: Chave Master Global (Padrão)
+                </div>
+                <p className="text-[10.5px] text-slate-500">
+                  A chave mestre da sua VPS (<code className="text-indigo-700 font-bold">b2efa885...</code>) tem super-poderes e funciona para <strong>todas as instâncias</strong> simultaneamente. Se deixar qualquer uma sem token individual, ela usará a master automaticamente!
+                </p>
+              </div>
+
+              <div className="bg-white/80 p-3 rounded-lg border border-slate-200/80 space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-slate-900 text-[11px]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Opção 2: Tokens Individuais por Instância
+                </div>
+                <p className="text-[10.5px] text-slate-500">
+                  Se você copiou o token específico gerado no Evolution Manager de cada empresa (ex: Primo, Verzel, Surface), você pode colar cada um abaixo. Cada empresa tem seu cofre <strong>isolado</strong> e <strong>nunca mais sobrepõe as outras</strong>!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabela Interativa de Instâncias e Tokens */}
+          <div className="space-y-3">
+            {MANAGED_COMPANIES.map((item) => {
+              const currentVal = individualKeys[item.instance] || config.instanceApiKeys?.[item.instance] || item.defaultToken;
+              const isShowing = showInstanceKeyMap[item.instance] || false;
+              const isCurrentActive = config.instanceName === item.instance;
+              const isSavedFeedback = savedKeyFeedback[item.instance] || false;
+              const isCopiedFeedback = copiedKeyFeedback[item.instance] || false;
+              const isMasterToken = currentVal === MASTER_GLOBAL_TOKEN;
+
+              return (
+                <div
+                  key={item.instance}
+                  className={`p-4 rounded-xl border transition-all ${
+                    isCurrentActive
+                      ? 'bg-slate-50/90 border-indigo-300 ring-1 ring-indigo-500/20 shadow-xs'
+                      : 'bg-white border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    {/* Identificação da Empresa */}
+                    <div className="min-w-[200px]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-900">{item.company}</span>
+                        {isCurrentActive && (
+                          <span className="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            Ativa no CRM
+                          </span>
+                        )}
+                        <span
+                          className={`text-[9.5px] font-semibold px-2 py-0.5 rounded border ${
+                            isMasterToken
+                              ? 'bg-slate-100 text-slate-700 border-slate-200'
+                              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          }`}
+                        >
+                          {isMasterToken ? 'Chave Master Global' : 'Token Individual Dedicado'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Instância: <code className="text-slate-800 font-mono font-semibold">{item.instance}</code> • {item.niche}
+                      </p>
+                    </div>
+
+                    {/* Campo de Token e Ações */}
+                    <div className="flex-1 flex flex-col sm:flex-row items-center gap-2 max-w-xl w-full">
+                      <div className="relative w-full">
+                        <input
+                          type={isShowing ? 'text' : 'password'}
+                          value={currentVal}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setIndividualKeys((prev) => ({ ...prev, [item.instance]: val }));
+                          }}
+                          placeholder="Cole o token da instância..."
+                          className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-16 py-1.5 text-xs font-mono text-slate-900 focus:outline-hidden focus:border-slate-400"
+                        />
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowInstanceKeyMap((prev) => ({
+                                ...prev,
+                                [item.instance]: !prev[item.instance],
+                              }))
+                            }
+                            className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
+                            title={isShowing ? 'Ocultar' : 'Mostrar'}
+                          >
+                            {isShowing ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyToken(item.instance, currentVal)}
+                            className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
+                            title="Copiar token"
+                          >
+                            {isCopiedFeedback ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0 w-full sm:w-auto">
+                        <button
+                          type="button"
+                          onClick={() => handleSaveIndividualToken(item.instance, currentVal)}
+                          className="flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer transition-all shadow-xs"
+                          title="Salvar apenas o token desta instância"
+                        >
+                          {isSavedFeedback ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              <span className="text-emerald-400">Salvo!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Key className="w-3.5 h-3.5" />
+                              <span>Salvar</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSelectInstanceTab(item.instance as any)}
+                          className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                            isCurrentActive
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                              : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
+                          }`}
+                        >
+                          {isCurrentActive ? '✓ Selecionada' : 'Ativar no CRM'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
         {/* 3. SIMULADOR DE MENSAGENS WHATSAPP (TESTE REAL DO WEBHOOK) */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-4">

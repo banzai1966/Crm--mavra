@@ -94,6 +94,69 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
   },
 };
 
+export const CLINIC_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base Pacientes Inativos (+6m)', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação Preventiva (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Novos Pacientes / Contato', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Triagem Clínica & Preferências', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Avaliação Integrativa Agendada', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Plano de Tratamento Apresentado', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Tratamento em Curso / Concluído', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Remarcação / Não Compareceu', color: '#ef4444', order: 7 },
+];
+
+export const PRIMO_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base Restaurantes Inativos (+6m)', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação Comercial (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Novos Orçamentos / Dúvidas', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Especificação & Voltagem (110/220V)', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Cotação & Frete Calculado', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Negociação / Fechamento PIX', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Pedido Pago / Expedição', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Perdido / Desistência', color: '#ef4444', order: 7 },
+];
+
+export const SURFACE_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base Industrial Inativa (+6m)', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação Técnica (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Nova Aplicação / Contato', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Análise de Substrato (Dyne)', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Amostras no Lab Surface Test', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Proposta Comercial do Sistema', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Sistema Vendido / Implantado', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Invigilância / Standby', color: '#ef4444', order: 7 },
+];
+
+export const VERZEL_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base Antiga / Leads Frios', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação Executiva (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Nova Demanda de TI / App', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Qualificação de Escopo & Stack', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Discovery Técnico Agendado', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Proposta de Squad / Projeto', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Contrato Assinado / Kickoff', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Sem Budget / Pausado', color: '#ef4444', order: 7 },
+];
+
+export const CANTAREIRA_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base Familiar Inativa (+6m)', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Acolhimento Preventivo (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Nova Família / Primeiro Acolhimento', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Orientação de Jazigo & Velório', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Visita ao Parque Agendada', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Apresentação de Plano Preventivo', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Jazigo / Plano Formalizado', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Atendimento Concluído', color: '#ef4444', order: 7 },
+];
+
+export function getStagesForNiche(niche?: string): KanbanStage[] {
+  if (niche === 'primo') return PRIMO_STAGES;
+  if (niche === 'surfacebrasil') return SURFACE_STAGES;
+  if (niche === 'verzel') return VERZEL_STAGES;
+  if (niche === 'cantareira') return CANTAREIRA_STAGES;
+  return CLINIC_STAGES;
+}
+
 export function normalizeNicheKey(raw?: string | null): string {
   if (!raw) return 'clinic';
   const clean = raw.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
@@ -133,7 +196,15 @@ export function normalizeNicheKey(raw?: string | null): string {
 export const getUrlParamNiche = (): string | null => {
   if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
-  const raw = params.get('nicho') || params.get('workspace') || params.get('empresa');
+  const raw =
+    params.get('empresa') ||
+    params.get('company') ||
+    params.get('instance') ||
+    params.get('instancia') ||
+    params.get('nicho') ||
+    params.get('workspace') ||
+    params.get('cliente') ||
+    params.get('c');
   
   if (raw && raw.trim()) {
     const normalized = normalizeNicheKey(raw);
@@ -151,13 +222,18 @@ export const getUrlParamNiche = (): string | null => {
 };
 
 export default function App() {
-  const activeUrlNiche = getUrlParamNiche();
+  const [activeUrlNiche, setActiveUrlNiche] = useState<string>(() => getUrlParamNiche() || 'clinic');
 
   const [activeTab, setActiveTab] = useState<
     'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'delivery' | 'agent' | 'evolution' | 'supabase'
   >(() => (activeUrlNiche === 'delivery' ? 'delivery' : 'kanban'));
 
-  const [stages, setStages] = useState<KanbanStage[]>([]);
+  const [stages, setStages] = useState<KanbanStage[]>(() => getStagesForNiche(activeUrlNiche));
+
+  useEffect(() => {
+    setStages(getStagesForNiche(activeUrlNiche));
+  }, [activeUrlNiche]);
+
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 
@@ -345,10 +421,11 @@ export default function App() {
           else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
           else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
           else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
+          const targetKey = (targetInst && evo.instanceApiKeys?.[targetInst]) || evo.apiKey;
           setEvolutionConfig((prev) => ({
             ...prev,
             ...evo,
-            ...(targetInst ? { instanceName: targetInst } : {}),
+            ...(targetInst ? { instanceName: targetInst, apiKey: targetKey || prev.apiKey } : {}),
           }));
         }
       }
@@ -389,7 +466,18 @@ export default function App() {
           if (evoRes.ok) {
             const freshEvo = await evoRes.json();
             if (freshEvo && typeof freshEvo === 'object') {
-              setEvolutionConfig((prev) => ({ ...prev, ...freshEvo }));
+              let targetInst = freshEvo.instanceName;
+              if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
+              else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
+              else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
+              else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
+              else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
+              const targetKey = (targetInst && freshEvo.instanceApiKeys?.[targetInst]) || freshEvo.apiKey;
+              setEvolutionConfig((prev) => ({
+                ...prev,
+                ...freshEvo,
+                ...(targetInst ? { instanceName: targetInst, apiKey: targetKey || prev.apiKey } : {}),
+              }));
             }
           }
         }
@@ -730,21 +818,26 @@ export default function App() {
   };
 
   const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel' | 'primo') => {
+    setActiveUrlNiche(workspaceId);
+    try {
+      localStorage.setItem('nexa_client_nicho', workspaceId);
+    } catch {}
+
     const chosen = WORKSPACE_PRESETS[workspaceId];
     if (chosen) {
-      await handleSaveAgentConfig(chosen);
-      if (workspaceId === 'surfacebrasil' || workspaceId === 'verzel' || workspaceId === 'primo') {
-        const targetInst = workspaceId === 'surfacebrasil' ? 'surfacebrasil' : workspaceId === 'verzel' ? 'verzel' : 'primo-equipamentos';
-        const updatedEvo = { ...evolutionConfig, instanceName: targetInst };
-        setEvolutionConfig(updatedEvo);
-        try {
-          await fetch('/api/evolution-config', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedEvo),
-          });
-        } catch (e) {}
-      }
+      setAgentConfig((prev) => ({ ...prev, ...chosen }));
+      const targetInst =
+        workspaceId === 'surfacebrasil'
+          ? 'surfacebrasil'
+          : workspaceId === 'verzel'
+          ? 'verzel'
+          : workspaceId === 'primo'
+          ? 'primo-equipamentos'
+          : 'dental-integrative';
+
+      const updatedEvo = { ...evolutionConfig, instanceName: targetInst };
+      setEvolutionConfig(updatedEvo);
+
       if (workspaceId === 'delivery') {
         setActiveTab('delivery');
       } else {
@@ -753,11 +846,79 @@ export default function App() {
     }
   };
 
-  const totalPipelineValue = leads.reduce((acc, l) => acc + (l.value || 0), 0);
-  const totalUnreadCount = leads.reduce((acc, l) => acc + (l.unreadCount || 0), 0);
-  const urgentCount = leads.filter((l) => l.isUrgent).length;
-  const hotCount = leads.filter((l) => l.isHotLead).length;
-  const deliveryOrdersCount = leads.filter((l) => Boolean(l.deliveryInfo)).length;
+  const filteredLeads = React.useMemo(() => {
+    if (!activeUrlNiche || activeUrlNiche === 'all' || activeUrlNiche === 'b2b') {
+      return leads;
+    }
+    const filtered = leads.filter((l) => {
+      const tags = (l.tags || []).map((t) => t.toLowerCase());
+      const notes = (l.notes || '').toLowerCase();
+      const interest = (l.interest || '').toLowerCase();
+
+      if (activeUrlNiche === 'clinic') {
+        return (
+          tags.some((t) => t.includes('murata') || t.includes('lucy') || t.includes('odonto') || t.includes('paciente') || t.includes('mentoria') || t.includes('dental')) ||
+          notes.includes('lucy') ||
+          notes.includes('odonto') ||
+          notes.includes('euroville') ||
+          interest.includes('avaliação') ||
+          interest.includes('consulta') ||
+          interest.includes('implante') ||
+          interest.includes('amálgama') ||
+          tags.some((t) => t.includes('dental-integrative') || t.includes('dra-lucy'))
+        );
+      }
+      if (activeUrlNiche === 'primo') {
+        return (
+          tags.some((t) => t.includes('primo') || t.includes('gastronomia') || t.includes('cozinha')) ||
+          notes.includes('primo') ||
+          interest.includes('fritadeira') ||
+          interest.includes('liquidificador') ||
+          interest.includes('extrator') ||
+          interest.includes('equipamento') ||
+          tags.some((t) => t.includes('primo-equipamentos'))
+        );
+      }
+      if (activeUrlNiche === 'surfacebrasil') {
+        return (
+          tags.some((t) => t.includes('surface') || t.includes('plasma') || t.includes('industrial')) ||
+          notes.includes('surface') ||
+          notes.includes('plasma') ||
+          interest.includes('plasma') ||
+          interest.includes('sap02')
+        );
+      }
+      if (activeUrlNiche === 'verzel') {
+        return (
+          tags.some((t) => t.includes('verzel') || t.includes('software') || t.includes('app') || t.includes('squad')) ||
+          notes.includes('verzel') ||
+          interest.includes('app') ||
+          interest.includes('squad') ||
+          interest.includes('software')
+        );
+      }
+      if (activeUrlNiche === 'cantareira') {
+        return (
+          tags.some((t) => t.includes('cantareira') || t.includes('cemiterio') || t.includes('jazigo')) ||
+          notes.includes('cantareira') ||
+          notes.includes('cemitério') ||
+          interest.includes('jazigo')
+        );
+      }
+      if (activeUrlNiche === 'delivery') {
+        return Boolean(l.deliveryInfo) || tags.some((t) => t.includes('delivery') || t.includes('pizza') || t.includes('lanche'));
+      }
+      return true;
+    });
+
+    return filtered.length > 0 ? filtered : leads;
+  }, [leads, activeUrlNiche]);
+
+  const totalPipelineValue = filteredLeads.reduce((acc, l) => acc + (l.value || 0), 0);
+  const totalUnreadCount = filteredLeads.reduce((acc, l) => acc + (l.unreadCount || 0), 0);
+  const urgentCount = filteredLeads.filter((l) => l.isUrgent).length;
+  const hotCount = filteredLeads.filter((l) => l.isHotLead).length;
+  const deliveryOrdersCount = filteredLeads.filter((l) => Boolean(l.deliveryInfo)).length;
 
   // Check if current URL is in public order tracking mode (?rastreio=PED-XXX or ?track=PED-XXX)
   const [publicTrackingOrder, setPublicTrackingOrder] = useState<string | null>(() => {
@@ -809,7 +970,7 @@ export default function App() {
         setActiveTab={setActiveTab}
         evolutionConfig={evolutionConfig}
         agentConfig={agentConfig}
-        totalLeads={leads.length}
+        totalLeads={filteredLeads.length}
         totalPipelineValue={totalPipelineValue}
         unreadCount={totalUnreadCount}
         urgentCount={urgentCount}
@@ -830,7 +991,7 @@ export default function App() {
         {activeTab === 'dashboard' && (
           <ErrorBoundary moduleName="Dashboard Executivo">
             <ExecutiveDashboard
-              leads={leads}
+              leads={filteredLeads}
               stages={stages}
               agentConfig={agentConfig}
               evolutionConfig={evolutionConfig}
@@ -851,7 +1012,7 @@ export default function App() {
           <ErrorBoundary moduleName="CRM Kanban">
             <KanbanBoard
               stages={stages}
-              leads={leads}
+              leads={filteredLeads}
               onMoveLead={handleMoveLead}
               onSaveLead={handleSaveLead}
               onDeleteLead={handleDeleteLead}
@@ -874,7 +1035,7 @@ export default function App() {
         {activeTab === 'chat' && (
           <ErrorBoundary moduleName="Central de Chat">
             <LiveChat
-              leads={leads}
+              leads={filteredLeads}
               selectedLeadId={selectedLeadId}
               onSelectLead={(id) => setSelectedLeadId(id)}
               stages={stages}
@@ -897,7 +1058,7 @@ export default function App() {
           <ErrorBoundary moduleName="Agendamentos & Agenda">
             <CalendarIntegration
               agentConfig={agentConfig}
-              leads={leads}
+              leads={filteredLeads}
               onUpdateAgentConfig={handleSaveAgentConfig}
               onRefreshLeads={loadAllData}
             />
@@ -913,7 +1074,7 @@ export default function App() {
         {activeTab === 'delivery' && (
           <ErrorBoundary moduleName="Pedidos & Entregas">
             <DeliveryTracking
-              leads={leads}
+              leads={filteredLeads}
               onSaveLead={handleSaveLead}
               onOpenChat={handleOpenChat}
               evolutionConfig={evolutionConfig}

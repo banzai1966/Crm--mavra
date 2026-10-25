@@ -135,9 +135,9 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({
   try {
     const origin = window.location.origin;
     const pathname = window.location.pathname;
-    clientUrl = `${origin}${pathname}?modo=cliente&nicho=${selectedNiche}`;
+    clientUrl = `${origin}${pathname}?modo=cliente&empresa=${selectedNiche}`;
   } catch {
-    clientUrl = `/?modo=cliente&nicho=${selectedNiche}`;
+    clientUrl = `/?modo=cliente&empresa=${selectedNiche}`;
   }
 
   const handleCopyLink = () => {

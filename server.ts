@@ -89,14 +89,29 @@ async function startServer() {
     // 1. Respond immediately to Evolution API to prevent timeouts (<50ms)
     res.status(200).json({ status: 'received' });
 
-    // 2. Process asynchronous pipeline in background with error isolation
-    Promise.resolve(handleIncomingWebhook(req.body)).catch((err) => {
+    // 2. Extract potential instance from route param or query string
+    const urlInstance =
+      (req.params && req.params.instance ? req.params.instance : null) ||
+      (req.query && (req.query.instance as string || req.query.instanceName as string)) ||
+      undefined;
+
+    const payload = req.body || {};
+    if (urlInstance && !payload.instance && !payload.instanceName) {
+      payload.instance = urlInstance;
+    }
+
+    // 3. Process asynchronous pipeline in background with error isolation
+    Promise.resolve(handleIncomingWebhook(payload, urlInstance)).catch((err) => {
       console.error('[Webhook Background Error]:', err?.message || err);
     });
   };
 
   app.post('/api/webhook', webhookHandler);
+  app.post('/api/webhook/:instance', webhookHandler);
   app.post('/api/whatsapp/webhook', webhookHandler);
+  app.post('/api/whatsapp/webhook/:instance', webhookHandler);
+  app.post('/webhook', webhookHandler);
+  app.post('/webhook/:instance', webhookHandler);
 
   // Route to view and print the Surfacebrasil PDF / Dossier
   app.get('/surfacebrasil-manual', (req: Request, res: Response) => {
@@ -1370,12 +1385,20 @@ async function startServer() {
 
   app.put('/api/evolution-config', (req: Request, res: Response) => {
     const raw = req.body || {};
+    const currentInstanceKeys = db.evolutionConfig.instanceApiKeys || {};
+    const incomingInstanceKeys = raw.instanceApiKeys || {};
+    const mergedInstanceKeys = { ...currentInstanceKeys, ...incomingInstanceKeys };
+    if (raw.instanceName && raw.apiKey) {
+      mergedInstanceKeys[raw.instanceName.trim()] = raw.apiKey.trim();
+    }
+
     db.evolutionConfig = {
       ...db.evolutionConfig,
       ...raw,
       serverUrl: raw.serverUrl ? sanitizeEvolutionUrl(raw.serverUrl) : db.evolutionConfig.serverUrl,
       apiKey: raw.apiKey ? raw.apiKey.trim() : db.evolutionConfig.apiKey,
       instanceName: raw.instanceName ? raw.instanceName.trim() : db.evolutionConfig.instanceName,
+      instanceApiKeys: mergedInstanceKeys,
     };
 
     // Sincronizar com o perfil ativo atual
@@ -1389,6 +1412,30 @@ async function startServer() {
     db.saveToFile();
 
     res.json(db.evolutionConfig);
+  });
+
+  // Dedicated endpoint to save or update token for a specific instance
+  app.post('/api/evolution/instance-token', (req: Request, res: Response) => {
+    const { instanceName, token } = req.body || {};
+    if (!instanceName) {
+      return res.status(400).json({ error: 'instanceName é obrigatório' });
+    }
+    const cleanInst = normalizeInstanceName(instanceName);
+    if (!db.evolutionConfig.instanceApiKeys) {
+      db.evolutionConfig.instanceApiKeys = {};
+    }
+    const sanitizedToken = (token || '').trim();
+    db.evolutionConfig.instanceApiKeys[cleanInst] = sanitizedToken;
+    if (db.evolutionConfig.instanceName === cleanInst && sanitizedToken) {
+      db.evolutionConfig.apiKey = sanitizedToken;
+    }
+    db.saveToFile();
+    res.json({
+      success: true,
+      instanceName: cleanInst,
+      token: sanitizedToken,
+      instanceApiKeys: db.evolutionConfig.instanceApiKeys,
+    });
   });
 
   app.post('/api/evolution/test-connection', async (req: Request, res: Response) => {

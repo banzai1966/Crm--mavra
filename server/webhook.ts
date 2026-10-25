@@ -12,8 +12,10 @@ import {
   sendWhatsAppMedia,
   sendWhatsAppVoiceAudio,
   getBase64FromMediaMessage,
+  normalizeInstanceName,
 } from './evolution';
 import { Lead, ChatMessage } from '../src/types';
+import { getAgentConfigForInstance, getCompanyPresetByInstance } from './companyConfigs';
 
 // In-memory cache for processed message IDs to prevent double processing & infinite duplicate loops
 const processedMessageIds = new Map<string, number>();
@@ -127,19 +129,19 @@ export function isWithinBusinessHours(config: any): boolean {
   }
 }
 
-export function handleIncomingWebhook(body: any): void {
+export function handleIncomingWebhook(body: any, fallbackInstance?: string): void {
   // CRITICAL: We execute the entire pipeline inside setImmediate / background async queue
   // so the caller function in server.ts has already returned HTTP 200 within <5ms.
   setImmediate(async () => {
     try {
-      await executeWebhookPipeline(body);
+      await executeWebhookPipeline(body, fallbackInstance);
     } catch (err) {
       console.error('[Webhook Background Error]:', err);
     }
   });
 }
 
-async function executeWebhookPipeline(body: any): Promise<void> {
+async function executeWebhookPipeline(body: any, fallbackInstance?: string): Promise<void> {
   if (!body) return;
 
   const rawEvent = (body.event || body.type || 'webhook').toString().toLowerCase();
@@ -225,20 +227,18 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     return;
   }
 
-  // Extract instance name from webhook payload
-  const incomingInstance = (
+  // Extract and strictly normalize instance name from webhook payload, URL route, or fallback
+  const rawInstance = (
     body?.instance ||
     data?.instance ||
     body?.instanceName ||
     data?.instanceName ||
+    fallbackInstance ||
     db.evolutionConfig.instanceName ||
-    'dra-lucy-murata'
-  ).trim();
+    'primo-equipamentos'
+  ).toString().trim();
 
-  // Keep evolutionConfig instance in sync with active traffic
-  if (incomingInstance && db.evolutionConfig.instanceName !== incomingInstance) {
-    db.evolutionConfig.instanceName = incomingInstance;
-  }
+  const incomingInstance = normalizeInstanceName(rawInstance);
 
   // Prevent concurrent webhook executions for the same contact number
   if (phoneInFlight.has(cleanPhone)) {
@@ -528,6 +528,10 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     body?.verifiedBizName ||
     '';
 
+  const companyPreset = getCompanyPresetByInstance(incomingInstance);
+  const instanceTag = `Instância: ${incomingInstance}`;
+  const companyTag = companyPreset.companyName;
+
   if (!lead) {
     const defaultStage = db.stages[0]?.id || 'stage-1';
     lead = {
@@ -536,9 +540,9 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       phone: cleanPhone,
       stageId: defaultStage,
       value: 0,
-      interest: 'Novo contato via WhatsApp',
-      tags: ['WhatsApp', 'Novo Lead'],
-      notes: 'Lead criado automaticamente via Evolution API v2.',
+      interest: `Novo contato via WhatsApp (${companyPreset.companyName})`,
+      tags: ['WhatsApp', instanceTag, companyTag],
+      notes: `Lead recebido pela instância "${incomingInstance}" (${companyPreset.companyName}).`,
       aiPaused: false,
       lastInteraction: new Date().toISOString(),
       createdAt: new Date().toISOString(),
@@ -550,6 +554,12 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     lead.unreadCount = (lead.unreadCount || 0) + 1;
     if (extractedPushName && (lead.name.startsWith('Lead ') || lead.name === `Lead ${cleanPhone.slice(-4)}`)) {
       lead.name = extractedPushName;
+    }
+    if (!lead.tags.includes(instanceTag)) {
+      lead.tags.push(instanceTag);
+    }
+    if (!lead.tags.includes(companyTag)) {
+      lead.tags.push(companyTag);
     }
   }
 
@@ -646,6 +656,7 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     const aiResult = await processAiConversation(lead, messageText.trim(), leadHistory, {
       isAudioMessage,
       isImageMessage,
+      instanceName: incomingInstance,
     });
 
     // 7. Update CRM if Function Calling / Intent detection triggered stage move or info extraction
@@ -946,17 +957,19 @@ async function executeWebhookPipeline(body: any): Promise<void> {
       shouldSendVoice = false;
     }
 
+    const instanceConfig = getAgentConfigForInstance(incomingInstance);
+
     if (shouldSendVoice) {
-      console.log(`[Webhook] Gerando áudio de voz Sofia (${db.agentConfig.voiceEngine || 'native_sofia'}) para ${cleanPhone}...`);
+      console.log(`[Webhook] Gerando áudio de voz Sofia (${instanceConfig.voiceEngine || 'native_sofia'}) para ${cleanPhone} (Instância: ${incomingInstance})...`);
       try {
         const speechRes = await synthesizeSpeech(aiResult.replyText, {
-          engine: db.agentConfig.voiceEngine || 'native_sofia',
-          voiceName: db.agentConfig.voiceVoiceName || 'pt-BR-FranciscaNeural',
-          speed: db.agentConfig.voiceSpeed || 0.90,
+          engine: instanceConfig.voiceEngine || 'native_sofia',
+          voiceName: instanceConfig.voiceVoiceName || 'pt-BR-FranciscaNeural',
+          speed: instanceConfig.voiceSpeed || 0.90,
           apiKey:
-            db.agentConfig.voiceEngine === 'elevenlabs'
-              ? db.agentConfig.elevenLabsApiKey
-              : db.agentConfig.googleTtsApiKey,
+            instanceConfig.voiceEngine === 'elevenlabs'
+              ? instanceConfig.elevenLabsApiKey
+              : instanceConfig.googleTtsApiKey,
         });
 
         if (speechRes.success && speechRes.audioBase64) {
@@ -990,10 +1003,11 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     }
 
     // 10. If the lead requested catalog/presentation and a PDF URL is configured, send the PDF document
-    if (aiResult.sendCatalogPdf && db.agentConfig.catalogPdfUrl) {
-      console.log(`[Webhook] Enviando PDF de apresentação para ${cleanPhone}...`);
-      const pdfUrl = db.agentConfig.catalogPdfUrl;
-      const pdfName = db.agentConfig.catalogPdfName || 'Apresentacao_Dra_Lucy_Murata.pdf';
+    const targetPdfUrl = instanceConfig.catalogPdfUrl || db.agentConfig.catalogPdfUrl;
+    if (aiResult.sendCatalogPdf && targetPdfUrl) {
+      console.log(`[Webhook] Enviando PDF de apresentação para ${cleanPhone} (${incomingInstance})...`);
+      const pdfUrl = targetPdfUrl;
+      const pdfName = instanceConfig.catalogPdfName || db.agentConfig.catalogPdfName || 'Catalogo_Apresentacao.pdf';
       await sendWhatsAppMedia(
         cleanPhone,
         pdfUrl,
@@ -1013,9 +1027,11 @@ async function executeWebhookPipeline(body: any): Promise<void> {
     }
 
     // 11. If the lead requested PIX information, send copy-paste key box
-    if (aiResult.sendPixInfo && db.agentConfig.pixKey) {
-      console.log(`[Webhook] Enviando chave PIX oficial para ${cleanPhone}...`);
-      const pixMessage = `💳 *Chave PIX Oficial (${db.agentConfig.pixKeyType || 'E-mail'}):*\n\`${db.agentConfig.pixKey}\`\n\nAssim que efetuar o pagamento, basta me enviar o comprovante por aqui! ✨`;
+    const targetPixKey = instanceConfig.pixKey || db.agentConfig.pixKey;
+    if (aiResult.sendPixInfo && targetPixKey) {
+      console.log(`[Webhook] Enviando chave PIX oficial para ${cleanPhone} (${incomingInstance})...`);
+      const pixType = instanceConfig.pixKeyType || db.agentConfig.pixKeyType || 'E-mail';
+      const pixMessage = `💳 *Chave PIX Oficial (${pixType}):*\n\`${targetPixKey}\`\n\nAssim que efetuar o pagamento, basta me enviar o comprovante por aqui! ✨`;
       await sendWhatsAppMessage(cleanPhone, pixMessage, incomingInstance);
       db.messages.push({
         id: 'msg-' + Date.now() + '-pix',

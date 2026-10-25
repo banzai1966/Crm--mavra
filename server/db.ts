@@ -706,6 +706,13 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
     state: 'disconnected',
     lastTestedAt: new Date().toISOString(),
     wasEverConnected: false,
+    instanceApiKeys: {
+      'verzel': '8B4CDFF9-8C33-415D-9877-EBE5E74134F4',
+      'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
+      'surfacebrasil': 'DE151DAD-79C8-49F5-BFE3-5E129987F773',
+      'dental-integrative': 'dental-integrative-oqn06i',
+      'cemiterio-cantareira': 'b2efa885a71ee22edf72b597df1a0ce9',
+    },
   };
 
   public sentinelAlerts: SentinelAlertConfig = {
@@ -1088,7 +1095,15 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
             ...data.evolutionConfig,
             serverUrl: cleanUrl(process.env.EVOLUTION_API_URL || data.evolutionConfig.serverUrl || this.evolutionConfig.serverUrl),
             apiKey: effectiveKey,
-            instanceName: instName || 'dra-lucy-murata',
+            instanceName: instName || this.evolutionConfig.instanceName || 'primo-equipamentos',
+            instanceApiKeys: {
+              ...this.evolutionConfig.instanceApiKeys,
+              ...(data.evolutionConfig.instanceApiKeys || {}),
+              'verzel': (data.evolutionConfig.instanceApiKeys?.['verzel'] || '8B4CDFF9-8C33-415D-9877-EBE5E74134F4').trim(),
+              'primo-equipamentos': (data.evolutionConfig.instanceApiKeys?.['primo-equipamentos'] || '43BF031A-3A5D-4C32-81DD-A305F6575384').trim(),
+              'surfacebrasil': (data.evolutionConfig.instanceApiKeys?.['surfacebrasil'] || 'DE151DAD-79C8-49F5-BFE3-5E129987F773').trim(),
+              'dental-integrative': (data.evolutionConfig.instanceApiKeys?.['dental-integrative'] || 'dental-integrative-oqn06i').trim(),
+            },
           };
         }
         if (data.supabaseConfig) {
