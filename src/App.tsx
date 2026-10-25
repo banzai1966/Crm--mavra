@@ -25,11 +25,19 @@ import {
 
 export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
   clinic: {
-    activeWorkspaceName: 'Clínica & Saúde Integrativa',
+    activeWorkspaceName: 'Clínica & Saúde Integrativa (Dra. Lucy Murata)',
     personaName: 'Sofia (Recepção Clínica)',
-    role: 'Coordenadora de Atendimento & Triagem Clínica',
+    role: 'Coordenadora de Atendimento & Triagem Clínica da Dra. Lucy Murata',
     followUpNiche: 'dental',
     salesGoal: 'Acolher pacientes, realizar pré-triagem de sintomas/horários e agendar consultas e retornos da base antiga',
+  },
+  cantareira: {
+    activeWorkspaceName: 'Cemitério Parque da Cantareira',
+    personaName: 'Sofia do Parque Cantareira',
+    role: 'Consultora de Atendimento Humanizado & Planejamento Familiar do Cemitério Parque da Cantareira',
+    toneOfVoice: 'Extremamente empático, respeitoso, compassivo, sereno, profissional e acolhedor em momentos delicados',
+    salesGoal: 'Acolher a família com máximo respeito e compaixão, esclarecer dúvidas sobre jazigos, velório 24h, cremação e planos preventivos',
+    followUpNiche: 'b2b_services',
   },
   delivery: {
     activeWorkspaceName: 'Restaurante & Pizzaria Delivery',
@@ -86,22 +94,60 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
   },
 };
 
+export function normalizeNicheKey(raw?: string | null): string {
+  if (!raw) return 'clinic';
+  const clean = raw.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+  if (
+    clean.includes('lucy') ||
+    clean.includes('clinic') ||
+    clean.includes('dental') ||
+    clean.includes('odonto') ||
+    clean.includes('saude') ||
+    clean.includes('health') ||
+    clean.includes('murata') ||
+    clean.includes('medica')
+  ) {
+    return 'clinic';
+  }
+  if (clean.includes('cantareira') || clean.includes('cemiterio')) {
+    return 'cantareira';
+  }
+  if (clean.includes('surface')) {
+    return 'surfacebrasil';
+  }
+  if (clean.includes('verzel')) {
+    return 'verzel';
+  }
+  if (clean.includes('primo')) {
+    return 'primo';
+  }
+  if (clean.includes('delivery') || clean.includes('pizzaria') || clean.includes('restaurante')) {
+    return 'delivery';
+  }
+  if (clean.includes('b2b') || clean.includes('nexa') || clean.includes('sales')) {
+    return 'b2b';
+  }
+  return clean || 'clinic';
+}
+
 export const getUrlParamNiche = (): string | null => {
   if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
   const raw = params.get('nicho') || params.get('workspace') || params.get('empresa');
-  if (raw && WORKSPACE_PRESETS[raw.toLowerCase()]) {
-    const valid = raw.toLowerCase();
+  
+  if (raw && raw.trim()) {
+    const normalized = normalizeNicheKey(raw);
     try {
-      localStorage.setItem('nexa_client_nicho', valid);
+      localStorage.setItem('nexa_client_nicho', normalized);
     } catch {}
-    return valid;
+    return normalized;
   }
+  
   try {
     const saved = localStorage.getItem('nexa_client_nicho');
-    if (saved && WORKSPACE_PRESETS[saved]) return saved;
+    if (saved && saved.trim()) return normalizeNicheKey(saved);
   } catch {}
-  return null;
+  return 'clinic';
 };
 
 export default function App() {
@@ -297,6 +343,8 @@ export default function App() {
           if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
           else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
           else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
+          else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
+          else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
           setEvolutionConfig((prev) => ({
             ...prev,
             ...evo,
