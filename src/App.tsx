@@ -285,6 +285,22 @@ export default function App() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 
+  // Sync workspace from URL changes
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      const empresa = params.get('empresa') || params.get('nicho');
+      if (empresa) {
+        const normalized = normalizeNicheKey(empresa);
+        if (normalized !== activeUrlNiche) {
+          setActiveUrlNiche(normalized);
+        }
+      }
+    };
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, [activeUrlNiche]);
+
   const [agentConfig, setAgentConfig] = useState<AgentConfig>(() => {
     const base: AgentConfig = {
       personaName: 'Sofia Mendes',
@@ -460,6 +476,15 @@ export default function App() {
           });
         }
       }
+      // Re-fetch specific agent config if workspace changed
+      const workspaceSpecificAgentRes = await fetch(`/api/agent-config?workspace=${encodeURIComponent(activeUrlNiche)}`).catch(() => null);
+      if (workspaceSpecificAgentRes && workspaceSpecificAgentRes.ok) {
+        const workspaceCfg = await workspaceSpecificAgentRes.json();
+        if (workspaceCfg && typeof workspaceCfg === 'object') {
+           setAgentConfig((prev) => ({ ...prev, ...workspaceCfg }));
+        }
+      }
+
       if (evoRes && evoRes.ok) {
         const evo = await evoRes.json();
         if (evo && typeof evo === 'object') {
@@ -506,9 +531,20 @@ export default function App() {
           if (evoRes.ok) {
             const freshEvo = await evoRes.json();
             if (freshEvo && typeof freshEvo === 'object') {
+              let targetInst = freshEvo.instanceName;
+              if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
+              else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
+              else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
+              else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
+              else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
+              else if (activeUrlNiche === 'b2b') targetInst = 'agente-ia';
+              
+              const targetKey = (targetInst && freshEvo.instanceApiKeys?.[targetInst]) || freshEvo.apiKey;
               setEvolutionConfig((prev) => ({
                 ...prev,
                 ...freshEvo,
+                instanceName: targetInst,
+                apiKey: targetKey || prev.apiKey,
               }));
             }
           }

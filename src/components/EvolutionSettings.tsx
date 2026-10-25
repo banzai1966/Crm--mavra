@@ -1151,7 +1151,9 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
           {/* Tabela Interativa de Instâncias e Tokens */}
           <div className="space-y-3">
             {MANAGED_COMPANIES.map((item) => {
-              const currentVal = individualKeys[item.instance] || config.instanceApiKeys?.[item.instance] || item.defaultToken;
+              const currentVal = item.instance in individualKeys
+                ? individualKeys[item.instance]
+                : (config.instanceApiKeys?.[item.instance] || item.defaultToken);
               const isShowing = showInstanceKeyMap[item.instance] || false;
               const isCurrentActive = config.instanceName === item.instance;
               const isSavedFeedback = savedKeyFeedback[item.instance] || false;
