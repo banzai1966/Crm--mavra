@@ -1467,7 +1467,7 @@ async function startServer() {
       ...raw,
       serverUrl: raw.serverUrl ? sanitizeEvolutionUrl(raw.serverUrl) : db.evolutionConfig.serverUrl,
       apiKey: raw.apiKey ? raw.apiKey.trim() : db.evolutionConfig.apiKey,
-      instanceName: raw.instanceName ? raw.instanceName.trim() : db.evolutionConfig.instanceName,
+      instanceName: raw.instanceName ? raw.instanceName.trim() : (raw.instanceName === "" ? "" : db.evolutionConfig.instanceName),
       instanceApiKeys: mergedInstanceKeys,
     };
 
