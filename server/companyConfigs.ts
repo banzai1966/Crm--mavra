@@ -333,55 +333,354 @@ R: Evitam despesas de emergência com opções parceladas e suporte 24h.`,
 3. Esclareça dúvidas sobre jazigos e agende atendimento humanizado ou visita com nossos consultores.`,
     },
   },
+
+  delivery: {
+    id: 'delivery',
+    instanceName: 'delivery',
+    aliases: ['delivery', 'restaurant_delivery', 'pizzaria', 'restaurante'],
+    companyName: 'Pizzaria & Restaurante Delivery',
+    documentIds: [],
+    agentConfig: {
+      businessName: 'Restaurante & Pizzaria Delivery',
+      activeWorkspaceName: 'Restaurante & Pizzaria Delivery',
+      personaName: 'Sofia (Central de Pedidos)',
+      role: 'Atendente Especialista em Pedidos & Delivery Rápido',
+      toneOfVoice: 'Ágil, simpática, acolhedora e focada em anotar o pedido completo sem erros',
+      salesGoal: 'Anotar pedidos completos, sugerir bebidas/bordas, calcular taxa de entrega por bairro e validar PIX na hora',
+      activeProvider: 'gemini',
+      activeModel: 'gemini-2.5-flash',
+      strictKnowledgeOnly: true,
+      autoTriggerCRMStages: true,
+      isGlobalAiActive: true,
+      testModeEnabled: false,
+      testNumberWhitelist: '',
+      autoTranscribeAudio: true,
+      typingDelayMs: 1200,
+      voiceResponseEnabled: true,
+      voiceResponseMode: 'smart_discernment',
+      voiceEngine: 'native_sofia',
+      voiceVoiceName: 'pt-BR-FranciscaNeural',
+      voiceSpeed: 0.92,
+      maxConsecutiveAudios: 3,
+      maxAudioChars: 400,
+      followUpNiche: 'restaurant_delivery',
+      followUpCustomMessage: 'Olá! Bateu aquela fome hoje? Nosso forno já está aquecido com pizzas e lanches fresquinhos saindo agora! Quer repetir seu pedido favorito com entrega expressa? 🍕🛵',
+      knowledgeFaq: 'Atendimento rápido de pedidos via WhatsApp com cálculo automático de taxa de entrega por bairro e confirmação via PIX.',
+      knowledgeCatalog: 'Cardápio completo de pizzas artesanais, lanches, porções, bebidas geladas e sobremesas.',
+      knowledgePricing: 'Pagamento via PIX com liberação imediata para a cozinha, cartão na entrega ou dinheiro.',
+      knowledgeRules: 'Confirme os itens do pedido, endereço completo com bairro, forma de pagamento e envie a chave PIX quando solicitado.',
+    },
+  },
+
+  b2b: {
+    id: 'b2b',
+    instanceName: 'agente-ia',
+    aliases: ['b2b', 'agente-ia', 'nexa', 'nexa-crm', 'nexa_crm', 'nexa_sales', 'sales'],
+    companyName: 'NEXA CRM Comercial B2B',
+    documentIds: ['doc-1', 'doc-2'],
+    agentConfig: {
+      businessName: 'NEXA CRM Oficial',
+      activeWorkspaceName: 'NEXA B2B & Vendas Comerciais',
+      personaName: 'Sofia Mendes (Executiva B2B)',
+      role: 'Especialista em Soluções Comerciais & Automação de Atendimento NEXA CRM',
+      toneOfVoice: 'Consultivo, executivo, empático e focado em conversão comercial e ROI',
+      salesGoal: 'Qualificar decisores, mapear gargalos de atendimento no WhatsApp e agendar demonstração executiva ou fechamento.',
+      activeProvider: 'gemini',
+      activeModel: 'gemini-2.5-flash',
+      strictKnowledgeOnly: false,
+      autoTriggerCRMStages: true,
+      isGlobalAiActive: true,
+      testModeEnabled: false,
+      testNumberWhitelist: '',
+      autoTranscribeAudio: true,
+      typingDelayMs: 1500,
+      voiceResponseEnabled: true,
+      voiceResponseMode: 'smart_discernment',
+      voiceEngine: 'native_sofia',
+      voiceVoiceName: 'pt-BR-FranciscaNeural',
+      voiceSpeed: 0.90,
+      maxConsecutiveAudios: 4,
+      maxAudioChars: 450,
+      followUpNiche: 'sales',
+      followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se conseguiu avaliar nossa proposta de automação comercial no WhatsApp com o NEXA CRM. Podemos agendar uma demonstração rápida de 15 minutos ao vivo? 🚀',
+      knowledgeFaq: 'O NEXA CRM integra WhatsApp oficial via Evolution API v2, IA multimodal (voz, texto, PDF e comprovantes PIX) e funil Kanban em tempo real.',
+      knowledgeCatalog: 'Planos Starter, Pro (com voz neural e follow-up automático) e Enterprise Multi-Empresas.',
+      knowledgePricing: 'Plano Starter R$ 297/mês | Plano Pro R$ 597/mês | Plano Enterprise sob consulta.',
+      knowledgeRules: 'Identifique o segmento do cliente, descubra o volume diário de mensagens no WhatsApp e convide para demonstração prática.',
+    },
+  },
 };
 
 /**
+ * Normalizes any raw workspace, niche, or instance identifier into a canonical box key.
+ * Built-in companies map to: 'clinic' | 'primo' | 'surfacebrasil' | 'verzel' | 'cantareira' | 'delivery' | 'ecommerce' | 'b2b'.
+ * Any custom instance/client (e.g. '1', '2', 'cliente-x') preserves its exact normalized slug as its own isolated box!
+ */
+export function normalizeWorkspaceKey(raw?: string | null): string {
+  if (!raw) return 'clinic';
+  const clean = raw
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/^inst[aâ]ncia:\s*/i, '')
+    .replace(/[^a-z0-9_-]/g, '-');
+  if (!clean) return 'clinic';
+
+  if (
+    clean === 'clinic' ||
+    clean === 'dental' ||
+    clean.includes('lucy') ||
+    clean.includes('murata') ||
+    clean.includes('dental-integrative') ||
+    clean.includes('odonto') ||
+    clean.includes('saude') ||
+    clean.includes('health') ||
+    clean === 'profile-dra-lucy'
+  ) {
+    return 'clinic';
+  }
+  if (clean === 'primo' || clean.includes('primo-equipamento') || clean.includes('primo_equipamento')) {
+    return 'primo';
+  }
+  if (clean.includes('surface')) {
+    return 'surfacebrasil';
+  }
+  if (clean.includes('verzel')) {
+    return 'verzel';
+  }
+  if (clean.includes('cantareira') || clean.includes('cemiterio')) {
+    return 'cantareira';
+  }
+  if (clean === 'delivery' || clean === 'restaurant_delivery' || clean === 'pizzaria' || clean === 'restaurante') {
+    return 'delivery';
+  }
+  if (clean === 'ecommerce' || clean === 'retail') {
+    return 'ecommerce';
+  }
+  if (
+    clean === 'b2b' ||
+    clean === 'agente-ia' ||
+    clean === 'nexa' ||
+    clean === 'nexa-crm' ||
+    clean === 'nexa_crm' ||
+    clean === 'nexa_sales' ||
+    clean === 'sales' ||
+    clean === 'profile-nexa-crm'
+  ) {
+    return 'b2b';
+  }
+  return clean;
+}
+
+/**
+ * Maps a canonical workspace key to its default Evolution instance name.
+ */
+export function getDefaultInstanceForWorkspace(workspaceKey?: string): string {
+  const wk = normalizeWorkspaceKey(workspaceKey);
+  if (wk === 'clinic') return 'dental-integrative';
+  if (wk === 'primo') return 'primo-equipamentos';
+  if (wk === 'surfacebrasil') return 'surfacebrasil';
+  if (wk === 'verzel') return 'verzel';
+  if (wk === 'cantareira') return 'cemiterio-cantareira';
+  if (wk === 'delivery') return 'delivery';
+  if (wk === 'b2b') return 'agente-ia';
+  return wk;
+}
+
+/**
+ * Strictly determines which workspace box a Lead belongs to.
+ * Never allows a lead from one box to leak into another box.
+ */
+export function resolveLeadWorkspaceId(lead: any): string {
+  if (!lead) return 'clinic';
+
+  // 1. Explicit workspaceId property
+  if (lead.workspaceId && typeof lead.workspaceId === 'string' && lead.workspaceId.trim()) {
+    return normalizeWorkspaceKey(lead.workspaceId);
+  }
+
+  // 2. Explicit instanceName property
+  if (lead.instanceName && typeof lead.instanceName === 'string' && lead.instanceName.trim()) {
+    return normalizeWorkspaceKey(lead.instanceName);
+  }
+
+  const tags: string[] = Array.isArray(lead.tags) ? lead.tags.map((t: any) => String(t)) : [];
+  const lowerTags = tags.map((t) => t.toLowerCase());
+  const notes = String(lead.notes || '').toLowerCase();
+  const interest = String(lead.interest || '').toLowerCase();
+  const idStr = String(lead.id || '').toLowerCase();
+
+  // 3. Look for explicit "Instância: <name>" tag added by webhook
+  for (const t of lowerTags) {
+    if (t.startsWith('instância:') || t.startsWith('instancia:')) {
+      const instPart = t.replace(/^inst[aâ]ncia:\s*/i, '').trim();
+      if (instPart) return normalizeWorkspaceKey(instPart);
+    }
+  }
+
+  // 4. Match built-in company markers
+  if (
+    lowerTags.some((t) => t.includes('primo')) ||
+    notes.includes('primo-equipamentos') ||
+    notes.includes('primo equipamentos') ||
+    interest.includes('primo equipamentos')
+  ) {
+    return 'primo';
+  }
+  if (
+    lowerTags.some((t) => t.includes('surface') || t.includes('plasma')) ||
+    notes.includes('surfacebrasil') ||
+    interest.includes('sap02') ||
+    interest.includes('plasma atmosférico')
+  ) {
+    return 'surfacebrasil';
+  }
+  if (
+    lowerTags.some((t) => t.includes('verzel')) ||
+    notes.includes('verzel') ||
+    interest.includes('verzel')
+  ) {
+    return 'verzel';
+  }
+  if (
+    lowerTags.some((t) => t.includes('cantareira') || t.includes('cemiterio') || t.includes('jazigo')) ||
+    notes.includes('cantareira') ||
+    interest.includes('jazigo')
+  ) {
+    return 'cantareira';
+  }
+  if (
+    Boolean(lead.deliveryInfo) ||
+    idStr.startsWith('lead-delivery') ||
+    lowerTags.some((t) => t.includes('delivery') || t.includes('pizza') || t.includes('motoboy'))
+  ) {
+    return 'delivery';
+  }
+  if (
+    Boolean(lead.triage) ||
+    idStr.includes('health') ||
+    idStr.includes('insta') ||
+    lowerTags.some((t) =>
+      t.includes('murata') ||
+      t.includes('lucy') ||
+      t.includes('odonto') ||
+      t.includes('paciente') ||
+      t.includes('mentoria') ||
+      t.includes('dental')
+    ) ||
+    notes.includes('lucy') ||
+    notes.includes('euroville') ||
+    interest.includes('amálgama') ||
+    interest.includes('zircônia') ||
+    interest.includes('avaliação integrativa')
+  ) {
+    return 'clinic';
+  }
+
+  // Default demo leads (lead-1, lead-2, etc.) belong to 'b2b'
+  if (idStr === 'lead-1' || idStr === 'lead-2' || idStr === 'lead-3') {
+    return 'b2b';
+  }
+
+  return 'b2b';
+}
+
+/**
  * Normalizes an instance name or company key and returns the matched preset definition.
+ * Also supports custom user-created instances (e.g. '1', '2', 'cliente-x') with isolated configs!
  */
 export function getCompanyPresetByInstance(instanceName?: string): CompanyPresetDefinition {
-  const clean = normalizeInstanceName(instanceName);
+  const wk = normalizeWorkspaceKey(instanceName);
+  const presetKey = wk === 'clinic' ? 'dental' : wk;
 
+  if (COMPANY_PRESETS[presetKey]) {
+    return COMPANY_PRESETS[presetKey];
+  }
+
+  const cleanInst = normalizeInstanceName(instanceName);
   for (const key of Object.keys(COMPANY_PRESETS)) {
     const preset = COMPANY_PRESETS[key];
     if (
-      preset.instanceName === clean ||
-      preset.aliases.includes(clean) ||
-      clean.includes(preset.id) ||
-      preset.aliases.some((alias) => clean.includes(alias))
+      preset.instanceName === cleanInst ||
+      preset.aliases.includes(cleanInst)
     ) {
       return preset;
     }
   }
 
-  // Fallback to Primo if primo is in clean string, else dental, else primo
-  if (clean.includes('primo')) return COMPANY_PRESETS.primo;
-  if (clean.includes('surface')) return COMPANY_PRESETS.surfacebrasil;
-  if (clean.includes('verzel')) return COMPANY_PRESETS.verzel;
-  if (clean.includes('cantareira')) return COMPANY_PRESETS.cantareira;
-  if (clean.includes('dental') || clean.includes('lucy')) return COMPANY_PRESETS.dental;
+  // Custom instance / client box (e.g. '1', '2', 'cliente-novo'): build an isolated definition!
+  const customSavedConfig = (db as any).workspaceConfigs?.[wk];
+  const displayTitle = customSavedConfig?.activeWorkspaceName || customSavedConfig?.businessName || `Cliente ${cleanInst}`;
 
-  return COMPANY_PRESETS.primo;
+  return {
+    id: wk,
+    instanceName: cleanInst,
+    aliases: [wk, cleanInst],
+    companyName: displayTitle,
+    documentIds: [],
+    agentConfig: customSavedConfig || {
+      businessName: displayTitle,
+      activeWorkspaceName: displayTitle,
+      personaName: 'Sofia',
+      role: `Especialista de Atendimento (${displayTitle})`,
+      toneOfVoice: 'Profissional, empático, ágil e prestativo',
+      salesGoal: 'Atender o cliente com excelência, tirar dúvidas e avançar no funil comercial',
+      activeProvider: 'gemini',
+      activeModel: 'gemini-2.5-flash',
+      strictKnowledgeOnly: false,
+      autoTriggerCRMStages: true,
+      isGlobalAiActive: true,
+      testModeEnabled: false,
+      testNumberWhitelist: '',
+      autoTranscribeAudio: true,
+      typingDelayMs: 1500,
+      voiceResponseEnabled: true,
+      voiceResponseMode: 'smart_discernment',
+      voiceEngine: 'native_sofia',
+      voiceVoiceName: 'pt-BR-FranciscaNeural',
+      voiceSpeed: 0.90,
+      maxConsecutiveAudios: 4,
+      maxAudioChars: 450,
+      followUpNiche: 'sales',
+      followUpCustomMessage: 'Olá! Tudo bem? Como posso ajudar você hoje?',
+      knowledgeFaq: '',
+      knowledgeCatalog: '',
+      knowledgePricing: '',
+      knowledgeRules: `Você é a assistente exclusiva de ${displayTitle}. Atenda com educação e foco nas necessidades do cliente.`,
+    },
+  };
 }
 
 /**
- * Returns the 100% isolated, non-contaminated AgentConfig for the specified instance.
+ * Returns the 100% isolated, non-contaminated AgentConfig for the specified instance or workspace.
  */
 export function getAgentConfigForInstance(instanceName?: string): AgentConfig {
+  const wk = normalizeWorkspaceKey(instanceName);
   const preset = getCompanyPresetByInstance(instanceName);
   const baseConfig = preset.agentConfig;
+  const savedWorkspaceCfg = (db as any).workspaceConfigs?.[wk] || {};
 
   // Inherit runtime keys (Gemini API key, Google TTS, ElevenLabs) from current db config so AI calls succeed
-  const runtimeGeminiKey = (db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
-  const runtimeOpenAiKey = (db.agentConfig.openaiApiKey || process.env.OPENAI_API_KEY || '').trim();
-  const runtimeAnthropicKey = (db.agentConfig.anthropicApiKey || process.env.ANTHROPIC_API_KEY || '').trim();
+  const runtimeGeminiKey = (savedWorkspaceCfg.geminiApiKey || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
+  const runtimeOpenAiKey = (savedWorkspaceCfg.openaiApiKey || db.agentConfig.openaiApiKey || process.env.OPENAI_API_KEY || '').trim();
+  const runtimeAnthropicKey = (savedWorkspaceCfg.anthropicApiKey || db.agentConfig.anthropicApiKey || process.env.ANTHROPIC_API_KEY || '').trim();
+
+  // For built-in companies, ensure core identity fields (personaName, role, followUpCustomMessage, knowledge)
+  // are never contaminated by another company's text
+  const isBuiltIn = ['clinic', 'primo', 'surfacebrasil', 'verzel', 'cantareira', 'delivery', 'b2b'].includes(wk);
 
   return {
     ...baseConfig,
+    ...(isBuiltIn ? {} : savedWorkspaceCfg),
+    activeWorkspaceName: baseConfig.activeWorkspaceName || baseConfig.businessName || preset.companyName,
     geminiApiKey: runtimeGeminiKey || baseConfig.geminiApiKey,
     openaiApiKey: runtimeOpenAiKey || baseConfig.openaiApiKey,
     anthropicApiKey: runtimeAnthropicKey || baseConfig.anthropicApiKey,
-    googleTtsApiKey: db.agentConfig.googleTtsApiKey || baseConfig.googleTtsApiKey,
-    elevenLabsApiKey: db.agentConfig.elevenLabsApiKey || baseConfig.elevenLabsApiKey,
+    googleTtsApiKey: savedWorkspaceCfg.googleTtsApiKey || db.agentConfig.googleTtsApiKey || baseConfig.googleTtsApiKey,
+    elevenLabsApiKey: savedWorkspaceCfg.elevenLabsApiKey || db.agentConfig.elevenLabsApiKey || baseConfig.elevenLabsApiKey,
+    isGlobalAiActive: savedWorkspaceCfg.isGlobalAiActive ?? baseConfig.isGlobalAiActive ?? true,
+    testModeEnabled: savedWorkspaceCfg.testModeEnabled ?? baseConfig.testModeEnabled ?? false,
+    testNumberWhitelist: savedWorkspaceCfg.testNumberWhitelist ?? baseConfig.testNumberWhitelist ?? '',
   };
 }
 
@@ -420,7 +719,7 @@ export function getDocumentsForInstance(instanceName?: string): KnowledgeDocumen
         (docContent.includes('verzel soluções') && !docContent.includes('plasma') && !docContent.includes('primo'))
       );
     }
-    if (companyId === 'dental') {
+    if (companyId === 'dental' || companyId === 'clinic') {
       return (
         docName.includes('lucy') ||
         docName.includes('odonto') ||

@@ -50,7 +50,8 @@ interface HeaderProps {
   onOpenAdminAuth?: () => void;
   onLockAdmin?: () => void;
   onToggleGlobalAi?: () => void;
-  onSwitchWorkspace?: (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel' | 'primo') => void;
+  activeWorkspaceId?: string;
+  onSwitchWorkspace?: (workspaceId: any) => void;
   onShowGuide?: () => void;
   pwaState?: {
     isInstallable: boolean;
@@ -80,6 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAdminAuth,
   onLockAdmin,
   onToggleGlobalAi,
+  activeWorkspaceId,
   onSwitchWorkspace,
   onShowGuide,
   pwaState,
@@ -155,35 +157,49 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  // Determine current niche
+  // Determine current niche strictly from activeWorkspaceId first, with safe fallback
   const currentNiche =
-    agentConfig.personaName?.toLowerCase().includes('primo') ||
-    agentConfig.role?.toLowerCase().includes('primo') ||
-    agentConfig.activeWorkspaceName?.toLowerCase().includes('primo')
+    activeWorkspaceId && activeWorkspaceId !== 'all'
+      ? activeWorkspaceId
+      : agentConfig.personaName?.toLowerCase().includes('primo') ||
+        agentConfig.role?.toLowerCase().includes('primo') ||
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('primo')
       ? 'primo'
+      : agentConfig.personaName?.toLowerCase().includes('cantareira') ||
+        agentConfig.role?.toLowerCase().includes('cantareira') ||
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('cantareira')
+      ? 'cantareira'
       : agentConfig.personaName?.toLowerCase().includes('verzel') ||
         agentConfig.role?.toLowerCase().includes('verzel') ||
-        agentConfig.followUpCustomMessage?.toLowerCase().includes('verzel')
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('verzel')
       ? 'verzel'
       : agentConfig.followUpNiche === 'restaurant_delivery'
       ? 'delivery'
       : agentConfig.followUpNiche === 'retail'
       ? 'ecommerce'
-      : agentConfig.followUpNiche === 'b2b_services' || agentConfig.personaName?.toLowerCase().includes('surface')
+      : agentConfig.personaName?.toLowerCase().includes('surface') ||
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('surface')
       ? 'surfacebrasil'
       : agentConfig.followUpNiche === 'sales'
       ? 'b2b'
       : 'clinic';
 
-  const nicheMeta = {
+  const builtInMeta: Record<string, { label: string; icon: any; badge: string }> = {
     primo: { label: 'Primo Equipamentos', icon: Building2, badge: 'Vendas & Geral' },
-    clinic: { label: 'Clínica & Saúde', icon: Stethoscope, badge: 'Saúde' },
+    clinic: { label: 'Clínica & Saúde (Dra. Lucy)', icon: Stethoscope, badge: 'Saúde' },
+    cantareira: { label: 'Parque da Cantareira', icon: Sparkles, badge: 'Familiar' },
     delivery: { label: 'Pizzaria & Delivery', icon: UtensilsCrossed, badge: 'Delivery' },
     ecommerce: { label: 'E-commerce & Varejo', icon: ShoppingBag, badge: 'Varejo' },
     b2b: { label: 'Comercial B2B', icon: Building2, badge: 'B2B' },
     surfacebrasil: { label: 'Surfacebrasil (Plasma)', icon: Zap, badge: 'Indústria' },
     verzel: { label: 'Verzel (Software & AI)', icon: Code2, badge: 'Tech' },
-  }[currentNiche] || { label: 'Vendas & Equipamentos', icon: Building2, badge: 'Vendas' };
+  };
+
+  const nicheMeta = builtInMeta[currentNiche] || {
+    label: agentConfig.activeWorkspaceName || `Instância: ${currentNiche}`,
+    icon: Building2,
+    badge: 'Isolado',
+  };
 
   const CurrentNicheIcon = nicheMeta.icon;
 
@@ -366,6 +382,25 @@ export const Header: React.FC<HeaderProps> = ({
                           {currentNiche === 'primo' && <span className="text-[10px] text-amber-700 font-bold">(Ativo)</span>}
                         </div>
                         <p className="text-[10px] text-slate-400 font-normal">Foco: Cozinhas industriais, maquinário gastronômico & televendas B2B</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onSwitchWorkspace('cantareira');
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                        currentNiche === 'cantareira' ? 'bg-teal-50/80 font-bold text-teal-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <Sparkles className="w-4 h-4 text-teal-600" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>Parque da Cantareira</span>
+                          {currentNiche === 'cantareira' && <span className="text-[10px] text-teal-700 font-bold">(Ativo)</span>}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-normal">Foco: Jazigos, assistência familiar & acolhimento 24h</p>
                       </div>
                     </button>
                   </div>

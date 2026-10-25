@@ -250,21 +250,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     return detectedNiche;
   });
 
-  // Keep in sync whenever workspace or agent changes (guarantee Primo / sales profiles always show Vendas & Geral)
+  // Keep in sync whenever workspace or agent changes (both in Admin and Client mode!)
   React.useEffect(() => {
     const currentDetected = detectDefaultNicheFromConfig(agentConfig);
-    if (currentDetected === 'all') {
-      setNicheFilter('all');
-      try {
-        localStorage.setItem('nexa_crm_kanban_niche', 'all');
-      } catch {}
-    } else if (!isAdmin) {
-      setNicheFilter(currentDetected);
-      try {
-        localStorage.setItem('nexa_crm_kanban_niche', currentDetected);
-      } catch {}
-    }
-  }, [agentConfig?.activeWorkspaceName, agentConfig?.personaName, agentConfig?.followUpNiche, isAdmin]);
+    setNicheFilter(currentDetected);
+    try {
+      localStorage.setItem('nexa_crm_kanban_niche', currentDetected);
+    } catch {}
+  }, [agentConfig?.activeWorkspaceName, agentConfig?.personaName, agentConfig?.role, agentConfig?.followUpNiche]);
 
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterHotOnly, setFilterHotOnly] = useState(false);

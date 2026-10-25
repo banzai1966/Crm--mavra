@@ -67,6 +67,8 @@ export interface Lead {
     vipNotes?: string;
     updatedAt?: string;
   };
+  workspaceId?: string;
+  instanceName?: string;
 }
 
 export interface DeliveryZoneRule {
@@ -138,6 +140,8 @@ export interface ChatMessage {
   };
   providerUsed?: string;
   modelUsed?: string;
+  workspaceId?: string;
+  instanceName?: string;
 }
 
 export interface KnowledgeDocument {

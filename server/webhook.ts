@@ -15,13 +15,18 @@ import {
   normalizeInstanceName,
 } from './evolution';
 import { Lead, ChatMessage } from '../src/types';
-import { getAgentConfigForInstance, getCompanyPresetByInstance } from './companyConfigs';
+import {
+  getAgentConfigForInstance,
+  getCompanyPresetByInstance,
+  normalizeWorkspaceKey,
+  resolveLeadWorkspaceId,
+} from './companyConfigs';
 
 // In-memory cache for processed message IDs to prevent double processing & infinite duplicate loops
 const processedMessageIds = new Map<string, number>();
-// In-memory debounce cache (phone + text hash -> timestamp) to prevent duplicate webhook dispatches
+// In-memory debounce cache (instance + phone + text hash -> timestamp) to prevent duplicate webhook dispatches
 const recentMessageFingerprints = new Map<string, number>();
-// In-memory lock per phone to prevent concurrent processing of the same conversation
+// In-memory lock per instance+phone to prevent concurrent processing of the same conversation
 const phoneInFlight = new Set<string>();
 
 let lastWebhookTimestamp = 0;
@@ -51,7 +56,7 @@ export function isDuplicateMessage(messageId?: string): boolean {
   return false;
 }
 
-function isDuplicateContent(phone: string, text: string): boolean {
+function isDuplicateContent(phone: string, text: string, instanceKey: string = 'default'): boolean {
   if (!phone || !text) return false;
   const now = Date.now();
 
@@ -64,10 +69,10 @@ function isDuplicateContent(phone: string, text: string): boolean {
     }
   }
 
-  const normalized = `${phone}:${text.trim().toLowerCase().slice(0, 100)}`;
+  const normalized = `${instanceKey}:${phone}:${text.trim().toLowerCase().slice(0, 100)}`;
   const lastTime = recentMessageFingerprints.get(normalized);
   if (lastTime && now - lastTime < 10000) {
-    // Exact same message from same phone received within 10 seconds (webhook duplicate)
+    // Exact same message from same phone on same instance received within 10 seconds (webhook duplicate)
     return true;
   }
 
@@ -497,25 +502,30 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     return;
   }
 
-  // Deduplication check by content: if the exact same message from this phone arrived in <10s, discard
-  if (isDuplicateContent(cleanPhone, messageText)) {
-    console.log(`[Webhook] Mensagem duplicada de ${cleanPhone} ignorada pelo filtro anti-duplicação (<10s): "${messageText.slice(0, 40)}"`);
+  const targetWorkspaceId = normalizeWorkspaceKey(incomingInstance);
+
+  // Deduplication check by content: if the exact same message from this phone on this instance arrived in <10s, discard
+  if (isDuplicateContent(cleanPhone, messageText, targetWorkspaceId)) {
+    console.log(`[Webhook] Mensagem duplicada de ${cleanPhone} (${incomingInstance}) ignorada pelo filtro anti-duplicação (<10s): "${messageText.slice(0, 40)}"`);
     return;
   }
 
-  console.log(`[Webhook] Mensagem recebida de ${cleanPhone}: "${messageText.slice(0, 50)}..."`);
+  console.log(`[Webhook] Mensagem recebida de ${cleanPhone} [Box: ${targetWorkspaceId} | Instância: ${incomingInstance}]: "${messageText.slice(0, 50)}..."`);
 
   // Log successful reception
   db.logWebhookEvent({
     event: rawEvent,
     senderPhone: cleanPhone,
-    messageText: messageText.trim(),
+    messageText: `[${incomingInstance}] ${messageText.trim()}`,
     status: 'processed',
-    details: 'Processando com IA Sofia e funil de CRM',
+    details: `Processando com IA Sofia (${targetWorkspaceId}) e funil de CRM isolado`,
   });
 
-  // 2. Find or create lead in CRM database
-  let lead = db.leads.find((l) => l.phone === cleanPhone);
+  // 2. Find or create lead in CRM database STRICTLY SCOPED to targetWorkspaceId!
+  // This guarantees that testing with the same WhatsApp number on Instance 1 and Instance 2 never mixes leads or chats.
+  let lead = db.leads.find(
+    (l) => l.phone === cleanPhone && resolveLeadWorkspaceId(l) === targetWorkspaceId
+  );
 
   const extractedPushName =
     data?.pushName ||
@@ -533,9 +543,9 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
   const companyTag = companyPreset.companyName;
 
   if (!lead) {
-    const defaultStage = db.stages[0]?.id || 'stage-1';
+    const defaultStage = db.stages.find((s) => s.id === 'stage-1')?.id || db.stages[0]?.id || 'stage-1';
     lead = {
-      id: 'lead-' + Date.now(),
+      id: `lead-${targetWorkspaceId}-${Date.now()}`,
       name: extractedPushName || `Lead ${cleanPhone.slice(-4)}`,
       phone: cleanPhone,
       stageId: defaultStage,
@@ -547,9 +557,13 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       lastInteraction: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       unreadCount: 1,
+      workspaceId: targetWorkspaceId,
+      instanceName: incomingInstance,
     };
     db.leads.unshift(lead);
   } else {
+    lead.workspaceId = targetWorkspaceId;
+    lead.instanceName = incomingInstance;
     lead.lastInteraction = new Date().toISOString();
     lead.unreadCount = (lead.unreadCount || 0) + 1;
     if (extractedPushName && (lead.name.startsWith('Lead ') || lead.name === `Lead ${cleanPhone.slice(-4)}`)) {
@@ -563,7 +577,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     }
   }
 
-  // 3. Register incoming message in chat history
+  // 3. Register incoming message in chat history (scoped to leadId and workspaceId)
   let displayText = messageText.trim();
   if (isAudioTranscribed) {
     displayText = `🎤 [Áudio Transcrito]: "${messageText.trim()}"`;
@@ -583,12 +597,16 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     mediaUrl: incomingAudioDataUrl,
     timestamp: new Date().toISOString(),
     status: 'delivered',
+    workspaceId: targetWorkspaceId,
+    instanceName: incomingInstance,
   };
   db.messages.push(incomingMsg);
   db.saveToFile();
 
+  const activeInstanceConfig = getAgentConfigForInstance(incomingInstance);
+
   // 4. Check Global AI Switch (ON / OFF)
-  if (db.agentConfig.isGlobalAiActive === false) {
+  if (activeInstanceConfig.isGlobalAiActive === false || db.agentConfig.isGlobalAiActive === false) {
     console.log(`[Webhook] IA Global DESLIGADA no painel. Ignorando resposta automática para ${cleanPhone}.`);
     db.logWebhookEvent({
       event: rawEvent,
@@ -888,6 +906,8 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       extractedInfo: aiResult.extractedInfo,
       providerUsed: aiResult.providerUsed,
       modelUsed: aiResult.modelUsed,
+      workspaceId: targetWorkspaceId,
+      instanceName: incomingInstance,
     };
     db.messages.push(aiMsg);
 

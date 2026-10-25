@@ -243,6 +243,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   useEffect(() => {
     if (activeLead) {
       fetchMessages(activeLead.id);
+    } else {
+      setMessages([]);
     }
   }, [activeLead?.id]);
 

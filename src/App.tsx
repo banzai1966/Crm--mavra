@@ -30,6 +30,7 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     role: 'Coordenadora de Atendimento & Triagem Clínica da Dra. Lucy Murata',
     followUpNiche: 'dental',
     salesGoal: 'Acolher pacientes, realizar pré-triagem de sintomas/horários e agendar consultas e retornos da base antiga',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨',
   },
   cantareira: {
     activeWorkspaceName: 'Cemitério Parque da Cantareira',
@@ -38,6 +39,7 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     toneOfVoice: 'Extremamente empático, respeitoso, compassivo, sereno, profissional e acolhedor em momentos delicados',
     salesGoal: 'Acolher a família com máximo respeito e compaixão, esclarecer dúvidas sobre jazigos, velório 24h, cremação e planos preventivos',
     followUpNiche: 'b2b_services',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para colocar nossa equipe à sua disposição para qualquer dúvida sobre nossos serviços, jazigos ou planejamento preventivo familiar no Parque da Cantareira. Estamos sempre prontos para ampará-los com todo o respeito e acolhimento. 🕊️🌿',
   },
   delivery: {
     activeWorkspaceName: 'Restaurante & Pizzaria Delivery',
@@ -159,15 +161,22 @@ export function getStagesForNiche(niche?: string): KanbanStage[] {
 
 export function normalizeNicheKey(raw?: string | null): string {
   if (!raw) return 'clinic';
-  const clean = raw.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+  const clean = raw
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/^inst[aâ]ncia:\s*/i, '')
+    .replace(/[^a-z0-9_-]/g, '-');
+  if (!clean) return 'clinic';
   if (
+    clean === 'clinic' ||
+    clean === 'dental' ||
     clean.includes('lucy') ||
-    clean.includes('clinic') ||
-    clean.includes('dental') ||
+    clean.includes('murata') ||
+    clean.includes('dental-integrative') ||
     clean.includes('odonto') ||
     clean.includes('saude') ||
     clean.includes('health') ||
-    clean.includes('murata') ||
     clean.includes('medica')
   ) {
     return 'clinic';
@@ -181,16 +190,55 @@ export function normalizeNicheKey(raw?: string | null): string {
   if (clean.includes('verzel')) {
     return 'verzel';
   }
-  if (clean.includes('primo')) {
+  if (clean === 'primo' || clean.includes('primo-equipamento') || clean.includes('primo_equipamento')) {
     return 'primo';
   }
-  if (clean.includes('delivery') || clean.includes('pizzaria') || clean.includes('restaurante')) {
+  if (clean === 'delivery' || clean === 'restaurant_delivery' || clean === 'pizzaria' || clean === 'restaurante') {
     return 'delivery';
   }
-  if (clean.includes('b2b') || clean.includes('nexa') || clean.includes('sales')) {
+  if (clean === 'ecommerce' || clean === 'retail') {
+    return 'ecommerce';
+  }
+  if (clean === 'b2b' || clean === 'agente-ia' || clean === 'nexa' || clean === 'nexa-crm' || clean === 'nexa_crm' || clean === 'sales') {
     return 'b2b';
   }
-  return clean || 'clinic';
+  return clean;
+}
+
+export function resolveClientLeadWorkspace(lead: Lead): string {
+  if (lead.workspaceId && lead.workspaceId.trim()) {
+    return normalizeNicheKey(lead.workspaceId);
+  }
+  if (lead.instanceName && lead.instanceName.trim()) {
+    return normalizeNicheKey(lead.instanceName);
+  }
+  const lowerTags = (lead.tags || []).map((t) => String(t).toLowerCase());
+  const notes = (lead.notes || '').toLowerCase();
+  const interest = (lead.interest || '').toLowerCase();
+  const idStr = String(lead.id || '').toLowerCase();
+
+  for (const t of lowerTags) {
+    if (t.startsWith('instância:') || t.startsWith('instancia:')) {
+      const instPart = t.replace(/^inst[aâ]ncia:\s*/i, '').trim();
+      if (instPart) return normalizeNicheKey(instPart);
+    }
+  }
+
+  if (lowerTags.some((t) => t.includes('primo')) || notes.includes('primo')) return 'primo';
+  if (lowerTags.some((t) => t.includes('surface') || t.includes('plasma')) || notes.includes('surface') || interest.includes('sap02')) return 'surfacebrasil';
+  if (lowerTags.some((t) => t.includes('verzel')) || notes.includes('verzel') || interest.includes('verzel')) return 'verzel';
+  if (lowerTags.some((t) => t.includes('cantareira') || t.includes('cemiterio') || t.includes('jazigo')) || notes.includes('cantareira')) return 'cantareira';
+  if (Boolean(lead.deliveryInfo) || lowerTags.some((t) => t.includes('delivery') || t.includes('pizza'))) return 'delivery';
+  if (
+    Boolean(lead.triage) ||
+    idStr.includes('health') ||
+    lowerTags.some((t) => t.includes('murata') || t.includes('lucy') || t.includes('odonto') || t.includes('paciente') || t.includes('dental')) ||
+    notes.includes('lucy') ||
+    notes.includes('euroville')
+  ) {
+    return 'clinic';
+  }
+  return 'b2b';
 }
 
 export const getUrlParamNiche = (): string | null => {
@@ -522,7 +570,11 @@ export default function App() {
         const res = await fetch('/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(leadData),
+          body: JSON.stringify({
+            ...leadData,
+            workspaceId: activeUrlNiche,
+            instanceName: evolutionConfig.instanceName || activeUrlNiche,
+          }),
         });
         if (res.ok) {
           const created = await res.json();
@@ -550,9 +602,14 @@ export default function App() {
 
   const handleClearAllLeads = async () => {
     try {
-      const res = await fetch('/api/leads/clear-all', { method: 'POST' });
+      const res = await fetch('/api/leads/clear-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workspace: activeUrlNiche }),
+      });
       if (res.ok) {
-        setLeads([]);
+        const data = await res.json();
+        setLeads(Array.isArray(data.leads) ? sanitizeLeads(data.leads) : []);
         setSelectedLeadId(null);
       }
     } catch (err) {
@@ -704,7 +761,15 @@ export default function App() {
         body: JSON.stringify(config),
       });
       if (res.ok) {
-        setEvolutionConfig(await res.json());
+        const savedEvo = await res.json();
+        setEvolutionConfig(savedEvo);
+        if (config.instanceName) {
+          const newWk = normalizeNicheKey(config.instanceName);
+          setActiveUrlNiche(newWk);
+          try {
+            localStorage.setItem('nexa_client_nicho', newWk);
+          } catch {}
+        }
       }
     } catch (err) {
       console.error('Erro ao salvar Evolution config:', err);
@@ -733,12 +798,20 @@ export default function App() {
       await fetch('/api/webhook/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, message, pushName, mediaType, fileName }),
+        body: JSON.stringify({
+          phone,
+          message,
+          pushName,
+          mediaType,
+          fileName,
+          instanceName: evolutionConfig.instanceName,
+          workspaceId: activeUrlNiche,
+        }),
       });
       // Quick refresh of leads
       setTimeout(async () => {
         const res = await fetch('/api/leads');
-        if (res.ok) setLeads(await res.json());
+        if (res.ok) setLeads(sanitizeLeads(await res.json()));
       }, 1500);
     } catch (err) {
       console.error('Erro ao simular webhook:', err);
@@ -817,102 +890,83 @@ export default function App() {
     }
   };
 
-  const handleSwitchWorkspacePreset = async (workspaceId: 'clinic' | 'delivery' | 'ecommerce' | 'b2b' | 'surfacebrasil' | 'verzel' | 'primo') => {
-    setActiveUrlNiche(workspaceId);
+  const handleSwitchWorkspacePreset = async (workspaceId: string) => {
+    const normalizedWk = normalizeNicheKey(workspaceId);
+    setActiveUrlNiche(normalizedWk);
     try {
-      localStorage.setItem('nexa_client_nicho', workspaceId);
+      localStorage.setItem('nexa_client_nicho', normalizedWk);
+      const kanbanMode =
+        normalizedWk === 'clinic'
+          ? 'health'
+          : normalizedWk === 'delivery'
+          ? 'restaurant'
+          : 'all';
+      localStorage.setItem('nexa_crm_kanban_niche', kanbanMode);
+      const url = new URL(window.location.href);
+      url.searchParams.set('nicho', normalizedWk);
+      window.history.replaceState({}, '', url.pathname + url.search);
     } catch {}
 
-    const chosen = WORKSPACE_PRESETS[workspaceId];
+    const chosen = WORKSPACE_PRESETS[normalizedWk];
+    const targetInst =
+      normalizedWk === 'surfacebrasil'
+        ? 'surfacebrasil'
+        : normalizedWk === 'verzel'
+        ? 'verzel'
+        : normalizedWk === 'primo'
+        ? 'primo-equipamentos'
+        : normalizedWk === 'cantareira'
+        ? 'cemiterio-cantareira'
+        : normalizedWk === 'clinic'
+        ? 'dental-integrative'
+        : normalizedWk === 'b2b'
+        ? 'agente-ia'
+        : normalizedWk;
+
+    const dedicatedKey = evolutionConfig.instanceApiKeys?.[targetInst] || evolutionConfig.apiKey;
+    const updatedEvo = {
+      ...evolutionConfig,
+      instanceName: targetInst,
+      ...(dedicatedKey ? { apiKey: dedicatedKey } : {}),
+    };
+    setEvolutionConfig(updatedEvo);
+
     if (chosen) {
       setAgentConfig((prev) => ({ ...prev, ...chosen }));
-      const targetInst =
-        workspaceId === 'surfacebrasil'
-          ? 'surfacebrasil'
-          : workspaceId === 'verzel'
-          ? 'verzel'
-          : workspaceId === 'primo'
-          ? 'primo-equipamentos'
-          : 'dental-integrative';
+    } else {
+      // Custom instance/box: fetch its isolated config from backend
+      fetch(`/api/agent-config?workspace=${encodeURIComponent(normalizedWk)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((cfg) => {
+          if (cfg) setAgentConfig((prev) => ({ ...prev, ...cfg }));
+        })
+        .catch(() => {});
+    }
 
-      const updatedEvo = { ...evolutionConfig, instanceName: targetInst };
-      setEvolutionConfig(updatedEvo);
-
-      if (workspaceId === 'delivery') {
-        setActiveTab('delivery');
-      } else {
-        setActiveTab('kanban');
-      }
+    if (normalizedWk === 'delivery') {
+      setActiveTab('delivery');
+    } else if (activeTab !== 'agent' && activeTab !== 'evolution') {
+      setActiveTab('kanban');
     }
   };
 
+  // Strictly isolate leads per workspace box! Never fallback to returning all leads when a box is empty.
   const filteredLeads = React.useMemo(() => {
-    if (!activeUrlNiche || activeUrlNiche === 'all' || activeUrlNiche === 'b2b') {
+    if (!activeUrlNiche || activeUrlNiche === 'all') {
       return leads;
     }
-    const filtered = leads.filter((l) => {
-      const tags = (l.tags || []).map((t) => t.toLowerCase());
-      const notes = (l.notes || '').toLowerCase();
-      const interest = (l.interest || '').toLowerCase();
-
-      if (activeUrlNiche === 'clinic') {
-        return (
-          tags.some((t) => t.includes('murata') || t.includes('lucy') || t.includes('odonto') || t.includes('paciente') || t.includes('mentoria') || t.includes('dental')) ||
-          notes.includes('lucy') ||
-          notes.includes('odonto') ||
-          notes.includes('euroville') ||
-          interest.includes('avaliação') ||
-          interest.includes('consulta') ||
-          interest.includes('implante') ||
-          interest.includes('amálgama') ||
-          tags.some((t) => t.includes('dental-integrative') || t.includes('dra-lucy'))
-        );
-      }
-      if (activeUrlNiche === 'primo') {
-        return (
-          tags.some((t) => t.includes('primo') || t.includes('gastronomia') || t.includes('cozinha')) ||
-          notes.includes('primo') ||
-          interest.includes('fritadeira') ||
-          interest.includes('liquidificador') ||
-          interest.includes('extrator') ||
-          interest.includes('equipamento') ||
-          tags.some((t) => t.includes('primo-equipamentos'))
-        );
-      }
-      if (activeUrlNiche === 'surfacebrasil') {
-        return (
-          tags.some((t) => t.includes('surface') || t.includes('plasma') || t.includes('industrial')) ||
-          notes.includes('surface') ||
-          notes.includes('plasma') ||
-          interest.includes('plasma') ||
-          interest.includes('sap02')
-        );
-      }
-      if (activeUrlNiche === 'verzel') {
-        return (
-          tags.some((t) => t.includes('verzel') || t.includes('software') || t.includes('app') || t.includes('squad')) ||
-          notes.includes('verzel') ||
-          interest.includes('app') ||
-          interest.includes('squad') ||
-          interest.includes('software')
-        );
-      }
-      if (activeUrlNiche === 'cantareira') {
-        return (
-          tags.some((t) => t.includes('cantareira') || t.includes('cemiterio') || t.includes('jazigo')) ||
-          notes.includes('cantareira') ||
-          notes.includes('cemitério') ||
-          interest.includes('jazigo')
-        );
-      }
-      if (activeUrlNiche === 'delivery') {
-        return Boolean(l.deliveryInfo) || tags.some((t) => t.includes('delivery') || t.includes('pizza') || t.includes('lanche'));
-      }
-      return true;
-    });
-
-    return filtered.length > 0 ? filtered : leads;
+    const targetWk = normalizeNicheKey(activeUrlNiche);
+    return leads.filter((l) => resolveClientLeadWorkspace(l) === targetWk);
   }, [leads, activeUrlNiche]);
+
+  // Keep selectedLeadId strictly inside the active workspace's filteredLeads so LiveChat never shows another box's conversation
+  useEffect(() => {
+    if (filteredLeads.length === 0) {
+      if (selectedLeadId !== null) setSelectedLeadId(null);
+    } else if (!selectedLeadId || !filteredLeads.some((l) => l.id === selectedLeadId)) {
+      setSelectedLeadId(filteredLeads[0].id);
+    }
+  }, [activeUrlNiche, filteredLeads, selectedLeadId]);
 
   const totalPipelineValue = filteredLeads.reduce((acc, l) => acc + (l.value || 0), 0);
   const totalUnreadCount = filteredLeads.reduce((acc, l) => acc + (l.unreadCount || 0), 0);
@@ -980,6 +1034,7 @@ export default function App() {
         onOpenAdminAuth={() => setShowAdminAuthModal(true)}
         onLockAdmin={handleLockAdmin}
         onToggleGlobalAi={handleToggleGlobalAi}
+        activeWorkspaceId={activeUrlNiche}
         onSwitchWorkspace={handleSwitchWorkspacePreset}
         onShowGuide={() => setShowExecutiveGuide(true)}
         pwaState={pwaState}
@@ -1094,6 +1149,7 @@ export default function App() {
               onSaveConfig={handleSaveAgentConfig}
               onUploadDocument={handleUploadDocument}
               onDeleteDocument={handleDeleteDocument}
+              onSwitchWorkspace={handleSwitchWorkspacePreset}
             />
           </ErrorBoundary>
         )}

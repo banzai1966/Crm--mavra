@@ -905,6 +905,7 @@ interface AgentBuilderProps {
   onSaveConfig: (updated: AgentConfig) => Promise<void>;
   onUploadDocument: (doc: { name: string; type: 'pdf' | 'txt' | 'docx'; contentText: string; size: number }) => Promise<void>;
   onDeleteDocument: (id: string) => Promise<void>;
+  onSwitchWorkspace?: (workspaceId: any) => void;
 }
 
 export const AgentBuilder: React.FC<AgentBuilderProps> = ({
@@ -913,6 +914,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   onSaveConfig,
   onUploadDocument,
   onDeleteDocument,
+  onSwitchWorkspace,
 }) => {
   const [config, setConfig] = useState<AgentConfig>(() => ({
     personaName: 'Sofia',
@@ -1002,6 +1004,15 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
         setActiveProfileId(data.activeProfileId);
         setConfig(data.agentConfig);
         await onSaveConfig(data.agentConfig);
+        if (onSwitchWorkspace) {
+          const targetWk =
+            targetId === 'profile-dra-lucy'
+              ? 'clinic'
+              : targetId === 'profile-nexa-crm'
+              ? 'b2b'
+              : data.evolutionConfig?.instanceName || targetId;
+          onSwitchWorkspace(targetWk);
+        }
         setIsProfileDropdownOpen(false);
         setPresetSuccessToast(`✨ Perfil do cliente "${data.activeProfileName}" carregado com sucesso!`);
       }
@@ -1015,13 +1026,23 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const handleCreateNewProfile = async () => {
     if (!newProfileName.trim()) return;
     try {
+      const slugInstance = newProfileName
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9_-]/g, '-');
       const res = await fetch('/api/client-profiles/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: newProfileName.trim(),
           nicheTag: newProfileNiche,
-          baseConfig: config,
+          evolutionInstanceName: slugInstance,
+          baseConfig: {
+            ...config,
+            activeWorkspaceName: newProfileName.trim(),
+          },
         }),
       });
       const data = await res.json();
@@ -1030,7 +1051,10 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
         setSavedProfiles(data.profiles);
         setShowNewProfileModal(false);
         setNewProfileName('');
-        setPresetSuccessToast(`✨ Novo perfil de cliente "${newProfileName}" criado e ativo!`);
+        if (onSwitchWorkspace && slugInstance) {
+          onSwitchWorkspace(slugInstance);
+        }
+        setPresetSuccessToast(`✨ Novo perfil de cliente "${newProfileName}" criado e isolado em seu próprio box!`);
       }
     } catch (err) {
       console.error('Falha ao criar perfil:', err);
@@ -1089,27 +1113,61 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     setConfig(updatedConfig);
     setSelectedPresetModal(null);
 
-    // If general sales or equipment, ensure Kanban immediately displays 'all' (Vendas & Geral)
-    if (isPrimo || preset.followUpNiche === 'b2b_services' || preset.followUpNiche === 'sales' || preset.followUpNiche === 'general') {
-      try {
-        localStorage.setItem('nexa_crm_kanban_niche', 'all');
-      } catch {}
-    }
+    // Automatically synchronize the Kanban niche filter ('health', 'restaurant', or 'all')
+    const isHealthPreset =
+      preset.id === 'dental_integrative' ||
+      preset.followUpNiche === 'dental' ||
+      preset.followUpNiche === 'medical' ||
+      preset.followUpNiche === 'aesthetics' ||
+      preset.category.toLowerCase().includes('saúde') ||
+      preset.category.toLowerCase().includes('odontologia');
+    const isRestaurantPreset =
+      preset.followUpNiche === 'restaurant_delivery' ||
+      preset.category.toLowerCase().includes('delivery') ||
+      preset.category.toLowerCase().includes('restaurante');
 
-    setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Evolution WhatsApp...`);
+    const targetKanbanMode = isHealthPreset ? 'health' : isRestaurantPreset ? 'restaurant' : 'all';
+    try {
+      localStorage.setItem('nexa_crm_kanban_niche', targetKanbanMode);
+    } catch {}
+
+    const targetWorkspaceId =
+      preset.id === 'dental_integrative'
+        ? 'clinic'
+        : preset.id === 'cemiterio_parque_cantareira'
+        ? 'cantareira'
+        : isSurface
+        ? 'surfacebrasil'
+        : isVerzel
+        ? 'verzel'
+        : isPrimo
+        ? 'primo'
+        : isNexa
+        ? 'b2b'
+        : isHealthPreset
+        ? 'clinic'
+        : isRestaurantPreset
+        ? 'delivery'
+        : preset.id.replace(/_/g, '-');
+
+    try {
+      localStorage.setItem('nexa_client_nicho', targetWorkspaceId);
+    } catch {}
+
+    setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Kanban + Evolution WhatsApp...`);
 
     const instanceName = preset.id === 'dental_integrative'
       ? 'dental-integrative'
       : preset.id === 'cemiterio_parque_cantareira'
       ? 'cemiterio-cantareira'
       : isSurface
-      ? 'surface-brasil'
+      ? 'surfacebrasil'
       : isVerzel
       ? 'verzel'
       : isPrimo
       ? 'primo-equipamentos'
       : isNexa
-      ? 'nexa-crm'
+      ? 'agente-ia'
       : preset.id.replace(/_/g, '-');
     try {
       const res = await fetch('/api/agent/apply-niche', {
@@ -1122,15 +1180,24 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       });
       const data = await res.json();
       if (data.success) {
-        setPresetSuccessToast(`✨ Nicho "${preset.name}" carregado e salvo! Instância WhatsApp "${instanceName}" configurada com sucesso.`);
         await onSaveConfig(data.agentConfig || updatedConfig);
+        if (onSwitchWorkspace) {
+          onSwitchWorkspace(targetWorkspaceId);
+        }
+        setPresetSuccessToast(`✨ Nicho "${preset.name}" ativado! Kanban, IA e Instância "${instanceName}" sincronizados automaticamente.`);
       } else {
         await onSaveConfig(updatedConfig);
-        setPresetSuccessToast(`✨ Nicho "${preset.name}" aplicado e salvo com sucesso!`);
+        if (onSwitchWorkspace) {
+          onSwitchWorkspace(targetWorkspaceId);
+        }
+        setPresetSuccessToast(`✨ Nicho "${preset.name}" aplicado e sincronizado com o Kanban!`);
       }
     } catch (err) {
       await onSaveConfig(updatedConfig);
-      setPresetSuccessToast(`✨ Nicho "${preset.name}" aplicado e salvo com sucesso!`);
+      if (onSwitchWorkspace) {
+        onSwitchWorkspace(targetWorkspaceId);
+      }
+      setPresetSuccessToast(`✨ Nicho "${preset.name}" aplicado e sincronizado com o Kanban!`);
     }
 
     setTimeout(() => setPresetSuccessToast(null), 8000);

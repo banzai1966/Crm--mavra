@@ -34,6 +34,12 @@ import {
 import { runFollowUpCycle, startFollowUpScheduler, followUpLogs, generateFollowUpMessage } from './server/followup';
 import { startEvolutionSync } from './server/evolutionSync';
 import { ChatMessage } from './src/types';
+import {
+  normalizeWorkspaceKey,
+  resolveLeadWorkspaceId,
+  getDefaultInstanceForWorkspace,
+  getAgentConfigForInstance,
+} from './server/companyConfigs';
 
 // Global process stability guards to prevent server crashes in production
 process.on('uncaughtException', (err) => {
@@ -133,14 +139,18 @@ async function startServer() {
 
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
-    const { phone, message, pushName, mediaType, fileName } = req.body;
+    const { phone, message, pushName, mediaType, fileName, instanceName, workspaceId } = req.body;
     if (!phone || !message) {
       return res.status(400).json({ error: 'Telefone e mensagem são obrigatórios' });
     }
 
+    const targetSimInstance = normalizeInstanceName(
+      instanceName || (workspaceId ? getDefaultInstanceForWorkspace(workspaceId) : db.evolutionConfig.instanceName)
+    );
     const cleanPhone = phone.replace(/\D/g, '');
     const simulatedPayload: any = {
       event: 'messages.upsert',
+      instance: targetSimInstance,
       data: {
         key: {
           remoteJid: `${cleanPhone}@s.whatsapp.net`,
@@ -186,10 +196,10 @@ async function startServer() {
     }
 
     // Return immediate confirmation
-    res.status(200).json({ status: 'simulated_queued' });
+    res.status(200).json({ status: 'simulated_queued', instanceName: targetSimInstance });
 
-    // Pass to webhook background handler
-    handleIncomingWebhook(simulatedPayload);
+    // Pass to webhook background handler with target instance
+    handleIncomingWebhook(simulatedPayload, targetSimInstance);
   });
 
   // =========================================================================
@@ -209,7 +219,21 @@ async function startServer() {
   });
 
   app.get('/api/leads', (req: Request, res: Response) => {
-    res.json(db.leads);
+    const rawWorkspace = (req.query.workspace || req.query.nicho || req.query.instance) as string | undefined;
+    const enrichedLeads = db.leads.map((l) => {
+      const resolvedWk = resolveLeadWorkspaceId(l);
+      if (l.workspaceId !== resolvedWk) {
+        l.workspaceId = resolvedWk;
+      }
+      return l;
+    });
+
+    if (rawWorkspace && rawWorkspace.trim() && rawWorkspace !== 'all') {
+      const targetWk = normalizeWorkspaceKey(rawWorkspace);
+      return res.json(enrichedLeads.filter((l) => resolveLeadWorkspaceId(l) === targetWk));
+    }
+
+    res.json(enrichedLeads);
   });
 
   app.post('/api/admin/reload-data', (req: Request, res: Response) => {
@@ -222,26 +246,36 @@ async function startServer() {
   });
 
   app.post('/api/leads', (req: Request, res: Response) => {
-    const { name, phone, email, stageId, value, interest, tags, notes, aiPaused } = req.body;
+    const { name, phone, email, stageId, value, interest, tags, notes, aiPaused, workspaceId, instanceName } = req.body;
     if (!name || !phone) {
       return res.status(400).json({ error: 'Nome e telefone são obrigatórios' });
     }
 
     const cleanPhone = phone.replace(/\D/g, '');
+    const resolvedWk = normalizeWorkspaceKey(workspaceId || instanceName || db.evolutionConfig.instanceName || 'clinic');
+    const resolvedInst = instanceName || getDefaultInstanceForWorkspace(resolvedWk);
+    const baseTags = Array.isArray(tags) ? [...tags] : [];
+    const instTag = `Instância: ${resolvedInst}`;
+    if (!baseTags.includes(instTag)) {
+      baseTags.push(instTag);
+    }
+
     const newLead = {
-      id: 'lead-' + Date.now(),
+      id: `lead-${resolvedWk}-${Date.now()}`,
       name,
       phone: cleanPhone,
       email: email || '',
       stageId: stageId || db.stages[0]?.id || 'stage-1',
       value: Number(value) || 0,
       interest: interest || '',
-      tags: Array.isArray(tags) ? tags : [],
+      tags: baseTags,
       notes: notes || '',
       aiPaused: typeof aiPaused === 'boolean' ? aiPaused : false,
       lastInteraction: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       unreadCount: 0,
+      workspaceId: resolvedWk,
+      instanceName: resolvedInst,
     };
 
     db.leads.unshift(newLead);
@@ -274,8 +308,18 @@ async function startServer() {
     res.json({ success: true });
   });
 
-  // Clear all leads and messages to start with a 100% clean CRM for production
+  // Clear leads and messages (scoped to workspace if provided, or all if not)
   app.post('/api/leads/clear-all', (req: Request, res: Response) => {
+    const rawWorkspace = (req.body?.workspace || req.query?.workspace) as string | undefined;
+    if (rawWorkspace && rawWorkspace !== 'all') {
+      // Ensure all leads have workspaceId stamped before filtering
+      db.leads.forEach((l) => {
+        if (!l.workspaceId) l.workspaceId = resolveLeadWorkspaceId(l);
+      });
+      const targetWk = normalizeWorkspaceKey(rawWorkspace);
+      db.clearAllLeads(targetWk);
+      return res.json({ success: true, count: db.leads.length, leads: db.leads });
+    }
     db.clearAllLeads();
     res.json({ success: true, count: 0, leads: [] });
   });
@@ -920,14 +964,25 @@ async function startServer() {
   // 4. AGENT BUILDER & KNOWLEDGE BASE API
   // =========================================================================
   app.get('/api/agent-config', (req: Request, res: Response) => {
+    const rawWorkspace = (req.query.workspace || req.query.nicho || req.query.instance) as string | undefined;
+    if (rawWorkspace && rawWorkspace.trim()) {
+      const wk = normalizeWorkspaceKey(rawWorkspace);
+      const isolatedConfig = getAgentConfigForInstance(wk);
+      return res.json(isolatedConfig);
+    }
     res.json(db.agentConfig);
   });
 
   app.put('/api/agent-config', (req: Request, res: Response) => {
+    const rawWorkspace = (req.query.workspace || req.body?.workspaceId) as string | undefined;
     db.agentConfig = {
       ...db.agentConfig,
       ...req.body,
     };
+    if (rawWorkspace && rawWorkspace.trim()) {
+      const wk = normalizeWorkspaceKey(rawWorkspace);
+      db.workspaceConfigs[wk] = JSON.parse(JSON.stringify(db.agentConfig));
+    }
     // Sincronizar perfil ativo
     const active = db.savedProfiles.find((p) => p.id === db.activeProfileId);
     if (active) {
@@ -1178,17 +1233,31 @@ async function startServer() {
   app.post('/api/agent/apply-niche', async (req: Request, res: Response) => {
     try {
       const { preset, evolutionInstanceName } = req.body;
+      const targetInstance = normalizeInstanceName(evolutionInstanceName || 'dra-lucy-murata');
+      const targetWk = normalizeWorkspaceKey(targetInstance);
+
       if (preset) {
         db.agentConfig = {
           ...db.agentConfig,
           ...preset,
         };
+        db.workspaceConfigs[targetWk] = JSON.parse(JSON.stringify(db.agentConfig));
       }
 
-      const targetInstance = normalizeInstanceName(evolutionInstanceName || 'dra-lucy-murata');
+      const dedicatedToken =
+        db.evolutionConfig.instanceApiKeys?.[targetInstance] ||
+        db.evolutionConfig.apiKey ||
+        MASTER_EVOLUTION_KEY;
+
       db.evolutionConfig.serverUrl = 'https://api.makprojetosmake.com.br';
-      db.evolutionConfig.apiKey = MASTER_EVOLUTION_KEY;
+      db.evolutionConfig.apiKey = dedicatedToken;
       db.evolutionConfig.instanceName = targetInstance;
+      if (!db.evolutionConfig.instanceApiKeys) {
+        db.evolutionConfig.instanceApiKeys = {};
+      }
+      if (!db.evolutionConfig.instanceApiKeys[targetInstance]) {
+        db.evolutionConfig.instanceApiKeys[targetInstance] = dedicatedToken;
+      }
 
       // Auto-register webhook on Evolution API
       const webhookUrl = 'https://crm.makprojetosmake.com.br/api/webhook';
@@ -1221,6 +1290,7 @@ async function startServer() {
         success: true,
         message: `Nicho ${preset?.personaName || 'Dra. Lucy Murata'} carregado com sucesso! Instância '${targetInstance}' integrada no Evolution.`,
         instanceName: targetInstance,
+        workspaceId: targetWk,
         agentConfig: db.agentConfig,
         evolutionConfig: db.evolutionConfig,
         qrcode: qrStatus.qrcode,

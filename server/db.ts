@@ -64,6 +64,8 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     lastInteraction: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
     unreadCount: 1,
+    workspaceId: 'surfacebrasil',
+    instanceName: 'surfacebrasil',
   },
   {
     id: 'lead-ind-base-1',
@@ -80,6 +82,8 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     lastInteraction: new Date(Date.now() - 1000 * 60 * 60 * 24 * 240).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 260).toISOString(),
     unreadCount: 0,
+    workspaceId: 'surfacebrasil',
+    instanceName: 'surfacebrasil',
   },
   {
     id: 'lead-ind-base-2',
@@ -97,6 +101,8 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     lastInteraction: new Date(Date.now() - 1000 * 60 * 60 * 24 * 210).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 230).toISOString(),
     unreadCount: 0,
+    workspaceId: 'surfacebrasil',
+    instanceName: 'surfacebrasil',
   },
   {
     id: 'lead-ind-base-3',
@@ -114,6 +120,8 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     lastInteraction: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 180).toISOString(),
     unreadCount: 1,
+    workspaceId: 'surfacebrasil',
+    instanceName: 'surfacebrasil',
   },
   {
     id: 'lead-verzel-1',
@@ -131,6 +139,8 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     lastInteraction: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
     unreadCount: 1,
+    workspaceId: 'verzel',
+    instanceName: 'verzel',
   },
   {
     id: 'lead-verzel-2',
@@ -148,6 +158,8 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     lastInteraction: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
     unreadCount: 0,
+    workspaceId: 'verzel',
+    instanceName: 'verzel',
   },
 ];
 
@@ -749,6 +761,7 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
   ];
 
   public activeProfileId: string = 'profile-dra-lucy';
+  public workspaceConfigs: Record<string, AgentConfig> = {};
   public savedProfiles: ClientProfile[] = [
     {
       id: 'profile-dra-lucy',
@@ -802,6 +815,7 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
         leads: this.leads,
         messages: this.messages,
         agentConfig: this.agentConfig,
+        workspaceConfigs: this.workspaceConfigs,
         documents: this.documents,
         evolutionConfig: this.evolutionConfig,
         supabaseConfig: this.supabaseConfig,
@@ -926,6 +940,9 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
           }
         }
         if (data.messages && Array.isArray(data.messages)) this.messages = data.messages;
+        if (data.workspaceConfigs && typeof data.workspaceConfigs === 'object') {
+          this.workspaceConfigs = data.workspaceConfigs;
+        }
         if (data.agentConfig) {
           const loadedMaxChars = data.agentConfig.maxAudioChars;
           const isLegacyNexa = typeof data.agentConfig.role === 'string' && data.agentConfig.role.includes('NEXA CRM');
@@ -942,9 +959,21 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
             };
           }
 
+          // Sanitize followUpCustomMessage if a Clinic/Lucy config accidentally had Verzel/Surface follow-up text
+          let cleanFollowUpMsg = data.agentConfig.followUpCustomMessage;
+          const roleLower = (data.agentConfig.role || '').toLowerCase();
+          if (
+            (roleLower.includes('lucy') || roleLower.includes('odonto') || data.agentConfig.followUpNiche === 'dental') &&
+            typeof cleanFollowUpMsg === 'string' &&
+            (cleanFollowUpMsg.toLowerCase().includes('verzel') || cleanFollowUpMsg.toLowerCase().includes('plasma'))
+          ) {
+            cleanFollowUpMsg = 'Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨';
+          }
+
           this.agentConfig = {
             ...this.agentConfig,
             ...(isLegacyNexa ? {} : data.agentConfig),
+            followUpCustomMessage: cleanFollowUpMsg || this.agentConfig.followUpCustomMessage,
             preRecordedAudios: data.agentConfig.preRecordedAudios && data.agentConfig.preRecordedAudios.length > 0
               ? data.agentConfig.preRecordedAudios
               : this.agentConfig.preRecordedAudios,
@@ -1178,7 +1207,23 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
     }
   }
 
-  public clearAllLeads(): void {
+  public clearAllLeads(workspaceId?: string): void {
+    if (workspaceId && workspaceId !== 'all') {
+      const targetWk = workspaceId.trim().toLowerCase();
+      const removedLeadIds = new Set<string>();
+      this.leads = this.leads.filter((l) => {
+        const lWk = (l.workspaceId || '').toLowerCase();
+        if (lWk === targetWk) {
+          removedLeadIds.add(l.id);
+          return false;
+        }
+        return true;
+      });
+      this.messages = this.messages.filter((m) => !removedLeadIds.has(m.leadId) && (m.workspaceId || '').toLowerCase() !== targetWk);
+      this.saveToFile();
+      console.log(`[DB Storage] Leads e mensagens do workspace "${targetWk}" foram limpos (${removedLeadIds.size} removidos).`);
+      return;
+    }
     this.leads = [];
     this.messages = [];
     this.saveToFile();
@@ -1186,8 +1231,8 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
   }
 
   public restoreDemoLeads(): void {
-    this.leads = [...DEFAULT_DEMO_LEADS];
-    this.messages = [...DEFAULT_DEMO_MESSAGES];
+    this.leads = JSON.parse(JSON.stringify(DEFAULT_DEMO_LEADS));
+    this.messages = JSON.parse(JSON.stringify(DEFAULT_DEMO_MESSAGES));
     this.saveToFile();
     console.log(`[DB Storage] Leads de demonstração restaurados (${this.leads.length} leads).`);
   }
