@@ -303,17 +303,18 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
   // Handle Switch Instance Tab
   const handleSelectInstanceTab = (
-    inst: 'dra-lucy-murata' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'cemiterio-cantareira' | 'custom',
+    inst: 'dra-lucy-murata' | 'dental-integrative' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'cemiterio-cantareira' | 'custom',
     customName?: string
   ) => {
     setSelectedInstanceTab(inst as any);
-    let targetName = 'dra-lucy-murata';
+    let targetName = 'dental-integrative';
     if (inst === 'agente-ia') targetName = 'agente-ia';
     if (inst === 'demo-ao-vivo') targetName = 'demo-ao-vivo';
     if (inst === 'verzel') targetName = 'verzel';
     if (inst === 'surfacebrasil') targetName = 'surfacebrasil';
     if (inst === 'primo-equipamentos') targetName = 'primo-equipamentos';
     if (inst === 'cemiterio-cantareira') targetName = 'cemiterio-cantareira';
+    if (inst === 'dental-integrative' || inst === 'dra-lucy-murata') targetName = 'dental-integrative';
     if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
 
     // Specific key for this instance: NEVER overwrite with current active config.apiKey
@@ -730,7 +731,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
             {/* Tab 4: Instância Saúde & Odontologia (Dra. Lucy) */}
             <div
-              onClick={() => handleSelectInstanceTab('custom', 'dental-integrative')}
+              onClick={() => handleSelectInstanceTab('dental-integrative')}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                 config.instanceName === 'dental-integrative' || config.instanceName === 'dra-lucy-murata'
                   ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600 shadow-xs'

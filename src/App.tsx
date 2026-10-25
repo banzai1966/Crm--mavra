@@ -463,16 +463,10 @@ export default function App() {
       if (evoRes && evoRes.ok) {
         const evo = await evoRes.json();
         if (evo && typeof evo === 'object') {
-          setEvolutionConfig((prev) => {
-            const currentInst = prev.instanceName || evo.instanceName || 'dental-integrative';
-            const currentKey = (currentInst && evo.instanceApiKeys?.[currentInst]) || evo.apiKey;
-            return {
-              ...prev,
-              ...evo,
-              instanceName: currentInst,
-              apiKey: currentKey || prev.apiKey,
-            };
-          });
+          setEvolutionConfig((prev) => ({
+            ...prev,
+            ...evo,
+          }));
         }
       }
       if (supaRes && supaRes.ok) {
@@ -512,17 +506,9 @@ export default function App() {
           if (evoRes.ok) {
             const freshEvo = await evoRes.json();
             if (freshEvo && typeof freshEvo === 'object') {
-              let targetInst = freshEvo.instanceName;
-              if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
-              else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
-              else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
-              else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
-              else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
-              const targetKey = (targetInst && freshEvo.instanceApiKeys?.[targetInst]) || freshEvo.apiKey;
               setEvolutionConfig((prev) => ({
                 ...prev,
                 ...freshEvo,
-                ...(targetInst ? { instanceName: targetInst, apiKey: targetKey || prev.apiKey } : {}),
               }));
             }
           }
@@ -767,6 +753,15 @@ export default function App() {
           try {
             localStorage.setItem('nexa_client_nicho', newWk);
           } catch {}
+          if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            url.searchParams.set('nicho', newWk);
+            window.history.replaceState({}, '', url.pathname + url.search);
+          }
+          const preset = WORKSPACE_PRESETS[newWk];
+          if (preset) {
+            setAgentConfig((prev) => ({ ...prev, ...preset }));
+          }
         }
       }
     } catch (err) {
@@ -928,6 +923,11 @@ export default function App() {
       ...(dedicatedKey ? { apiKey: dedicatedKey } : {}),
     };
     setEvolutionConfig(updatedEvo);
+    fetch('/api/evolution-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedEvo),
+    }).catch(() => {});
 
     if (chosen) {
       setAgentConfig((prev) => ({ ...prev, ...chosen }));
