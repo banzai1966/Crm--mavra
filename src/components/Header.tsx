@@ -180,12 +180,17 @@ export const Header: React.FC<HeaderProps> = ({
       : agentConfig.personaName?.toLowerCase().includes('surface') ||
         agentConfig.activeWorkspaceName?.toLowerCase().includes('surface')
       ? 'surfacebrasil'
+      : agentConfig.personaName?.toLowerCase().includes('psi') ||
+        agentConfig.role?.toLowerCase().includes('emdr') ||
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('psi')
+      ? 'equipamentospsi'
       : agentConfig.followUpNiche === 'sales'
       ? 'b2b'
       : 'clinic';
 
   const builtInMeta: Record<string, { label: string; icon: any; badge: string }> = {
     primo: { label: 'Primo Equipamentos', icon: Building2, badge: 'Vendas & Geral' },
+    equipamentospsi: { label: 'Equipamentos PSI (EMDR)', icon: Activity, badge: 'Psicologia' },
     clinic: { label: 'Clínica & Saúde (Dra. Lucy)', icon: Stethoscope, badge: 'Saúde' },
     cantareira: { label: 'Parque da Cantareira', icon: Sparkles, badge: 'Familiar' },
     delivery: { label: 'Pizzaria & Delivery', icon: UtensilsCrossed, badge: 'Delivery' },
@@ -401,6 +406,25 @@ export const Header: React.FC<HeaderProps> = ({
                           {currentNiche === 'cantareira' && <span className="text-[10px] text-teal-700 font-bold">(Ativo)</span>}
                         </div>
                         <p className="text-[10px] text-slate-400 font-normal">Foco: Jazigos, assistência familiar & acolhimento 24h</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onSwitchWorkspace('equipamentospsi');
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                        currentNiche === 'equipamentospsi' ? 'bg-purple-50/80 font-bold text-purple-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <Activity className="w-4 h-4 text-purple-600" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>Equipamentos PSI (EMDR)</span>
+                          {currentNiche === 'equipamentospsi' && <span className="text-[10px] text-purple-700 font-bold">(Ativo)</span>}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-normal">Foco: Barras de luz, pulsers táteis & terapia EMDR</p>
                       </div>
                     </button>
                   </div>

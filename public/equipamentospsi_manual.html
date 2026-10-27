@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dossiê Técnico & Manual Comercial | Equipamentos PSI - Terapia EMDR & Psicologia</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #6d28d9;
+      --primary-light: #ede9fe;
+      --secondary: #0f172a;
+      --accent: #10b981;
+      --text: #334155;
+      --text-muted: #64748b;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background-color: #f8fafc;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 24px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 15px;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .toolbar-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .header-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #7c3aed, #10b981, #6366f1);
+    }
+
+    .badge-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      max-width: 720px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .meta-item {
+      font-size: 12px;
+    }
+    .meta-label {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .meta-value {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 13px;
+    }
+
+    .section-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 18px 0 8px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .highlight-box {
+      background: #faf5ff;
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 10px 10px 0;
+      margin: 18px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 18px 0;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .price-tag {
+      display: inline-block;
+      background: #dcfce7;
+      color: #15803d;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+
+    .table-custom th, .table-custom td {
+      padding: 10px 14px;
+      border: 1px solid #e2e8f0;
+      text-align: left;
+    }
+
+    .table-custom th {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    @media print {
+      .toolbar { display: none; }
+      body { background: #fff; padding: 0; }
+      .container { max-width: 100%; padding: 0; }
+      .section-card, .header-card { border: none; box-shadow: none; padding: 15px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="toolbar">
+      <span class="toolbar-title">NEXA CRM • Dossiê Comercial & Atendimento com IA</span>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-outline" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+        <a href="/?nicho=equipamentospsi" class="btn btn-primary">Abrir no CRM</a>
+      </div>
+    </div>
+
+    <div class="header-card">
+      <span class="badge-tag">Psicologia & Estimulação Bilateral EMDR</span>
+      <h1>Equipamentos PSI</h1>
+      <p class="subtitle">
+        Tecnologia nacional acessível para psicólogos clínicos, terapeutas de trauma e neuroterapias.
+        Fabricação própria de Barras de Luz LED e Aparelhos Táteis com Pulsers/Buzzers.
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <div class="meta-label">Website Oficial</div>
+          <div class="meta-value"><a href="https://equipamentospsi.com/" target="_blank" style="color: #7c3aed;">equipamentospsi.com</a></div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Fundadores (2015)</div>
+          <div class="meta-value">Priscila Alves (Psicóloga) & Eliab Caetano</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Atendente IA (Sofia)</div>
+          <div class="meta-value">Consultora Especialista em EMDR</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Instância WhatsApp</div>
+          <div class="meta-value">equipamentospsi</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 1: Origem e Missão -->
+    <div class="section-card">
+      <h2>1. Origem, Fundadores & Propósito</h2>
+      <p>
+        A <strong>Equipamentos PSI</strong> nasceu em abril de 2015 a partir da prática clínica voluntária da psicóloga <strong>Priscila Alves</strong> na Casa Social Filadélfia. Realizando atendimentos com a técnica de EMDR (Dessensibilização e Reprocessamento por Movimentos Oculares), a movimentação repetitiva com os dedos causava dores musculares intensas e cansaço físico.
+      </p>
+      <p>
+        Constatando que os aparelhos existentes no mercado eram todos importados e custavam preços proibitivos para a grande maioria dos psicólogos brasileiros, Priscila uniu-se ao analista e projetista <strong>Eliab Caetano</strong> para desenvolver no Brasil soluções robustas, duráveis e de valor justo.
+      </p>
+      <div class="highlight-box">
+        <strong>Missão Central:</strong> Fornecer equipamentos de estimulação bilateral visual e tátil com garantia, assistência técnica no país e suporte humanizado, permitindo que o psicólogo tenha total foco nas reações do paciente sem sofrer fadiga corporal.
+      </div>
+    </div>
+
+    <!-- Seção 2: Produtos e Preços -->
+    <div class="section-card">
+      <h2>2. Catálogo de Produtos & Tabela de Preços</h2>
+      <div class="grid-2">
+        <div class="card-item">
+          <div class="card-title">Barra de Luz Tradicional (74 cm)</div>
+          <p style="font-size: 13px;">Equipada com 26 LEDs verdes de alta suavidade visual, controle remoto para ajuste fino de velocidade e memória integrada. Acompanha tripé com ajuste de altura e inclinação. Bivolt automático.</p>
+          <div class="price-tag">R$ 1.314,80 a R$ 1.384,00</div>
+        </div>
+
+        <div class="card-item">
+          <div class="card-title">Barra de Luz Baby (51 cm)</div>
+          <p style="font-size: 13px;">Versão compacta com as mesmas funções da tradicional. Ideal para consultórios menores, atendimento a crianças e profissionais que sublocam salas ou viajam frequentemente. Acompanha tripé grande.</p>
+          <div class="price-tag">R$ 1.286,60 a R$ 1.354,32</div>
+        </div>
+
+        <div class="card-item">
+          <div class="card-title">Aparelho Tátil Completo (Pulsers Táteis)</div>
+          <p style="font-size: 13px;">Central digital com display numérico para ajuste independente de velocidade e intensidade vibratória. Acompanha 2 pulsers anatômicos (motores vibratórios), cabos de 1,5m, fonte bivolt e bolsa de proteção.</p>
+          <div class="price-tag">R$ 687,42 a R$ 723,60</div>
+        </div>
+
+        <div class="card-item">
+          <div class="card-title">Bolsas Acolchoadas & Acessórios</div>
+          <p style="font-size: 13px;">Bolsas de transporte reforçadas para Barra Tradicional (R$ 302,67) ou Baby (R$ 292,41). Par de cabos com pulsers de reposição (R$ 135,00) e cabos avulsos (R$ 69,00).</p>
+          <div class="price-tag">A partir de R$ 69,00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 3: Como a Sofia atua no WhatsApp -->
+    <div class="section-card">
+      <h2>3. Atendimento Comercial & Triagem com a Sofia</h2>
+      <p>
+        Como o site da Equipamentos PSI não possui fechamento de compra direto pelo carrinho (orientando os clientes a falar pelo WhatsApp), a <strong>Sofia</strong> atua como a consultora técnica acolhedora do negócio:
+      </p>
+      <ul>
+        <li><strong>Acolhimento ao Psicólogo:</strong> Compreende a linha de atendimento do profissional (EMDR, Brainspotting, traumas, ansiedade, clínica infantil ou adultos).</li>
+        <li><strong>Orientação sobre Modelos:</strong> Esclarece a diferença entre a Barra Tradicional (74cm) e a Baby (51cm), além de explicar os benefícios da estimulação tátil com os pulsers para pacientes com olhos fechados ou fotossensibilidade.</li>
+        <li><strong>Cálculo de Frete Ágil:</strong> Coleta o CEP do consultório e calcula prazos e opções via Correios (SEDEX / PAC).</li>
+        <li><strong>Condições de Pagamento:</strong> Apresenta a opção com desconto no PIX à vista ou parcelamento em até 12x no cartão de crédito em ambiente seguro.</li>
+        <li><strong>Formalização do Pedido:</strong> Coleta os dados para nota e emissão do código de rastreamento.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

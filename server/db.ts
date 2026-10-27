@@ -161,9 +161,64 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     workspaceId: 'verzel',
     instanceName: 'verzel',
   },
+  {
+    id: 'lead-psi-1',
+    name: 'Dra. Camila Vasconcelos (Psicóloga Clínica)',
+    phone: '5511984219988',
+    email: 'dra.camila@clinicapensar.com.br',
+    stageId: 'stage-1',
+    value: 1384,
+    interest: 'Barra de Luz Tradicional (74cm) com Tripé para EMDR',
+    tags: ['🧠 Equipamentos PSI', 'Terapia EMDR', '🔥 LEAD QUENTE'],
+    notes: 'Psicóloga clínica especialista em TEPT. Busca Barra de Luz para substituir movimentos manuais que estão gerando dor no ombro. Solicitou cálculo de frete para Campinas/SP.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Quer fechar pedido hoje com desconto no PIX para entrega rápida em Campinas',
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 40).toISOString(),
+    unreadCount: 1,
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
+  {
+    id: 'lead-psi-base-1',
+    name: 'Espaço Terapêutico Integrar (Dr. Marcelo Santos)',
+    phone: '5511971123344',
+    email: 'contato@espacointegrar.med.br',
+    stageId: 'stage-base',
+    value: 723,
+    interest: 'Aparelho Tátil com Pulsers/Buzzers para pacientes com olhos fechados',
+    tags: ['📂 Base Terapeutas', 'Inativo > 6m', 'Equipamentos PSI'],
+    notes: 'Compraram a Barra de Luz há 8 meses e manifestaram interesse em adquirir o Aparelho Tátil com pulsers para complementar as sessões.',
+    aiPaused: false,
+    isHotLead: false,
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 60 * 24 * 220).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 240).toISOString(),
+    unreadCount: 0,
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
 ];
 
 export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
+  {
+    id: 'msg-psi-1',
+    leadId: 'lead-psi-1',
+    phone: '5511984219988',
+    sender: 'lead',
+    text: 'Olá! Sou psicóloga e atendo com EMDR aqui em Campinas. Estou tendo muita dor no braço e tendinite de fazer o movimento com os dedos. A Barra de Luz de vocês de 74cm acompanha o tripé? E qual o valor com envio para o CEP 13010-111?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+    status: 'read',
+  },
+  {
+    id: 'msg-psi-2',
+    leadId: 'lead-psi-1',
+    phone: '5511984219988',
+    sender: 'ai',
+    text: 'Olá, Dra. Camila! Que alegria falar com você! Sou a Sofia, consultora técnica da Equipamentos PSI. Compreendo perfeitamente o seu relato; inclusive, nossa fundadora, a psicóloga Priscila Alves, criou a empresa em 2015 exatamente para proteger a saúde física dos terapeutas contra a sobrecarga nos braços e punhos. Sim! A nossa Barra de Luz Tradicional de 74 cm já acompanha o tripé metálico robusto com regulagem de altura e cabeça articulada, além de controle remoto com ajuste de velocidade e fonte bivolt automática. Comprando no PIX à vista, fica por apenas R$ 1.314,80 (ou parcelado no cartão em até 12x). Para o seu CEP em Campinas, o SEDEX expresso chega em até 2 dias úteis! Gostaria que eu formalizasse o seu pedido agora com garantia oficial de 1 ano?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+    status: 'delivered',
+  },
   {
     id: 'msg-v-1',
     leadId: 'lead-verzel-1',
@@ -701,6 +756,33 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
       uploadedAt: new Date().toISOString(),
     },
     {
+      id: 'doc-equipamentos-psi',
+      name: 'Manual_Tecnico_Equipamentos_PSI_EMDR.txt',
+      type: 'txt',
+      size: 16500,
+      contentText: `MANUAL TÉCNICO & CATÁLOGO COMPLETO — EQUIPAMENTOS PSI (EMDR)
+Website Oficial: https://equipamentospsi.com/
+Fundadores: Priscila Alves (Psicóloga clínica) e Eliab Caetano (Analista de sistemas) — Fundada em abril de 2015.
+Canais Oficiais: WhatsApp Comercial (11) 96631-0256 | Suporte Técnico (62) 9223-8416 | comercial@equipamentospsi.com
+
+1. CONTEXTO & TERAPIA EMDR:
+A Equipamentos PSI projeta e fabrica no Brasil dispositivos para estimulação bilateral alternada (visual e tátil) voltados para psicoterapia EMDR (Eye Movement Desensitization and Reprocessing), Brainspotting e neuroterapias.
+Automatiza a estimulação, garantindo ritmo constante e eliminando dores musculares (LER/DORT) do psicólogo causadas por movimentos manuais repetitivos com os dedos durante as sessões.
+
+2. CATÁLOGO DE PRODUTOS & PREÇOS:
+- Barra de Luz Tradicional (74 cm): 26 LEDs verdes suaves com difusores ópticos, controle remoto com ajuste de velocidade e memória, tripé telescópico metálico com regulagem de altura e inclinação, fonte bivolt automática (110V/220V). Faixa: R$ 1.314,80 a R$ 1.384,00.
+- Barra de Luz Baby (51 cm): versão compacta e portátil, mesmas funções e tripé grande. Ideal para salas compactas, atendimento infantil e profissionais em trânsito. Faixa: R$ 1.286,60 a R$ 1.354,32.
+- Aparelho Tátil Completo (Pulsers / Buzzers): caixa de comando digital com display numérico, regulagem independente de velocidade e intensidade vibratória, 2 pulsers anatômicos em formato de gota com cabos de 1,5m, bolsa e fonte bivolt. Faixa: R$ 687,42 a R$ 723,60.
+- Bolsas de Transporte Acolchoadas: proteção antichoque para Barra Tradicional (R$ 302,67) ou Barra Baby (R$ 292,41).
+- Conjunto de cabos P2 com pulsers: R$ 135,00 | Cabos sem pulsers: R$ 69,00.
+
+3. POLÍTICA COMERCIAL:
+- Desconto no PIX à vista ou em até 12x no cartão de crédito em ambiente seguro.
+- Envio via Correios (SEDEX / PAC) calculado pelo CEP do consultório.
+- Garantia de fábrica de 1 ano com peças de reposição e assistência técnica no Brasil.`,
+      uploadedAt: new Date().toISOString(),
+    },
+    {
       id: 'doc-2',
       name: 'SLA_e_Qualidade_de_Atendimento.txt',
       type: 'txt',
@@ -724,6 +806,8 @@ Agendar uma demonstração ao vivo de 15 minutos onde o lead assiste à IA atend
       'surfacebrasil': 'DE151DAD-79C8-49F5-BFE3-5E129987F773',
       'dental-integrative': 'dental-integrative-oqn06i',
       'cemiterio-cantareira': 'b2efa885a71ee22edf72b597df1a0ce9',
+      'equipamentospsi': 'b2efa885a71ee22edf72b597df1a0ce9',
+      'psi': 'b2efa885a71ee22edf72b597df1a0ce9',
     },
   };
 

@@ -94,6 +94,17 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳',
   },
+  equipamentospsi: {
+    activeWorkspaceName: 'Equipamentos PSI (Terapia EMDR & Psicologia)',
+    personaName: 'Sofia da Equipamentos PSI',
+    role: 'Consultora Especialista em Equipamentos e Tecnologia para Terapia EMDR & Psicologia Clínica',
+    toneOfVoice: 'Acolhedor, técnico, respeitoso, empático com a rotina clínica de psicólogos e terapeutas, conhecedor profundo da terapia EMDR e estimulação bilateral',
+    salesGoal: 'Compreender a necessidade do terapeuta (atendimento clínico infantil, adulto, espaço físico ou consultório compacto), orientar o modelo ideal (Barra de Luz 74cm vs Baby 51cm, Aparelho Tátil com Pulsers/Buzzers ou Kit Integrado), calcular frete por CEP e direcionar para fechamento com desconto no PIX à vista ou parcelado em até 12x no cartão.',
+    followUpNiche: 'b2b_services',
+    catalogPdfName: 'Manual_Tecnico_Equipamentos_PSI_EMDR.txt',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿',
+  },
 };
 
 export const CLINIC_STAGES: KanbanStage[] = [
@@ -151,11 +162,23 @@ export const CANTAREIRA_STAGES: KanbanStage[] = [
   { id: 'stage-6', name: 'Atendimento Concluído', color: '#ef4444', order: 7 },
 ];
 
+export const EQUIPAMENTOS_PSI_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base Terapeutas / Inativos (+6m)', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação & Upgrades (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Novos Terapeutas / Dúvidas EMDR', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Especificação (Barra/Pulsers) & CEP', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Proposta & Condições (PIX/Cartão)', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Pedido Fechado / Aguardando PIX', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Pago / Embalado & Enviado', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Perdido / Desistência', color: '#ef4444', order: 7 },
+];
+
 export function getStagesForNiche(niche?: string): KanbanStage[] {
   if (niche === 'primo') return PRIMO_STAGES;
   if (niche === 'surfacebrasil') return SURFACE_STAGES;
   if (niche === 'verzel') return VERZEL_STAGES;
   if (niche === 'cantareira') return CANTAREIRA_STAGES;
+  if (niche === 'equipamentospsi') return EQUIPAMENTOS_PSI_STAGES;
   return CLINIC_STAGES;
 }
 
@@ -183,6 +206,16 @@ export function normalizeNicheKey(raw?: string | null): string {
   }
   if (clean.includes('cantareira') || clean.includes('cemiterio')) {
     return 'cantareira';
+  }
+  if (
+    clean === 'equipamentospsi' ||
+    clean === 'psi' ||
+    clean === 'equipamentos-psi' ||
+    clean === 'equipamentos_psi' ||
+    clean.includes('emdr') ||
+    clean.includes('barra-de-luz')
+  ) {
+    return 'equipamentospsi';
   }
   if (clean.includes('surface')) {
     return 'surfacebrasil';
@@ -228,6 +261,16 @@ export function resolveClientLeadWorkspace(lead: Lead): string {
   if (lowerTags.some((t) => t.includes('surface') || t.includes('plasma')) || notes.includes('surface') || interest.includes('sap02')) return 'surfacebrasil';
   if (lowerTags.some((t) => t.includes('verzel')) || notes.includes('verzel') || interest.includes('verzel')) return 'verzel';
   if (lowerTags.some((t) => t.includes('cantareira') || t.includes('cemiterio') || t.includes('jazigo')) || notes.includes('cantareira')) return 'cantareira';
+  if (
+    lowerTags.some((t) => t.includes('psi') || t.includes('emdr') || t.includes('terapeuta')) ||
+    notes.includes('equipamentospsi') ||
+    notes.includes('barra de luz') ||
+    interest.includes('emdr') ||
+    interest.includes('barra de luz') ||
+    interest.includes('pulser')
+  ) {
+    return 'equipamentospsi';
+  }
   if (Boolean(lead.deliveryInfo) || lowerTags.some((t) => t.includes('delivery') || t.includes('pizza'))) return 'delivery';
   if (
     Boolean(lead.triage) ||

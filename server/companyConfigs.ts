@@ -409,6 +409,81 @@ R: Evitam despesas de emergência com opções parceladas e suporte 24h.`,
       knowledgeRules: 'Identifique o segmento do cliente, descubra o volume diário de mensagens no WhatsApp e convide para demonstração prática.',
     },
   },
+
+  equipamentospsi: {
+    id: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+    aliases: ['equipamentospsi', 'equipamentos-psi', 'psi', 'equipamentos_psi', 'emdr'],
+    companyName: 'Equipamentos PSI (Terapia EMDR & Psicologia)',
+    documentIds: ['doc-equipamentos-psi'],
+    agentConfig: {
+      businessName: 'Equipamentos PSI – Tecnologia para Psicologia & EMDR',
+      activeWorkspaceName: 'Equipamentos PSI (Terapia EMDR & Psicologia)',
+      personaName: 'Sofia da Equipamentos PSI',
+      role: 'Consultora Especialista em Equipamentos e Tecnologia para Terapia EMDR & Psicologia Clínica da Equipamentos PSI',
+      toneOfVoice: 'Acolhedor, técnico, respeitoso, empático com a rotina clínica de psicólogos e terapeutas, conhecedor profundo da terapia EMDR, estimulação bilateral e especificações ergonômicas dos aparelhos',
+      salesGoal: 'Compreender a necessidade do terapeuta (atendimento clínico infantil, adulto, espaço físico ou consultório compacto), orientar o modelo ideal (Barra de Luz 74cm vs Baby 51cm, Aparelho Tátil com Pulsers/Buzzers ou Kit Integrado), coletar o CEP para cotar o frete e conduzir para fechamento com desconto no PIX à vista ou parcelado em até 12x no cartão.',
+      activeProvider: 'gemini',
+      activeModel: 'gemini-2.5-flash',
+      strictKnowledgeOnly: true,
+      autoTriggerCRMStages: true,
+      isGlobalAiActive: true,
+      testModeEnabled: false,
+      testNumberWhitelist: '',
+      autoTranscribeAudio: true,
+      typingDelayMs: 1500,
+      voiceResponseEnabled: true,
+      voiceResponseMode: 'smart_discernment',
+      voiceEngine: 'native_sofia',
+      voiceVoiceName: 'pt-BR-FranciscaNeural',
+      voiceSpeed: 0.90,
+      maxConsecutiveAudios: 4,
+      maxAudioChars: 450,
+      followUpNiche: 'b2b_services',
+      followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿',
+      knowledgeFaq: `PERGUNTAS FREQUENTES (EQUIPAMENTOS PSI - ESTIMULAÇÃO BILATERAL & EMDR):
+
+P: O que é a Equipamentos PSI?
+R: A Equipamentos PSI foi fundada em abril de 2015 pela psicóloga Priscila Alves e pelo analista de sistemas Eliab Caetano. Nasceu da prática voluntária com a técnica EMDR na Casa Social Filadélfia, com a missão de fabricar no Brasil equipamentos de estimulação bilateral visual e tátil com alta qualidade, durabilidade, ergonomia e preço acessível para psicólogos.
+
+P: O que é o EMDR e para que serve o equipamento?
+R: O EMDR (Dessensibilização e Reprocessamento por Movimentos Oculares) é uma abordagem validada pela OMS para tratar traumas, TEPT, fobias e ansiedade. Os equipamentos automatizam a estimulação bilateral (visual através dos LEDs da Barra de Luz e tátil através dos pulsers vibratórios), garantindo ritmo constante, permitindo ao terapeuta focar 100% nas reações do paciente e eliminando dores musculares e fadiga física por movimentos repetitivos com os braços.
+
+P: Os LEDs da Barra de Luz incomodam a visão?
+R: Não! São 26 LEDs verdes de alta definição e difusão óptica suave. A cor verde é relaxante e foi escolhida pela neurociência para não causar fotofobia nem desconforto ao paciente.
+
+P: Qual a diferença entre a Barra Tradicional (74cm) e a Baby (51cm)?
+R: A Tradicional (74cm) é ideal para consultórios com distância padrão de 1,20m a 2m entre a poltrona e a barra. A Baby (51cm) é mais compacta e leve, recomendada para consultórios pequenos, atendimento infantil ou profissionais que viajam e sublocam salas. Ambas acompanham controle remoto, ajuste de velocidade, memória e tripé telescópico.
+
+P: Os equipamentos são bivolt?
+R: Sim! Tanto a Barra de Luz quanto o Aparelho Tátil acompanham fontes bivolt automáticas (110V/220V) e podem ser ligados em qualquer tomada do Brasil.
+
+P: Por que o carrinho online não fecha compra direta no site?
+R: Como cada terapeuta tem preferências específicas de tamanho de barra, necessidade de pulsers táteis e precisa de cotação de frete por CEP com código de rastreamento seguro, nosso canal oficial de WhatsApp (11) 96631-0256 realiza todo o atendimento consultivo, aplicação de desconto no PIX e envio do pedido.`,
+      knowledgeCatalog: `CATÁLOGO DE PRODUTOS EQUIPAMENTOS PSI:
+1. Barra de Luz Tradicional (74 cm): 26 LEDs verdes suaves, controle remoto com ajuste de velocidade e memória, tripé metálico articulado com regulagem de altura e inclinação, fonte bivolt automática. (Faixa: R$ 1.314,80 a R$ 1.384,00).
+2. Barra de Luz Baby (51 cm): versão compacta e leve, 51cm, controle remoto, memória, tripé telescópico grande e fonte bivolt. Ideal para salas compactas, consultório infantil e transporte frequente. (Faixa: R$ 1.286,60 a R$ 1.354,32).
+3. Aparelho Tátil Completo (Pulsers / Buzzers): caixa de comando digital com display numérico, regulagem independente de velocidade e intensidade vibratória, 2 pulsers anatômicos ergonômicos, cabos de 1,5m, fonte bivolt e bolsa protetora. (Faixa: R$ 687,42 a R$ 723,60).
+4. Bolsas de Transporte Acolchoadas: modelo reforçado com proteção antichoque para Barra Tradicional (R$ 302,67 a R$ 318,60) ou Barra Baby (R$ 292,41 a R$ 307,80).
+5. Acessórios e Reposição: Conjunto de cabos P2 com pulsers (R$ 135,00), cabos sem pulsers (R$ 69,00), tripés telescópicos e fontes bivolt avulsas.`,
+      knowledgePricing: `POLÍTICA COMERCIAL EQUIPAMENTOS PSI:
+- Desconto especial no PIX à vista com confirmação imediata.
+- Parcelamento facilitado em até 12x no cartão de crédito em ambiente seguro.
+- Envio para todo o Brasil via Correios (SEDEX / PAC) com cálculo exato a partir do CEP informado.
+- Garantia de fábrica de 1 ano contra defeitos de fabricação e suporte técnico nacional.
+- Contatos: WhatsApp Comercial (11) 96631-0256 | Suporte Técnico (62) 9223-8416 | comercial@equipamentospsi.com`,
+      knowledgeRules: `DIRETRIZES FUNDAMENTAIS DA SOFIA (EQUIPAMENTOS PSI):
+1. VOCÊ É EXCLUSIVAMENTE DA EQUIPAMENTOS PSI. Jamais fale de cozinhas (Primo), software (Verzel), plasma (Surface) ou dentista (Lucy).
+2. ACOLHIMENTO CLÍNICO: Trate os clientes como psicólogos, psicoterapeutas e médicos psiquiatras com cordialidade, simpatia e vocabulário técnico alinhado ao EMDR e à terapia do trauma.
+3. ORIENTAÇÃO DO EQUIPAMENTO:
+   - Se o profissional tem consultório fixo com espaço regular: recomende a Barra Tradicional de 74 cm.
+   - Se atende em sala compacta, sublocação ou público infantil: recomende a Barra Baby de 51 cm.
+   - Se os pacientes fecham os olhos durante o reprocessamento ou têm sensibilidade ocular: indique o Aparelho Tátil com Pulsers.
+4. COTAÇÃO DE FRETE: Solicite gentilmente o CEP do consultório para simular as opções de envio (SEDEX ou PAC) e prazos.
+5. CONDIÇÕES DE PAGAMENTO: Apresente o desconto com PIX à vista ou parcelamento em cartão de crédito.
+6. FECHAMENTO DO PEDIDO: Colete Nome Completo, CPF/CNPJ, E-mail e Endereço de Entrega para formalizar o pedido e despachar o equipamento.`,
+    },
+  },
 };
 
 /**
@@ -451,6 +526,16 @@ export function normalizeWorkspaceKey(raw?: string | null): string {
   if (clean.includes('cantareira') || clean.includes('cemiterio')) {
     return 'cantareira';
   }
+  if (
+    clean === 'equipamentospsi' ||
+    clean === 'psi' ||
+    clean === 'equipamentos-psi' ||
+    clean === 'equipamentos_psi' ||
+    clean.includes('emdr') ||
+    clean.includes('barra-de-luz')
+  ) {
+    return 'equipamentospsi';
+  }
   if (clean === 'delivery' || clean === 'restaurant_delivery' || clean === 'pizzaria' || clean === 'restaurante') {
     return 'delivery';
   }
@@ -482,6 +567,7 @@ export function getDefaultInstanceForWorkspace(workspaceKey?: string): string {
   if (wk === 'surfacebrasil') return 'surfacebrasil';
   if (wk === 'verzel') return 'verzel';
   if (wk === 'cantareira') return 'cemiterio-cantareira';
+  if (wk === 'equipamentospsi') return 'equipamentospsi';
   if (wk === 'delivery') return 'delivery';
   if (wk === 'b2b') return 'agente-ia';
   return wk;
@@ -548,6 +634,16 @@ export function resolveLeadWorkspaceId(lead: any): string {
     interest.includes('jazigo')
   ) {
     return 'cantareira';
+  }
+  if (
+    lowerTags.some((t) => t.includes('psi') || t.includes('emdr') || t.includes('terapeuta')) ||
+    notes.includes('equipamentospsi') ||
+    notes.includes('barra de luz') ||
+    interest.includes('emdr') ||
+    interest.includes('barra de luz') ||
+    interest.includes('pulser')
+  ) {
+    return 'equipamentospsi';
   }
   if (
     Boolean(lead.deliveryInfo) ||
@@ -667,7 +763,7 @@ export function getAgentConfigForInstance(instanceName?: string): AgentConfig {
 
   // For built-in companies, ensure core identity fields (personaName, role, followUpCustomMessage, knowledge)
   // are never contaminated by another company's text
-  const isBuiltIn = ['clinic', 'primo', 'surfacebrasil', 'verzel', 'cantareira', 'delivery', 'b2b'].includes(wk);
+  const isBuiltIn = ['clinic', 'primo', 'surfacebrasil', 'verzel', 'cantareira', 'equipamentospsi', 'delivery', 'b2b'].includes(wk);
 
   return {
     ...baseConfig,
@@ -731,6 +827,13 @@ export function getDocumentsForInstance(instanceName?: string): KnowledgeDocumen
         docName.includes('cantareira') ||
         docName.includes('cemiterio') ||
         docContent.includes('cemitério parque da cantareira')
+      );
+    }
+    if (companyId === 'equipamentospsi') {
+      return (
+        docName.includes('psi') ||
+        docName.includes('emdr') ||
+        docContent.includes('equipamentos psi')
       );
     }
     return false;

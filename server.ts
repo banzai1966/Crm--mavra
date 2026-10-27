@@ -137,6 +137,15 @@ async function startServer() {
     res.status(404).send('Manual da Verzel não encontrado.');
   });
 
+  // Route to view and print the Equipamentos PSI PDF / Dossier
+  app.get('/equipamentospsi-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'equipamentospsi_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual da Equipamentos PSI não encontrado.');
+  });
+
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
     const { phone, message, pushName, mediaType, fileName, instanceName, workspaceId } = req.body;

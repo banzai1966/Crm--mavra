@@ -36,6 +36,8 @@ const KNOWN_DEFAULT_KEYS: Record<string, string> = {
   'dental-integrative': 'dental-integrative-oqn06i',
   'dra-lucy-murata': 'b2efa885a71ee22edf72b597df1a0ce9',
   'cemiterio-cantareira': 'b2efa885a71ee22edf72b597df1a0ce9',
+  'equipamentospsi': 'b2efa885a71ee22edf72b597df1a0ce9',
+  'psi': 'b2efa885a71ee22edf72b597df1a0ce9',
   'agente-ia': 'b2efa885a71ee22edf72b597df1a0ce9',
 };
 
@@ -49,6 +51,14 @@ const MANAGED_COMPANIES = [
     defaultToken: '43BF031A-3A5D-4C32-81DD-A305F6575384',
     badge: 'bg-amber-100 text-amber-900 border-amber-300',
     iconColor: 'text-amber-600',
+  },
+  {
+    instance: 'equipamentospsi',
+    company: 'Equipamentos PSI',
+    niche: 'Terapia EMDR & Psicologia Clínica (Sofia)',
+    defaultToken: 'b2efa885a71ee22edf72b597df1a0ce9',
+    badge: 'bg-purple-100 text-purple-900 border-purple-300',
+    iconColor: 'text-purple-600',
   },
   {
     instance: 'verzel',
