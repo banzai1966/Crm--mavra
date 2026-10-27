@@ -52,6 +52,7 @@ import {
   Zap,
   Code2,
   ChevronDown,
+  Activity,
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider, PreRecordedAudio, ClientProfileSummary } from '../types';
 import { AiTestingLabModal } from './AiTestingLabModal';
@@ -896,6 +897,81 @@ R: Em cozinhas profissionais e comércios de alimentação, ligar um equipamento
 3. Alta vs Baixa Rotação (Liquidificadores): Explique que Alta Rotação é para líquidos/sucos, e Baixa Rotação é para açaí, polpas, molhos e cremes densos.
 4. Frete e Prazo: Peça o CEP para cálculo de frete ou direcione para o WhatsApp comercial (11) 97333-4135 caso precise de cotação por transportadora com entrega paletizada.
 5. Postura: Seja prestativa, técnica, objetiva e transparente com prazos e estoque.`
+  },
+  {
+    id: 'equipamentos_psi',
+    name: 'Equipamentos PSI – Barras de Luz EMDR, Brainspotting & Neuroterapias',
+    category: 'Psicologia & Neuroterapias (EMDR)',
+    tag: 'Equipamentos PSI (EMDR)',
+    description: 'Especialista em equipamentos de estimulação bilateral visual e tátil para psicólogos clínicos, terapeutas EMDR e neuroterapeutas: Barra de Luz Tradicional 74cm, Barra Baby 51cm, Aparelho Tátil com Pulsers/Buzzers, reposição de cabos e bolsas de transporte. Empresa pioneira fundada em 2015 por Priscila Alves e Eliab Caetano.',
+    personaName: 'Sofia da Equipamentos PSI',
+    role: 'Consultora Especialista em Equipamentos de Estimulação Bilateral e Terapia EMDR',
+    toneOfVoice: 'Empático, acolhedor, técnico-científico, profissional e prestativo para terapeutas clínicos e psicólogos',
+    salesGoal: 'Identificar a abordagem terapêutica do cliente (EMDR, Brainspotting ou neuroterapias), apresentar os benefícios da estimulação visual (Barra 74cm ou Baby 51cm) e tátil (Pulsers), tirar dúvidas técnicas (pedestal, fixação, controle de velocidade e luzes) e conduzir o fechamento com desconto de 5% no Pix ou parcelado.',
+    followUpNiche: 'b2b_services',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a Barra de Luz ou o Aparelho Tátil de Pulsers para os seus atendimentos clínicos de EMDR e Brainspotting. Qualquer dúvida técnica sobre o espaço do consultório ou condições no Pix/cartão, estou à disposição! 🧠✨',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (EQUIPAMENTOS PSI - ESTIMULAÇÃO BILATERAL EMDR & BRAINSPOTTING):
+
+P: O que é a Equipamentos PSI e quem são os responsáveis?
+R: A Equipamentos PSI foi fundada em 2015 pela psicóloga Priscila Alves (CRP 06/115403, pós-graduanda em Neuropsicologia e terapeuta EMDR pelo EMDR Institute dos EUA) e por Eliab Caetano (especialista técnico em desenvolvimento de circuitos). Somos pioneiros e líderes no Brasil no desenvolvimento e fabricação própria de tecnologias para estimulação bilateral em psicoterapia (EMDR, Brainspotting e neuroterapias).
+
+P: Quais são os principais equipamentos fabricados?
+R: Fabricamos duas linhas essenciais de estimulação bilateral:
+1. Barra de Luz EMDR Tradicional (74cm) e Barra de Luz Baby (51cm): Equipamento visual com trilho de LEDs de movimento suave, velocidade e brilho ajustáveis, bivolt, com tripé/pedestal de regulagem de altura e bolsa de transporte reforçada.
+2. Aparelho Tátil EMDR com Pulsers (Buzzers): Estimulação bilateral tátil via vibração alternada nos pulsers manuais, com ajuste fino de velocidade e intensidade, cabo de silicone ultra-flexível e estojo de proteção.
+3. Acessórios e Peças de Reposição: Bolsas impermeáveis com alça para transporte seguro e cabos de reposição com pulsers ergonômicos.
+
+P: Qual a diferença entre a Barra de Luz Tradicional (74cm) e a Barra de Luz Baby (51cm)?
+R: 
+- Barra Tradicional (74cm): O padrão ouro mais utilizado nos consultórios de psicologia. Oferece amplitude visual completa de rastreamento ocular para pacientes sentados a uma distância média ou ampla da poltrona terapêutica.
+- Barra Baby (51cm): Modelo compacto, mais leve e portátil. Excelente para consultórios menores, terapeutas que atendem em múltiplos locais ou realizam atendimentos domiciliares/viagens, além de ser muito confortável para atendimento infantil. Ambas possuem a mesma eletrônica de ponta, suavidade no movimento dos LEDs e robustez.
+
+P: O movimento da luz cansa os olhos do paciente?
+R: Não! Nosso software interno foi especialmente desenhado para suavizar a transição luminosa, simulando perfeitamente o movimento sacádico natural dos olhos sem trancos ou reflexos estroboscópicos agressivos, garantindo conforto visual total ao paciente durante o reprocessamento de traumas.
+
+P: Os equipamentos funcionam em 110V ou 220V?
+R: Todos os nossos aparelhos são BIVOLT AUTOMÁTICO (100V a 240V). Podem ser ligados com total segurança em qualquer tomada do Brasil ou do exterior sem risco de queima.
+
+P: Como funciona a garantia e assistência técnica?
+R: Todos os equipamentos possuem 1 ano de garantia de fábrica contra defeitos de fabricação e suporte técnico direto com o fabricante no Brasil. A manutenção e reposição de componentes são ágeis e sem complicação.
+
+P: Quais são as opções de pagamento e envio?
+R: Oferecemos 5% de desconto para pagamento à vista via Pix ou transferência, além de parcelamento em até 12x no cartão de crédito via checkout seguro. Enviamos para todo o Brasil via Correios (Sedex / PAC) ou transportadora segurada com código de rastreamento.`,
+    knowledgeCatalog: `CATÁLOGO COMPLETO DE EQUIPAMENTOS & ACESSÓRIOS - EQUIPAMENTOS PSI:
+
+1. BARRA DE LUZ EMDR TRADICIONAL (74 CM):
+- Aplicação: Estimulação bilateral visual completa para consultórios de EMDR, Brainspotting e reprocessamento neurobiológico.
+- Características: 74cm de comprimento, ajuste milimétrico de velocidade e intensidade dos LEDs, controle remoto ou no próprio corpo, fonte bivolt automática (110V/220V).
+- Acompanha: Pedestal/tripé ajustável de altura com fixação firme e bolsa acolchoada de transporte com zíper duplo e alça de ombro.
+- Preço: R$ 1.314,80 à vista no Pix (5% OFF) ou R$ 1.384,00 em até 12x no cartão.
+
+2. BARRA DE LUZ EMDR BABY PORTÁTIL (51 CM):
+- Aplicação: Ideal para consultórios compactos, atendimento infantil ou terapeutas itinerantes que necessitam de portabilidade máxima.
+- Características: 51cm de comprimento, LEDs de alta precisão e suavidade contínua, bivolt automático, fácil desmontagem.
+- Acompanha: Pedestal/tripé ajustável e bolsa reforçada compacta de transporte.
+- Preço: R$ 1.286,60 à vista no Pix (5% OFF) ou R$ 1.354,32 em até 12x no cartão.
+
+3. APARELHO TÁTIL EMDR COM PULSERS (BUZZERS DE VIBRAÇÃO):
+- Aplicação: Estimulação bilateral tátil para pacientes com sensibilidade ocular ou que preferem processamento tátil sincronizado.
+- Características: Par de pulsers anatômicos com textura suave ao toque das mãos, vibração suave e calibrada, frequência regulável de alternância, unidade central compacta com bateria recarregável ou conexão bivolt.
+- Preço: R$ 687,42 à vista no Pix (5% OFF) ou R$ 723,60 em até 12x no cartão.
+
+4. ACESSÓRIOS & REPOSIÇÃO:
+- Cabos de Reposição com Pulsers: R$ 290,00 (substituição rápida com conectores de engate rápido banhados a ouro para durabilidade).
+- Bolsa Avulsa de Transporte Tradicional (74cm): R$ 180,00.
+- Bolsa Avulsa de Transporte Baby (51cm): R$ 160,00.`,
+    knowledgePricing: `TABELA DE PREÇOS & CONDIÇÕES COMERCIAIS (EQUIPAMENTOS PSI):
+- Barra de Luz Tradicional 74cm: R$ 1.314,80 à vista via Pix ou R$ 1.384,00 em até 12x no cartão de crédito.
+- Barra de Luz Baby 51cm: R$ 1.286,60 à vista via Pix ou R$ 1.354,32 em até 12x no cartão de crédito.
+- Aparelho Tátil com Pulsers: R$ 687,42 à vista via Pix ou R$ 723,60 em até 12x no cartão de crédito.
+- Cabos com Pulsers (Reposição): R$ 290,00 à vista via Pix.
+- Frete: Calculado pelo CEP do consultório do terapeuta via Correios ou transportadora.`,
+    knowledgeRules: `DIRETRIZES DE ATENDIMENTO DA SOFIA DA EQUIPAMENTOS PSI:
+1. Posicionamento Humanizado & Técnico: O público-alvo é formado por psicólogos, neuropsicólogos e psiquiatras. Trate-os com respeito acadêmico e acolhimento clínico.
+2. Identificação da Abordagem: Pergunte se o profissional atua com EMDR, Brainspotting ou terapia cognitivo-comportamental/neurofeedback.
+3. Diferenciação Clara de Tamanho: Recomende a Barra de 74cm para consultórios convencionais com distância padrão poltrona-paciente, e a Barra Baby de 51cm para espaços menores, atendimento de crianças ou deslocamentos frequentes.
+4. Estimulação Tátil: Caso o terapeuta mencione pacientes fotossensíveis, com déficit visual ou trauma ocular, recomende imediatamente o Aparelho Tátil com Pulsers.
+5. Fechamento Comercial: Destaque o benefício de 5% de desconto à vista via Pix, facilidade em até 12x e 1 ano de garantia integral com assistência no Brasil.`
   }
 ];
 
@@ -1086,9 +1162,10 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     const isSurface = preset.id === 'surface_brasil_plasma';
     const isVerzel = preset.id === 'verzel_software_consultoria';
     const isPrimo = preset.id === 'primo_equipamentos';
+    const isPsi = preset.id === 'equipamentos_psi';
     const updatedConfig: AgentConfig = {
       ...config,
-      activeWorkspaceName: isPrimo ? 'Primo Equipamentos (Vendas e Equipamentos)' : preset.name,
+      activeWorkspaceName: isPrimo ? 'Primo Equipamentos (Vendas e Equipamentos)' : isPsi ? 'Equipamentos PSI (Terapia EMDR & Psicologia)' : preset.name,
       personaName: preset.personaName,
       role: preset.role,
       toneOfVoice: preset.toneOfVoice,
@@ -1099,7 +1176,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
-      preRecordedAudiosEnabled: isSurface || isVerzel || isPrimo ? false : config.preRecordedAudiosEnabled,
+      preRecordedAudiosEnabled: isSurface || isVerzel || isPrimo || isPsi ? false : config.preRecordedAudiosEnabled,
       catalogPdfName: isSurface
         ? 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf'
         : isVerzel
@@ -1108,6 +1185,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
         ? 'Apresentacao_NEXA_CRM.pdf'
         : isPrimo
         ? 'Catalogo_Primo_Equipamentos.pdf'
+        : isPsi
+        ? 'Manual_Equipamentos_PSI_EMDR.pdf'
         : 'Apresentacao_Dra_Lucy_Murata.pdf',
     };
     setConfig(updatedConfig);
@@ -1142,6 +1221,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
         ? 'verzel'
         : isPrimo
         ? 'primo'
+        : isPsi
+        ? 'equipamentospsi'
         : isNexa
         ? 'b2b'
         : isHealthPreset
@@ -1166,6 +1247,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       ? 'verzel'
       : isPrimo
       ? 'primo-equipamentos'
+      : isPsi
+      ? 'equipamentospsi'
       : isNexa
       ? 'agente-ia'
       : preset.id.replace(/_/g, '-');
@@ -2232,6 +2315,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               const isAuto = preset.id === 'auto_dealer' || preset.id === 'automotive';
               const isSaaS = preset.id === 'nexa_crm' || preset.id === 'saas_tech';
               const isRestaurant = preset.id === 'restaurant_delivery' || preset.id === 'restaurant';
+              const isPrimo = preset.id === 'primo_equipamentos';
+              const isPsi = preset.id === 'equipamentos_psi';
 
               return (
                 <div
@@ -2241,6 +2326,10 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                       ? 'bg-gradient-to-b from-sky-50/70 to-white border-sky-300 ring-1 ring-sky-200'
                       : preset.id === 'verzel_software_consultoria'
                       ? 'bg-gradient-to-b from-indigo-50/70 via-slate-50 to-white border-indigo-300 ring-1 ring-indigo-200'
+                      : preset.id === 'equipamentos_psi'
+                      ? 'bg-gradient-to-b from-purple-50/70 via-indigo-50/30 to-white border-purple-300 ring-1 ring-purple-200 shadow-2xs'
+                      : preset.id === 'primo_equipamentos'
+                      ? 'bg-gradient-to-b from-amber-50/70 to-white border-amber-300 ring-1 ring-amber-200'
                       : preset.id === 'nexa_crm'
                       ? 'bg-gradient-to-b from-indigo-50/60 to-white border-indigo-300 ring-1 ring-indigo-200'
                       : preset.id === 'restaurant_delivery'
@@ -2255,17 +2344,33 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                           ? 'text-sky-900 bg-sky-100 border-sky-300 font-bold'
                           : preset.id === 'verzel_software_consultoria'
                           ? 'text-indigo-900 bg-indigo-100 border-indigo-300 font-bold'
+                          : preset.id === 'equipamentos_psi'
+                          ? 'text-purple-900 bg-purple-100 border-purple-300 font-bold'
+                          : preset.id === 'primo_equipamentos'
+                          ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold'
                           : preset.id === 'nexa_crm'
                           ? 'text-indigo-900 bg-indigo-100/90 border-indigo-300 ring-1 ring-indigo-300 font-mono'
                           : preset.id === 'restaurant_delivery'
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-semibold'
                           : 'text-indigo-700 bg-indigo-50 border-indigo-100'
                       }`}>
-                        {preset.id === 'surface_brasil_plasma' ? '⚡ SURFACEBRASIL PLASMA' : preset.id === 'verzel_software_consultoria' ? '💻 VERZEL SOFTWARE & AI' : preset.id === 'nexa_crm' ? '🚀 OFICIAL NEXA CRM' : (preset.category || 'Nicho')}
+                        {preset.id === 'surface_brasil_plasma'
+                          ? '⚡ SURFACEBRASIL PLASMA'
+                          : preset.id === 'verzel_software_consultoria'
+                          ? '💻 VERZEL SOFTWARE & AI'
+                          : preset.id === 'equipamentos_psi'
+                          ? '🧠 EQUIPAMENTOS PSI (EMDR)'
+                          : preset.id === 'primo_equipamentos'
+                          ? '🍳 PRIMO EQUIPAMENTOS GASTRONOMIA'
+                          : preset.id === 'nexa_crm'
+                          ? '🚀 OFICIAL NEXA CRM'
+                          : (preset.category || 'Nicho')}
                       </span>
                       <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
                         {isSurface && <Zap className="w-4 h-4 text-sky-600" />}
                         {isVerzel && <Code2 className="w-4 h-4 text-indigo-600" />}
+                        {isPsi && <Activity className="w-4 h-4 text-purple-600" />}
+                        {isPrimo && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
                         {isDental && <Stethoscope className="w-4 h-4" />}
                         {isMedical && <HeartHandshake className="w-4 h-4" />}
                         {isRealEstate && <Building2 className="w-4 h-4" />}
@@ -2274,8 +2379,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                         {isSolar && <Sun className="w-4 h-4" />}
                         {isAuto && <Car className="w-4 h-4" />}
                         {isSaaS && <Bot className="w-4 h-4" />}
-                        {isRestaurant && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
-                        {!isSurface && !isVerzel && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
+                        {isRestaurant && !isPrimo && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
+                        {!isSurface && !isVerzel && !isPsi && !isPrimo && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
                           <SparklesIcon className="w-4 h-4" />
                         )}
                       </div>
@@ -3335,6 +3440,33 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0 self-start sm:self-center"
+            >
+              <span>Abrir & Salvar em PDF</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Quick link to Equipamentos PSI Dossier / PDF Manual */}
+          <div className="bg-gradient-to-r from-purple-50 via-white to-indigo-50 border border-purple-200/90 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <span className="text-xl">🧠</span>
+              <div>
+                <p className="text-xs font-bold text-purple-950 flex items-center gap-2">
+                  <span>Dossiê & Manual Técnico Equipamentos PSI (Estimulação Bilateral EMDR)</span>
+                  <span className="text-[10px] bg-purple-100 text-purple-800 font-semibold px-2 py-0.5 rounded-md border border-purple-200">
+                    PDF Pronto
+                  </span>
+                </p>
+                <p className="text-[11px] text-purple-700 mt-0.5">
+                  Manual completo com Barra de Luz 74cm, Barra Baby 51cm, Aparelho Tátil com Pulsers, especificações de tensão bivolt e roteiro da Sofia.
+                </p>
+              </div>
+            </div>
+            <a
+              href="/equipamentospsi-manual"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0 self-start sm:self-center"
             >
               <span>Abrir & Salvar em PDF</span>
               <ExternalLink className="w-3.5 h-3.5" />
