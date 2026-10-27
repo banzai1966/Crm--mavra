@@ -578,6 +578,7 @@ export default function App() {
               if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
               else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
               else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
+              else if (activeUrlNiche === 'equipamentospsi') targetInst = 'equipamentospsi';
               else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
               else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
               else if (activeUrlNiche === 'b2b') targetInst = 'agente-ia';
@@ -987,6 +988,8 @@ export default function App() {
         ? 'verzel'
         : normalizedWk === 'primo'
         ? 'primo-equipamentos'
+        : normalizedWk === 'equipamentospsi'
+        ? 'equipamentospsi'
         : normalizedWk === 'cantareira'
         ? 'cemiterio-cantareira'
         : normalizedWk === 'clinic'
