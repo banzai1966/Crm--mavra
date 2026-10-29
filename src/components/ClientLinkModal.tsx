@@ -80,6 +80,15 @@ const COMPANIES: CompanyOption[] = [
     aliases: ['primo', 'primo-equipamentos'],
   },
   {
+    id: 'equipamentospsi',
+    name: 'Equipamentos PSI',
+    subtitle: 'Terapia EMDR & Estimuladores Bilaterais',
+    icon: Sparkles,
+    tag: 'Terapia EMDR',
+    badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
+    aliases: ['equipamentospsi', 'equipamentos-psi', 'psi', 'emdr'],
+  },
+  {
     id: 'delivery',
     name: 'Pizzaria & Delivery',
     subtitle: 'Pedidos Rápidos, Motoboy & Bairros',
