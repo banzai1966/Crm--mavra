@@ -1059,7 +1059,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 stage.name.toLowerCase().includes('reativacao')) && (
                 <div className="px-3 py-1.5 bg-indigo-50/90 border-b border-indigo-100 flex items-center justify-between">
                   <span className="text-[10px] font-semibold text-indigo-700">
-                    {stageLeads.length} {stage.id.includes('reativacao') ? 'em reativação' : 'pacientes na base'}
+                    {stageLeads.length}{' '}
+                    {stage.id.includes('reativacao')
+                      ? 'em reativação'
+                      : nicheFilter === 'health'
+                      ? 'pacientes na base'
+                      : 'contatos na base'}
                   </span>
                   <button
                     onClick={() => setShowCampaignModal(true)}
