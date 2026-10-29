@@ -24,7 +24,27 @@ export function getEvolutionApiKey(instanceName?: string): string {
   // 1. Check instance-specific token stored in instanceApiKeys
   const specificKey = config.instanceApiKeys?.[targetInstance];
   if (specificKey && specificKey.trim() && !specificKey.includes('seuservidor')) {
+    // If it's a known dedicated instance and currently points to master key, prefer the dedicated key
+    if (targetInstance === 'equipamentospsi' && specificKey === MASTER_EVOLUTION_KEY) {
+      return '2EE0711F-2838-41E5-9BE0-466D03995E3F';
+    }
     return specificKey.trim();
+  }
+
+  if (targetInstance === 'equipamentospsi' || targetInstance === 'psi') {
+    return '2EE0711F-2838-41E5-9BE0-466D03995E3F';
+  }
+
+  if (targetInstance === 'primo-equipamentos') {
+    return '43BF031A-3A5D-4C32-81DD-A305F6575384';
+  }
+
+  if (targetInstance === 'verzel') {
+    return '8B4CDFF9-8C33-415D-9877-EBE5E74134F4';
+  }
+
+  if (targetInstance === 'surfacebrasil') {
+    return 'DE151DAD-79C8-49F5-BFE3-5E129987F773';
   }
 
   if (targetInstance === 'dental-integrative' || targetInstance === 'dra-lucy-murata') {
@@ -64,6 +84,9 @@ export function normalizeInstanceName(inst?: string): string {
   }
   if (raw === 'primo' || raw === 'primo-equipamento' || raw === 'primo-equipamentos') {
     return 'primo-equipamentos';
+  }
+  if (raw === 'equipamentos-psi' || raw === 'equipamentospsi' || raw === 'psi') {
+    return 'equipamentospsi';
   }
   if (raw.startsWith('dental-integrative')) {
     return 'dental-integrative';

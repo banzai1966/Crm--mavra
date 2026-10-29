@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { KanbanBoard } from './components/KanbanBoard';
 import { LiveChat } from './components/LiveChat';
@@ -319,6 +319,11 @@ export default function App() {
     'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'delivery' | 'agent' | 'evolution' | 'supabase'
   >(() => (activeUrlNiche === 'delivery' ? 'delivery' : 'kanban'));
 
+  const activeTabRef = useRef(activeTab);
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
+
   const [stages, setStages] = useState<KanbanStage[]>(() => getStagesForNiche(activeUrlNiche));
 
   useEffect(() => {
@@ -574,22 +579,40 @@ export default function App() {
           if (evoRes.ok) {
             const freshEvo = await evoRes.json();
             if (freshEvo && typeof freshEvo === 'object') {
-              let targetInst = freshEvo.instanceName;
-              if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
-              else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
-              else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
-              else if (activeUrlNiche === 'equipamentospsi') targetInst = 'equipamentospsi';
-              else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
-              else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
-              else if (activeUrlNiche === 'b2b') targetInst = 'agente-ia';
-              
-              const targetKey = (targetInst && freshEvo.instanceApiKeys?.[targetInst]) || freshEvo.apiKey;
-              setEvolutionConfig((prev) => ({
-                ...prev,
-                ...freshEvo,
-                instanceName: targetInst,
-                apiKey: targetKey || prev.apiKey,
-              }));
+              const isViewingEvolutionTab = activeTabRef.current === 'evolution';
+              setEvolutionConfig((prev) => {
+                // If the user is on the Evolution Settings tab, keep their active instance stable and only update connection status/instanceApiKeys
+                if (isViewingEvolutionTab) {
+                  return {
+                    ...prev,
+                    isConnected: freshEvo.isConnected,
+                    state: freshEvo.state,
+                    qrcode: freshEvo.qrcode,
+                    serverUrl: prev.serverUrl || freshEvo.serverUrl,
+                    instanceApiKeys: {
+                      ...(freshEvo.instanceApiKeys || {}),
+                      ...(prev.instanceApiKeys || {}),
+                    },
+                  };
+                }
+
+                let targetInst = freshEvo.instanceName;
+                if (activeUrlNiche === 'surfacebrasil') targetInst = 'surfacebrasil';
+                else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
+                else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
+                else if (activeUrlNiche === 'equipamentospsi') targetInst = 'equipamentospsi';
+                else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
+                else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
+                else if (activeUrlNiche === 'b2b') targetInst = 'agente-ia';
+                
+                const targetKey = (targetInst && freshEvo.instanceApiKeys?.[targetInst]) || freshEvo.apiKey;
+                return {
+                  ...prev,
+                  ...freshEvo,
+                  instanceName: targetInst,
+                  apiKey: targetKey || prev.apiKey,
+                };
+              });
             }
           }
         }

@@ -2165,11 +2165,6 @@ async function startServer() {
 
     // Start background sentinel watcher (WhatsApp disconnection and server alerts)
     startSentinelBackgroundWatcher();
-
-    // Auto-ensure equipamentospsi instance exists with UUID token on startup
-    setTimeout(() => {
-      createEvolutionInstance('equipamentospsi', 'https://crm.makprojetosmake.com.br/api/webhook').catch(() => {});
-    }, 2000);
   });
 }
 

@@ -36,8 +36,8 @@ const KNOWN_DEFAULT_KEYS: Record<string, string> = {
   'dental-integrative': 'dental-integrative-oqn06i',
   'dra-lucy-murata': 'b2efa885a71ee22edf72b597df1a0ce9',
   'cemiterio-cantareira': 'b2efa885a71ee22edf72b597df1a0ce9',
-  'equipamentospsi': 'b2efa885a71ee22edf72b597df1a0ce9',
-  'psi': 'b2efa885a71ee22edf72b597df1a0ce9',
+  'equipamentospsi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
+  'psi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
   'agente-ia': 'b2efa885a71ee22edf72b597df1a0ce9',
 };
 
@@ -56,7 +56,7 @@ const MANAGED_COMPANIES = [
     instance: 'equipamentospsi',
     company: 'Equipamentos PSI',
     niche: 'Terapia EMDR & Psicologia Clínica (Sofia)',
-    defaultToken: 'b2efa885a71ee22edf72b597df1a0ce9',
+    defaultToken: '2EE0711F-2838-41E5-9BE0-466D03995E3F',
     badge: 'bg-purple-100 text-purple-900 border-purple-300',
     iconColor: 'text-purple-600',
   },
@@ -137,19 +137,25 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   // Keep local config in sync with parent evolutionConfig only when not actively editing
   useEffect(() => {
     if (!isEditing) {
-      setConfig(evolutionConfig);
+      setConfig((prev) => ({
+        ...evolutionConfig,
+        // Preserve locally focused instance and url if already set
+        instanceName: prev.instanceName || evolutionConfig.instanceName,
+        apiKey: prev.apiKey || evolutionConfig.apiKey,
+        serverUrl: prev.serverUrl || evolutionConfig.serverUrl,
+      }));
     }
     setIndividualKeys((prev) => {
       const next = { ...prev };
       const serverKeys = evolutionConfig.instanceApiKeys || {};
       for (const [key, val] of Object.entries(serverKeys)) {
-        if (!dirtyKeys[key]) {
+        if (!dirtyKeys[key] && val) {
           next[key] = val;
         }
       }
       return next;
     });
-  }, [evolutionConfig, isEditing, dirtyKeys]);
+  }, [evolutionConfig.isConnected, evolutionConfig.state, evolutionConfig.serverUrl, evolutionConfig.instanceApiKeys, isEditing, dirtyKeys]);
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
@@ -360,15 +366,18 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
   const handleSaveIndividualToken = async (instName: string, tokenVal: string) => {
     const cleanToken = tokenVal.trim();
     try {
+      setIndividualKeys((prev) => ({ ...prev, [instName]: cleanToken }));
+      setDirtyKeys((prev) => ({ ...prev, [instName]: false }));
+
       const res = await fetch('/api/evolution/instance-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ instanceName: instName, token: cleanToken }),
       });
       if (res.ok) {
-        setDirtyKeys((prev) => ({ ...prev, [instName]: false }));
         const updatedInstanceKeys = {
           ...(config.instanceApiKeys || {}),
+          ...individualKeys,
           [instName]: cleanToken,
         };
         const updatedConfig = {
@@ -579,7 +588,8 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
       const currentKey = config.apiKey.trim();
       const updatedInstanceKeys = {
         ...(config.instanceApiKeys || {}),
-        [currentInstName]: currentKey,
+        ...individualKeys,
+        ...(currentInstName ? { [currentInstName]: currentKey } : {}),
       };
       const sanitizedConfig = {
         ...config,
@@ -590,6 +600,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
       };
       await onSaveConfig(sanitizedConfig);
       setConfig(sanitizedConfig);
+      setDirtyKeys({});
       setIsEditing(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
