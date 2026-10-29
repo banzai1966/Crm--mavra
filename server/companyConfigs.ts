@@ -440,6 +440,8 @@ R: Evitam despesas de emergência com opções parceladas e suporte 24h.`,
       maxConsecutiveAudios: 4,
       maxAudioChars: 450,
       followUpNiche: 'b2b_services',
+      catalogPdfUrl: 'https://crm.makprojetosmake.com.br/equipamentospsi-manual',
+      catalogPdfName: 'Dossie_Tecnico_Equipamentos_PSI.pdf',
       followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿',
       knowledgeFaq: `PERGUNTAS FREQUENTES (EQUIPAMENTOS PSI - ESTIMULAÇÃO BILATERAL & EMDR):
 
