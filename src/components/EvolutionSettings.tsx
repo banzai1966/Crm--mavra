@@ -450,6 +450,33 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     }
   };
 
+  const [isRecreating, setIsRecreating] = useState(false);
+  const handleRecreateInstance = async () => {
+    if (!confirm(`Deseja recriar a instância "${config.instanceName}" com um token UUID seguro padrão?`)) return;
+    setIsRecreating(true);
+    setCreateFeedback(null);
+    try {
+      const currentWebhookUrl = `${window.location.origin}/api/webhook`;
+      const res = await fetch('/api/evolution/recreate-instance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instanceName: config.instanceName, webhookUrl: currentWebhookUrl }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCreateFeedback(`✅ Instância "${config.instanceName}" recriada com sucesso com token UUID!`);
+        setQrStatusText('Instância recriada. Gere o QR Code para conectar.');
+        loadQrCode(config.instanceName);
+      } else {
+        setCreateFeedback(`Erro: ${data.error || 'Falha ao recriar instância'}`);
+      }
+    } catch (err: any) {
+      setCreateFeedback('Erro ao recriar: ' + err.message);
+    } finally {
+      setIsRecreating(false);
+    }
+  };
+
   // Helper to extract clean URL without label leftovers
   const cleanUrlString = (val: string) => {
     const match = val.match(/https?:\/\/[^\s"'<>]+/i);
@@ -1755,6 +1782,17 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Atualizar QR Code</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleRecreateInstance}
+                  disabled={isRecreating}
+                  className="flex items-center gap-1.5 text-xs text-amber-700 font-semibold hover:underline cursor-pointer"
+                  title="Recriar instância com token UUID seguro"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isRecreating ? 'animate-spin' : ''}`} />
+                  <span>{isRecreating ? 'Recriando...' : '🔄 Recriar Token UUID'}</span>
                 </button>
 
                 <button

@@ -17,6 +17,7 @@ import {
   sanitizeEvolutionUrl,
   getEvolutionQRCode,
   createEvolutionInstance,
+  deleteEvolutionInstance,
   logoutEvolutionInstance,
   fetchAllEvolutionInstances,
   normalizeInstanceName,
@@ -1549,6 +1550,31 @@ async function startServer() {
     res.json(result);
   });
 
+  // Delete and Recreate instance with UUID token
+  app.post('/api/evolution/recreate-instance', async (req: Request, res: Response) => {
+    const { instanceName, webhookUrl } = req.body;
+    const targetInst = normalizeInstanceName(instanceName || db.evolutionConfig.instanceName || 'equipamentospsi');
+    try {
+      console.log(`[Recreate Instance] Excluindo e recriando instância "${targetInst}" com token UUID...`);
+      await deleteEvolutionInstance(targetInst);
+      await new Promise((r) => setTimeout(r, 1000));
+      const targetWebhook = webhookUrl || `${req.protocol}://${req.get('host')}/api/webhook`;
+      const createRes = await createEvolutionInstance(targetInst, targetWebhook);
+      if (createRes.success) {
+        res.json({
+          success: true,
+          message: `Instância "${targetInst}" recriada com sucesso com token UUID padrão!`,
+          data: createRes.data,
+        });
+      } else {
+        res.status(400).json({ success: false, error: createRes.error || 'Falha ao recriar instância' });
+      }
+    } catch (err: any) {
+      console.error('[Recreate Instance Error]:', err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   // Logout / Disconnect instance
   app.post('/api/evolution/logout', async (req: Request, res: Response) => {
     const { instanceName } = req.body;
@@ -2139,6 +2165,11 @@ async function startServer() {
 
     // Start background sentinel watcher (WhatsApp disconnection and server alerts)
     startSentinelBackgroundWatcher();
+
+    // Auto-ensure equipamentospsi instance exists with UUID token on startup
+    setTimeout(() => {
+      createEvolutionInstance('equipamentospsi', 'https://crm.makprojetosmake.com.br/api/webhook').catch(() => {});
+    }, 2000);
   });
 }
 

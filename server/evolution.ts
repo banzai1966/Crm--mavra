@@ -27,6 +27,10 @@ export function getEvolutionApiKey(instanceName?: string): string {
     return specificKey.trim();
   }
 
+  if (targetInstance === 'dental-integrative' || targetInstance === 'dra-lucy-murata') {
+    return 'dental-integrative-oqn06i';
+  }
+
   // 2. Fall back to general configured apiKey if valid
   const configured = (config.apiKey || '').trim();
   if (
@@ -857,9 +861,17 @@ export async function createEvolutionInstance(
 
   try {
     const endpoint = `${baseUrl}/instance/create`;
+    const generateUuidToken = () => {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16).toUpperCase();
+      });
+    };
+
     const bodyPayload: any = {
       instanceName: cleanName,
-      token: cleanName + '-' + Math.random().toString(36).substring(2, 8),
+      token: generateUuidToken(),
       qrcode: true,
       integration: 'WHATSAPP-BAILEYS',
     };
@@ -930,6 +942,39 @@ export async function createEvolutionInstance(
       success: false,
       error: errorMsg,
     };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Delete an Evolution instance from the VPS
+ */
+export async function deleteEvolutionInstance(targetInstance: string): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const config = db.evolutionConfig;
+  const baseUrl = sanitizeEvolutionUrl(config.serverUrl) || 'https://api.makprojetosmake.com.br';
+  const rawInst = normalizeInstanceName(targetInstance);
+  const instance = encodeURIComponent(rawInst);
+  const apiKey = MASTER_EVOLUTION_KEY;
+
+  try {
+    const endpoint = `${baseUrl}/instance/delete/${instance}`;
+    const response = await fetch(endpoint, {
+      method: 'DELETE',
+      headers: {
+        apikey: apiKey,
+      },
+    });
+
+    if (response.ok || response.status === 404) {
+      return { success: true, message: `Instância ${rawInst} excluída com sucesso.` };
+    }
+    const errText = await response.text();
+    return { success: false, error: `HTTP ${response.status}: ${errText.slice(0, 100)}` };
   } catch (err: any) {
     return { success: false, error: err.message };
   }
