@@ -1041,6 +1041,9 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
         phone: cleanPhone,
         sender: 'ai',
         text: `📄 [Documento Enviado]: "${pdfName}"`,
+        mediaType: 'pdf',
+        mediaUrl: pdfUrl,
+        fileName: pdfName,
         timestamp: new Date().toISOString(),
         status: 'delivered',
       });

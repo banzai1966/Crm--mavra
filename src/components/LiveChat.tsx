@@ -1068,40 +1068,65 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                         </div>
 
                         {/* PDF / Document Bubble */}
-                        {msg.mediaType === 'pdf' || msg.text.startsWith('📄 [') ? (
-                          <div className="space-y-2">
-                            <div className={`flex items-center gap-2.5 p-2.5 rounded-xl border ${
-                              isAgent ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white/90 border-slate-200 text-slate-900'
-                            }`}>
-                              <div className="w-9 h-9 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                                <FileText className="w-5 h-5" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <span className="text-xs font-bold truncate block">
-                                  {msg.fileName || msg.text.split(']:')[0]?.replace('📄 [', '').replace(']', '') || 'Documento.pdf'}
-                                </span>
-                                <span className="text-[10px] text-slate-400">Documento PDF Oficial</span>
-                              </div>
-                              {msg.mediaUrl && (
-                                <a
-                                  href={msg.mediaUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  download={msg.fileName || 'documento.pdf'}
-                                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 shrink-0"
-                                  title="Baixar PDF"
-                                >
+                        {msg.mediaType === 'pdf' || msg.text.startsWith('📄 [') ? (() => {
+                          const parsedFileName =
+                            msg.fileName ||
+                            (msg.text.includes('"')
+                              ? msg.text.match(/"([^"]+)"/)?.[1]
+                              : msg.text.replace(/^📄\s*\[[^\]]+\]:\s*/, '').trim()) ||
+                            'Dossie_Tecnico_Equipamentos_PSI.pdf';
+
+                          const effectivePdfUrl =
+                            msg.mediaUrl ||
+                            (parsedFileName.includes('Equipamentos_PSI') || msg.text.includes('Equipamentos_PSI')
+                              ? '/Dossie_Tecnico_Equipamentos_PSI.pdf'
+                              : parsedFileName.includes('Surfacebrasil') || msg.text.includes('Surfacebrasil')
+                              ? '/Dossie_Tecnico_Surfacebrasil_Plasma.pdf'
+                              : parsedFileName.includes('Verzel') || msg.text.includes('Verzel')
+                              ? '/Dossie_Tecnico_Verzel_Sistemas.pdf'
+                              : parsedFileName.includes('Lucy') || msg.text.includes('Lucy')
+                              ? '/Apresentacao_Dra_Lucy_Murata.pdf'
+                              : parsedFileName.includes('Primo') || msg.text.includes('Primo')
+                              ? '/Catalogo_Primo_Equipamentos.pdf'
+                              : '/Dossie_Tecnico_Equipamentos_PSI.pdf');
+
+                          return (
+                            <div className="space-y-2">
+                              <a
+                                href={effectivePdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer group shadow-2xs hover:shadow-md ${
+                                  isAgent
+                                    ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-750'
+                                    : 'bg-white/95 border-slate-200 text-slate-900 hover:border-purple-300 hover:bg-purple-50/50'
+                                }`}
+                              >
+                                <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                                  <FileText className="w-5 h-5" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-xs font-bold truncate block text-slate-900 group-hover:text-purple-900">
+                                    {parsedFileName}
+                                  </span>
+                                  <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                                    <span>Documento PDF Oficial</span>
+                                    <span>•</span>
+                                    <span className="underline font-bold">Clique para abrir / baixar</span>
+                                  </span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-purple-600 group-hover:text-white text-slate-700 shrink-0 transition-colors shadow-2xs">
                                   <Download className="w-4 h-4" />
-                                </a>
+                                </div>
+                              </a>
+                              {msg.text.includes(']:') && !msg.text.includes('"') && (
+                                <p className="text-xs leading-relaxed whitespace-pre-wrap">
+                                  {msg.text.split(']:')[1]?.trim()}
+                                </p>
                               )}
                             </div>
-                            {msg.text.includes(']:') && (
-                              <p className="text-xs leading-relaxed whitespace-pre-wrap">
-                                {msg.text.split(']:')[1]?.trim()}
-                              </p>
-                            )}
-                          </div>
-                        ) : msg.mediaType === 'image' || msg.text.startsWith('📷 [Foto') ? (
+                          );
+                        })() : msg.mediaType === 'image' || msg.text.startsWith('📷 [Foto') ? (
                           /* Image Bubble */
                           <div className="space-y-1.5">
                             {msg.mediaUrl && (

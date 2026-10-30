@@ -24,6 +24,7 @@ import {
   fetchEvolutionContacts,
   MASTER_EVOLUTION_KEY,
 } from './server/evolution';
+import { generateAllPdfs } from './server/generatePdfs';
 import {
   processAiConversation,
   synthesizeSpeech,
@@ -2133,6 +2134,17 @@ async function startServer() {
     }
   });
 
+  // Serve official static PDF documents directly from /public with application/pdf Content-Type
+  app.get('/:pdfName([A-Za-z0-9_-]+\\.pdf)', (req: Request, res: Response) => {
+    const filePath = path.join(process.cwd(), 'public', req.params.pdfName);
+    if (fs.existsSync(filePath)) {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${req.params.pdfName}"`);
+      return res.sendFile(filePath);
+    }
+    res.status(404).send('Documento PDF não encontrado.');
+  });
+
   // =========================================================================
   // 6. VITE MIDDLEWARE (DEV) & STATIC SERVING (PROD)
   // =========================================================================
@@ -2165,6 +2177,9 @@ async function startServer() {
 
     // Start background sentinel watcher (WhatsApp disconnection and server alerts)
     startSentinelBackgroundWatcher();
+
+    // Ensure all official PDF documents exist in /public
+    generateAllPdfs().catch((err) => console.warn('[PDF Init Error]:', err));
   });
 }
 
