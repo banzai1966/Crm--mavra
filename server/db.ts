@@ -272,7 +272,7 @@ export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
     leadId: 'lead-psi-marco',
     phone: '5511976143323',
     sender: 'ai',
-    text: 'Trabalhamos com a Barra de Luz para estimulação visual, a partir de mil duzentos e oitenta e seis reais, e o Aparelho Tátil com pulsers vibratórios a partir de seiscentos e oitenta e sete reais. Eles garantem um ritmo bilateral constante e evitam a fadiga muscular do terapeuta nas sessões de EMDR. Já estou anexando aqui o nosso catálogo oficial com todas as fotos e detalhes técnicos. Você costuma atender em consultório fixo ou precisa de algo mais compacto para transportar?',
+    text: 'Trabalhamos com a Barra de Luz para estimulação visual, a partir de R$ 1.286,00, e o Aparelho Tátil com pulsers vibratórios a partir de R$ 687,00. Eles garantem um ritmo bilateral constante e evitam a fadiga muscular do terapeuta nas sessões de EMDR. Já estou anexando aqui o nosso catálogo oficial com todas as fotos e detalhes técnicos. Você costuma atender em consultório fixo ou precisa de algo mais compacto para transportar?',
     timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
     status: 'read',
     workspaceId: 'equipamentospsi',
