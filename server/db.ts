@@ -284,7 +284,7 @@ export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
     phone: '5511976143323',
     sender: 'ai',
     text: '📄 Documento Enviado: "Dossie_Tecnico_Equipamentos_PSI.pdf"',
-    mediaType: 'document',
+    mediaType: 'pdf',
     mediaUrl: '/api/pdf/equipamentospsi',
     timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
     status: 'read',

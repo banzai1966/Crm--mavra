@@ -888,7 +888,8 @@ ${companySpecificGuideline}
        - Defina "requestHuman": true e preencha "humanHandoffReason" com o motivo.
 
 10. ENVIO DE CATÁLOGO / APRESENTAÇÃO EM PDF:
-   - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento, mencione na mensagem de texto que está anexando a apresentação oficial para ele e defina "sendCatalogPdf": true no JSON.
+   - Se o lead pedir o material institucional, catálogo, apresentação, PDF, proposta ou tabela detalhada em documento:
+     * ${config.catalogPdfUrl ? 'A empresa POSSUI PDF cadastrado. Mencione que está enviando a apresentação oficial e defina "sendCatalogPdf": true no JSON.' : 'A empresa AINDA NÃO POSSUI PDF cadastrado (fase de protótipo). NUNCA diga que anexou arquivo. Responda com extrema simpatia e acolhimento: "No momento ainda estamos finalizando a diagramação oficial do material com a equipe, mas já anotei sua solicitação e envio para você assim que estiver pronto, pode ficar tranquilo!" e defina "sendCatalogPdf": false.'}
 
 11. ENVIO DE CHAVE PIX OU DADOS DE PAGAMENTO E DETECÇÃO DE "LEAD QUENTE / PEDIDO DE FECHAMENTO":
    - Se o lead pedir a chave PIX, dados bancários para fechar, link de cartão, contrato, perguntar como pagar, ou disser claramente que quer fechar/comprar/assinar agora:

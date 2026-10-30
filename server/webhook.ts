@@ -1025,12 +1025,12 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       aiMsg.status = 'delivered';
     }
 
-    // 10. If the lead requested catalog/presentation and a PDF URL is configured, send the PDF document
-    const targetPdfUrl = instanceConfig.catalogPdfUrl || db.agentConfig.catalogPdfUrl;
+    // 10. If the lead requested catalog/presentation and a PDF URL is strictly configured for THIS instance, send the PDF document
+    const targetPdfUrl = instanceConfig.catalogPdfUrl;
     if (aiResult.sendCatalogPdf && targetPdfUrl) {
-      console.log(`[Webhook] Enviando PDF de apresentação para ${cleanPhone} (${incomingInstance})...`);
+      console.log(`[Webhook] Enviando PDF de apresentação exclusivo para ${cleanPhone} (${incomingInstance}): ${targetPdfUrl}`);
       const pdfUrl = targetPdfUrl;
-      const pdfName = instanceConfig.catalogPdfName || db.agentConfig.catalogPdfName || 'Catalogo_Apresentacao.pdf';
+      const pdfName = instanceConfig.catalogPdfName || 'Catalogo_Apresentacao.pdf';
       await sendWhatsAppMedia(
         cleanPhone,
         pdfUrl,

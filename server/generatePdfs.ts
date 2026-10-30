@@ -23,7 +23,10 @@ export async function generateAllPdfs(): Promise<void> {
   // 5. Primo Equipamentos
   await generatePrimoPdf(path.join(publicDir, 'Catalogo_Primo_Equipamentos.pdf'));
 
-  console.log('[PDF Generator] Todos os 5 PDFs oficiais foram gerados com sucesso em /public!');
+  // 6. Cemitério Parque da Cantareira
+  await generateCantareiraPdf(path.join(publicDir, 'Dossie_Tecnico_Cemiterio_Cantareira.pdf'));
+
+  console.log('[PDF Generator] Todos os 6 PDFs oficiais foram gerados com sucesso em /public!');
 }
 
 async function generateEquipamentosPsiPdf(outputPath: string) {
@@ -647,3 +650,56 @@ async function generatePrimoPdf(outputPath: string) {
   const pdfBytes = await doc.save();
   fs.writeFileSync(outputPath, pdfBytes);
 }
+
+async function generateCantareiraPdf(outputPath: string) {
+  const doc = await PDFDocument.create();
+  const fontBold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const fontRegular = await doc.embedFont(StandardFonts.Helvetica);
+
+  const page = doc.addPage([595.28, 841.89]);
+  const { width, height } = page.getSize();
+
+  page.drawRectangle({
+    x: 0,
+    y: height - 100,
+    width: width,
+    height: 100,
+    color: rgb(0.1, 0.35, 0.2),
+  });
+
+  page.drawText('CEMITÉRIO PARQUE DA CANTAREIRA - PLANEJAMENTO FAMILIAR', {
+    x: 40,
+    y: height - 45,
+    size: 14,
+    font: fontBold,
+    color: rgb(1, 1, 1),
+  });
+
+  page.drawText('Guia Oficial de Jazigos, Velório 24h & Assistência Preventiva', {
+    x: 40,
+    y: height - 70,
+    size: 11,
+    font: fontRegular,
+    color: rgb(0.9, 1, 0.93),
+  });
+
+  let y = height - 140;
+  page.drawText('ESTRUTURA & SERVIÇOS DO PARQUE DA CANTAREIRA:', { x: 40, y, size: 12, font: fontBold, color: rgb(0.1, 0.1, 0.2) });
+  y -= 25;
+
+  const items = [
+    '• Localizado na Serra da Cantareira em Mairiporã/SP, em meio a natureza preservada e serena.',
+    '• Jazigos Familiares Perpétuos (com gavetas e ossário) e Locação Temporária de 4 anos.',
+    '• Complexo de Velório climatizado 24h, capela ecumênica, salas de repouso e estacionamento.',
+    '• Planos preventivos familiares com parcelamento facilitado e assistência humanizada.',
+  ];
+
+  for (const it of items) {
+    page.drawText(it, { x: 45, y, size: 9.5, font: fontRegular, color: rgb(0.2, 0.2, 0.3) });
+    y -= 18;
+  }
+
+  const pdfBytes = await doc.save();
+  fs.writeFileSync(outputPath, pdfBytes);
+}
+

@@ -46,6 +46,8 @@ export const COMPANY_PRESETS: Record<string, CompanyPresetDefinition> = {
       maxConsecutiveAudios: 4,
       maxAudioChars: 450,
       followUpNiche: 'b2b_services',
+      catalogPdfUrl: 'https://crm.makprojetosmake.com.br/Catalogo_Primo_Equipamentos.pdf',
+      catalogPdfName: 'Catalogo_Primo_Equipamentos.pdf',
       followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳',
       knowledgeFaq: `PERGUNTAS FREQUENTES (PRIMO EQUIPAMENTOS - GASTRONOMIA PROFISSIONAL):
 
@@ -115,6 +117,8 @@ R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica
       maxAudioChars: 450,
       followUpNiche: 'b2b_services',
       followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a viabilidade do tratamento por plasma para as peças da sua fábrica. Nossos engenheiros de aplicação estão com a bancada do Surface Test disponível esta semana para testar suas amostras de material ou agendar uma rápida conversa técnica online. Como está sua disponibilidade? ⚡🔬',
+      catalogPdfUrl: 'https://crm.makprojetosmake.com.br/Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
+      catalogPdfName: 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
       knowledgeFaq: `PERGUNTAS FREQUENTES (SURFACEBRASIL - TRATAMENTO POR PLASMA ATMOSFÉRICO A FRIO):
 
 P: O que é a Surfacebrasil?
@@ -180,6 +184,8 @@ R: Nosso laboratório em Campinas/SP onde o cliente envia amostras das peças pa
       maxAudioChars: 450,
       followUpNiche: 'b2b_services',
       followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀',
+      catalogPdfUrl: 'https://crm.makprojetosmake.com.br/Dossie_Tecnico_Verzel_Sistemas.pdf',
+      catalogPdfName: 'Dossie_Tecnico_Verzel_Sistemas.pdf',
       knowledgeFaq: `PERGUNTAS FREQUENTES (VERZEL - FÁBRICA DE SOFTWARE & SISTEMAS):
 
 P: O que é a Verzel?
@@ -250,6 +256,8 @@ R: Sessão online gratuita com nossos arquitetos de software e diretores técnic
       maxAudioChars: 450,
       followUpNiche: 'dental',
       followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨',
+      catalogPdfUrl: 'https://crm.makprojetosmake.com.br/Apresentacao_Dra_Lucy_Murata.pdf',
+      catalogPdfName: 'Apresentacao_Dra_Lucy_Murata.pdf',
       knowledgeFaq: `PERGUNTAS FREQUENTES (DRA. LUCY MURATA - ODONTOLOGIA INTEGRATIVA & BIOLÓGICA):
 
 P: O que é a Odontologia Biológica & Integrativa?
@@ -312,6 +320,8 @@ R: Euroville Mall - Torre II - Praça Maastricht, 200 - Sala 103, Jardim São Jo
       maxAudioChars: 450,
       followUpNiche: 'b2b_services',
       followUpCustomMessage: 'Olá! Tudo bem? Passando para colocar nossa equipe à sua disposição para qualquer dúvida sobre nossos serviços, jazigos ou planejamento preventivo familiar no Parque da Cantareira. Estamos sempre prontos para ampará-los com todo o respeito e acolhimento. 🕊️🌿',
+      catalogPdfUrl: 'https://crm.makprojetosmake.com.br/Dossie_Tecnico_Cemiterio_Cantareira.pdf',
+      catalogPdfName: 'Dossie_Tecnico_Cemiterio_Cantareira.pdf',
       knowledgeFaq: `PERGUNTAS FREQUENTES (CEMITÉRIO PARQUE DA CANTAREIRA):
 P: Onde fica?
 R: Na Serra da Cantareira em Mairiporã - SP, em meio a uma paisagem verde preservada e serena.
@@ -364,6 +374,8 @@ R: Evitam despesas de emergência com opções parceladas e suporte 24h.`,
       maxConsecutiveAudios: 3,
       maxAudioChars: 400,
       followUpNiche: 'restaurant_delivery',
+      catalogPdfUrl: '',
+      catalogPdfName: '',
       followUpCustomMessage: 'Olá! Bateu aquela fome hoje? Nosso forno já está aquecido com pizzas e lanches fresquinhos saindo agora! Quer repetir seu pedido favorito com entrega expressa? 🍕🛵',
       knowledgeFaq: 'Atendimento rápido de pedidos via WhatsApp com cálculo automático de taxa de entrega por bairro e confirmação via PIX.',
       knowledgeCatalog: 'Cardápio completo de pizzas artesanais, lanches, porções, bebidas geladas e sobremesas.',
