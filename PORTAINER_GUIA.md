@@ -73,3 +73,25 @@ networks:
    - Clique no botão **"Gravar Webhook Automaticamente na VPS"**. Ele vai configurar a Evolution API para enviar todas as mensagens diretamente para o seu novo endereço.
    - Clique em **"Conectar / Ver QR Code"** e leia o QR Code com o WhatsApp do seu celular (**Aparelhos Conectados -> Conectar um aparelho**).
 4. **Pronto!** A Sofia atenderá áudios e textos automaticamente com transcrição e inteligência artificial.
+
+---
+
+## 4. 🛡️ Como Funciona o Banco de Dados, Persistência e Atualizações
+
+### A. Dar Reload (F5) ou Abrir em Aba Anônima Apaga Dados?
+**NÃO, absolutamente nunca.**
+- O frontend (navegador) apenas pede os dados ao servidor via `/api/leads` e `/api/messages`.
+- Toda vez que chega um WhatsApp ou você altera algo, o servidor grava no arquivo em disco (`/app/data/nexa_data.json`).
+- Quando você dá F5 ou abre em aba anônima, o sistema busca exatamente o que já está salvo no servidor.
+
+### B. Por que pode parecer que uma conversa sumiu no navegador?
+- **Filtro de Empresa na URL:** Se você abrir `crm.makprojetosmake.com.br` (sem parâmetro), o CRM abre na visão padrão (Dra. Lucy). As conversas da Equipamentos PSI estão salvas, mas ficam isoladas para não misturar clientes.
+- Para ver as conversas da Equipamentos PSI, basta abrir o link da empresa:
+  `crm.makprojetosmake.com.br/?modo=cliente&empresa=equipamentospsi&nicho=equipamentospsi`
+  ou selecionar a empresa no menu superior.
+
+### C. Se o cliente tiver uma base de dados e eu fizer um Deploy, os dados somem?
+**NÃO somem, desde que o volume persistente esteja ativo:**
+- No Docker, o volume `nexa_crm_data:/app/data` faz com que o arquivo de dados fique fisicamente guardado no disco da VPS (`/var/lib/docker/volumes/...`), fora do container.
+- Quando você atualiza o código (novo deploy / rebuild), o Docker troca apenas o código da aplicação, reconecta o mesmo volume de dados intacto, e todos os clientes, contatos, conversas e notas continuam lá.
+- Além disso, se ativar o **Supabase** no painel, tudo é espelhado na nuvem em tempo real como backup redundante.

@@ -2134,6 +2134,9 @@ async function startServer() {
     }
   });
 
+  // Serve static assets (images, photos, documents) directly from /public
+  app.use('/assets/psi', express.static(path.join(process.cwd(), 'public', 'assets', 'psi')));
+
   // Serve official static PDF documents directly from /public with application/pdf Content-Type
   app.get('/:pdfName([A-Za-z0-9_-]+\\.pdf)', (req: Request, res: Response) => {
     const filePath = path.join(process.cwd(), 'public', req.params.pdfName);

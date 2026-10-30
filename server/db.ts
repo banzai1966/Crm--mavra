@@ -20,9 +20,22 @@ function getStorageFilePath(): string {
   const dockerDataDir = path.join(process.cwd(), 'data');
   const targetDir = fs.existsSync(dockerDataDir) ? dockerDataDir : process.cwd();
 
-  // If nexa_data.json already exists, use it
+  // If nexa_data.json already exists in target directory, use it
   const nexaPath = path.join(targetDir, 'nexa_data.json');
   if (fs.existsSync(nexaPath)) return nexaPath;
+
+  // Se estiver rodando com volume Docker (/app/data) e o volume estiver vazio,
+  // clonar o nexa_data.json da raiz do repositório para o volume persistente
+  const rootSeedPath = path.join(process.cwd(), 'nexa_data.json');
+  if (targetDir !== process.cwd() && fs.existsSync(rootSeedPath)) {
+    try {
+      fs.copyFileSync(rootSeedPath, nexaPath);
+      console.log('[DB Storage] Base inicial sincronizada para o volume persistente com sucesso:', nexaPath);
+      return nexaPath;
+    } catch (err) {
+      console.warn('[DB Storage] Aviso ao copiar base inicial para o volume:', err);
+    }
+  }
 
   // If legacy file exists from previous deployment, use it to avoid data loss
   const legacyPath = path.join(targetDir, 'mavra_data.json');
@@ -198,9 +211,86 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     workspaceId: 'equipamentospsi',
     instanceName: 'equipamentospsi',
   },
+  {
+    id: 'lead-psi-marco',
+    name: 'Marco',
+    phone: '5511976143323',
+    email: 'marco.agduarte22@gmail.com',
+    stageId: 'stage-2',
+    value: 1973,
+    interest: 'Barra de Luz Tradicional e Aparelho Tátil com Pulsers para EMDR',
+    tags: ['🧠 Equipamentos PSI', 'Qualificado / Interesse', 'WhatsApp Conectado', '🔥 LEAD QUENTE'],
+    notes: 'Interessado em estimulação bilateral (Barra de Luz e Aparelho Tátil com pulsers). Enviado dossiê técnico com fotos e catálogo.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Demonstrou interesse nos dois equipamentos e recebeu catálogo técnico oficial',
+    lastInteraction: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    unreadCount: 0,
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
 ];
 
 export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
+  {
+    id: 'msg-psi-marco-1',
+    leadId: 'lead-psi-marco',
+    phone: '5511976143323',
+    sender: 'lead',
+    text: 'Oi de onde fala?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+    status: 'read',
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
+  {
+    id: 'msg-psi-marco-2',
+    leadId: 'lead-psi-marco',
+    phone: '5511976143323',
+    sender: 'ai',
+    text: 'Olá! Tudo bem? Aqui é a Sofia, da Equipamentos PSI. Nós fabricamos equipamentos de estimulação bilateral visual e tátil para terapia EMDR e psicologia clínica. Como posso te ajudar hoje?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
+    status: 'read',
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
+  {
+    id: 'msg-psi-marco-3',
+    leadId: 'lead-psi-marco',
+    phone: '5511976143323',
+    sender: 'lead',
+    text: '🎤 [Áudio Transcrito]: "Oi, Sofia, me desculpe. Que equipamentos vocês trabalham? Como é esse estimulador bilateral, por gentileza? E quanto ele custa? E você teria alguma imagem dele ou coisa parecida?"',
+    mediaType: 'audio',
+    timestamp: new Date(Date.now() - 1000 * 60 * 13).toISOString(),
+    status: 'read',
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
+  {
+    id: 'msg-psi-marco-4',
+    leadId: 'lead-psi-marco',
+    phone: '5511976143323',
+    sender: 'ai',
+    text: 'Trabalhamos com a Barra de Luz para estimulação visual, a partir de mil duzentos e oitenta e seis reais, e o Aparelho Tátil com pulsers vibratórios a partir de seiscentos e oitenta e sete reais. Eles garantem um ritmo bilateral constante e evitam a fadiga muscular do terapeuta nas sessões de EMDR. Já estou anexando aqui o nosso catálogo oficial com todas as fotos e detalhes técnicos. Você costuma atender em consultório fixo ou precisa de algo mais compacto para transportar?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+    status: 'read',
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
+  {
+    id: 'msg-psi-marco-5',
+    leadId: 'lead-psi-marco',
+    phone: '5511976143323',
+    sender: 'ai',
+    text: '📄 Documento Enviado: "Dossie_Tecnico_Equipamentos_PSI.pdf"',
+    mediaType: 'document',
+    mediaUrl: '/api/pdf/equipamentospsi',
+    timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+    status: 'read',
+    workspaceId: 'equipamentospsi',
+    instanceName: 'equipamentospsi',
+  },
   {
     id: 'msg-psi-1',
     leadId: 'lead-psi-1',

@@ -122,106 +122,181 @@ async function generateEquipamentosPsiPdf(outputPath: string) {
     font: fontBold,
     color: rgb(0.1, 0.1, 0.2),
   });
+  const psiDir = path.join(process.cwd(), 'public', 'assets', 'psi');
+  const imgGrandePath = path.join(psiDir, 'barra-de-luz-grande-74cm.jpg');
+  const imgBabyPath = path.join(psiDir, 'barra-de-luz-baby-51cm.jpg');
+  const imgTatilPath = path.join(psiDir, 'aparelho-tatil-pulsers.jpg');
+  const imgCabosPath = path.join(psiDir, 'cabos-com-pulsers.jpg');
+
+  let imgGrande = null;
+  let imgBaby = null;
+  let imgTatil = null;
+  let imgCabos = null;
+
+  try {
+    if (fs.existsSync(imgGrandePath)) imgGrande = await doc.embedJpg(fs.readFileSync(imgGrandePath));
+    if (fs.existsSync(imgBabyPath)) imgBaby = await doc.embedJpg(fs.readFileSync(imgBabyPath));
+    if (fs.existsSync(imgTatilPath)) imgTatil = await doc.embedJpg(fs.readFileSync(imgTatilPath));
+    if (fs.existsSync(imgCabosPath)) imgCabos = await doc.embedJpg(fs.readFileSync(imgCabosPath));
+  } catch (imgErr) {
+    console.warn('[PDF Generator] Aviso ao carregar fotos da PSI para o PDF:', imgErr);
+  }
+
   y -= 18;
 
-  // Produto 1: Barra Tradicional
+  // Produto 1: Barra Tradicional (74 cm) com Foto Real
   page.drawRectangle({
     x: 40,
-    y: y - 105,
+    y: y - 108,
     width: width - 80,
-    height: 105,
+    height: 108,
     color: rgb(1, 1, 1),
-    borderColor: rgb(0.88, 0.88, 0.92),
+    borderColor: rgb(0.85, 0.85, 0.90),
     borderWidth: 1,
   });
 
   page.drawText('A. Barra de Luz Tradicional (74 cm) - Modelo Clínico Padrão', {
-    x: 55,
-    y: y - 22,
-    size: 11,
+    x: 52,
+    y: y - 20,
+    size: 10.5,
     font: fontBold,
     color: rgb(0.1, 0.5, 0.35),
   });
 
   const p1Details = [
-    '• Especificações: 26 LEDs verdes difusos de alta definição (cor relaxante, sem fotofobia).',
-    '• Funções: Controle remoto com ajuste contínuo de velocidade e botão de memória de ritmo.',
-    '• Estrutura: Tripé articulado em metal reforçado com regulagem telescópica de altura.',
-    '• Alimentação: Fonte bivolt automática 110V/220V inclusa.',
-    '• Faixa de Investimento: R$ 1.314,80 (à vista com desconto PIX) a R$ 1.384,00 (em até 12x).',
+    '• 26 LEDs verdes difusos de alta definição (relaxante, sem fotofobia).',
+    '• Controle remoto com velocidade contínua e memória de ritmo.',
+    '• Tripé telescópico articulado em metal reforçado com regulagem.',
+    '• Fonte bivolt automática 110V/220V inclusa com garantia de 1 ano.',
+    '• Investimento: R$ 1.314,80 (PIX à vista) a R$ 1.384,00 (em até 12x).',
   ];
-  ty = y - 40;
+  ty = y - 36;
   for (const line of p1Details) {
-    page.drawText(line, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.2, 0.25) });
-    ty -= 12;
+    page.drawText(line, { x: 52, y: ty, size: 8, font: fontRegular, color: rgb(0.2, 0.2, 0.25) });
+    ty -= 13;
+  }
+
+  if (imgGrande) {
+    // Moldura e Foto Real do Equipamento
+    page.drawRectangle({
+      x: width - 185,
+      y: y - 102,
+      width: 135,
+      height: 94,
+      color: rgb(0.97, 0.97, 0.99),
+      borderColor: rgb(0.80, 0.75, 0.90),
+      borderWidth: 1,
+    });
+    page.drawImage(imgGrande, {
+      x: width - 183,
+      y: y - 100,
+      width: 131,
+      height: 90,
+    });
   }
 
   y -= 120;
 
-  // Produto 2: Barra Baby
+  // Produto 2: Barra Baby (51 cm) com Foto Real
   page.drawRectangle({
     x: 40,
-    y: y - 105,
+    y: y - 108,
     width: width - 80,
-    height: 105,
+    height: 108,
     color: rgb(1, 1, 1),
-    borderColor: rgb(0.88, 0.88, 0.92),
+    borderColor: rgb(0.85, 0.85, 0.90),
     borderWidth: 1,
   });
 
-  page.drawText('B. Barra de Luz Baby (51 cm) - Compacta & Portátil', {
-    x: 55,
-    y: y - 22,
-    size: 11,
+  page.drawText('B. Barra de Luz Baby (51 cm) - Compacta, Infantil & Portátil', {
+    x: 52,
+    y: y - 20,
+    size: 10.5,
     font: fontBold,
     color: rgb(0.1, 0.5, 0.35),
   });
 
   const p2Details = [
-    '• Indicação: Consultórios compactos, atendimento infantil ou profissionais em sublocação.',
-    '• Recursos: 51 cm de extensão, controle remoto, ajuste fino de velocidade e memória integrada.',
-    '• Incluso: Tripé telescópico completo, suporte metálico e fonte bivolt automática.',
-    '• Vantagem: Ultraleve para transporte seguro em atendimentos domiciliares ou múltiplas clínicas.',
-    '• Faixa de Investimento: R$ 1.286,60 (à vista com desconto PIX) a R$ 1.354,32 (em até 12x).',
+    '• Para consultórios compactos, clínica infantil ou salas sublocadas.',
+    '• 51 cm de extensão, ultraleve, controle remoto e memória integrada.',
+    '• Acompanha tripé telescópico completo e fonte bivolt automática.',
+    '• Praticidade máxima para transporte em atendimentos itinerantes.',
+    '• Investimento: R$ 1.286,60 (PIX à vista) a R$ 1.354,32 (em até 12x).',
   ];
-  ty = y - 40;
+  ty = y - 36;
   for (const line of p2Details) {
-    page.drawText(line, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.2, 0.25) });
-    ty -= 12;
+    page.drawText(line, { x: 52, y: ty, size: 8, font: fontRegular, color: rgb(0.2, 0.2, 0.25) });
+    ty -= 13;
+  }
+
+  if (imgBaby) {
+    page.drawRectangle({
+      x: width - 185,
+      y: y - 102,
+      width: 135,
+      height: 94,
+      color: rgb(0.97, 0.97, 0.99),
+      borderColor: rgb(0.80, 0.75, 0.90),
+      borderWidth: 1,
+    });
+    page.drawImage(imgBaby, {
+      x: width - 183,
+      y: y - 100,
+      width: 131,
+      height: 90,
+    });
   }
 
   y -= 120;
 
-  // Produto 3: Aparelho Tátil
+  // Produto 3: Aparelho Tátil Completo com Foto Real
   page.drawRectangle({
     x: 40,
-    y: y - 105,
+    y: y - 108,
     width: width - 80,
-    height: 105,
+    height: 108,
     color: rgb(1, 1, 1),
-    borderColor: rgb(0.88, 0.88, 0.92),
+    borderColor: rgb(0.85, 0.85, 0.90),
     borderWidth: 1,
   });
 
   page.drawText('C. Aparelho Tátil Completo (Pulsers / Buzzers Vibratórios)', {
-    x: 55,
-    y: y - 22,
-    size: 11,
+    x: 52,
+    y: y - 20,
+    size: 10.5,
     font: fontBold,
     color: rgb(0.1, 0.5, 0.35),
   });
 
   const p3Details = [
-    '• Descrição: Central de comando digital com display indicador de intensidade e velocidade.',
-    '• Pulsers Táteis: 2 manoplas anatômicas com vibração alternada suave e sem ruído mecânico.',
-    '• Ergonomia: Cabos de 1,5 metro de alta flexibilidade, bolsa de veludo para proteção e fonte bivolt.',
-    '• Aplicação: Indispensável para pacientes com sensibilidade visual, baixa visão ou idosos.',
-    '• Faixa de Investimento: R$ 687,42 (à vista com desconto PIX) a R$ 723,60 (em até 12x).',
+    '• Central digital com display indicador de intensidade e velocidade.',
+    '• 2 pulsers táteis anatômicos com vibração alternada silenciosa.',
+    '• Cabos de 1,5m de alta flexibilidade, bolsa de veludo e fonte bivolt.',
+    '• Essencial para pacientes com olhos fechados, baixa visão ou idosos.',
+    '• Investimento: R$ 687,42 (PIX à vista) a R$ 723,60 (em até 12x).',
   ];
-  ty = y - 40;
+  ty = y - 36;
   for (const line of p3Details) {
-    page.drawText(line, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.2, 0.25) });
-    ty -= 12;
+    page.drawText(line, { x: 52, y: ty, size: 8, font: fontRegular, color: rgb(0.2, 0.2, 0.25) });
+    ty -= 13;
+  }
+
+  if (imgTatil) {
+    page.drawRectangle({
+      x: width - 185,
+      y: y - 102,
+      width: 135,
+      height: 94,
+      color: rgb(0.97, 0.97, 0.99),
+      borderColor: rgb(0.80, 0.75, 0.90),
+      borderWidth: 1,
+    });
+    page.drawImage(imgTatil, {
+      x: width - 183,
+      y: y - 100,
+      width: 131,
+      height: 90,
+    });
   }
 
   y -= 120;

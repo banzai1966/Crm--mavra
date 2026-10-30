@@ -9,4 +9,6 @@ coverage/
 mavra_data.json
 data/
 *.sqlite
+public/assets/aistudio/
+*.map
 

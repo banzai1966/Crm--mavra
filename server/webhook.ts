@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { db } from './db';
 import {
   processAiConversation,
@@ -11,6 +13,7 @@ import {
   sendWhatsAppMessage,
   sendWhatsAppMedia,
   sendWhatsAppVoiceAudio,
+  sendWhatsAppImage,
   getBase64FromMediaMessage,
   normalizeInstanceName,
 } from './evolution';
@@ -1047,6 +1050,48 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
         timestamp: new Date().toISOString(),
         status: 'delivered',
       });
+    }
+
+    // 10b. If the lead specifically asked for photos of Equipamentos PSI, send high-res photo directly via WhatsApp
+    const isPsiWorkspace = incomingInstance === 'equipamentospsi' || targetWorkspaceId === 'equipamentospsi' || (instanceConfig.role || '').includes('Equipamentos PSI');
+    const userAskedForPhoto = /foto|imagem|fotos|imagens|aparelho|estimulador/i.test(messageText);
+
+    if (isPsiWorkspace && userAskedForPhoto) {
+      const lower = messageText.toLowerCase();
+      let photoFileName = 'barra-de-luz-grande-74cm.jpg';
+      let photoCaption = 'Barra de Luz Tradicional (74cm) com Tripé Metálico Regulável — Equipamentos PSI';
+
+      if (lower.includes('tatil') || lower.includes('tátil') || lower.includes('pulser') || lower.includes('buzzer')) {
+        photoFileName = 'aparelho-tatil-pulsers.jpg';
+        photoCaption = 'Aparelho Tátil Digital com Pulsers Ergonômicos Vibratórios — Equipamentos PSI';
+      } else if (lower.includes('baby') || lower.includes('51') || lower.includes('portatil') || lower.includes('portátil')) {
+        photoFileName = 'barra-de-luz-baby-51cm.jpg';
+        photoCaption = 'Barra de Luz Baby (51cm) Compacta e Portátil — Equipamentos PSI';
+      }
+
+      const photoPath = path.join(process.cwd(), 'public', 'assets', 'psi', photoFileName);
+      if (fs.existsSync(photoPath)) {
+        try {
+          const photoBase64 = fs.readFileSync(photoPath).toString('base64');
+          console.log(`[Webhook] Enviando foto real (${photoFileName}) do equipamento para ${cleanPhone}...`);
+          await sendWhatsAppImage(cleanPhone, `data:image/jpeg;base64,${photoBase64}`, photoCaption, incomingInstance);
+          db.messages.push({
+            id: 'msg-' + Date.now() + '-photo',
+            leadId: lead.id,
+            phone: cleanPhone,
+            sender: 'ai',
+            text: `📷 [Foto Enviada]: ${photoCaption}`,
+            mediaType: 'image',
+            mediaUrl: `/assets/psi/${photoFileName}`,
+            timestamp: new Date().toISOString(),
+            status: 'delivered',
+            workspaceId: targetWorkspaceId,
+            instanceName: incomingInstance,
+          });
+        } catch (imgSendErr: any) {
+          console.warn('[Webhook] Falha ao enviar foto do equipamento:', imgSendErr.message);
+        }
+      }
     }
 
     // 11. If the lead requested PIX information, send copy-paste key box

@@ -25,8 +25,9 @@ ENV PORT=3000
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copy compiled build output from builder stage
+# Copy compiled build output and initial database seed from builder stage
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/nexa_data.json ./nexa_data.json
 # Directory for persistent data volume
 RUN mkdir -p /app/data
 
