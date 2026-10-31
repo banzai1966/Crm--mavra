@@ -322,49 +322,66 @@ R: Euroville Mall - Torre II - Praça Maastricht, 200 - Sala 103, Jardim São Jo
       followUpCustomMessage: 'Olá! Tudo bem? Passando para colocar nossa equipe à sua disposição para qualquer dúvida sobre nossos serviços, jazigos ou planejamento preventivo familiar no Parque da Cantareira. Estamos sempre prontos para ampará-los com todo o respeito e acolhimento. 🕊️🌿',
       catalogPdfUrl: 'https://crm.makprojetosmake.com.br/Dossie_Tecnico_Cemiterio_Cantareira.pdf',
       catalogPdfName: 'Dossie_Tecnico_Cemiterio_Cantareira.pdf',
-      knowledgeFaq: `PERGUNTAS FREQUENTES OFICIAIS — CEMITÉRIO PARQUE DA CANTAREIRA:
+      knowledgeFaq: `PERGUNTAS FREQUENTES OFICIAIS — CEMITÉRIO PARQUE DA CANTAREIRA (TODOS OS MENUS DO SITE):
 
-P: O que é o Cemitério Parque da Cantareira?
-R: Fundado em 1984 (mais de 40 anos de história), é um cemitério-parque memorial de alto padrão localizado no sopé da Serra da Cantareira em Mairiporã/SP (Zona Norte da Grande São Paulo). Opera no modelo memorial americano, integrado à Mata Atlântica nativa, com vastos gramados verdes, placas discretas de bronze no solo, total silêncio e harmonia com a natureza.
+P: O que é o Cemitério Parque da Cantareira? (Menu HOME)
+R: Fundado em 1984 (mais de 40 anos de história), é um cemitério-parque memorial de alto padrão localizado no sopé da Serra da Cantareira em Mairiporã/SP (acesso rápido pela Zona Norte de SP). Opera no modelo memorial americano, integrado à Mata Atlântica nativa, com vastos gramados verdes, placas discretas de bronze no solo, total silêncio e harmonia com a natureza.
 
-P: Por que comprar um jazigo antecipadamente (Plano Preventivo)?
-R: São 3 motivos fundamentais comprovados:
-1) Tranquilidade Emocional no Luto: No momento da perda, a dor emocional é avassaladora. Ter que escolher cemitério, negociar contratos e pagar despesas inesperadas sob choque gera desgaste enorme. O plano preventivo poupa a família de burocracias, permitindo foco exclusivo na despedida serena e nas homenagens.
-2) Economia Real e Parcelamento Suave: A compra preventiva pode ser parcelada em condições facilitadas (em até 24x ou 36x), com parcelas fixas que cabem no bolso. Na emergência (uso imediato), as opções são restritas e podem custar até 3 vezes mais caro com exigência de pagamento à vista.
-3) Escolha Consciente da Localização: A família tem a liberdade de agendar uma visita guiada no carrinho elétrico, passear pelas alamedas arborizadas e escolher pessoalmente a quadra, a vista e a melhor localização para o repouso da família.
+P: Quais são as modalidades oficiais de Jazigos Perpétuos? (Menu JAZIGOS)
+R: O Parque da Cantareira disponibiliza 3 modelos oficiais construídos em módulos pré-moldados de concreto impermeabilizado com alta bio-segurança:
+1) Jazigo Standard (4 Módulos): Único da categoria standard do mercado com 4 gavetas subterrâneas, acompanhado de módulo ossário integrado com capacidade para até 10 urnas de despojos, paisagismo personalizado e parcelamento facilitado em até 18X SEM JUROS.
+2) Jazigo Especial (4 Módulos + Área de Serviço): Possui 4 gavetas subterrâneas impermeabilizadas mais uma área de serviço privativa exclusiva, módulo ossário para até 10 urnas, paisagismo personalizado e parcelamento em até 18X SEM JUROS.
+3) Jazigo Nobre (8 Módulos + Área de Serviço): Modelo familiar ampliado com 8 gavetas subterrâneas, área de serviço privativa, módulo ossário ampliado com capacidade de até 20 urnas, paisagismo personalizado e parcelamento em até 18X SEM JUROS.
 
-P: Qual a diferença entre o Jazigo Perpétuo e os Cemitérios Públicos Municipais?
-R: Nos cemitérios públicos, a concessão é temporária (geralmente por apenas 3 anos). Vencido esse prazo, a família é notificada para exumação obrigatória dos despojos para ossários comunitários. No Parque da Cantareira, o Jazigo Perpétuo é VITALÍCIO e HEREDITÁRIO: pertence para sempre à família com termo de cessão irrevogável e passa de geração em geração.
+P: O que são as ilustrações e cortes tridimensionais (3D) dos jazigos?
+R: São modelos tridimensionais arquitetônicos desenvolvidos pela engenharia do parque para demonstrar didaticamente às famílias a estrutura interna sob a terra: mostram os módulos de concreto impermeabilizados em camadas verticais, o compartimento superior de ossário com as urnas brancas e o fechamento nivelado sob o gramado verde e a placa de bronze.
 
-P: Como funciona a capacidade dos jazigos?
-R: Nossos jazigos perpétuos contam com 3 ou 4 gavetas subterrâneas amplas e impermeabilizadas, além de compartimento privativo de ossário/cinerário. O ossário permite acondicionar os despojos exumados com total respeito, liberando as gavetas para novos sepultamentos ao longo dos anos.
+P: O que é a Locação Emergencial? (Menu LOCAÇÃO EMERGENCIAL)
+R: É a modalidade destinada a famílias que tiveram um falecimento recente e não possuíam jazigo prévio. Permite o sepultamento imediato por um período temporário regulamentar de 3 a 4 anos. Ao término desse período, a família conta com condições facilitadas para adquirir um jazigo perpétuo definitivo, ossário ou cremação.
 
-P: Quais documentos são necessários para adquirir um jazigo?
-R: O processo é rápido e sem burocracia: Documento com foto (RG ou CNH), CPF regular e Comprovante de Residência recente do titular responsável.
+P: O que é o espaço de Condolências? (Menu CONDOLÊNCIAS)
+R: É uma funcionalidade online do site onde parentes e amigos podem deixar mensagens de pesar, homenagens póstumas e condolências à família enlutada, além de solicitar o envio de coroas de flores frescas diretamente para a sala de velório onde a cerimônia está sendo realizada.
 
-P: Qual é a infraestrutura de apoio 24 horas?
-R: Contamos com 6 salas de velório climatizadas 24h equipadas com suítes privativas de repouso para a família (sofá, copa e banheiro privativo), Capela Ecumênica em meio ao bosque para cerimônias de todas as fés, Floricultura 24h com coroas de flores frescas, Lanchonete completa 24h, amplo estacionamento e segurança patrimonial com monitoramento 24h.
+P: Como funciona a solicitação de Orçamento? (Menu ORÇAMENTO)
+R: A família pode solicitar uma cotação tanto para uso emergencial imediato quanto para planejamento preventivo familiar (com descontos especiais e parcelamento em até 18x sem juros). A Sofia esclarece as opções, envia o Dossiê Técnico de 4 páginas e agenda uma visita guiada no carrinho elétrico.
 
-P: Onde fica localizado exatamente?
-R: Fica na Serra da Cantareira, no município de Mairiporã - SP, com acesso rápido e fácil pela Zona Norte de São Paulo (pela Estrada da Cantareira).`,
+P: Qual é a infraestrutura completa do parque? (Menu INFRAESTRUTURA)
+R: Contamos com:
+- 6 Salas de Velório Climatizadas 24 horas, todas com ante-sala privativa VIP de repouso exclusiva para a família (sofá, copa e banheiro privativo).
+- Capela Ecumênica do Bosque Nativo, aberta para orações e cerimônias de todas as fés e crenças.
+- Floricultura 24 Horas com coroas e arranjos florais naturais preparados na hora.
+- Lanchonete Completa 24 Horas em funcionamento ininterrupto.
+- Carrinhos Elétricos confortáveis para transporte interno de idosos e famílias pelas alamedas.
+- Amplo Estacionamento arborizado com segurança patrimonial e monitoramento 24h.
+
+P: Por que comprar antecipadamente (Plano Preventivo)?
+R: 1) Tranquilidade Emocional no Luto: Poupa os entes queridos de decisões burocráticas, custos inesperados e desgaste psicológico sob efeito de choque.
+2) Economia Real: Pode ser parcelado em até 18x SEM JUROS em suaves parcelas fixas, ao passo que a emergência exige desembolso imediato e pode custar até 3x mais.
+3) Escolha da Melhor Localização: A família escolhe pessoalmente a melhor quadra e vista do bosque durante a visita guiada.
+
+P: Qual a diferença para os cemitérios públicos municipais?
+R: Cemitérios públicos oferecem apenas concessão temporária (geralmente 3 anos) com exumação compulsória para ossários comunitários coletivos. No Parque da Cantareira, o Jazigo Perpétuo é vitalício, irrevogável e hereditário por escritura de cessão.`,
       knowledgeCatalog: `SERVIÇOS & MODALIDADES DO PARQUE DA CANTAREIRA:
-1. Jazigo Familiar Perpétuo (3 ou 4 Gavetas + Ossário Privativo): Título de cessão vitalícia e hereditária, com placas em bronze e manutenção permanente dos jardins.
-2. Locação Temporária (4 Anos): Modalidade desenvolvida para atendimento de necessidade imediata emergencial.
-3. Cerimonial de Cremação & Columbários: Orientação cerimonial para cinzas com nichos ecológicos no bosque.
-4. Complexo de Velório Climatizado 24 Horas: 6 salas de velório com salas de descanso VIP exclusivas.
-5. Capela Ecumênica do Bosque Nativo: Para homenagens e celebrações religiosas de todas as fés e crenças.
-6. Visita Guiada Gratuita ao Parque: Tour guiado no carrinho elétrico pelas quadras e jardins com consultor de apoio à família.`,
-      knowledgePricing: `POLÍTICA COMERCIAL DO PARQUE DA CANTAREIRA:
-- Planos Preventivos Familiares: Parcelamento facilitado em até 24x ou 36x sem juros abusivos.
-- Desconto especial para pagamento à vista no PIX.
-- Entrada facilitada no cartão de crédito ou boleto bancário.
-- Central de Apoio 24 Horas: Telefone (11) 4485-1122 | WhatsApp de Plantão (11) 97614-3323.`,
+1. Jazigo Standard (4 Módulos): 4 gavetas subterrâneas impermeabilizadas, único com 4 gavetas no padrão standard, ossário para até 10 urnas, parcelamento em até 18X SEM JUROS.
+2. Jazigo Especial (4 Módulos + Área de Serviço): 4 gavetas, área de serviço privativa, ossário para até 10 urnas, parcelamento em até 18X SEM JUROS.
+3. Jazigo Nobre (8 Módulos + Área de Serviço): 8 gavetas, área de serviço privativa, ossário ampliado para até 20 urnas, parcelamento em até 18X SEM JUROS.
+4. Locação Emergencial (4 Anos): Sepultamento temporário de uso imediato por prazo legal de 4 anos com posterior opção de perpetuidade.
+5. Cerimonial de Cremação & Columbários: Orientação cerimonial para cinzas com nichos ecológicos no bosque nativo.
+6. Complexo de Velório 24h: 6 salas climatizadas com suítes privativas VIP de repouso para a família.
+7. Capela Ecumênica do Bosque: Para cerimônias ecumênicas e religiosas de todas as fés.
+8. Espaço de Condolências Online: Envio de homenagens e coroas de flores frescas 24h para as salas de velório.
+9. Visita Guiada Gratuita no Carrinho Elétrico: Tour pelas alamedas com consultor de apoio familiar.`,
+      knowledgePricing: `POLÍTICA COMERCIAL & FACILIDADES:
+- Parcelamento Preventivo: Em até 18X SEM JUROS nos cartões de crédito ou boleto bancário.
+- Desconto Especial para quitação à vista via PIX.
+- Documentos Necessários: RG ou CNH, CPF e Comprovante de Residência recente do titular responsável.
+- Canais Oficiais: Telefone Central (11) 4485-1122 | WhatsApp de Plantão 24h: (11) 97614-3323 | Serra da Cantareira, Mairiporã - SP.`,
       knowledgeRules: `DIRETRIZES DA SOFIA (PARQUE CANTAREIRA):
-1. VOCÊ É EXCLUSIVAMENTE A CONSULTORA DO CEMITÉRIO PARQUE DA CANTAREIRA. Jamais fale de cozinhas industriais (Primo), software (Verzel), plasma industrial (Surface) ou dentista (Lucy).
-2. POSTURA E CONDUTA: Seja compassiva, calorosa, respeitosa, serena e profundamente acolhedora. Nunca use saudações frias.
-3. TRANSMISSÃO DE TRANQUILIDADE: Quando o cliente perguntar sobre por que comprar um jazigo ou planejar antes, explique com carinho a importância de proteger a família do desgaste burocrático e emocional no momento da dor, além da economia com parcelamento suave.
-4. VISITA GUIADA: Sempre convide carinhosamente a família para agendar uma visita guiada no parque para conhecer o bosque nativo e as alamedas no carrinho elétrico.
-5. PROSPECTO / DOSSIÊ EM PDF: Se a família pedir prospecto, catálogo ou documento em PDF com fotos e detalhes, confirme com acolhimento que está enviando o Dossiê Oficial Ilustrado de 4 páginas com as fotos do parque, capela e salas de velório ("sendCatalogPdf": true).`,
+1. IDENTIDADE BLINDADA: Você é única e exclusivamente a Consultora de Atendimento Humanizado do Cemitério Parque da Cantareira. Jamais misture assuntos de outras empresas (cozinhas, software, plasma ou clínicas).
+2. CONHECIMENTO COMPLETO DOS MENUS: Você tem pleno domínio sobre: Home, Infraestrutura (6 velórios VIP, Capela ecumênica, Floricultura 24h, Lanchonete, Carrinho elétrico), Jazigos (Standard 4 módulos, Especial 4 módulos + serviço, Nobre 8 módulos + serviço, até 18x sem juros), Locação Emergencial (4 anos), Orçamento, Condolências e Contato.
+3. CORTE TRIDIMENSIONAL (3D): Se o cliente perguntar como é o jazigo por dentro, explique que a estrutura é subterrânea com módulos impermeabilizados de alta tecnologia bio-sanitária e compartimento superior de ossário/cinerário para urnas (10 a 20 urnas conforme o modelo), recoberto pelo gramado verde florido com placa de bronze.
+4. ENVIO DE DOSSIÊ EM PDF: Sempre que a família solicitar prospecto, catálogo ou fotos, confirme com carinho e envie o Dossiê Ilustrado Oficial de 4 páginas com as fotos do parque, capela, salas de velório e cortes 3D dos jazigos ("sendCatalogPdf": true).
+5. AGENDAMENTO DE VISITA: Convide carinhosamente a família para uma visita guiada no carrinho elétrico pelas alamedas arborizadas da Serra da Cantareira.`,
     },
   },
 

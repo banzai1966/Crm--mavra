@@ -1288,15 +1288,21 @@ async function generateCantareiraPdf(outputPath: string) {
   const imgParquePath = path.join(cantareiraDir, 'parque_panoramica.jpg');
   const imgCapelaPath = path.join(cantareiraDir, 'capela_jardins.jpg');
   const imgSalaPath = path.join(cantareiraDir, 'sala_acolhimento.jpg');
+  const imgCorteStandardPath = path.join(cantareiraDir, 'corte_3d_standard_4modulos.jpg');
+  const imgCorteNobrePath = path.join(cantareiraDir, 'corte_3d_nobre_8modulos.jpg');
 
   let imgParque: any = null;
   let imgCapela: any = null;
   let imgSala: any = null;
+  let imgCorteStandard: any = null;
+  let imgCorteNobre: any = null;
 
   try {
     if (fs.existsSync(imgParquePath)) imgParque = await doc.embedJpg(fs.readFileSync(imgParquePath));
     if (fs.existsSync(imgCapelaPath)) imgCapela = await doc.embedJpg(fs.readFileSync(imgCapelaPath));
     if (fs.existsSync(imgSalaPath)) imgSala = await doc.embedJpg(fs.readFileSync(imgSalaPath));
+    if (fs.existsSync(imgCorteStandardPath)) imgCorteStandard = await doc.embedJpg(fs.readFileSync(imgCorteStandardPath));
+    if (fs.existsSync(imgCorteNobrePath)) imgCorteNobre = await doc.embedJpg(fs.readFileSync(imgCorteNobrePath));
   } catch (err) {
     console.warn('[PDF Generator Cantareira] Aviso ao carregar fotos do Cantareira:', err);
   }
@@ -1673,21 +1679,21 @@ async function generateCantareiraPdf(outputPath: string) {
   }
 
   // =========================================================================
-  // PÁGINA 3: MODALIDADES DE JAZIGOS & INFRAESTRUTURA COMPLETA
+  // PÁGINA 3: MODALIDADES DE JAZIGOS (STANDARD, ESPECIAL, NOBRE) & CORTE 3D
   // =========================================================================
   const page3 = doc.addPage([595.28, 841.89]);
-  drawPageHeader(page3, 'Modalidades de Jazigos & Infraestrutura Completa 24h', 3);
+  drawPageHeader(page3, 'Modalidades de Jazigos (Standard, Especial, Nobre) & Infraestrutura', 3);
 
   y = height - 75;
 
-  page3.drawText('2. MODALIDADES DE JAZIGOS DISPONÍVEIS', {
+  page3.drawText('2. MODALIDADES OFICIAIS DE JAZIGOS PERPÉTUOS', {
     x: 40,
     y: y,
     size: 13,
     font: fontBold,
     color: rgb(0.08, 0.28, 0.18),
   });
-  page3.drawText('Conheça os modelos de jazigos e serviços cerimoniais desenvolvidos para amparar cada perfil familiar.', {
+  page3.drawText('Projetados em concreto impermeabilizado com alta tecnologia construtiva e paisagismo integrado.', {
     x: 40,
     y: y - 16,
     size: 9,
@@ -1695,78 +1701,123 @@ async function generateCantareiraPdf(outputPath: string) {
     color: rgb(0.35, 0.45, 0.4),
   });
 
-  y -= 40;
+  y -= 38;
 
-  // Caixa Jazigo Perpétuo
+  // 3 Boxes comparativos horizontais para Standard, Especial e Nobre
+  const tierWidth = (width - 90) / 3;
+  const tierHeight = 158;
+
+  // Box 1: STANDARD (4 Módulos)
   page3.drawRectangle({
     x: 40,
-    y: y - 105,
-    width: width - 80,
-    height: 105,
+    y: y - tierHeight,
+    width: tierWidth,
+    height: tierHeight,
     color: rgb(0.97, 0.99, 0.97),
-    borderColor: rgb(0.80, 0.88, 0.82),
+    borderColor: rgb(0.75, 0.85, 0.78),
     borderWidth: 1,
   });
-
-  page3.drawText('JAZIGO FAMILIAR PERPÉTUO (PATRIMÔNIO VITALÍCIO)', {
-    x: 55,
-    y: y - 22,
-    size: 11,
-    font: fontBold,
-    color: rgb(0.08, 0.35, 0.22),
-  });
-
-  const jazigoLines = [
-    '• Capacidade: Disponível em opções de 3 ou 4 gavetas subterrâneas amplas e impermeabilizadas.',
-    '• Compartimento de Ossário Privativo: Área exclusiva no próprio jazigo para acondicionamento perpétuo',
-    '  dos despojos exumados, liberando as gavetas para novos sepultamentos ao longo das gerações.',
-    '• Identificação Nobre: Placa em bronze fundido gravada com o nome dos entes queridos, datas e homenagens.',
-    '• Direito Hereditário: Protegido por escritura e termo de cessão vitalícia irrevogável.',
-    '• Condição Especial: Parcelamento preventivo facilitado e desconto especial à vista no Pix.',
-  ];
-  ty = y - 38;
-  for (const l of jazigoLines) {
-    page3.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.25, 0.22) });
-    ty -= 12;
-  }
-
-  y -= 120;
-
-  // Caixa Locação Temporária & Cremação
   page3.drawRectangle({
     x: 40,
-    y: y - 85,
-    width: width - 80,
-    height: 85,
-    color: rgb(1, 1, 1),
-    borderColor: rgb(0.85, 0.85, 0.88),
-    borderWidth: 1,
+    y: y - 24,
+    width: tierWidth,
+    height: 24,
+    color: rgb(0.08, 0.28, 0.18),
   });
+  page3.drawText('STANDARD', { x: 50, y: y - 16, size: 10, font: fontBold, color: rgb(1, 1, 1) });
+  page3.drawText('4 Módulos Subterrâneos', { x: tierWidth - 15, y: y - 16, size: 7.5, font: fontRegular, color: rgb(0.85, 0.95, 0.9) });
 
-  page3.drawText('LOCAÇÃO TEMPORÁRIA (4 ANOS) & ASSISTÊNCIA DE CREMAÇÃO', {
-    x: 55,
-    y: y - 20,
-    size: 10.5,
-    font: fontBold,
-    color: rgb(0.12, 0.15, 0.14),
-  });
-
-  const locLines = [
-    '• Locação por 4 Anos: Atende famílias em situação de necessidade imediata que não possuem jazigo próprio.',
-    '  Após o período legal de 4 anos, a família pode optar pela aquisição de ossário perpétuo ou cremação.',
-    '• Cremação & Columbários: Orientação cerimonial completa para cinzas, com nichos ecológicos no bosque.',
-    '• Assistência Burocrática: Apoio 24h para liberação de certidões, cartórios, translado e guia de sepultamento.',
+  const stdItems = [
+    '• Único da categoria com 4 módulos.',
+    '• Concreto impermeabilizado.',
+    '• Módulo ossário para até 10 urnas.',
+    '• Atendimento humanizado 24h.',
+    '• Paisagismo personalizado.',
+    '• Parcelamento em até 18X SEM JUROS.',
+    '• Cessão vitalícia e hereditária.',
   ];
-  ty = y - 36;
-  for (const l of locLines) {
-    page3.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.25, 0.3, 0.28) });
-    ty -= 12;
+  ty = y - 40;
+  for (const it of stdItems) {
+    page3.drawText(it, { x: 48, y: ty, size: 7.5, font: fontRegular, color: rgb(0.2, 0.25, 0.22) });
+    ty -= 14;
   }
 
-  y -= 105;
+  // Box 2: ESPECIAL (4 Módulos + Área de Serviço)
+  const espX = 40 + tierWidth + 5;
+  page3.drawRectangle({
+    x: espX,
+    y: y - tierHeight,
+    width: tierWidth,
+    height: tierHeight,
+    color: rgb(0.96, 0.98, 1),
+    borderColor: rgb(0.70, 0.80, 0.92),
+    borderWidth: 1,
+  });
+  page3.drawRectangle({
+    x: espX,
+    y: y - 24,
+    width: tierWidth,
+    height: 24,
+    color: rgb(0.12, 0.28, 0.50),
+  });
+  page3.drawText('ESPECIAL', { x: espX + 10, y: y - 16, size: 10, font: fontBold, color: rgb(1, 1, 1) });
+  page3.drawText('4 Módulos + Serviço', { x: espX + tierWidth - 65, y: y - 16, size: 7.5, font: fontRegular, color: rgb(0.85, 0.92, 1) });
 
-  // Seção de Fotos da Infraestrutura (2 fotos lado a lado: Capela e Sala de Velório VIP)
-  page3.drawText('INFRAESTRUTURA DE ACOLHIMENTO E HOMENAGENS:', {
+  const espItems = [
+    '• 4 módulos subterrâneos.',
+    '• Área de serviço privativa.',
+    '• Concreto impermeabilizado.',
+    '• Módulo ossário para até 10 urnas.',
+    '• Atendimento humanizado 24h.',
+    '• Paisagismo personalizado.',
+    '• Parcelamento em até 18X SEM JUROS.',
+  ];
+  ty = y - 40;
+  for (const it of espItems) {
+    page3.drawText(it, { x: espX + 8, y: ty, size: 7.5, font: fontRegular, color: rgb(0.15, 0.22, 0.3) });
+    ty -= 14;
+  }
+
+  // Box 3: NOBRE (8 Módulos + Área de Serviço)
+  const nobX = espX + tierWidth + 5;
+  page3.drawRectangle({
+    x: nobX,
+    y: y - tierHeight,
+    width: tierWidth,
+    height: tierHeight,
+    color: rgb(1, 0.98, 0.94),
+    borderColor: rgb(0.90, 0.78, 0.55),
+    borderWidth: 1,
+  });
+  page3.drawRectangle({
+    x: nobX,
+    y: y - 24,
+    width: tierWidth,
+    height: 24,
+    color: rgb(0.75, 0.50, 0.12),
+  });
+  page3.drawText('NOBRE', { x: nobX + 10, y: y - 16, size: 10, font: fontBold, color: rgb(1, 1, 1) });
+  page3.drawText('8 Módulos + Serviço', { x: nobX + tierWidth - 65, y: y - 16, size: 7.5, font: fontRegular, color: rgb(1, 0.95, 0.85) });
+
+  const nobItems = [
+    '• 8 gavetas subterrâneas amplas.',
+    '• Área de serviço privativa.',
+    '• Concreto impermeabilizado.',
+    '• Ossário ampliado: até 20 urnas.',
+    '• Atendimento humanizado 24h.',
+    '• Paisagismo personalizado.',
+    '• Parcelamento em até 18X SEM JUROS.',
+  ];
+  ty = y - 40;
+  for (const it of nobItems) {
+    page3.drawText(it, { x: nobX + 8, y: ty, size: 7.5, font: fontRegular, color: rgb(0.3, 0.22, 0.15) });
+    ty -= 14;
+  }
+
+  y -= (tierHeight + 18);
+
+  // Seção Ilustrada com o Corte Tridimensional (3D) dos Módulos Subterrâneos
+  page3.drawText('REPRESENTAÇÃO ARQUITETÔNICA TRIDIMENSIONAL (CORTE 3D DAS GAVETAS):', {
     x: 40,
     y: y,
     size: 10.5,
@@ -1774,76 +1825,132 @@ async function generateCantareiraPdf(outputPath: string) {
     color: rgb(0.08, 0.28, 0.18),
   });
 
-  y -= 18;
-  const colWidth = (width - 95) / 2;
-  const photoHeight = 150;
+  y -= 14;
 
-  // Foto 1: Capela
-  if (imgCapela) {
+  const cutImgWidth = 270;
+  const cutImgHeight = 160;
+
+  // Imagem 3D do Jazigo
+  if (imgCorteStandard || imgCorteNobre) {
+    const activeImg = imgCorteStandard || imgCorteNobre;
     page3.drawRectangle({
       x: 39,
-      y: y - photoHeight - 1,
-      width: colWidth + 2,
-      height: photoHeight + 2,
+      y: y - cutImgHeight - 1,
+      width: cutImgWidth + 2,
+      height: cutImgHeight + 2,
       color: rgb(0.96, 0.98, 0.96),
-      borderColor: rgb(0.80, 0.88, 0.82),
+      borderColor: rgb(0.75, 0.85, 0.78),
       borderWidth: 1,
     });
+    page3.drawImage(activeImg, {
+      x: 40,
+      y: y - cutImgHeight,
+      width: cutImgWidth,
+      height: cutImgHeight,
+    });
+
+    // Tarja de legenda sobre a foto 3D
+    page3.drawRectangle({
+      x: 40,
+      y: y - cutImgHeight,
+      width: cutImgWidth,
+      height: 20,
+      color: rgb(0.08, 0.2, 0.14),
+    });
+    page3.drawText('Corte 3D: Módulos impermeabilizados e ossário sob o gramado.', {
+      x: 46,
+      y: y - cutImgHeight + 6,
+      size: 7,
+      font: fontRegular,
+      color: rgb(0.9, 0.95, 0.92),
+    });
+  }
+
+  // Bloco explicativo ao lado da foto 3D (width - 40 - cutImgWidth - 15)
+  const sideBoxX = 40 + cutImgWidth + 12;
+  const sideBoxW = width - sideBoxX - 40;
+  page3.drawRectangle({
+    x: sideBoxX,
+    y: y - cutImgHeight,
+    width: sideBoxW,
+    height: cutImgHeight,
+    color: rgb(0.98, 0.99, 0.98),
+    borderColor: rgb(0.85, 0.88, 0.85),
+    borderWidth: 1,
+  });
+
+  page3.drawText('TECNOLOGIA CONSTRUTIVA & BIO-PROTEÇÃO', {
+    x: sideBoxX + 10,
+    y: y - 18,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.08, 0.35, 0.22),
+  });
+
+  const sidePoints = [
+    '• Engenharia Subterrânea: Módulos pré-moldados',
+    '  em concreto armado com impermeabilização total,',
+    '  garantindo 100% de vedação e respeito sanitário.',
+    '• Módulo Ossário Integrado: Compartimento superior',
+    '  dedicado a acondicionar com carinho as urnas',
+    '  de despojos (10 a 20 urnas), liberando as gavetas.',
+    '• Gramado Nivelado: Após a conclusão, a tampa é',
+    '  recoberta pelo manto verde contínuo com placa',
+    '  em bronze, preservando a harmonia do parque.',
+    '• Opção de Locação Emergencial (4 Anos): Para',
+    '  famílias em necessidade imediata sem plano.',
+  ];
+  let sty = y - 34;
+  for (const p of sidePoints) {
+    page3.drawText(p, { x: sideBoxX + 10, y: sty, size: 7, font: fontRegular, color: rgb(0.2, 0.25, 0.22) });
+    sty -= 11.5;
+  }
+
+  y -= (cutImgHeight + 20);
+
+  // 2 Fotos da Infraestrutura (Capela e Velório VIP)
+  page3.drawText('INFRAESTRUTURA DE APOIO & ACOLHIMENTO 24 HORAS:', {
+    x: 40,
+    y: y,
+    size: 10,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.18),
+  });
+
+  y -= 14;
+  const colWidth = (width - 95) / 2;
+  const photoHeight = 90;
+
+  if (imgCapela) {
     page3.drawImage(imgCapela, {
       x: 40,
       y: y - photoHeight,
       width: colWidth,
       height: photoHeight,
     });
+    page3.drawText('Capela Ecumênica do Bosque Nativo (Todas as fés)', {
+      x: 45,
+      y: y - photoHeight - 12,
+      size: 7,
+      font: fontBold,
+      color: rgb(0.1, 0.3, 0.2),
+    });
   }
-  // Legenda Capela
-  page3.drawText('Capela Ecumênica do Bosque Nativo', {
-    x: 45,
-    y: y - photoHeight - 15,
-    size: 8,
-    font: fontBold,
-    color: rgb(0.1, 0.3, 0.2),
-  });
-  page3.drawText('Espaço ecumênico para orações e celebrações de todas as fés.', {
-    x: 45,
-    y: y - photoHeight - 25,
-    size: 7,
-    font: fontRegular,
-    color: rgb(0.4, 0.45, 0.42),
-  });
 
-  // Foto 2: Sala de Velório VIP
   if (imgSala) {
     const xPos = 40 + colWidth + 15;
-    page3.drawRectangle({
-      x: xPos - 1,
-      y: y - photoHeight - 1,
-      width: colWidth + 2,
-      height: photoHeight + 2,
-      color: rgb(0.96, 0.98, 0.96),
-      borderColor: rgb(0.80, 0.88, 0.82),
-      borderWidth: 1,
-    });
     page3.drawImage(imgSala, {
       x: xPos,
       y: y - photoHeight,
       width: colWidth,
       height: photoHeight,
     });
-    // Legenda Sala
-    page3.drawText('Salas de Velório & Repouso VIP 24h', {
+    page3.drawText('6 Salas de Velório Climatizadas 24h com Suítes VIP', {
       x: xPos + 5,
-      y: y - photoHeight - 15,
-      size: 8,
+      y: y - photoHeight - 12,
+      size: 7,
       font: fontBold,
       color: rgb(0.1, 0.3, 0.2),
-    });
-    page3.drawText('6 salas climatizadas com suíte privativa para o descanso familiar.', {
-      x: xPos + 5,
-      y: y - photoHeight - 25,
-      size: 7,
-      font: fontRegular,
-      color: rgb(0.4, 0.45, 0.42),
     });
   }
 
