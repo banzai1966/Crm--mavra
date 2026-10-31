@@ -293,7 +293,7 @@ R: Euroville Mall - Torre II - Praça Maastricht, 200 - Sala 103, Jardim São Jo
   cantareira: {
     id: 'cantareira',
     instanceName: 'cemiterio-cantareira',
-    aliases: ['cantareira', 'cemiterio-cantareira', 'cemiterio_parque_cantareira'],
+    aliases: ['cantareira', 'cemiterio-cantareira', 'cemiterio-cantareira-48zvof', 'cemiterio_parque_cantareira'],
     companyName: 'Cemitério Parque da Cantareira',
     documentIds: ['doc-cantareira-guia'],
     agentConfig: {

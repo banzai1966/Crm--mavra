@@ -51,6 +51,10 @@ export function getEvolutionApiKey(instanceName?: string): string {
     return 'dental-integrative-oqn06i';
   }
 
+  if (targetInstance === 'cemiterio-cantareira' || targetInstance === 'cemiterio-cantareira-48zvof' || targetInstance === 'cantareira') {
+    return 'cemiterio-cantareira-48zvof';
+  }
+
   // 2. Fall back to general configured apiKey if valid
   const configured = (config.apiKey || '').trim();
   if (
@@ -79,7 +83,7 @@ export function normalizeInstanceName(inst?: string): string {
   if (raw === 'surface-brasil' || raw === 'surfice') {
     return 'surfacebrasil';
   }
-  if (raw === 'cemiterio-cantareira' || raw === 'cantareira') {
+  if (raw === 'cemiterio-cantareira' || raw === 'cantareira' || raw === 'cemiterio-cantareira-48zvof') {
     return 'cemiterio-cantareira';
   }
   if (raw === 'primo' || raw === 'primo-equipamento' || raw === 'primo-equipamentos') {

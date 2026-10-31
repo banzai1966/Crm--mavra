@@ -895,7 +895,8 @@ Automatiza a estimulação, garantindo ritmo constante e eliminando dores muscul
       'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
       'surfacebrasil': 'DE151DAD-79C8-49F5-BFE3-5E129987F773',
       'dental-integrative': 'dental-integrative-oqn06i',
-      'cemiterio-cantareira': 'b2efa885a71ee22edf72b597df1a0ce9',
+      'cemiterio-cantareira': 'cemiterio-cantareira-48zvof',
+      'cemiterio-cantareira-48zvof': 'cemiterio-cantareira-48zvof',
       'equipamentospsi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
       'psi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
     },
@@ -1306,6 +1307,16 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
               'primo-equipamentos': (data.evolutionConfig.instanceApiKeys?.['primo-equipamentos'] || '43BF031A-3A5D-4C32-81DD-A305F6575384').trim(),
               'surfacebrasil': (data.evolutionConfig.instanceApiKeys?.['surfacebrasil'] || 'DE151DAD-79C8-49F5-BFE3-5E129987F773').trim(),
               'dental-integrative': (data.evolutionConfig.instanceApiKeys?.['dental-integrative'] || 'dental-integrative-oqn06i').trim(),
+              'cemiterio-cantareira': (
+                data.evolutionConfig.instanceApiKeys?.['cemiterio-cantareira'] &&
+                data.evolutionConfig.instanceApiKeys?.['cemiterio-cantareira'] !== 'b2efa885a71ee22edf72b597df1a0ce9'
+                  ? data.evolutionConfig.instanceApiKeys['cemiterio-cantareira']
+                  : 'cemiterio-cantareira-48zvof'
+              ).trim(),
+              'cemiterio-cantareira-48zvof': (
+                data.evolutionConfig.instanceApiKeys?.['cemiterio-cantareira-48zvof'] ||
+                'cemiterio-cantareira-48zvof'
+              ).trim(),
               'equipamentospsi': (
                 data.evolutionConfig.instanceApiKeys?.['equipamentospsi'] &&
                 data.evolutionConfig.instanceApiKeys?.['equipamentospsi'] !== 'b2efa885a71ee22edf72b597df1a0ce9'

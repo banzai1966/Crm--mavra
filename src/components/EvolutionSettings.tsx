@@ -35,7 +35,8 @@ const KNOWN_DEFAULT_KEYS: Record<string, string> = {
   'surfacebrasil': 'DE151DAD-79C8-49F5-BFE3-5E129987F773',
   'dental-integrative': 'dental-integrative-oqn06i',
   'dra-lucy-murata': 'b2efa885a71ee22edf72b597df1a0ce9',
-  'cemiterio-cantareira': 'b2efa885a71ee22edf72b597df1a0ce9',
+  'cemiterio-cantareira': 'cemiterio-cantareira-48zvof',
+  'cemiterio-cantareira-48zvof': 'cemiterio-cantareira-48zvof',
   'equipamentospsi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
   'psi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
   'agente-ia': 'b2efa885a71ee22edf72b597df1a0ce9',
@@ -88,9 +89,9 @@ const MANAGED_COMPANIES = [
     instance: 'cemiterio-cantareira',
     company: 'Cemitério Parque Cantareira',
     niche: 'Planos & Atendimento Humanizado',
-    defaultToken: 'b2efa885a71ee22edf72b597df1a0ce9',
-    badge: 'bg-slate-100 text-slate-800 border-slate-300',
-    iconColor: 'text-slate-600',
+    defaultToken: 'cemiterio-cantareira-48zvof',
+    badge: 'bg-emerald-100 text-emerald-900 border-emerald-300',
+    iconColor: 'text-emerald-600',
   },
   {
     instance: 'agente-ia',
@@ -1225,15 +1226,50 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
           {/* Tabela Interativa de Instâncias e Tokens */}
           <div className="space-y-3">
-            {MANAGED_COMPANIES.map((item) => {
-              const currentVal = item.instance in individualKeys
-                ? individualKeys[item.instance]
-                : (config.instanceApiKeys?.[item.instance] || item.defaultToken);
-              const isShowing = showInstanceKeyMap[item.instance] || false;
-              const isCurrentActive = config.instanceName === item.instance;
-              const isSavedFeedback = savedKeyFeedback[item.instance] || false;
-              const isCopiedFeedback = copiedKeyFeedback[item.instance] || false;
-              const isMasterToken = currentVal === MASTER_GLOBAL_TOKEN;
+            {(() => {
+              // Dynamically combine managed companies with any custom instance created or discovered
+              const allList = [...MANAGED_COMPANIES];
+              const knownInstances = new Set(MANAGED_COMPANIES.map((m) => m.instance));
+
+              if (config.instanceApiKeys) {
+                for (const [instKey, tokenVal] of Object.entries(config.instanceApiKeys)) {
+                  if (!knownInstances.has(instKey) && instKey !== 'psi' && instKey !== 'cemiterio-cantareira-48zvof') {
+                    knownInstances.add(instKey);
+                    allList.push({
+                      instance: instKey,
+                      company: instKey.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+                      niche: 'Instância Personalizada (Dedicada)',
+                      defaultToken: tokenVal || MASTER_GLOBAL_TOKEN,
+                      badge: 'bg-emerald-100 text-emerald-900 border-emerald-300',
+                      iconColor: 'text-emerald-600',
+                    });
+                  }
+                }
+              }
+
+              for (const vpsInst of availableInstances) {
+                if (!knownInstances.has(vpsInst.name) && vpsInst.name !== 'psi' && vpsInst.name !== 'cemiterio-cantareira-48zvof') {
+                  knownInstances.add(vpsInst.name);
+                  allList.push({
+                    instance: vpsInst.name,
+                    company: vpsInst.name.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+                    niche: 'Instância Detectada na VPS',
+                    defaultToken: individualKeys[vpsInst.name] || config.instanceApiKeys?.[vpsInst.name] || MASTER_GLOBAL_TOKEN,
+                    badge: 'bg-sky-100 text-sky-900 border-sky-300',
+                    iconColor: 'text-sky-600',
+                  });
+                }
+              }
+
+              return allList.map((item) => {
+                const currentVal = item.instance in individualKeys
+                  ? individualKeys[item.instance]
+                  : (config.instanceApiKeys?.[item.instance] || item.defaultToken);
+                const isShowing = showInstanceKeyMap[item.instance] || false;
+                const isCurrentActive = config.instanceName === item.instance;
+                const isSavedFeedback = savedKeyFeedback[item.instance] || false;
+                const isCopiedFeedback = copiedKeyFeedback[item.instance] || false;
+                const isMasterToken = currentVal === MASTER_GLOBAL_TOKEN;
 
               return (
                 <div
@@ -1344,7 +1380,8 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                   </div>
                 </div>
               );
-            })}
+            });
+          })()}
           </div>
         </div>
 
