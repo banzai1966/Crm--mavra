@@ -655,51 +655,719 @@ async function generateCantareiraPdf(outputPath: string) {
   const doc = await PDFDocument.create();
   const fontBold = await doc.embedFont(StandardFonts.HelveticaBold);
   const fontRegular = await doc.embedFont(StandardFonts.Helvetica);
+  const fontOblique = await doc.embedFont(StandardFonts.HelveticaOblique);
 
-  const page = doc.addPage([595.28, 841.89]);
-  const { width, height } = page.getSize();
+  const cantareiraDir = path.join(process.cwd(), 'public', 'assets', 'cantareira');
+  const imgParquePath = path.join(cantareiraDir, 'parque_panoramica.jpg');
+  const imgCapelaPath = path.join(cantareiraDir, 'capela_jardins.jpg');
+  const imgSalaPath = path.join(cantareiraDir, 'sala_acolhimento.jpg');
 
-  page.drawRectangle({
+  let imgParque: any = null;
+  let imgCapela: any = null;
+  let imgSala: any = null;
+
+  try {
+    if (fs.existsSync(imgParquePath)) imgParque = await doc.embedJpg(fs.readFileSync(imgParquePath));
+    if (fs.existsSync(imgCapelaPath)) imgCapela = await doc.embedJpg(fs.readFileSync(imgCapelaPath));
+    if (fs.existsSync(imgSalaPath)) imgSala = await doc.embedJpg(fs.readFileSync(imgSalaPath));
+  } catch (err) {
+    console.warn('[PDF Generator Cantareira] Aviso ao carregar fotos do Cantareira:', err);
+  }
+
+  // Helper de cabeçalho padrão para páginas internas
+  const drawPageHeader = (page: any, pageTitle: string, pageNum: number) => {
+    const { width, height } = page.getSize();
+    // Top bar verde escuro floresta
+    page.drawRectangle({
+      x: 0,
+      y: height - 50,
+      width: width,
+      height: 50,
+      color: rgb(0.08, 0.28, 0.18),
+    });
+    // Linha dourada
+    page.drawRectangle({
+      x: 0,
+      y: height - 54,
+      width: width,
+      height: 4,
+      color: rgb(0.82, 0.68, 0.25),
+    });
+    page.drawText('CEMITÉRIO PARQUE DA CANTAREIRA', {
+      x: 35,
+      y: height - 32,
+      size: 11,
+      font: fontBold,
+      color: rgb(1, 1, 1),
+    });
+    page.drawText(pageTitle.toUpperCase(), {
+      x: 35,
+      y: height - 44,
+      size: 8,
+      font: fontRegular,
+      color: rgb(0.85, 0.95, 0.9),
+    });
+    page.drawText(`Página ${pageNum} de 4`, {
+      x: width - 95,
+      y: height - 35,
+      size: 8,
+      font: fontRegular,
+      color: rgb(0.85, 0.95, 0.9),
+    });
+
+    // Rodapé sutil
+    page.drawLine({
+      start: { x: 35, y: 35 },
+      end: { x: width - 35, y: 35 },
+      thickness: 0.8,
+      color: rgb(0.85, 0.88, 0.85),
+    });
+    page.drawText('Cemitério Parque da Cantareira • Serra da Cantareira / Mairiporã-SP • Central de Acolhimento 24h: (11) 4485-1122', {
+      x: 35,
+      y: 23,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(0.4, 0.45, 0.42),
+    });
+  };
+
+  // =========================================================================
+  // PÁGINA 1: CAPA & APRESENTAÇÃO INSTITUCIONAL DO PARQUE MEMORIAL
+  // =========================================================================
+  const page1 = doc.addPage([595.28, 841.89]);
+  const { width, height } = page1.getSize();
+
+  // Header nobre
+  page1.drawRectangle({
     x: 0,
-    y: height - 100,
+    y: height - 130,
     width: width,
-    height: 100,
-    color: rgb(0.1, 0.35, 0.2),
+    height: 130,
+    color: rgb(0.08, 0.28, 0.18), // #14472e
+  });
+  page1.drawRectangle({
+    x: 0,
+    y: height - 136,
+    width: width,
+    height: 6,
+    color: rgb(0.82, 0.68, 0.25), // Dourado clássico
   });
 
-  page.drawText('CEMITÉRIO PARQUE DA CANTAREIRA - PLANEJAMENTO FAMILIAR', {
+  page1.drawText('CEMITÉRIO PARQUE DA CANTAREIRA', {
     x: 40,
-    y: height - 45,
-    size: 14,
+    y: height - 60,
+    size: 22,
     font: fontBold,
     color: rgb(1, 1, 1),
   });
 
-  page.drawText('Guia Oficial de Jazigos, Velório 24h & Assistência Preventiva', {
+  page1.drawText('Dossiê Institucional & Guia Oficial de Planejamento Familiar', {
     x: 40,
-    y: height - 70,
-    size: 11,
+    y: height - 85,
+    size: 13,
     font: fontRegular,
-    color: rgb(0.9, 1, 0.93),
+    color: rgb(0.92, 0.98, 0.94),
   });
 
-  let y = height - 140;
-  page.drawText('ESTRUTURA & SERVIÇOS DO PARQUE DA CANTAREIRA:', { x: 40, y, size: 12, font: fontBold, color: rgb(0.1, 0.1, 0.2) });
-  y -= 25;
+  page1.drawText('Tradição, Serenidade e Respeito em Harmonia com a Biosfera da Serra da Cantareira • Desde 1984', {
+    x: 40,
+    y: height - 105,
+    size: 9.5,
+    font: fontOblique,
+    color: rgb(0.82, 0.88, 0.84),
+  });
 
-  const items = [
-    '• Localizado na Serra da Cantareira em Mairiporã/SP, em meio a natureza preservada e serena.',
-    '• Jazigos Familiares Perpétuos (com gavetas e ossário) e Locação Temporária de 4 anos.',
-    '• Complexo de Velório climatizado 24h, capela ecumênica, salas de repouso e estacionamento.',
-    '• Planos preventivos familiares com parcelamento facilitado e assistência humanizada.',
+  // Imagem Panorâmica do Parque Memorial (240px de altura)
+  let y = height - 155;
+  if (imgParque) {
+    page1.drawRectangle({
+      x: 38,
+      y: y - 224,
+      width: width - 76,
+      height: 224,
+      color: rgb(0.96, 0.98, 0.96),
+      borderColor: rgb(0.78, 0.86, 0.80),
+      borderWidth: 1.5,
+    });
+    page1.drawImage(imgParque, {
+      x: 40,
+      y: y - 222,
+      width: width - 80,
+      height: 220,
+    });
+    y -= 238;
+  } else {
+    y -= 20;
+  }
+
+  // Caixa 1: O Conceito de Cemitério-Parque
+  page1.drawRectangle({
+    x: 40,
+    y: y - 130,
+    width: width - 80,
+    height: 130,
+    color: rgb(0.97, 0.99, 0.97),
+    borderColor: rgb(0.80, 0.88, 0.82),
+    borderWidth: 1,
+  });
+
+  page1.drawText('O CONCEITO DE CEMITÉRIO-PARQUE: DIGNIDADE, PAZ E NATUREZA', {
+    x: 55,
+    y: y - 24,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.08, 0.35, 0.22),
+  });
+
+  const p1Text = [
+    '• Modelo Memorial Americano: Vasto gramado florido e bem cuidado, sem túmulos de alvenaria',
+    '  ou concreto aparente. As identificações são feitas por discretas placas de bronze no solo.',
+    '• Preservação da Mata Atlântica: Localizado no sopé da Serra da Cantareira (Mairiporã/SP),',
+    '  com brisa fresca, canto dos pássaros e total isolamento acústico dos centros urbanos.',
+    '• Tradição e Confiança: Fundado em 1984, conta com mais de 40 anos de história prestando',
+    '  serviços de excelência, acolhimento e amparo humanizado a famílias de todo o estado de SP.',
+    '• Acolhimento Permanente: Funcionamento ininterrupto 24 horas por dia, 365 dias ao ano.',
   ];
 
-  for (const it of items) {
-    page.drawText(it, { x: 45, y, size: 9.5, font: fontRegular, color: rgb(0.2, 0.2, 0.3) });
-    y -= 18;
+  let ty = y - 44;
+  for (const line of p1Text) {
+    page1.drawText(line, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.25, 0.22) });
+    ty -= 14;
   }
+
+  y -= 145;
+
+  // Caixa 2: Destaques Institucionais
+  page1.drawRectangle({
+    x: 40,
+    y: y - 95,
+    width: width - 80,
+    height: 95,
+    color: rgb(1, 1, 1),
+    borderColor: rgb(0.85, 0.85, 0.88),
+    borderWidth: 1,
+  });
+
+  page1.drawText('INFRAESTRUTURA COMPLETA À DISPOSIÇÃO DAS FAMÍLIAS:', {
+    x: 55,
+    y: y - 20,
+    size: 10,
+    font: fontBold,
+    color: rgb(0.12, 0.15, 0.14),
+  });
+
+  const infraItems = [
+    '• 6 Salas de Velório Climatizadas 24h com Suítes VIP de Repouso Exclusivas para a Família',
+    '• Capela Ecumênica em Meio ao Bosque Nativo para Homenagens e Orações de Todas as Crenças',
+    '• Floricultura 24h com Coroas de Flores Frescas e Lanchonete Completa em Funcionamento Integral',
+    '• Amplo Estacionamento com Vigilância Patrimonial e Monitoramento Eletrônico 24 Horas',
+  ];
+
+  ty = y - 38;
+  for (const it of infraItems) {
+    page1.drawText(it, { x: 55, y: ty, size: 8, font: fontRegular, color: rgb(0.25, 0.3, 0.28) });
+    ty -= 13;
+  }
+
+  // =========================================================================
+  // PÁGINA 2: POR QUE COMPRAR UM JAZIGO? O VALOR DO PLANEJAMENTO PREVENTIVO
+  // =========================================================================
+  const page2 = doc.addPage([595.28, 841.89]);
+  drawPageHeader(page2, 'Por Que Comprar um Jazigo? O Valor do Planejamento Preventivo', 2);
+
+  y = height - 75;
+
+  page2.drawText('1. POR QUE COMPRAR UM JAZIGO ANTECIPADAMENTE?', {
+    x: 40,
+    y: y,
+    size: 13,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.18),
+  });
+  page2.drawText('Entenda por que a aquisição preventiva é um dos maiores gestos de amor e cuidado com quem você ama.', {
+    x: 40,
+    y: y - 16,
+    size: 9,
+    font: fontOblique,
+    color: rgb(0.35, 0.45, 0.4),
+  });
+
+  y -= 38;
+
+  // Bloco 1: Tranquilidade no Luto
+  page2.drawRectangle({
+    x: 40,
+    y: y - 100,
+    width: width - 80,
+    height: 100,
+    color: rgb(0.97, 0.99, 0.97),
+    borderColor: rgb(0.82, 0.88, 0.84),
+    borderWidth: 1,
+  });
+
+  page2.drawText('A. TRANQUILIDADE EMOCIONAL EM MOMENTOS DE DOR', {
+    x: 55,
+    y: y - 22,
+    size: 10.5,
+    font: fontBold,
+    color: rgb(0.08, 0.35, 0.22),
+  });
+
+  const b1Lines = [
+    'O momento do falecimento de um ente querido é marcado por um impacto emocional avassalador.',
+    'Ter que escolher cemitério, negociar contratos, avaliar tipos de jazigo e providenciar pagamentos',
+    'urgentes sob efeito de choque e desespero gera um desgaste imenso entre os familiares.',
+    'Com o planejamento preventivo, sua família é poupada de todas as decisões burocráticas e financeiras,',
+    'podendo dedicar-se unicamente ao acolhimento mútuo, às homenagens e à despedida serena.',
+  ];
+  ty = y - 38;
+  for (const l of b1Lines) {
+    page2.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.25, 0.22) });
+    ty -= 12;
+  }
+
+  y -= 115;
+
+  // Bloco 2: Proteção Financeira e Economia Real
+  page2.drawRectangle({
+    x: 40,
+    y: y - 105,
+    width: width - 80,
+    height: 105,
+    color: rgb(1, 0.99, 0.96),
+    borderColor: rgb(0.90, 0.85, 0.75),
+    borderWidth: 1,
+  });
+
+  page2.drawText('B. ECONOMIA SIGNIFICATIVA E PARCELAMENTO SUAVE', {
+    x: 55,
+    y: y - 22,
+    size: 10.5,
+    font: fontBold,
+    color: rgb(0.65, 0.40, 0.10),
+  });
+
+  const b2Lines = [
+    '• Contratação Preventiva: Pode ser parcelada em condições facilitadas (em até 24x ou 36x),',
+    '  com valores fixos e suaves que cabem perfeitamente no orçamento familiar sem sustos.',
+    '• Contratação Imediata (Emergência): No momento da perda, as opções de pagamento são reduzidas,',
+    '  exigindo entrada imediata e valores que podem custar até 3 vezes mais do que no plano planejado.',
+    '• Eliminação de Taxas Oportunistas: Você congela os custos hoje e protege o patrimônio da sua família',
+    '  contra a inflação do setor funerário e reajustes futuros.',
+  ];
+  ty = y - 38;
+  for (const l of b2Lines) {
+    page2.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.25, 0.22, 0.18) });
+    ty -= 12;
+  }
+
+  y -= 120;
+
+  // Bloco 3: Perpetuidade vs Cemitérios Públicos
+  page2.drawRectangle({
+    x: 40,
+    y: y - 110,
+    width: width - 80,
+    height: 110,
+    color: rgb(0.97, 0.97, 1),
+    borderColor: rgb(0.80, 0.80, 0.92),
+    borderWidth: 1,
+  });
+
+  page2.drawText('C. JAZIGO PERPÉTUO VS A INSEGURANÇA DOS CEMITÉRIOS PÚBLICOS', {
+    x: 55,
+    y: y - 22,
+    size: 10.5,
+    font: fontBold,
+    color: rgb(0.20, 0.25, 0.65),
+  });
+
+  const b3Lines = [
+    '• Cemitérios Públicos / Municipais: Trabalham apenas com gavetas provisórias por prazo determinado',
+    '  (geralmente 3 anos). Vencido o prazo, a família é notificada para a exumação obrigatória e remoção',
+    '  dos despojos para ossários comunitários, gerando dor, insegurança e desamparo contínuo.',
+    '• Parque da Cantareira (Jazigo Perpétuo): O título de cessão é VITALÍCIO E HEREDITÁRIO.',
+    '  O jazigo pertence para sempre à sua família e passará de geração em geração, oferecendo',
+    '  um ponto de referência definitivo, digno e protegido para a memória dos seus antepassados.',
+  ];
+  ty = y - 38;
+  for (const l of b3Lines) {
+    page2.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.22, 0.3) });
+    ty -= 12;
+  }
+
+  y -= 125;
+
+  // Tabela Comparativa Resumida
+  page2.drawText('QUADRO COMPARATIVO: AQUISIÇÃO PREVENTIVA VS AQUISIÇÃO DE URGÊNCIA', {
+    x: 40,
+    y: y,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.1, 0.15, 0.12),
+  });
+
+  y -= 14;
+  page2.drawRectangle({
+    x: 40,
+    y: y - 85,
+    width: width - 80,
+    height: 85,
+    color: rgb(1, 1, 1),
+    borderColor: rgb(0.85, 0.85, 0.85),
+    borderWidth: 1,
+  });
+
+  // Header da tabela
+  page2.drawRectangle({
+    x: 40,
+    y: y - 20,
+    width: width - 80,
+    height: 20,
+    color: rgb(0.08, 0.28, 0.18),
+  });
+  page2.drawText('CRITÉRIO', { x: 50, y: y - 14, size: 8, font: fontBold, color: rgb(1, 1, 1) });
+  page2.drawText('PLANO PREVENTIVO (RECOMENDADO)', { x: 180, y: y - 14, size: 8, font: fontBold, color: rgb(1, 1, 1) });
+  page2.drawText('USO IMEDIATO (EMERGÊNCIA)', { x: 390, y: y - 14, size: 8, font: fontBold, color: rgb(1, 1, 1) });
+
+  const compData = [
+    ['Forma de Pagamento', 'Parcelamento suave em até 24x ou 36x sem juros', 'À vista ou com poucas parcelas sob pressão'],
+    ['Custo Total', 'Tabelas promocionais com desconto preventivo', 'Preços majorados de tabela cheia emergencial'],
+    ['Estado Emocional', 'Decisão consciente, lúcida e em família', 'Decisão precipitada sob luto e estresse extremo'],
+    ['Escolha da Localização', 'Família escolhe a melhor quadra e vista do parque', 'Fica restrita às poucas gavetas vagas no dia'],
+  ];
+
+  ty = y - 34;
+  for (const row of compData) {
+    page2.drawText(row[0], { x: 50, y: ty, size: 7.5, font: fontBold, color: rgb(0.2, 0.25, 0.22) });
+    page2.drawText(row[1], { x: 180, y: ty, size: 7.5, font: fontRegular, color: rgb(0.05, 0.45, 0.2) });
+    page2.drawText(row[2], { x: 390, y: ty, size: 7.5, font: fontRegular, color: rgb(0.6, 0.2, 0.15) });
+    ty -= 15;
+  }
+
+  // =========================================================================
+  // PÁGINA 3: MODALIDADES DE JAZIGOS & INFRAESTRUTURA COMPLETA
+  // =========================================================================
+  const page3 = doc.addPage([595.28, 841.89]);
+  drawPageHeader(page3, 'Modalidades de Jazigos & Infraestrutura Completa 24h', 3);
+
+  y = height - 75;
+
+  page3.drawText('2. MODALIDADES DE JAZIGOS DISPONÍVEIS', {
+    x: 40,
+    y: y,
+    size: 13,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.18),
+  });
+  page3.drawText('Conheça os modelos de jazigos e serviços cerimoniais desenvolvidos para amparar cada perfil familiar.', {
+    x: 40,
+    y: y - 16,
+    size: 9,
+    font: fontOblique,
+    color: rgb(0.35, 0.45, 0.4),
+  });
+
+  y -= 40;
+
+  // Caixa Jazigo Perpétuo
+  page3.drawRectangle({
+    x: 40,
+    y: y - 105,
+    width: width - 80,
+    height: 105,
+    color: rgb(0.97, 0.99, 0.97),
+    borderColor: rgb(0.80, 0.88, 0.82),
+    borderWidth: 1,
+  });
+
+  page3.drawText('JAZIGO FAMILIAR PERPÉTUO (PATRIMÔNIO VITALÍCIO)', {
+    x: 55,
+    y: y - 22,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.08, 0.35, 0.22),
+  });
+
+  const jazigoLines = [
+    '• Capacidade: Disponível em opções de 3 ou 4 gavetas subterrâneas amplas e impermeabilizadas.',
+    '• Compartimento de Ossário Privativo: Área exclusiva no próprio jazigo para acondicionamento perpétuo',
+    '  dos despojos exumados, liberando as gavetas para novos sepultamentos ao longo das gerações.',
+    '• Identificação Nobre: Placa em bronze fundido gravada com o nome dos entes queridos, datas e homenagens.',
+    '• Direito Hereditário: Protegido por escritura e termo de cessão vitalícia irrevogável.',
+    '• Condição Especial: Parcelamento preventivo facilitado e desconto especial à vista no Pix.',
+  ];
+  ty = y - 38;
+  for (const l of jazigoLines) {
+    page3.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.25, 0.22) });
+    ty -= 12;
+  }
+
+  y -= 120;
+
+  // Caixa Locação Temporária & Cremação
+  page3.drawRectangle({
+    x: 40,
+    y: y - 85,
+    width: width - 80,
+    height: 85,
+    color: rgb(1, 1, 1),
+    borderColor: rgb(0.85, 0.85, 0.88),
+    borderWidth: 1,
+  });
+
+  page3.drawText('LOCAÇÃO TEMPORÁRIA (4 ANOS) & ASSISTÊNCIA DE CREMAÇÃO', {
+    x: 55,
+    y: y - 20,
+    size: 10.5,
+    font: fontBold,
+    color: rgb(0.12, 0.15, 0.14),
+  });
+
+  const locLines = [
+    '• Locação por 4 Anos: Atende famílias em situação de necessidade imediata que não possuem jazigo próprio.',
+    '  Após o período legal de 4 anos, a família pode optar pela aquisição de ossário perpétuo ou cremação.',
+    '• Cremação & Columbários: Orientação cerimonial completa para cinzas, com nichos ecológicos no bosque.',
+    '• Assistência Burocrática: Apoio 24h para liberação de certidões, cartórios, translado e guia de sepultamento.',
+  ];
+  ty = y - 36;
+  for (const l of locLines) {
+    page3.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.25, 0.3, 0.28) });
+    ty -= 12;
+  }
+
+  y -= 105;
+
+  // Seção de Fotos da Infraestrutura (2 fotos lado a lado: Capela e Sala de Velório VIP)
+  page3.drawText('INFRAESTRUTURA DE ACOLHIMENTO E HOMENAGENS:', {
+    x: 40,
+    y: y,
+    size: 10.5,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.18),
+  });
+
+  y -= 18;
+  const colWidth = (width - 95) / 2;
+  const photoHeight = 150;
+
+  // Foto 1: Capela
+  if (imgCapela) {
+    page3.drawRectangle({
+      x: 39,
+      y: y - photoHeight - 1,
+      width: colWidth + 2,
+      height: photoHeight + 2,
+      color: rgb(0.96, 0.98, 0.96),
+      borderColor: rgb(0.80, 0.88, 0.82),
+      borderWidth: 1,
+    });
+    page3.drawImage(imgCapela, {
+      x: 40,
+      y: y - photoHeight,
+      width: colWidth,
+      height: photoHeight,
+    });
+  }
+  // Legenda Capela
+  page3.drawText('Capela Ecumênica do Bosque Nativo', {
+    x: 45,
+    y: y - photoHeight - 15,
+    size: 8,
+    font: fontBold,
+    color: rgb(0.1, 0.3, 0.2),
+  });
+  page3.drawText('Espaço ecumênico para orações e celebrações de todas as fés.', {
+    x: 45,
+    y: y - photoHeight - 25,
+    size: 7,
+    font: fontRegular,
+    color: rgb(0.4, 0.45, 0.42),
+  });
+
+  // Foto 2: Sala de Velório VIP
+  if (imgSala) {
+    const xPos = 40 + colWidth + 15;
+    page3.drawRectangle({
+      x: xPos - 1,
+      y: y - photoHeight - 1,
+      width: colWidth + 2,
+      height: photoHeight + 2,
+      color: rgb(0.96, 0.98, 0.96),
+      borderColor: rgb(0.80, 0.88, 0.82),
+      borderWidth: 1,
+    });
+    page3.drawImage(imgSala, {
+      x: xPos,
+      y: y - photoHeight,
+      width: colWidth,
+      height: photoHeight,
+    });
+    // Legenda Sala
+    page3.drawText('Salas de Velório & Repouso VIP 24h', {
+      x: xPos + 5,
+      y: y - photoHeight - 15,
+      size: 8,
+      font: fontBold,
+      color: rgb(0.1, 0.3, 0.2),
+    });
+    page3.drawText('6 salas climatizadas com suíte privativa para o descanso familiar.', {
+      x: xPos + 5,
+      y: y - photoHeight - 25,
+      size: 7,
+      font: fontRegular,
+      color: rgb(0.4, 0.45, 0.42),
+    });
+  }
+
+  // =========================================================================
+  // PÁGINA 4: COMO AGENDAR SUA VISITA GUIADA & DOCUMENTAÇÃO NECESSÁRIA
+  // =========================================================================
+  const page4 = doc.addPage([595.28, 841.89]);
+  drawPageHeader(page4, 'Visita Guiada, Documentação & Atendimento Humanizado', 4);
+
+  y = height - 75;
+
+  page4.drawText('3. VISITA GUIADA, CONTRATAÇÃO & SUPORTE FAMILIAR', {
+    x: 40,
+    y: y,
+    size: 13,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.18),
+  });
+  page4.drawText('Conheça o passo a passo simples e acolhedor para formalizar o plano de segurança da sua família.', {
+    x: 40,
+    y: y - 16,
+    size: 9,
+    font: fontOblique,
+    color: rgb(0.35, 0.45, 0.4),
+  });
+
+  y -= 40;
+
+  // Caixa: Passo a Passo da Visita
+  page4.drawRectangle({
+    x: 40,
+    y: y - 120,
+    width: width - 80,
+    height: 120,
+    color: rgb(0.97, 0.99, 0.97),
+    borderColor: rgb(0.80, 0.88, 0.82),
+    borderWidth: 1,
+  });
+
+  page4.drawText('PASSO A PASSO PARA CONHECER O PARQUE (VISITA GUIADA GRATUITA)', {
+    x: 55,
+    y: y - 22,
+    size: 10.5,
+    font: fontBold,
+    color: rgb(0.08, 0.35, 0.22),
+  });
+
+  const stepLines = [
+    '1. Agendamento com a Consultora Sofia: Basta informar a data e período de sua preferência (manhã ou tarde).',
+    '2. Recepção Personalizada: Ao chegar ao parque na Serra da Cantareira, um consultor de acolhimento receberá',
+    '   você e sua família com café, água fresca e total cordialidade em nossa sala de atendimento.',
+    '3. Tour pelas Alamedas: Você fará um passeio tranquilo no carrinho elétrico pelas quadras e bosques nativos,',
+    '   podendo escolher pessoalmente a localização exata, a vista das colinas e a quadra que mais lhe agradar.',
+    '4. Simulação sem Compromisso: Nosso consultor apresentará as tabelas de parcelamento preventivo personalizadas',
+    '   para o seu orçamento familiar, sem nenhuma pressão de fechamento no dia.',
+  ];
+  ty = y - 38;
+  for (const l of stepLines) {
+    page4.drawText(l, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.2, 0.25, 0.22) });
+    ty -= 12.5;
+  }
+
+  y -= 135;
+
+  // Caixa: Documentos Necessários & Facilidades
+  page4.drawRectangle({
+    x: 40,
+    y: y - 105,
+    width: width - 80,
+    height: 105,
+    color: rgb(1, 1, 1),
+    borderColor: rgb(0.85, 0.85, 0.88),
+    borderWidth: 1,
+  });
+
+  page4.drawText('DOCUMENTOS NECESSÁRIOS PARA FORMALIZAÇÃO DO JAZIGO:', {
+    x: 55,
+    y: y - 22,
+    size: 10.5,
+    font: fontBold,
+    color: rgb(0.12, 0.15, 0.14),
+  });
+
+  const docItems = [
+    '• Documento de Identificação Oficial com Foto (RG ou CNH) do titular responsável.',
+    '• Cadastro de Pessoa Física (CPF) regular perante a Receita Federal.',
+    '• Comprovante de Residência Atualizado em nome do titular ou cônjuge (energia, água ou gás).',
+    '• Certidão de Casamento ou União Estável (caso deseje incluir o cônjuge como cotitular).',
+    '• Formas de Pagamento Aceitas: Boleto bancário parcelado, cartão de crédito e desconto especial no Pix.',
+  ];
+  ty = y - 38;
+  for (const it of docItems) {
+    page4.drawText(it, { x: 55, y: ty, size: 8.5, font: fontRegular, color: rgb(0.25, 0.3, 0.28) });
+    ty -= 12.5;
+  }
+
+  y -= 125;
+
+  // Caixa de Compromisso Humanizado & Contato
+  page4.drawRectangle({
+    x: 40,
+    y: y - 120,
+    width: width - 80,
+    height: 120,
+    color: rgb(0.08, 0.28, 0.18),
+  });
+
+  page4.drawText('NOSSO COMPROMISSO DE ACOLHIMENTO E DIGNIDADE', {
+    x: 55,
+    y: y - 25,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.82, 0.68, 0.25),
+  });
+
+  const compLines = [
+    '"No Cemitério Parque da Cantareira, acreditamos que a memória de quem amamos merece ser celebrada',
+    'em um ambiente de paz eterna, rodeado pela grandiosidade da natureza. Nosso propósito diário é',
+    'proporcionar amparo afetuoso, respeito absoluto e segurança permanente para a sua família."',
+  ];
+  ty = y - 42;
+  for (const cl of compLines) {
+    page4.drawText(cl, { x: 55, y: ty, size: 8.5, font: fontOblique, color: rgb(0.9, 0.96, 0.92) });
+    ty -= 12;
+  }
+
+  // Contato destacado no bloco verde
+  page4.drawRectangle({
+    x: 55,
+    y: y - 110,
+    width: width - 110,
+    height: 32,
+    color: rgb(0.05, 0.22, 0.14),
+  });
+  page4.drawText('Localizacao: Serra da Cantareira • Mairiporã - SP | Central 24h: (11) 4485-1122 | WhatsApp: (11) 97614-3323', {
+    x: 65,
+    y: y - 94,
+    size: 8,
+    font: fontBold,
+    color: rgb(1, 1, 1),
+  });
+  page4.drawText('Site Oficial: cemiteriocantareira.com.br • Agende sua visita com a consultora Sofia a qualquer momento.', {
+    x: 65,
+    y: y - 105,
+    size: 7.5,
+    font: fontRegular,
+    color: rgb(0.8, 0.9, 0.85),
+  });
 
   const pdfBytes = await doc.save();
   fs.writeFileSync(outputPath, pdfBytes);
+  console.log('[PDF Generator Cantareira] Dossiê oficial de 4 páginas com fotos gerado com sucesso em:', outputPath);
 }
 

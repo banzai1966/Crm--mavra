@@ -148,6 +148,15 @@ async function startServer() {
     res.status(404).send('Manual da Equipamentos PSI não encontrado.');
   });
 
+  // Route to view and print the Cemitério Parque da Cantareira PDF / Dossier
+  app.get('/cantareira-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'cantareira_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual do Cemitério Parque da Cantareira não encontrado.');
+  });
+
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
     const { phone, message, pushName, mediaType, fileName, instanceName, workspaceId } = req.body;
@@ -2136,6 +2145,8 @@ async function startServer() {
 
   // Serve static assets (images, photos, documents) directly from /public
   app.use('/assets/psi', express.static(path.join(process.cwd(), 'public', 'assets', 'psi')));
+  app.use('/assets/cantareira', express.static(path.join(process.cwd(), 'public', 'assets', 'cantareira')));
+  app.use('/assets', express.static(path.join(process.cwd(), 'public', 'assets')));
 
   // Serve official static PDF documents directly from /public with application/pdf Content-Type
   app.get('/:pdfName([A-Za-z0-9_-]+\\.pdf)', (req: Request, res: Response) => {
