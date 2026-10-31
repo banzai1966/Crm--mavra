@@ -1,76 +1,52 @@
-# 🍳 Manual Completo de Operação & Conhecimento: Primo Equipamentos
+# 🍳 Catálogo Técnico Oficial & Manual da Primo Equipamentos
 
-Este documento consolida todas as informações oficiais extraídas do catálogo e políticas da **Primo Equipamentos** para direcionar o atendimento humanizado e comercial da **Sofia** (IA de Atendimento e Vendas).
+Este documento consolida o material técnico, visual e comercial da **Primo Equipamentos**, garantindo total fidelidade ao modelo de atendimento da assistente **Sofia** e aos padrões industriais do setor gastronômico.
 
 ---
 
-## 🏢 1. Dados Institucionais & Contato Oficial
+## 🏢 1. Dados Cadastrais & Contato Oficial
 
-* **Razão Social:** PRIMO EQUIPAMENTOS LTDA.
+* **Razão Social:** Primo Equipamentos Ltda
 * **CNPJ:** 18.154.896/0001-29
-* **Fundação:** Desde 2010 no mercado de gastronomia profissional e comercial.
-* **Loja Virtual:** [https://primo-equipamentos.lojaintegrada.com.br/](https://primo-equipamentos.lojaintegrada.com.br/)
-* **Telefone Fixo:** (11) 3313-2875
+* **Fundação:** Desde 2010 atendendo o setor de food service e cozinhas profissionais.
+* **Loja Virtual Oficial:** [https://primo-equipamentos.lojaintegrada.com.br/](https://primo-equipamentos.lojaintegrada.com.br/)
 * **WhatsApp Comercial:** (11) 97333-4135
+* **Central Telefônica Fixa:** (11) 3313-2875
 * **E-mail Oficial:** primoequipamentos@hotmail.com
+* **Localização:** São Paulo - SP com pronta-entrega para capital/Grande SP e frete para todo o Brasil.
 
 ---
 
-## 🎯 2. Missão da Sofia & Perfil de Atendimento
+## 📄 2. Catálogo Oficial em PDF (4 Páginas com Fotos Reais)
 
-* **Persona:** Sofia da Primo Equipamentos
-* **Voz & Tom:** Consultiva, ágil, conhecedora da rotina de cozinhas industriais, restaurantes e bares, transparente com prazos e empática com as necessidades operacionais dos clientes.
-* **Objetivo Comercial:** Identificar o modelo de negócio do cliente (abertura de bar, hamburgueria, restaurante, padaria, pizzaria ou reposição de maquinário), tirar dúvidas sobre capacidade, voltagem (110V vs 220V), calcular prazos/frete e encaminhar para fechamento facilitado (Pix ou cartão).
-
----
-
-## 📦 3. Catálogo de Produtos & Marcas Oficiais
-
-### A. Refrigeração Comercial & Expositores
-* **Freezers:** Horizontais (tampa cega ou vidro) e verticais para congelados e gelo.
-* **Refrigeradores & Cervejeiras:** Conservação de bebidas na temperatura ideal de serviço.
-* **Ilhas Refrigeradas & Balcões:** Autoatendimento de frios, laticínios, carnes e açougues.
-* **Marcas Principais:** Metalfrio, Gelopar.
-
-### B. Eletroportáteis Industriais & Processamento
-* **Liquidificadores Industriais:**
-  * *Alta Rotação:* Sucos, vitaminas e líquidos leves.
-  * *Baixa Rotação:* Massas pesadas, açaí, polpas, molhos e cremes densos em copo inox.
-* **Processadores de Alimentos:** Fatiador, ralador, corte em cubos e desfiador para grande escala.
-* **Extratores de Suco:** Rápida extração de citros com motor industrial.
-* **Fatiadores de Frios:** Lâminas com corte de alta precisão e regulagem micrométrica.
-* **Fritadeiras Profissionais:** Elétricas e a gás (zona fria ou água/óleo para maior durabilidade do óleo).
-* **Fogões de Indução Comerciais:** Potência e segurança sem chama aberta.
-* **Marcas Principais:** Skymsen, Metalcubas, Marchesoni.
-
-### C. Panelas, Caldeirões & Utensílios
-* **Panelas de Pressão Industriais:** 10L, 15L e 20L com válvulas de alívio e travas reforçadas (Fulgor, Nigro, Eirilar).
-* **Linha Inox & Caçarolas:** Panelas e frigideiras profissionais reforçadas (Tramontina).
-* **Utensílios em Inox:** Pegadores, espátulas para chapa, facas de corte e talheres comerciais.
-
-### D. Linha Quente & Cocção
-* Fogões industriais de 2 a 8 bocas (baixa e alta pressão).
-* Chapas bifeteiras a gás e elétricas para lanches e hambúrgueres.
-* Fornos industriais refratários para pizzas e assados.
+O arquivo oficial gerado no servidor está disponível em:
+* **Caminho no Servidor:** `/public/Catalogo_Primo_Equipamentos.pdf`
+* **Tamanho do Arquivo:** 2.5 MB (Alta Resolução Gráfica)
+* **Estrutura das 4 Páginas:**
+  * **Página 1:** Capa Institucional, CNPJ, segmentos atendidos (bares, restaurantes, hamburguerias, pizzarias e cozinhas industriais) e **Foto 1 (Refrigeração Comercial e Expositores)**.
+  * **Página 2:** Refrigeração Comercial (Gelopar & Metalfrio, cervejeiras subzero -6°C a +2°C), Linha Quente Pesada (fogões baixa/alta pressão, chapas de aço carbono 1/4" e 5/16", fritadeiras água e óleo) e **Foto 2 (Cocção Pesada e Fritadeiras)**.
+  * **Página 3:** Eletroportáteis Industriais & Processamento (Skymsen & Metalcubas), **Tabela Comparativa de Alta Rotação vs Baixa Rotação**, Fatiadores de frios micrométricos, Panelas de pressão industriais (Fulgor, Nigro, Eirilar 10L a 20L) e **Foto 3 (Processamento e Utensílios)**.
+  * **Página 4:** Alerta Mandatório de Voltagem (110V vs 220V, tomadas 20A), Políticas Comerciais (desconto no Pix, parcelamento Pagali, transporte rodoviário paletizado) e Bloco de Contato Direto da Matriz.
 
 ---
 
-## 💳 4. Pagamento, Frete & Garantia
+## 🌐 3. Manual Web Interativo & Imprimível
 
-* **Formas de Pagamento:**
-  * Desconto especial para pagamento à vista no **Pix**.
-  * Parcelamento no **Cartão de Crédito** via checkout integrado e seguro (Pagali).
-  * Boleto bancário para compras faturadas ou à vista.
-* **Frete & Entregas:**
-  * Envio para todo o território nacional.
-  * O cálculo considera o prazo de expedição + transporte rodoviário conforme o CEP.
-* **Garantia:**
-  * Garantia oficial de fábrica em todas as marcas (Skymsen, Metalfrio, Gelopar, Tramontina, etc.).
+* **Rota Disponível no Sistema:** `/primo-manual` (e arquivo `/public/primo_manual.html`)
+* **Recursos:**
+  * Barra fixa com botão de download direto do PDF oficial de 4 páginas.
+  * Botão de impressão limpa formatada para folha A4.
+  * Galeria visual responsiva com zoom e cards explicativos.
+  * Tabela de decisão para escolha correta de liquidificador (evita queima de induzido por clientes).
+  * Alerta de segurança elétrica para prevenção de garantias.
 
 ---
 
-## ⚡ 5. Regra Crítica de Segurança: Voltagem (110V vs 220V)
+## ⚡ 4. Regras Críticas de Atendimento da Sofia (Primo)
 
-**Regra de Ouro:** A Sofia **SEMPRE** pergunta e confirma a voltagem do estabelecimento antes de direcionar para o pagamento:
-1. "Qual é a voltagem da sua cozinha: 110V (127V) ou 220V?"
-2. Para equipamentos pesados trifásicos, confirmar a rede industrial do cliente.
+1. **Blindagem Absoluta:** Sofia responde exclusivamente sobre equipamentos gastronômicos e cozinhas. Jamais menciona dentistas, plasma, cemitérios ou software.
+2. **Voltagem Obrigatória:** Em qualquer consulta de máquina elétrica, ela confirma: *"Qual é a voltagem da sua cozinha: 110V (127V) ou 220V?"*
+3. **Alta vs Baixa Rotação:**
+   * *Alta:* Para sucos e vitaminas leves (18.000 a 22.000 RPM).
+   * *Baixa:* Para açaí, polpas congeladas e massas densas (3.500 RPM com alto torque).
+4. **Envio de Material:** Quando o cliente pedir catálogo, prospecto ou fotos, Sofia anexa o `Catalogo_Primo_Equipamentos.pdf` oficial.

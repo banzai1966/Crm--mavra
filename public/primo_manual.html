@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo Técnico & Manual de Cozinhas Comerciais | Primo Equipamentos</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap');
+
+    :root {
+      --primary: #121620;
+      --primary-light: #1e2433;
+      --accent: #e66b0a;
+      --accent-hover: #c95a05;
+      --accent-light: #fff4ea;
+      --surface: #ffffff;
+      --bg: #f5f6f9;
+      --text: #1d232e;
+      --text-muted: #5c6575;
+      --border: #e2e5eb;
+      --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background-color: var(--bg);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 70px;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 15px;
+      z-index: 100;
+      background: rgba(18, 22, 32, 0.95);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 14px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.25);
+    }
+
+    .toolbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toolbar-logo {
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .toolbar-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f0f3f8;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .toolbar-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .toolbar-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .toolbar-btn.secondary {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .toolbar-btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, #121620 0%, #1e2636 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 44px 36px;
+      margin-bottom: 28px;
+      box-shadow: 0 12px 36px -10px rgba(18, 22, 32, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      background: radial-gradient(circle, rgba(230, 107, 10, 0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffc494;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: #cbd3e1;
+      max-width: 800px;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 32px;
+      margin-bottom: 26px;
+      box-shadow: 0 4px 18px -2px rgba(18, 22, 32, 0.04);
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    /* Galeria de Fotos */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin: 20px 0 28px;
+    }
+
+    .photo-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #fafbfc;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-caption {
+      padding: 12px 14px;
+    }
+
+    .photo-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .photo-text {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Comparativo Alta vs Baixa Rotação */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .comparison-box {
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid;
+    }
+
+    .comparison-box.alta {
+      background: #f0f7ff;
+      border-color: #bcd9ff;
+    }
+
+    .comparison-box.baixa {
+      background: #fff8f0;
+      border-color: #fed8b5;
+    }
+
+    .comp-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .comp-badge.alta {
+      background: #0066cc;
+      color: #fff;
+    }
+
+    .comp-badge.baixa {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .comp-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .comp-list {
+      list-style: none;
+      font-size: 13px;
+    }
+
+    .comp-list li {
+      margin-bottom: 8px;
+      position: relative;
+      padding-left: 20px;
+      color: #374151;
+    }
+
+    .comp-list li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .comp-list.alta li::before {
+      color: #0066cc;
+    }
+
+    /* Cards de Produtos */
+    .prod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 15px;
+    }
+
+    .prod-card {
+      background: #fafbfc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .prod-card:hover {
+      border-color: #cbd3e1;
+    }
+
+    .prod-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .prod-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .prod-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Box de Alerta Voltagem */
+    .alert-box {
+      background: #fff5f5;
+      border: 1.5px solid #feb2b2;
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-top: 20px;
+    }
+
+    .alert-title {
+      font-weight: 700;
+      font-size: 14.5px;
+      color: #c53030;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .alert-desc {
+      font-size: 13px;
+      color: #742a2a;
+      line-height: 1.6;
+    }
+
+    /* Rodapé Comercial */
+    .contact-banner {
+      background: linear-gradient(135deg, #121620 0%, #1a2230 100%);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      border: 2px solid var(--accent);
+    }
+
+    .contact-info h3 {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .contact-info p {
+      font-size: 13.5px;
+      color: #cbd3e1;
+      line-height: 1.5;
+    }
+
+    .contact-cta {
+      display: flex;
+      gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .photo-grid, .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .toolbar-actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+      .toolbar-btn {
+        flex: 1;
+        justify-content: center;
+      }
+      .hero-title {
+        font-size: 24px;
+      }
+      .contact-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media print {
+      .toolbar { display: none; }
+      body { background: #fff; padding: 0; }
+      .card, .hero-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Sticky Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-brand">
+        <span class="toolbar-logo">PRIMO</span>
+        <span class="toolbar-title">Catálogo Oficial de Cozinhas & Gastronomia Profissional</span>
+      </div>
+      <div class="toolbar-actions">
+        <a href="/Catalogo_Primo_Equipamentos.pdf" target="_blank" class="toolbar-btn">
+          <span>⬇ Baixar PDF Oficial (4 Páginas)</span>
+        </a>
+        <button onclick="window.print()" class="toolbar-btn secondary">
+          <span>🖨 Imprimir</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+      <div class="badge-row">
+        <span class="badge">Desde 2010</span>
+        <span class="badge">CNPJ: 18.154.896/0001-29</span>
+        <span class="badge">Food Service B2B</span>
+        <span class="badge">Atendimento com Sofia IA</span>
+      </div>
+      <h1 class="hero-title">Primo Equipamentos Gastronômicos</h1>
+      <p class="hero-subtitle">
+        Fornecimento de maquinário profissional, refrigeração comercial e equipamentos pesados para restaurantes, bares, hamburguerias, pizzarias, padarias e cozinhas industriais em todo o Brasil.
+      </p>
+    </div>
+
+    <!-- Galeria Visual das Linhas Oficiais -->
+    <div class="card">
+      <h2 class="section-title">Galeria Visual de Equipamentos Homologados</h2>
+      <p class="section-desc">Equipamentos robustos em aço inox com garantia oficial de fábrica e assistência técnica nacional.</p>
+      
+      <div class="photo-grid">
+        <div class="photo-card">
+          <img src="/assets/primo/refrigeracao_comercial.jpg" alt="Refrigeração Comercial Primo">
+          <div class="photo-caption">
+            <div class="photo-title">Refrigeração & Cervejeiras</div>
+            <div class="photo-text">Expositores verticais subzero, freezers Gelopar e Metalfrio para conservação impecável.</div>
+          </div>
+        </div>
+
+        <div class="photo-card">
+          <img src="/assets/primo/coccao_industrial.jpg" alt="Cocção Pesada Primo">
+          <div class="photo-caption">
+            <div class="photo-title">Cocção Pesada & Fritadeiras</div>
+            <div class="photo-text">Fogões industriais modulados, chapas bifeteiras e fritadeiras água e óleo de alto rendimento.</div>
+          </div>
+        </div>
+
+        <div class="photo-card">
+          <img src="/assets/primo/preparo_processamento.jpg" alt="Preparo e Processamento Primo">
+          <div class="photo-caption">
+            <div class="photo-title">Processamento & Panelas</div>
+            <div class="photo-text">Fatiadores de frios micrométricos, liquidificadores de alto torque e panelas Fulgor/Nigro 10L a 20L.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparativo Crítico: Alta Rotação vs Baixa Rotação -->
+    <div class="card">
+      <h2 class="section-title">Guia Técnico de Escolha: Liquidificador de Alta vs Baixa Rotação</h2>
+      <p class="section-desc">Entenda a diferença técnica para não danificar o motor do seu estabelecimento comercial.</p>
+
+      <div class="comparison-grid">
+        <div class="comparison-box alta">
+          <span class="comp-badge alta">Alta Rotação (18.000 a 22.000 RPM)</span>
+          <h3 class="comp-title">Velocidade Extrema para Líquidos Leves</h3>
+          <ul class="comp-list alta">
+            <li><strong>Aplicação:</strong> Sucos naturais, shakes, vitaminas, batidas e coquetéis.</li>
+            <li><strong>Tempo de preparo:</strong> Homogeneização ultrarrápida em 15 a 30 segundos.</li>
+            <li><strong>Copos:</strong> Inox sanitário ou policarbonato cristal reforçado (1,5L a 4L).</li>
+            <li><strong>Alerta Crítico:</strong> NUNCA triturar açaí puro, polpas densas ou massas (risco de queimar o induzido).</li>
+          </ul>
+        </div>
+
+        <div class="comparison-box baixa">
+          <span class="comp-badge baixa">Baixa Rotação (3.500 RPM com Alto Torque)</span>
+          <h3 class="comp-title">Força Bruta para Massas e Açaí</h3>
+          <ul class="comp-list">
+            <li><strong>Aplicação:</strong> Polpas congeladas, açaí puro, molhos pesados, maioneses e massas leves.</li>
+            <li><strong>Mecânica:</strong> Motor robusto com engrenagens de alto torque que não travam.</li>
+            <li><strong>Copos:</strong> Aço inox 304 escovado ultraespesso (capacidades de 4L, 6L, 8L, 10L, 15L e 25L).</li>
+            <li><strong>Obrigatório em:</strong> Casas de açaí, lanchonetes de smash burger e cozinhas de pré-preparo.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catálogo de Soluções por Categoria -->
+    <div class="card">
+      <h2 class="section-title">Principais Linhas de Equipamentos Disponíveis</h2>
+      <p class="section-desc">Linhas completas das fabricantes Skymsen, Metalfrio, Gelopar, Metalcubas, Marchesoni e Tramontina.</p>
+
+      <div class="prod-grid">
+        <div class="prod-card">
+          <div class="prod-tag">Refrigeração Comercial</div>
+          <div class="prod-name">Cervejeiras Subzero (-6°C a +2°C)</div>
+          <div class="prod-desc">Controlador digital touch, vidro duplo anticondensação, iluminação LED e gás ecológico R290. Capacidades de 230L a 1.000L.</div>
+        </div>
+
+        <div class="prod-card">
+          <div class="prod-tag">Cocção Profissional</div>
+          <div class="prod-name">Fritadeiras Água e Óleo</div>
+          <div class="prod-desc">Decantação de resíduos na água com sal grosso no fundo, mantendo o óleo limpo por até 60% mais tempo com economia comprovada de insumo.</div>
+        </div>
+
+        <div class="prod-card">
+          <div class="prod-tag">Linha Quente</div>
+          <div class="prod-name">Fogões Industriais & Chapas</div>
+          <div class="prod-desc">Grelhas 30x30cm e 40x40cm em ferro fundido, queimadores simples e duplos, chapas bifeteiras de aço carbono 1/4" e 5/16" com gaveta coletora.</div>
+        </div>
+
+        <div class="prod-card">
+          <div class="prod-tag">Processamento de Alimentos</div>
+          <div class="prod-name">Processadores & Fatiadores de Frios</div>
+          <div class="prod-desc">Fatiadores de lâminas alemãs com regulagem micrométrica e processadores multi-discos com rendimento de até 250 kg/hora.</div>
+        </div>
+
+        <div class="prod-card">
+          <div class="prod-tag">Utensílios Pesados</div>
+          <div class="prod-name">Panelas de Pressão Industriais</div>
+          <div class="prod-desc">Panelas de 10L, 15L e 20L das marcas Fulgor, Nigro e Eirilar com tripla trava hermética de segurança e liga de alta durabilidade.</div>
+        </div>
+
+        <div class="prod-card">
+          <div class="prod-tag">Aço Inox Sanitário</div>
+          <div class="prod-name">Cubas Gastronômicas (GNs) & Utensílios</div>
+          <div class="prod-desc">Padrão mundial Gastronorm (GN 1/1, 1/2, 1/3, 1/4 e 1/6) em aço inox 304 para conservação térmica e organização de buffet.</div>
+        </div>
+      </div>
+
+      <!-- Alerta de Voltagem -->
+      <div class="alert-box">
+        <div class="alert-title">
+          <span>⚠️ ALERTA MANDATÓRIO DE INSTALAÇÃO: CONFIRMAÇÃO DE VOLTAGEM</span>
+        </div>
+        <div class="alert-desc">
+          Todos os equipamentos elétricos com motores comerciais exigem confirmação prévia da voltagem do seu estabelecimento: <strong>110V (127V)</strong> ou <strong>220V</strong>. Para equipamentos térmicos de alta potência (fritadeiras e balcões), utilize sempre tomadas de 20A com fiação e disjuntores dedicados, sem uso de adaptadores. Essa precaução preserva a garantia integral de fábrica.
+        </div>
+      </div>
+    </div>
+
+    <!-- Políticas Comerciais e Contatos Matriz -->
+    <div class="contact-banner">
+      <div class="contact-info">
+        <h3>Atendimento Comercial Primo Equipamentos</h3>
+        <p><strong>Loja Virtual:</strong> primo-equipamentos.lojaintegrada.com.br</p>
+        <p><strong>WhatsApp Comercial:</strong> (11) 97333-4135 | <strong>Central Fixa:</strong> (11) 3313-2875</p>
+        <p><strong>E-mail:</strong> primoequipamentos@hotmail.com | <strong>CNPJ:</strong> 18.154.896/0001-29</p>
+        <p>Condições: Desconto especial no Pix à vista, parcelamento no cartão Pagali e frete rodoviário paletizado para todo o Brasil.</p>
+      </div>
+      <div class="contact-cta">
+        <a href="https://primo-equipamentos.lojaintegrada.com.br/" target="_blank" class="toolbar-btn">
+          <span>Visitar Loja Virtual</span>
+        </a>
+        <a href="/Catalogo_Primo_Equipamentos.pdf" target="_blank" class="toolbar-btn secondary">
+          <span>Baixar PDF (4 Págs)</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

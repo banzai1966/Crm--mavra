@@ -619,33 +619,660 @@ async function generatePrimoPdf(outputPath: string) {
   const doc = await PDFDocument.create();
   const fontBold = await doc.embedFont(StandardFonts.HelveticaBold);
   const fontRegular = await doc.embedFont(StandardFonts.Helvetica);
+  const fontOblique = await doc.embedFont(StandardFonts.HelveticaOblique);
 
-  const page = doc.addPage([595.28, 841.89]);
-  const { width, height } = page.getSize();
+  const primoDir = path.join(process.cwd(), 'public', 'assets', 'primo');
+  const imgRefrigPath = path.join(primoDir, 'refrigeracao_comercial.jpg');
+  const imgCoccaoPath = path.join(primoDir, 'coccao_industrial.jpg');
+  const imgPreparoPath = path.join(primoDir, 'preparo_processamento.jpg');
 
-  page.drawRectangle({
+  let imgRefrig: any = null;
+  let imgCoccao: any = null;
+  let imgPreparo: any = null;
+
+  try {
+    if (fs.existsSync(imgRefrigPath)) imgRefrig = await doc.embedJpg(fs.readFileSync(imgRefrigPath));
+    if (fs.existsSync(imgCoccaoPath)) imgCoccao = await doc.embedJpg(fs.readFileSync(imgCoccaoPath));
+    if (fs.existsSync(imgPreparoPath)) imgPreparo = await doc.embedJpg(fs.readFileSync(imgPreparoPath));
+  } catch (err) {
+    console.warn('[PDF Generator Primo] Aviso ao carregar fotos da Primo Equipamentos:', err);
+  }
+
+  // Helper de cabeçalho padrão para páginas 2, 3 e 4
+  const drawPageHeader = (page: any, pageTitle: string, pageNum: number) => {
+    const { width, height } = page.getSize();
+    // Top bar laranja e chumbo industrial
+    page.drawRectangle({
+      x: 0,
+      y: height - 50,
+      width: width,
+      height: 50,
+      color: rgb(0.12, 0.16, 0.22),
+    });
+    page.drawRectangle({
+      x: 0,
+      y: height - 53,
+      width: width,
+      height: 3,
+      color: rgb(0.88, 0.45, 0.08),
+    });
+    page.drawText('PRIMO EQUIPAMENTOS • GASTRONOMIA PROFISSIONAL & COZINHAS INDUSTRIAIS', {
+      x: 35,
+      y: height - 28,
+      size: 9,
+      font: fontBold,
+      color: rgb(1, 1, 1),
+    });
+    page.drawText(pageTitle, {
+      x: 35,
+      y: height - 42,
+      size: 8,
+      font: fontRegular,
+      color: rgb(0.9, 0.92, 0.95),
+    });
+    page.drawText(`Página ${pageNum} de 4`, {
+      x: width - 95,
+      y: height - 35,
+      size: 8.5,
+      font: fontBold,
+      color: rgb(0.88, 0.45, 0.08),
+    });
+  };
+
+  // Helper de rodapé
+  const drawPageFooter = (page: any) => {
+    const { width } = page.getSize();
+    page.drawLine({
+      start: { x: 35, y: 35 },
+      end: { x: width - 35, y: 35 },
+      thickness: 0.8,
+      color: rgb(0.85, 0.88, 0.92),
+    });
+    page.drawText('Primo Equipamentos Ltda • CNPJ 18.154.896/0001-29 • primo-equipamentos.lojaintegrada.com.br', {
+      x: 35,
+      y: 22,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(0.45, 0.5, 0.55),
+    });
+    page.drawText('Televendas: (11) 3313-2875 • WhatsApp Comercial: (11) 97333-4135', {
+      x: width - 265,
+      y: 22,
+      size: 7.5,
+      font: fontBold,
+      color: rgb(0.15, 0.2, 0.25),
+    });
+  };
+
+  // ==========================================
+  // PÁGINA 1: CAPA & APRESENTAÇÃO INSTITUCIONAL
+  // ==========================================
+  const page1 = doc.addPage([595.28, 841.89]);
+  const { width: p1W, height: p1H } = page1.getSize();
+
+  // Topo Master
+  page1.drawRectangle({
     x: 0,
-    y: height - 100,
-    width: width,
-    height: 100,
-    color: rgb(0.85, 0.45, 0.1),
+    y: p1H - 120,
+    width: p1W,
+    height: 120,
+    color: rgb(0.12, 0.16, 0.22), // Slate Navy
+  });
+  page1.drawRectangle({
+    x: 0,
+    y: p1H - 125,
+    width: p1W,
+    height: 5,
+    color: rgb(0.88, 0.45, 0.08), // Amber Orange
   });
 
-  page.drawText('PRIMO EQUIPAMENTOS - COZINHAS INDUSTRIAIS & GASTRONOMIA', {
-    x: 40,
-    y: height - 45,
-    size: 15,
+  page1.drawText('PRIMO EQUIPAMENTOS GASTRONÔMICOS', {
+    x: 35,
+    y: p1H - 45,
+    size: 20,
+    font: fontBold,
+    color: rgb(1, 1, 1),
+  });
+  page1.drawText('CATÁLOGO TÉCNICO OFICIAL DE COZINHAS PROFISSIONAIS & REFRIGERAÇÃO COMERCIAL', {
+    x: 35,
+    y: p1H - 68,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page1.drawText('Soluções Completas B2B para Restaurantes, Bares, Hamburguerias, Pizzarias, Padarias e Cozinhas Industriais', {
+    x: 35,
+    y: p1H - 88,
+    size: 8.5,
+    font: fontRegular,
+    color: rgb(0.9, 0.92, 0.96),
+  });
+  page1.drawText('CNPJ: 18.154.896/0001-29 • Tradição e Excelência no Mercado Gastronômico desde 2010', {
+    x: 35,
+    y: p1H - 106,
+    size: 8,
+    font: fontOblique,
+    color: rgb(0.75, 0.8, 0.88),
+  });
+
+  let y = p1H - 145;
+
+  // Foto 1: Refrigeração Comercial
+  if (imgRefrig) {
+    const imgH = 175;
+    page1.drawImage(imgRefrig, {
+      x: 35,
+      y: y - imgH,
+      width: p1W - 70,
+      height: imgH,
+    });
+    // Tarja com legenda
+    page1.drawRectangle({
+      x: 35,
+      y: y - imgH,
+      width: p1W - 70,
+      height: 22,
+      color: rgb(0.08, 0.1, 0.14),
+    });
+    page1.drawText('Linha de Refrigeração Comercial, Expositores e Cervejeiras de Alta Performance para Ponto de Venda', {
+      x: 45,
+      y: y - imgH + 7,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(0.9, 0.93, 0.98),
+    });
+    y -= (imgH + 18);
+  }
+
+  // Box 1: Sobre a Primo Equipamentos
+  page1.drawRectangle({
+    x: 35,
+    y: y - 105,
+    width: p1W - 70,
+    height: 105,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.8, 0.85, 0.92),
+    borderWidth: 1,
+  });
+  page1.drawText('1. SOBRE A PRIMO EQUIPAMENTOS & ESTRUTURA COMERCIAL', {
+    x: 48,
+    y: y - 20,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+
+  const sobreText = [
+    '• Especialista em maquinário profissional para o setor de food service, hotelaria e gastronomia comercial.',
+    '• Parceria direta com as maiores fábricas do Brasil: Skymsen, Metalfrio, Gelopar, Metalcubas, Marchesoni e Tramontina.',
+    '• Portfólio completo com garantia oficial de fábrica e assistência técnica autorizada em todo o país.',
+    '• Equipe técnica especializada para auxiliar na escolha da capacidade cúbica, litragem e dimensionamento elétrico.',
+    '• Faturamento ágil com desconto especial via PIX e parcelamento facilitado no cartão de crédito corporativo.',
+  ];
+  let ty = y - 36;
+  for (const line of sobreText) {
+    page1.drawText(line, { x: 48, y: ty, size: 8, font: fontRegular, color: rgb(0.2, 0.25, 0.3) });
+    ty -= 13;
+  }
+  y -= 120;
+
+  // Box 2: Segmentos Atendidos
+  page1.drawRectangle({
+    x: 35,
+    y: y - 140,
+    width: p1W - 70,
+    height: 140,
+    color: rgb(0.99, 0.97, 0.94),
+    borderColor: rgb(0.92, 0.8, 0.65),
+    borderWidth: 1,
+  });
+  page1.drawText('2. SEGMENTOS ATENDIDOS & PROJETOS CUSTOMIZADOS', {
+    x: 48,
+    y: y - 20,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+
+  const segText = [
+    '• RESTAURANTES & BUFFETS: Fogões de alta capacidade, cubas gastronômicas GN e balcões térmicos/refrigerados.',
+    '• HAMBURGUERIAS & LANCHONETES: Chapas bifeteiras de alto rendimento, fritadeiras água e óleo e fatiadores.',
+    '• PIZZARIAS & MASSAS: Fornos refratários de alta temperatura, masseiras espirais e bancadas de inox para abertura.',
+    '• BARES & CHOPERIAS: Cervejeiras com controle de temperatura subzero (-6 C a +2 C), geladeiras expositoras e taças.',
+    '• PADARIAS & CONFEITARIAS: Batedeiras planetárias, fatiadores de frios, vitrines aquecidas e fornos turbo.',
+    '• AÇOUGUES & ROTISSERIAS: Moedores de carne elétricos bocas 8/22/32, serras fita para ossos e ilhas congeladas.',
+  ];
+  ty = y - 36;
+  for (const s of segText) {
+    page1.drawText(s, { x: 48, y: ty, size: 8, font: fontRegular, color: rgb(0.25, 0.22, 0.2) });
+    ty -= 16;
+  }
+
+  drawPageFooter(page1);
+
+  // ==========================================
+  // PÁGINA 2: REFRIGERAÇÃO & COCÇÃO PESADA
+  // ==========================================
+  const page2 = doc.addPage([595.28, 841.89]);
+  const { width: p2W, height: p2H } = page2.getSize();
+  drawPageHeader(page2, 'Seção I: Refrigeração Comercial & Equipamentos de Cocção Pesada', 2);
+
+  y = p2H - 75;
+
+  page2.drawText('3. REFRIGERAÇÃO COMERCIAL & EXPOSITORES (GELOPAR & METALFRIO)', {
+    x: 35,
+    y: y,
+    size: 12,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  y -= 15;
+
+  // Card Cervejeiras & Expositores
+  page2.drawRectangle({
+    x: 35,
+    y: y - 75,
+    width: p2W - 70,
+    height: 75,
+    color: rgb(0.96, 0.98, 1),
+    borderColor: rgb(0.7, 0.82, 0.95),
+    borderWidth: 1,
+  });
+  page2.drawText('CERVEJEIRAS & REFRIGERADORES VERTICAIS DE BEBIDAS', {
+    x: 45,
+    y: y - 18,
+    size: 10,
+    font: fontBold,
+    color: rgb(0.05, 0.35, 0.65),
+  });
+  const refrigDetails = [
+    '• Faixa de temperatura ajustável: -6 C, -4 C e +2 C (ideal para garrafas, latas e long necks sem congelamento).',
+    '• Porta de vidro duplo aquecido com tecnologia anticondensação e gás ecológico R290 de baixíssimo consumo elétrico.',
+    '• Controlador eletrônico digital com display frontal de temperatura em tempo real e iluminação interna full LED.',
+    '• Capacidades comerciais disponíveis: 230L, 410L, 570L e modelos porta dupla de 1.000 Litros.',
+  ];
+  ty = y - 32;
+  for (const r of refrigDetails) {
+    page2.drawText(r, { x: 45, y: ty, size: 7.8, font: fontRegular, color: rgb(0.2, 0.25, 0.35) });
+    ty -= 12;
+  }
+  y -= 88;
+
+  // Card Freezers & Balcões
+  page2.drawRectangle({
+    x: 35,
+    y: y - 70,
+    width: p2W - 70,
+    height: 70,
+    color: rgb(0.97, 0.98, 0.99),
+    borderColor: rgb(0.85, 0.88, 0.92),
+    borderWidth: 1,
+  });
+  page2.drawText('FREEZERS HORIZONTAIS, ILHAS DE CONGELADOS & BALCÕES DE AÇOUGUE', {
+    x: 45,
+    y: y - 18,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  const freezeDetails = [
+    '• Freezers Horizontais de 1 e 2 tampas (cegas ou vidro deslizante reto/curvo) para sorvetes, gelo e carnes.',
+    '• Balcões de Atendimento e Exposição com acabamento externo e interno em aço inox e vidros panorâmicos.',
+    '• Dreno de degelo frontal de fácil escoamento e gaxetas magnéticas de alta retenção térmica.',
+  ];
+  ty = y - 32;
+  for (const f of freezeDetails) {
+    page2.drawText(f, { x: 45, y: ty, size: 7.8, font: fontRegular, color: rgb(0.25, 0.28, 0.32) });
+    ty -= 12;
+  }
+  y -= 82;
+
+  // Foto 2: Linha de Cocção
+  if (imgCoccao) {
+    const imgH = 160;
+    page2.drawImage(imgCoccao, {
+      x: 35,
+      y: y - imgH,
+      width: p2W - 70,
+      height: imgH,
+    });
+    page2.drawRectangle({
+      x: 35,
+      y: y - imgH,
+      width: p2W - 70,
+      height: 20,
+      color: rgb(0.08, 0.1, 0.14),
+    });
+    page2.drawText('Linha Quente Comercial: Fogões Industriais Modulares, Fritadeiras de Alta Potência e Chapas', {
+      x: 45,
+      y: y - imgH + 6,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(0.9, 0.93, 0.98),
+    });
+    y -= (imgH + 18);
+  }
+
+  page2.drawText('4. LINHA QUENTE & COCÇÃO PESADA (FOGÕES, FRITADEIRAS & CHAPAS)', {
+    x: 35,
+    y: y,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  y -= 15;
+
+  // Card Cocção Detalhes
+  page2.drawRectangle({
+    x: 35,
+    y: y - 110,
+    width: p2W - 70,
+    height: 110,
+    color: rgb(0.99, 0.98, 0.96),
+    borderColor: rgb(0.92, 0.85, 0.75),
+    borderWidth: 1,
+  });
+
+  const coccaoItems = [
+    '• FOGÕES INDUSTRIAIS: Modelos de 2, 4, 6 e 8 bocas com grelhas reforçadas 30x30cm e 40x40cm em ferro fundido.',
+    '  Disponíveis em Baixa Pressão (queimadores simples e duplos com controle fino de chama) e Alta Pressão (chama rápida).',
+    '• FRITADEIRAS PROFISSIONAIS ÁGUA E ÓLEO: Permitem decantação de resíduos na água com sal grosso no fundo da cuba,',
+    '  evitando que queima do resíduo amargue o óleo e estendendo a vida útil da gordura em até 60% com menor troca de insumo.',
+    '• CHAPAS BIFETEIRAS: Em chapa de aço carbono polido 1/4" e 5/16" com gaveta coletora de gordura removível em inox,',
+    '  garantindo selagem perfeita de carnes, lanches e hambúrgueres com distribuição térmica homogênea.',
+    '• FOGÕES POR INDUÇÃO INDUSTRIAIS: Tecnologia sem chama aberta, controle térmico digital instantâneo e máxima segurança.',
+  ];
+  ty = y - 18;
+  for (const c of coccaoItems) {
+    page2.drawText(c, { x: 45, y: ty, size: 7.5, font: fontRegular, color: rgb(0.25, 0.2, 0.15) });
+    ty -= 12.5;
+  }
+
+  drawPageFooter(page2);
+
+  // ==========================================
+  // PÁGINA 3: PROCESSAMENTO & ELETROPORTÁTEIS
+  // ==========================================
+  const page3 = doc.addPage([595.28, 841.89]);
+  const { width: p3W, height: p3H } = page3.getSize();
+  drawPageHeader(page3, 'Seção II: Eletroportáteis Industriais, Processamento & Utensílios de Inox', 3);
+
+  y = p3H - 75;
+
+  page3.drawText('5. LIQUIDIFICADORES INDUSTRIAIS: ALTA ROTAÇÃO VS BAIXA ROTAÇÃO', {
+    x: 35,
+    y: y,
+    size: 11.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  y -= 15;
+
+  // Box Comparativo Crítico: Alta vs Baixa
+  page3.drawRectangle({
+    x: 35,
+    y: y - 100,
+    width: (p3W - 80) / 2,
+    height: 100,
+    color: rgb(0.95, 0.98, 1),
+    borderColor: rgb(0.65, 0.8, 0.95),
+    borderWidth: 1,
+  });
+  page3.drawText('ALTA ROTAÇÃO (18.000 a 22.000 RPM)', {
+    x: 45,
+    y: y - 18,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.08, 0.36, 0.73),
+  });
+  const altaText = [
+    '• Para líquidos leves, sucos e shakes.',
+    '• Homogeneização ultrarrápida (15 a 30s).',
+    '• Copo em inox ou policarbonato cristal.',
+    '• Modelos de 1,5L a 4 Litros.',
+    '• ATENÇÃO: NÃO USAR para açaí ou cremes densos,',
+    '  pois queima o induzido de alta velocidade.',
+  ];
+  ty = y - 32;
+  for (const a of altaText) {
+    page3.drawText(a, { x: 45, y: ty, size: 7.2, font: fontRegular, color: rgb(0.2, 0.25, 0.35) });
+    ty -= 11;
+  }
+
+  // Coluna Baixa Rotação
+  const col2X = 35 + (p3W - 80) / 2 + 10;
+  page3.drawRectangle({
+    x: col2X,
+    y: y - 100,
+    width: (p3W - 80) / 2,
+    height: 100,
+    color: rgb(0.99, 0.97, 0.94),
+    borderColor: rgb(0.92, 0.78, 0.6),
+    borderWidth: 1,
+  });
+  page3.drawText('BAIXA ROTAÇÃO (3.500 RPM COM ALTO TORQUE)', {
+    x: col2X + 10,
+    y: y - 18,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.85, 0.42, 0.08),
+  });
+  const baixaText = [
+    '• Para polpas densas, açaí puro e molhos.',
+    '• Massas leves, maionese artesanal e pastas.',
+    '• Motor com alto torque que não trava.',
+    '• Copos reforçados em aço inox 304 escovado.',
+    '• Capacidades comerciais: 4L, 6L, 8L, 10L, 15L e 25L.',
+    '• O equipamento essencial para casas de açaí.',
+  ];
+  ty = y - 32;
+  for (const b of baixaText) {
+    page3.drawText(b, { x: col2X + 10, y: ty, size: 7.2, font: fontRegular, color: rgb(0.25, 0.22, 0.18) });
+    ty -= 11;
+  }
+  y -= 115;
+
+  // Foto 3: Preparo e Processamento
+  if (imgPreparo) {
+    const imgH = 150;
+    page3.drawImage(imgPreparo, {
+      x: 35,
+      y: y - imgH,
+      width: p3W - 70,
+      height: imgH,
+    });
+    page3.drawRectangle({
+      x: 35,
+      y: y - imgH,
+      width: p3W - 70,
+      height: 20,
+      color: rgb(0.08, 0.1, 0.14),
+    });
+    page3.drawText('Equipamentos de Preparação: Fatiadores de Frios de Precisão, Liquidificadores e Panelas de Inox', {
+      x: 45,
+      y: y - imgH + 6,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(0.9, 0.93, 0.98),
+    });
+    y -= (imgH + 18);
+  }
+
+  page3.drawText('6. PROCESSADORES DE ALIMENTOS, FATIADORES & PANELAS DE PRESSÃO', {
+    x: 35,
+    y: y,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  y -= 15;
+
+  page3.drawRectangle({
+    x: 35,
+    y: y - 110,
+    width: p3W - 70,
+    height: 110,
+    color: rgb(0.97, 0.98, 0.99),
+    borderColor: rgb(0.85, 0.88, 0.92),
+    borderWidth: 1,
+  });
+
+  const prepItems = [
+    '• FATIADORES DE FRIOS PROFISSIONAIS: Lâminas de 260mm, 300mm e 330mm com corte milimétrico regulável.',
+    '  Base em alumínio anodizado sanitário, afiador embutido e sistema de segurança contra contato acidental.',
+    '• PROCESSADORES DE ALIMENTOS SKYMSEN & METALCUBAS: Equipados com discos de corte intercambiáveis para ralar,',
+    '  fatiar, cortar em cubos e desfiar vegetais, queijos e frios em grande volume (rendimento superior a 250 kg/hora).',
+    '• EXTRATORES DE SUCO INDUSTRIAIS: Motores bivolt com castanhas para laranja e limão e copo coletor com peneira.',
+    '• PANELAS DE PRESSÃO INDUSTRIAIS (FULGOR, NIGRO & EIRILAR): Capacidades pesadas de 10L, 15L e 20L em alumínio',
+    '  de alta espessura com múltiplas válvulas de alívio de segurança e trava hermética para cocção acelerada.',
+    '• CUBAS GASTRONÔMICAS (GN) & UTENSÍLIOS TRAMONTINA: Padrão mundial GN 1/1, 1/2, 1/3, 1/4 e 1/6 em aço inox 304.',
+  ];
+  ty = y - 18;
+  for (const pr of prepItems) {
+    page3.drawText(pr, { x: 45, y: ty, size: 7.5, font: fontRegular, color: rgb(0.2, 0.25, 0.3) });
+    ty -= 12.5;
+  }
+
+  drawPageFooter(page3);
+
+  // ==========================================
+  // PÁGINA 4: VOLTAGEM, LOGÍSTICA & CONTATOS
+  // ==========================================
+  const page4 = doc.addPage([595.28, 841.89]);
+  const { width: p4W, height: p4H } = page4.getSize();
+  drawPageHeader(page4, 'Seção III: Instalação Técnica, Política Comercial, Frete & Contatos Oficiais', 4);
+
+  y = p4H - 75;
+
+  page4.drawText('7. DIRETRIZES TÉCNICAS MANDATÓRIAS: VOLTAGEM & FIAÇÃO ELÉTRICA', {
+    x: 35,
+    y: y,
+    size: 11.5,
+    font: fontBold,
+    color: rgb(0.85, 0.15, 0.15), // Alerta vermelho
+  });
+  y -= 15;
+
+  page4.drawRectangle({
+    x: 35,
+    y: y - 90,
+    width: p4W - 70,
+    height: 90,
+    color: rgb(1, 0.96, 0.96),
+    borderColor: rgb(0.9, 0.65, 0.65),
+    borderWidth: 1,
+  });
+
+  const voltagemText = [
+    '• CONFIRMAÇÃO OBRIGATÓRIA DA VOLTAGEM: Todos os motores comerciais requerem compatibilidade com a rede elétrica.',
+    '  Confirme sempre se o estabelecimento opera em 110V (127V monofásico) ou 220V (monofásico/bifásico).',
+    '• MOTORES PESADOS & TRIFÁSICOS: Moedores boca 32, masseiras grandes e fornos industriais exigem rede 220V/380V trifásica.',
+    '• CIRCUITOS DEDICADOS & TOMADAS 20A: Equipamentos com resistência de aquecimento (fritadeiras e balcões térmicos)',
+    '  nunca devem usar adaptadores ou benjamins (T) e devem ser ligados diretamente a disjuntores adequados e tomadas 20A.',
+    '• GARANTIA PRESERVADA: A correta especificação de voltagem na hora da compra previne perda de garantia de fábrica.',
+  ];
+  ty = y - 18;
+  for (const v of voltagemText) {
+    page4.drawText(v, { x: 45, y: ty, size: 7.7, font: fontRegular, color: rgb(0.4, 0.1, 0.1) });
+    ty -= 13;
+  }
+  y -= 105;
+
+  page4.drawText('8. POLÍTICA COMERCIAL, FORMAS DE PAGAMENTO & LOGÍSTICA', {
+    x: 35,
+    y: y,
+    size: 11.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  y -= 15;
+
+  page4.drawRectangle({
+    x: 35,
+    y: y - 110,
+    width: p4W - 70,
+    height: 110,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.75, 0.85, 0.95),
+    borderWidth: 1,
+  });
+
+  const condicoesText = [
+    '• DESCONTO ESPECIAL NO PIX: Desconto exclusivo para pagamento à vista via PIX com aprovação imediata do pedido.',
+    '• PARCELAMENTO NO CARTÃO DE CRÉDITO: Parcelamento em ambiente seguro e criptografado (Pagali / Loja Integrada).',
+    '• FATURAMENTO DIRETO PARA PESSOA JURÍDICA: Condições personalizadas para renovação ou montagem de cozinhas inteiras.',
+    '• TRANSPORTE RODOVIÁRIO PALETIZADO: Envio seguro para todos os municípios do Brasil via transportadoras homologadas,',
+    '  com seguro de carga integral contra qualquer avaria durante o trajeto até o estabelecimento do cliente.',
+    '• PRONTA-ENTREGA PARA SÃO PAULO: Opções de despacho acelerado para a capital paulista e Região Metropolitana.',
+    '• NOTA FISCAL & GARANTIA DE FÁBRICA: Todos os produtos acompanham Nota Fiscal eletrônica (NF-e) com garantia nacional.',
+  ];
+  ty = y - 18;
+  for (const c of condicoesText) {
+    page4.drawText(c, { x: 45, y: ty, size: 7.6, font: fontRegular, color: rgb(0.15, 0.25, 0.35) });
+    ty -= 13;
+  }
+  y -= 130;
+
+  // Box Contatos Oficiais Matriz
+  page4.drawRectangle({
+    x: 35,
+    y: y - 130,
+    width: p4W - 70,
+    height: 130,
+    color: rgb(0.12, 0.16, 0.22), // Fundo Chumbo
+    borderColor: rgb(0.88, 0.45, 0.08),
+    borderWidth: 2,
+  });
+
+  page4.drawText('CANAL DIRETO COM A EQUIPE COMERCIAL PRIMO EQUIPAMENTOS', {
+    x: 48,
+    y: y - 24,
+    size: 12,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+
+  page4.drawText('Consulte nossa consultora virtual Sofia ou fale diretamente com a equipe técnica da matriz:', {
+    x: 48,
+    y: y - 44,
+    size: 8.5,
+    font: fontRegular,
+    color: rgb(0.9, 0.92, 0.96),
+  });
+
+  page4.drawText('• Loja Virtual Oficial: https://primo-equipamentos.lojaintegrada.com.br/', {
+    x: 48,
+    y: y - 64,
+    size: 9,
     font: fontBold,
     color: rgb(1, 1, 1),
   });
 
-  page.drawText('Catálogo Oficial de Maquinário Gastronômico, Refrigeração e Cocção', {
-    x: 40,
-    y: height - 70,
-    size: 11,
-    font: fontRegular,
-    color: rgb(1, 0.95, 0.9),
+  page4.drawText('• WhatsApp Comercial: (11) 97333-4135  •  Central Telefônica Fixa: (11) 3313-2875', {
+    x: 48,
+    y: y - 82,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.95, 0.95, 1),
   });
+
+  page4.drawText('• E-mail Oficial: primoequipamentos@hotmail.com', {
+    x: 48,
+    y: y - 99,
+    size: 8.5,
+    font: fontRegular,
+    color: rgb(0.8, 0.85, 0.92),
+  });
+
+  page4.drawText('• Razão Social: Primo Equipamentos Ltda • CNPJ: 18.154.896/0001-29 • São Paulo / SP', {
+    x: 48,
+    y: y - 116,
+    size: 8,
+    font: fontOblique,
+    color: rgb(0.7, 0.75, 0.85),
+  });
+
+  drawPageFooter(page4);
 
   const pdfBytes = await doc.save();
   fs.writeFileSync(outputPath, pdfBytes);

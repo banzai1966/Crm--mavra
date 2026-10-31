@@ -157,6 +157,15 @@ async function startServer() {
     res.status(404).send('Manual do Cemitério Parque da Cantareira não encontrado.');
   });
 
+  // Route to view and print the Primo Equipamentos PDF / Dossier
+  app.get('/primo-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'primo_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual da Primo Equipamentos não encontrado.');
+  });
+
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
     const { phone, message, pushName, mediaType, fileName, instanceName, workspaceId } = req.body;
