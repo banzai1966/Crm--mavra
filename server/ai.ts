@@ -686,6 +686,9 @@ export async function processAiConversation(
     day: '2-digit',
   }).format(nowInBrazil);
 
+  const brazilHour = parseInt(brazilTimeShort.split(':')[0], 10) || 12;
+  const isNightOrMadrugada = brazilHour >= 20 || brazilHour < 8;
+
   // 13. Biblioteca de Áudios Reais do Especialista / Proprietário (Avaliação de Contexto e Concordância)
   const preRecordedList = (config.preRecordedAudios || []).filter((a) => a.enabled);
   const alreadyDispatched = new Set(lead.dispatchedAudioIds || []);
@@ -837,6 +840,14 @@ Seu objetivo comercial primordial é: ${config.salesGoal}.
 === CONTEXTO TEMPORAL & FUSO HORÁRIO DE BRASÍLIA (AMERICA/SAO_PAULO) ===
 - DATA ATUAL NO BRASIL: ${brazilDateFull} (Data ISO: ${brazilIsoDate}).
 - HORA ATUAL EM BRASÍLIA: ${brazilTimeShort} (Horário Oficial de Brasília, GMT-3).
+- PERÍODO: ${isNightOrMadrugada ? '🌙 NOITE / MADRUGADA (Fora do expediente administrativo comercial comum).' : '☀️ DIA (Expediente comercial ativo).'}
+${isNightOrMadrugada ? `⚠️ REGRA CRÍTICA DE ATENDIMENTO NOTURNO / MADRUGADA:
+  * Como agora é noite/madrugada (${brazilTimeShort}), a equipe humana administrativa e financeira não está na empresa.
+  * SE O CLIENTE PEDIR VALORES ESPECÍFICOS OU PROPOSTA FORMAL DA ADMINISTRAÇÃO:
+    NUNCA diga "vou pedir para alguém te ligar em instantes"! Isso deixaria o cliente acordado esperando no meio da madrugada.
+    Responda com extremo acolhimento: explique que, devido ao horário da madrugada, você já registrou o pedido dele com prioridade máxima no sistema, e que logo no primeiro horário da manhã (a partir das 08h) o consultor especialista já entrará em contato pelo WhatsApp com a simulação completa.
+  * SE FOR CASO DE FALECIMENTO / ÓBITO RECENTE (EMERGÊNCIA 24H):
+    Informe com carinho e respeito que o Cemitério possui Plantão Funerário Emergencial 24h pelo telefone oficial (11) 4485-1122 para amparo imediato da família.` : ''}
 - Todo o atendimento e prazos seguem estritamente o Horário Oficial de Brasília (America/Sao_Paulo).
 
 O lead com quem você está conversando é:
