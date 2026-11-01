@@ -1,5 +1,6 @@
 import { db } from './db';
 import { sendWhatsAppMessage } from './evolution';
+import { getCompanyPresetByInstance, resolveLeadWorkspaceId } from './companyConfigs';
 import { ChatMessage, Lead, BusinessNiche } from '../src/types';
 
 export interface FollowUpLog {
@@ -122,13 +123,20 @@ export async function runFollowUpCycle(): Promise<{ evaluated: number; sent: num
       if (timeSinceLastFollowUp < thresholdMs) continue;
     }
 
-    // Generate tailored message
-    const messageToSend = generateFollowUpMessage(lead, niche, customMessage);
+    // Determine lead's company and isolated config
+    const leadWorkspaceId = resolveLeadWorkspaceId(lead);
+    const leadPreset = getCompanyPresetByInstance(leadWorkspaceId);
+    const leadNiche = (leadPreset?.agentConfig?.followUpNiche || niche) as any;
+    const leadCustomMsg = leadPreset?.agentConfig?.followUpCustomMessage || customMessage;
+    const leadInstanceName = leadPreset?.instanceName || undefined;
 
-    console.log(`[Follow-Up Automático] Disparando follow-up (${niche}) para ${lead.name} (${lead.phone})...`);
+    // Generate tailored message strictly for this lead's company
+    const messageToSend = generateFollowUpMessage(lead, leadNiche, leadCustomMsg);
+
+    console.log(`[Follow-Up Automático] Disparando follow-up (${leadCompanyId} / ${leadNiche}) para ${lead.name} (${lead.phone})...`);
 
     try {
-      await sendWhatsAppMessage(lead.phone, messageToSend);
+      await sendWhatsAppMessage(lead.phone, messageToSend, undefined, leadInstanceName);
 
       const msgObj: ChatMessage = {
         id: 'msg-' + Date.now() + '-followup',

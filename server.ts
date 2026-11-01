@@ -867,7 +867,68 @@ async function startServer() {
     // Reset unread count when opening conversation
     lead.unreadCount = 0;
 
-    const msgs = db.messages.filter((m) => m.leadId === leadId);
+    const leadWk = resolveLeadWorkspaceId(lead);
+    const msgs = db.messages
+      .filter((m) => m.leadId === leadId)
+      .filter((m) => {
+        const txt = (m.text || '').toLowerCase();
+        // Cross-company leakage shield: never leak text of another tenant into this chat
+        if (leadWk === 'cantareira') {
+          if (
+            txt.includes('primo equipamentos') ||
+            txt.includes('verzel') ||
+            txt.includes('surface test') ||
+            txt.includes('dra. lucy') ||
+            txt.includes('equipamentos psi') ||
+            txt.includes('barra de luz')
+          ) {
+            return false;
+          }
+        } else if (leadWk === 'primo_equipamentos') {
+          if (
+            txt.includes('cemitério') ||
+            txt.includes('cantareira') ||
+            txt.includes('jazigo') ||
+            txt.includes('verzel') ||
+            txt.includes('dra. lucy') ||
+            txt.includes('plasma') ||
+            txt.includes('barra de luz')
+          ) {
+            return false;
+          }
+        } else if (leadWk === 'equipamentos_psi') {
+          if (
+            txt.includes('primo equipamentos') ||
+            txt.includes('cantareira') ||
+            txt.includes('jazigo') ||
+            txt.includes('dra. lucy') ||
+            txt.includes('verzel')
+          ) {
+            return false;
+          }
+        } else if (leadWk === 'verzel') {
+          if (
+            txt.includes('cantareira') ||
+            txt.includes('jazigo') ||
+            txt.includes('primo') ||
+            txt.includes('dra. lucy')
+          ) {
+            return false;
+          }
+        } else if (leadWk === 'clinic' || leadWk === 'dental') {
+          if (
+            txt.includes('cantareira') ||
+            txt.includes('jazigo') ||
+            txt.includes('primo') ||
+            txt.includes('verzel') ||
+            txt.includes('plasma')
+          ) {
+            return false;
+          }
+        }
+        return true;
+      });
+
     res.json(msgs);
   });
 
