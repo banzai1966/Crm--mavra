@@ -317,7 +317,19 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<
     'dashboard' | 'kanban' | 'chat' | 'calendar' | 'sales' | 'delivery' | 'agent' | 'evolution' | 'supabase'
-  >(() => (activeUrlNiche === 'delivery' ? 'delivery' : 'kanban'));
+  >(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedTab = (urlParams.get('tab') || urlParams.get('aba')) as any;
+    if (
+      requestedTab &&
+      ['dashboard', 'kanban', 'chat', 'calendar', 'sales', 'delivery', 'agent', 'evolution', 'supabase'].includes(
+        requestedTab
+      )
+    ) {
+      return requestedTab;
+    }
+    return activeUrlNiche === 'delivery' ? 'delivery' : 'dashboard';
+  });
 
   const activeTabRef = useRef(activeTab);
   useEffect(() => {

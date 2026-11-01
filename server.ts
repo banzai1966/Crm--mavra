@@ -166,6 +166,15 @@ async function startServer() {
     res.status(404).send('Manual da Primo Equipamentos não encontrado.');
   });
 
+  // Route to view and print the official NEXA CRM Presentation Guide
+  app.get(['/nexa-guia', '/nexa-manual', '/apresentacao-nexa'], (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'nexa_guia.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Guia Oficial do NEXA CRM não encontrado.');
+  });
+
   // Simulator route to simulate incoming WhatsApp message directly from the UI
   app.post('/api/webhook/simulate', (req: Request, res: Response) => {
     const { phone, message, pushName, mediaType, fileName, instanceName, workspaceId } = req.body;
