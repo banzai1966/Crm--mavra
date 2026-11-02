@@ -692,7 +692,11 @@ Website Oficial: https://primo-equipamentos.lojaintegrada.com.br/
 Razão Social / CNPJ: PRIMO EQUIPAMENTOS LTDA. — CNPJ: 18.154.896/0001-29
 Segmento: Equipamentos, máquinas, balanças, utensílios e soluções completas para cozinhas industriais, açougues, padarias, bares, restaurantes, lanchonetes e pizzarias.
 
-1. REFRIGERAÇÃO COMERCIAL & AÇOUGUES:
+1. REFRIGERAÇÃO COMERCIAL, GELADEIRAS INDUSTRIAIS & AÇOUGUES:
+- Geladeira Grep 6 Portas Inox Gelopar (A Melhor da Categoria): R$ 13.899,00
+  (Refrigerador vertical profissional em aço inox escovado 430, 6 portas com fechamento automático, estantes reguláveis, ar forçado para cozinhas pesadas e restaurantes).
+- Refrigerador Vertical Gelopar GPC-57 Tripla Ação: R$ 6.706,00
+  (570 Litros de capacidade útil, tripla ação: resfriados, bebidas ou congelados, porta de vidro aquecido antiembaçante).
 - GATS-200 PR Balcão de Açougue com Depósito Gelopar: R$ 17.869,00
   (Gancheira dupla superior, depósito refrigerado inferior para estoque, serpentina em cobre, iluminação LED especial).
 - Expositor Ilha Standard GESV-190 ou GESV-290 Gelopar: A partir de R$ 9.109,00
@@ -701,6 +705,7 @@ Segmento: Equipamentos, máquinas, balanças, utensílios e soluções completas
   (Tripla ação: refrigerador +1°C a +7°C, conservador -12°C a -16°C ou congelador -18°C a -22°C, gás ecológico R290).
 - Freezer Vertical Gpc 57 Gelopar: R$ 6.306,00
   (Conservador de congelados frost free com 2 anos de garantia oficial de fábrica Gelopar).
+- Expositor Vertical Comercial Conveniência Gelopar (GCVR-1450/1950/2500): A partir de R$ 17.434,00.
 - Cervejeiras Comerciais Subzero (-6°C a +2°C, porta de vidro duplo aquecido antiembaçante).
 
 2. LINHA QUENTE & COCÇÃO PESADA:
@@ -735,7 +740,21 @@ Segmento: Equipamentos, máquinas, balanças, utensílios e soluções completas
 - Balança Digital Toledo Prix 3 Fit 15Kg com Bateria: R$ 889,00
   (Compacta para buffets por quilo, hortifrútis e pequenos comércios).
 
-5. PROCESSAMENTO DE ALIMENTOS & FRIOS:
+5. PROCESSAMENTO DE ALIMENTOS, FRIOS & SUCOS:
+- Processador de Alimentos PA7 Pro com 7 Discos Skymsen: R$ 6.510,00
+  (Capacidade até 250 kg/h, 7 discos inclusos para fatiar, ralar e cubos em cozinhas industriais).
+- Liquidificador Industrial Basculante Skymsen LB 25 (25 Litros): R$ 2.959,00.
+- Liquidificador Industrial Basculante Skymsen LB 15 (15 Litros): R$ 2.879,00.
+- Linha Comercial de Liquidificadores Skymsen LS (Baixa Rotação / Alto Torque):
+  • LS 10 (10 Litros): R$ 1.950,00
+  • LS 08 (8 Litros): R$ 1.850,00
+  • LS 06 (6 Litros): R$ 1.720,00
+  • LS 04 (4 Litros): R$ 1.650,00
+  • LS 03 (3 Litros): R$ 1.539,00
+- TA 4 Liquidificador Monobloco Inox Skymsen (4 Litros): R$ 1.654,00.
+- LI 1.5 Liquidificador Inox Skymsen (1,5 Litros): R$ 822,00.
+- LT 1.5 Liquidificador Copo Plástico Skymsen (1,5 Litros): R$ 749,00.
+- Multiprocessador de Alimentos USB: R$ 54,00.
 - Cortador de Frios GLP-300 Semiautomático Lâmina 25cm Gural: A partir de R$ 6.467,00
   (Lâmina alemã temperada, deslizamento macio com rolamentos blindados, acabamento nobre sanitário).
 - Fatiador de Frios Cortador 202mm BM06 Inox Bivolt Bermar: R$ 2.270,00
@@ -744,13 +763,15 @@ Segmento: Equipamentos, máquinas, balanças, utensílios e soluções completas
   (Motor comercial de 0,5 CV para extração contínua em lanchonetes e bares).
 - EXB-N 1,2L Extrator de Suco Industrial Inox Skymsen: R$ 989,00
   (Copo de 1,2L com peneira acoplada, castanhas para laranja e limão).
-- Liquidificadores Industriais: Alta Rotação (sucos e shakes, 18.000 a 22.000 RPM) vs Baixa Rotação (açaí, polpas e massas densas, 3.500 RPM alto torque, de 2L a 25L).
 
-6. UTENSÍLIOS PROFISSIONAIS & FRIGIDEIRAS:
-- Frigideira Tramontina em Aço Inox com Fundo Triplo: A partir de R$ 709,00
-  (Linha Tramontina Grano / Professional com fundo triplo inox + alumínio + inox, tampa e cabo térmico).
-- Frigideira Pergaminho 20 cm Kit com 10 Peças: R$ 499,00
-  (Kit com 10 unidades para servir porções, petiscos e pratos à la carte à mesa com charme rústico).
+6. PANELAS INDUSTRIAIS, FRIGIDEIRAS & UTENSÍLIOS PROFISSIONAIS:
+- Panela de Pressão Industrial 35 Litros Fulgor: R$ 1.698,00
+  (35 Litros de capacidade para grandes volumes com tripla segurança).
+- Panela de Pressão 6L Fundo Triplo Inox Allegra Tramontina: R$ 1.190,00.
+- Frigideiras Tramontina em Aço Inox com Fundo Triplo (24cm, 26cm, 28cm): A partir de R$ 709,00.
+- Frigideira Pergaminho 20 cm Kit com 10 Peças: R$ 499,00.
+- Kit Churrasco com Caixa Tramontina 16 Peças: R$ 689,00.
+- Pegador de Gelo Aço Inox Original 20 cm: R$ 9,98.
 
 7. CANAIS DE CONTATO E SUPORTE:
 - Telefone Fixo: (11) 3313-2875

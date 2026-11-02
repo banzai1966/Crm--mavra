@@ -68,38 +68,63 @@ R: Sim! Todos os equipamentos novos contam com garantia oficial de fábrica (por
 
 P: Por que a voltagem é tão importante?
 R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica para motores pesados como a Amassadeira AM25) antes de concluir a compra para evitar queima de motor ou incompatibilidade na instalação da cozinha.`,
-      knowledgeCatalog: `CATÁLOGO OFICIAL DE PRODUTOS & PREÇOS — PRIMO EQUIPAMENTOS (2026):
+      knowledgeCatalog: `CATÁLOGO OFICIAL DE PRODUTOS, ESPECIFICAÇÕES & PREÇOS — PRIMO EQUIPAMENTOS (2026):
 
-1. REFRIGERAÇÃO COMERCIAL & AÇOUGUES:
-• GATS-200 PR Balcão de Açougue com Depósito Gelopar — R$ 17.869,00
-  (Exposição de carnes frescas e frios. Gancheira dupla superior, depósito refrigerado inferior para estoque, serpentina em cobre, iluminação LED especial).
-• Expositor Ilha Standard GESV-190 ou GESV-290 Gelopar — A partir de R$ 9.109,00
-  (Ilha de congelados com tampas de vidro curvo Low-E de baixa emissividade, termômetro digital e alta eficiência).
+1. REFRIGERAÇÃO COMERCIAL, GELADEIRAS INDUSTRIAIS & AÇOUGUES:
+• Geladeira Grep 6 Portas Inox Gelopar (A Melhor da Categoria) — R$ 13.899,00
+  (Refrigerador vertical profissional em aço inox escovado 430, 6 portas com fechamento automático, estantes reguláveis, ar forçado com serpentina aletada, ideal para cozinhas industriais pesadas e restaurantes).
+• Refrigerador Vertical Gelopar GPC-57 Tripla Ação — R$ 6.706,00
+  (Tripla Ação: refrigeração para bebidas, resfriados ou congelados, 570 Litros de capacidade útil, porta de vidro aquecido antiembaçante, termostato digital regulável).
 • Freezer Vertical 531 Litros VF55FT Tripla Ação Metalfrio — R$ 5.920,00 (De R$ 8.184,00 com 28% de desconto!)
-  (Tripla ação: refrigerador +1°C a +7°C, conservador -12°C a -16°C ou congelador -18°C a -22°C, gás ecológico R290).
-• Freezer Vertical Gpc 57 Gelopar — R$ 6.306,00
-  (Conservador de congelados frost free com 2 anos de garantia oficial de fábrica Gelopar).
-• Cervejeiras Comerciais Subzero (-6°C a +2°C, porta de vidro duplo aquecido antiembaçante).
+  (Capacidade de 531 Litros. 3 faixas de temperatura: refrigerador +1°C a +7°C, conservador -12°C a -16°C ou congelador -18°C a -22°C. Gás ecológico R290, alta economia de energia, 110V ou 220V).
+• Freezer Vertical Gpc 57 Gelopar com 2 Anos de Garantia — R$ 6.306,00
+  (Tecnologia Frost Free, 2 anos de garantia oficial Gelopar de fábrica, prateleiras reforçadas, excelente isolamento em poliuretano injetado).
+• GATS-200 PR Balcão de Açougue com Depósito Gelopar — R$ 17.869,00
+  (Exposição de carnes frescas e frios. Gancheira dupla superior, depósito refrigerado inferior para estoque, serpentina em cobre superior e placa fria inferior, iluminação LED especial).
+• Expositor Ilha Standard GESV-190 ou GESV-290 Gelopar — A partir de R$ 9.109,00
+  (Ilha de congelados para supermercados e empórios com tampas de vidro curvo temperado Low-E de baixa emissividade, termômetro digital, divisórias aramadas).
+• Refrigerador Vertical Comercial Conveniência Gelopar (GCVR-1450, GCVR-1950 e GCVR-2500) — A partir de R$ 17.434,00
+  (Modelos de 3 a 5 portas de vidro para exposição de bebidas, laticínios e autoatendimento com refrigeração por ar forçado).
 
-2. LINHA QUENTE & COCÇÃO PESADA:
+2. LINHA SKYMSEN DE LIQUIDIFICADORES & PROCESSADORES DE ALIMENTOS:
+• Processador de Alimentos PA7 Pro com 7 Discos Skymsen — R$ 6.510,00
+  (Processador industrial para cozinhas de alta produção: pica, rala, fatia e corta em cubos legumes e queijos com rendimento de até 250 kg/hora. Acompanha 7 discos profissionais).
+• Liquidificador Industrial Basculante Skymsen LB 25 (25 Litros) — R$ 2.959,00
+  (Capacidade de 25 Litros, sistema basculante que facilita despejar o conteúdo sem esforço físico, motor de alto torque para massas pesadas, polpas e molhos).
+• Liquidificador Industrial Basculante Skymsen LB 15 (15 Litros) — R$ 2.879,00
+  (Capacidade de 15 Litros basculante, aço inox 304 sanitário, ideal para refeitórios industriais e restaurantes de grande porte).
+• Linha de Liquidificadores Comerciais Skymsen LS (Baixa Rotação / Alto Torque):
+  - LS 10 (10 Litros) — R$ 1.950,00
+  - LS 08 (8 Litros) — R$ 1.850,00
+  - LS 06 (6 Litros) — R$ 1.720,00
+  - LS 04 (4 Litros) — R$ 1.650,00
+  - LS 03 (3 Litros) — R$ 1.539,00
+  (Toda a linha LS possui copos em aço inox sem soldas e motor de alto torque para triturar polpas congeladas, açaí, maioneses e massas densas).
+• TA 4 Liquidificador Monobloco Inox Skymsen (4 Litros) — R$ 1.654,00
+  (Copo monobloco em peça única de aço inox sem frestas ou rebites, máxima higienização padrão sanitário ANVISA).
+• LI 1.5 Liquidificador Inox Skymsen (1,5 Litros) — R$ 822,00 (Alta Rotação para sucos e vitaminas).
+• LT 1.5 Liquidificador Copo Plástico Skymsen (1,5 Litros) — R$ 749,00 (Econômico e resistente).
+• Multiprocessador de Alimentos USB Recarregável — R$ 54,00 (Prático para picar alho, cebola e pequenos temperos).
+
+3. LINHA QUENTE & COCÇÃO PESADA:
 • Fritador Vulcan LG 300 a Gás GLP (Líder Mundial do Food Service) — R$ 13.960,00
-  (Tanque 18L a 21L, 3 queimadores pesados de ferro fundido com 90.000 BTU/h, sistema de zona fria e recuperação térmica instantânea).
+  (Tanque de 18L a 21L, 3 queimadores pesados de ferro fundido com 90.000 BTU/h, zona fria decantadora e recuperação térmica instantânea).
 • Fogão 1 Boca Indução Linha Profissional Tramontina 3500W — R$ 3.599,90
-  (Potência de 3,5 kW em 220V, mesa vitrocerâmica, controle touch com 10 níveis de potência e timer digital).
+  (Potência de 3,5 kW em 220V, mesa vitrocerâmica, controle touch com 10 níveis de potência, seguro e sem irradiação excessiva de calor na cozinha).
 • FC-N Fritadeira Elétrica Skymsen — R$ 3.099,00
   (Gabinete e cuba em aço inox escovado, termostato de segurança e alta durabilidade).
 • Fritadeira Zona Fria 15 Litros de Mesa Fzm8 Croydon 220V — R$ 2.406,00
-  (15 Litros de capacidade, zona fria decantadora no fundo que economiza até 60% de óleo, 5.000W em 220V).
+  (15 Litros de óleo, zona fria decantadora no fundo que economiza até 60% de óleo, 5.000W em 220V).
 
-3. PANIFICAÇÃO, MASSAS & CONFEITARIA:
+4. PANIFICAÇÃO, MASSAS & CONFEITARIA:
 • Amassadeira Semi Rápida AM25 G.Paniz (25kg de Massa Pronta) — R$ 7.199,00
   (Capacidade para até 25kg de massa pronta, espiral estanhado em ferro fundido, tacho em inox 304, alto torque para pães e pizzas).
-• Batedeira com Pedestal Industrial G.Paniz Bambina BP-05B Bivolt (5L) — R$ 2.923,00
+• Batedeira com Pedestal Industrial G.Paniz Bambina BP-05B Bivolt (5 Litros) — R$ 2.923,00
   (Acompanha 3 batedores: globo, raquete e gancho; velocidade ajustável para chantilly, cremes e massas leves).
-• Chocolateira Marchesoni 3L - Potência Versátil — R$ 2.699,00
+• Chocolateira Marchesoni 3L Potência Versátil — R$ 2.699,00
   (3 Litros, pá giratória contínua para manter chocolate encorpado sem queimar no fundo, termostato até 90°C).
 
-4. PESAGEM COMERCIAL, AUTOMAÇÃO & CHECK-OUT:
+5. PESAGEM COMERCIAL, AUTOMAÇÃO & CHECK-OUT:
 • Balança Automação Comercial Ramuza Atena II 35Kg com Wi-Fi — R$ 4.160,00
   (Impressor térmico integrado de etiquetas de código de barras e tabela nutricional, Wi-Fi e Ethernet homologada INMETRO).
 • Balança Comercial Toledo 8217 Capacidade 32Kg de Check-out — R$ 2.899,00
@@ -113,7 +138,7 @@ R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica
 • Balança Digital Toledo Prix 3 Fit 15Kg com Bateria — R$ 889,00
   (Compacta para buffets por quilo, hortifrútis e pequenos comércios).
 
-5. PROCESSAMENTO DE ALIMENTOS & FRIOS:
+6. PROCESSAMENTO DE CARNES, FRIOS & SUCOS:
 • Cortador de Frios GLP-300 Semiautomático Lâmina 25cm Gural — A partir de R$ 6.467,00
   (Lâmina alemã temperada, deslizamento macio com rolamentos blindados, acabamento nobre sanitário).
 • Fatiador de Frios Cortador 202mm BM06 Inox Bivolt Bermar — R$ 2.270,00
@@ -122,13 +147,20 @@ R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica
   (Motor comercial de 0,5 CV para extração contínua em lanchonetes e bares).
 • EXB-N 1,2L Extrator de Suco Industrial Inox Skymsen — R$ 989,00
   (Copo de 1,2L com peneira acoplada, castanhas para laranja e limão).
-• Liquidificadores Industriais: Alta Rotação (sucos e shakes, 18.000 a 22.000 RPM) vs Baixa Rotação (açaí, polpas e massas densas, 3.500 RPM alto torque, de 2L a 25L).
 
-6. UTENSÍLIOS PROFISSIONAIS & FRIGIDEIRAS:
-• Frigideira Tramontina em Aço Inox com Fundo Triplo — A partir de R$ 709,00
-  (Linha Tramontina Grano / Professional com fundo triplo inox + alumínio + inox, tampa e cabo térmico).
+7. PANELAS INDUSTRIAIS, FRIGIDEIRAS & UTENSÍLIOS PROFISSIONAIS:
+• Panela de Pressão Industrial 35 Litros Fulgor — R$ 1.698,00
+  (35 Litros de capacidade para grandes volumes em cozinhas de escolas, hospitais, fábricas e buffets. Válvula de peso pesada e fecho hermético).
+• Panela de Pressão 6 Litros Fundo Triplo Inox Allegra Tramontina — R$ 1.190,00
+  (Aço inox de alto brilho com fundo triplo difusor térmico para máxima eficiência e durabilidade).
+• Frigideiras Tramontina em Aço Inox com Fundo Triplo (Tampa, Cabo e Alça) — A partir de R$ 709,00
+  (Tamanhos disponíveis: 24 cm, 26 cm e 28 cm. Fundo triplo inox + alumínio + inox, distribui o calor uniformemente sem deformar).
 • Frigideira Pergaminho 20 cm Kit com 10 Peças — R$ 499,00
-  (Kit com 10 unidades para servir porções, petiscos e pratos à la carte à mesa com charme rústico).`,
+  (Kit com 10 unidades em alumínio resistente para servir porções, petiscos e pratos à la carte à mesa com elegância).
+• Kit Churrasco com Caixa Tramontina 16 Peças — R$ 689,00
+  (Kit profissional com lâminas de aço inox e cabos de madeira tratada Polywood em estojo nobre de madeira).
+• Pegador de Gelo Aço Inox Original 20 cm — R$ 9,98
+  (Aço inoxidável sanitário com dentes anatômicos para cubos de gelo e guarnições de bar).`,
       knowledgePricing: `POLÍTICA COMERCIAL DA PRIMO EQUIPAMENTOS:
 - Desconto especial no PIX à vista com confirmação imediata.
 - Parcelamento facilitado em até 12x no cartão de crédito via Pagali / Loja Integrada.
@@ -137,11 +169,16 @@ R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica
       knowledgeRules: `DIRETRIZES FUNDAMENTAIS DE ATENDIMENTO DA SOFIA (PRIMO EQUIPAMENTOS):
 1. VOCÊ É EXCLUSIVAMENTE DA PRIMO EQUIPAMENTOS. Jamais fale de software (Verzel), plasma (Surface) ou dentista (Dra. Lucy).
 2. IDENTIFICAÇÃO DO NEGÓCIO: Pergunte qual é o comércio do cliente (restaurante, lanchonete, bar, padaria, delivery, açougue ou hamburgueria) e qual preparação ele precisa fazer.
-3. INFORMAÇÃO PRECISA DE PREÇOS: Você possui a tabela oficial com preços exatos de balanças (Prix 3 Plus R$ 1.100, Prix 3 Fit R$ 889, Ramuza Wi-Fi R$ 4.160), masseiras (G.Paniz AM25 R$ 7.199), fritadeiras (Vulcan LG 300 R$ 13.960, Croydon R$ 2.406), fatiadores (Gural R$ 6.467, Bermar R$ 2.270) e refrigeração (Balcão GATS-200 R$ 17.869, Metalfrio 531L R$ 5.920).
+3. INFORMAÇÃO PRECISA DE PREÇOS E ESPECIFICAÇÕES: Você possui a tabela oficial com preços e litros exatos:
+   - Geladeiras e Freezers: Grep 6 Portas R$ 13.899, Freezer 531L Metalfrio R$ 5.920, Gelopar Gpc 57 R$ 6.306, Balcão GATS-200 R$ 17.869, Ilha GESV R$ 9.109, Conveniência GCVR R$ 17.434.
+   - Liquidificadores Skymsen: Processador PA7 Pro R$ 6.510, Basculantes LB 25L (R$ 2.959) e LB 15L (R$ 2.879), Comerciais LS 10L (R$ 1.950), LS 8L (R$ 1.850), LS 6L (R$ 1.720), LS 4L (R$ 1.650), LS 3L (R$ 1.539), Monobloco TA 4L (R$ 1.654), Inox LI 1.5L (R$ 822), Copo Plástico LT 1.5L (R$ 749).
+   - Panelas e Utensílios: Panela de Pressão 35L Fulgor R$ 1.698, Tramontina Allegra 6L R$ 1.190, Frigideira Pergaminho kit 10 un R$ 499, Frigideiras Tramontina Inox Fundo Triplo a partir de R$ 709, Pegador de Gelo R$ 9,98, Kit Churrasco Tramontina R$ 689.
+   - Balanças: Toledo Prix 3 Plus R$ 1.100, Prix 3 Fit R$ 889, Ramuza Wi-Fi R$ 4.160, Toledo 8217 R$ 2.899, Triunfo 300kg R$ 1.787.
+   - Cocção e Panificação: Amassadeira AM25 R$ 7.199, Batedeira Bambina 5L R$ 2.923, Fritador Vulcan LG 300 R$ 13.960, Fogão Indução Tramontina R$ 3.599,90, Croydon 15L R$ 2.406, Chocolateira Marchesoni R$ 2.699.
 4. VOLTAGEM OBRIGATÓRIA: Sempre confirme a voltagem necessária (110V ou 220V) para orientar o modelo correto antes de fechar o pedido.
-5. ALTA VS BAIXA ROTAÇÃO: Se o cliente perguntar de liquidificador, explique que Alta Rotação é para líquidos/sucos e Baixa Rotação é para massas, polpas, açaí e molhos pesados.
+5. ALTA VS BAIXA ROTAÇÃO: Se o cliente perguntar de liquidificador, explique que Alta Rotação (18.000 a 22.000 RPM) é para líquidos/sucos e Baixa Rotação (3.500 RPM com alto torque) é para massas, polpas congeladas, açaí puro e molhos pesados.
 6. FRETE: Peça o CEP para cotar frete e prazo de entrega via transportadora homologada.
-7. CATÁLOGO EM PDF: Quando o cliente pedir catálogo, fotos ou prospecto, informe que está enviando o Catálogo Oficial de 6 páginas completo da Primo Equipamentos (Catalogo_Primo_Equipamentos.pdf).`,
+7. CATÁLOGO EM PDF: Quando o cliente pedir catálogo, fotos ou prospecto, informe que está enviando o Catálogo Oficial completo da Primo Equipamentos (Catalogo_Primo_Equipamentos.pdf).`,
     },
   },
 
