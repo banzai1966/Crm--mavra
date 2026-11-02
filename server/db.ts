@@ -686,29 +686,80 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
       id: 'doc-primo-equipamentos',
       name: 'Catalogo_Completo_Primo_Equipamentos.txt',
       type: 'txt',
-      size: 5100,
-      contentText: `MANUAL E CATÁLOGO COMPLETO — PRIMO EQUIPAMENTOS
+      size: 9800,
+      contentText: `MANUAL E CATÁLOGO OFICIAL COMPLETO — PRIMO EQUIPAMENTOS (2026)
 Website Oficial: https://primo-equipamentos.lojaintegrada.com.br/
 Razão Social / CNPJ: PRIMO EQUIPAMENTOS LTDA. — CNPJ: 18.154.896/0001-29
-Segmento: Equipamentos, máquinas, utensílios e soluções completas para cozinhas industriais, bares, restaurantes, lanchonetes, pizzarias, padarias e estabelecimentos comerciais.
+Segmento: Equipamentos, máquinas, balanças, utensílios e soluções completas para cozinhas industriais, açougues, padarias, bares, restaurantes, lanchonetes e pizzarias.
 
-1. PORTFÓLIO DE PRODUTOS & EQUIPAMENTOS:
-- Fritadeiras Industriais: Modelos elétricos e a gás de alta performance (marcas renomadas como Croydon, Skymsen, etc.), com termostato de precisão e cestos robustos em aço inox.
-- Extratores de Suco e Liquidificadores: Extratores bivolt em alumínio/inox para lanchonetes, liquidificadores industriais de alta rotação (para vitaminas) e baixa rotação (para pastas, massas e molhos) de 2 a 25 litros.
-- Processadores de Alimentos & Fatiadores de Frios: Multiprocessadores para ralar, desfiar e fatiar legumes e queijos; fatiadores de frios profissionais com lâminas temperadas para açougues, mercados e restaurantes.
-- Masseiras, Moedores e Equipamentos de Preparo: Masseiras planetárias e espirais, moedores de carne boca 5, 8, 22 e 32, descascadores de batatas e serras fita para carne.
-- Fogões Industriais & Indução: Fogões de alta e baixa pressão em ferro fundido, chapas sanduicheiras a gás/elétricas e fogões por indução profissionais.
-- Refrigeradores e Expositores: Balcões refrigerados para açougue e frios, cervejeiras, expositores verticais e ilhas congeladas.
-- Utensílios de Inox & Cozinha: Panelas industriais, caldeirões, travessas, pegadores de gelo, kits de churrasco e utensílios gerais para operação gastronômica.
+1. REFRIGERAÇÃO COMERCIAL & AÇOUGUES:
+- GATS-200 PR Balcão de Açougue com Depósito Gelopar: R$ 17.869,00
+  (Gancheira dupla superior, depósito refrigerado inferior para estoque, serpentina em cobre, iluminação LED especial).
+- Expositor Ilha Standard GESV-190 ou GESV-290 Gelopar: A partir de R$ 9.109,00
+  (Ilha de congelados com tampas de vidro curvo Low-E de baixa emissividade e termômetro digital).
+- Freezer Vertical 531 Litros VF55FT Tripla Ação Metalfrio: R$ 5.920,00 (De R$ 8.184,00 com 28% de desconto!)
+  (Tripla ação: refrigerador +1°C a +7°C, conservador -12°C a -16°C ou congelador -18°C a -22°C, gás ecológico R290).
+- Freezer Vertical Gpc 57 Gelopar: R$ 6.306,00
+  (Conservador de congelados frost free com 2 anos de garantia oficial de fábrica Gelopar).
+- Cervejeiras Comerciais Subzero (-6°C a +2°C, porta de vidro duplo aquecido antiembaçante).
 
-2. CANAIS DE CONTATO E SUPORTE:
+2. LINHA QUENTE & COCÇÃO PESADA:
+- Fritador Vulcan LG 300 a Gás GLP (Líder Mundial do Food Service): R$ 13.960,00
+  (Tanque 18L a 21L, 3 queimadores pesados de ferro fundido com 90.000 BTU/h, sistema de zona fria e recuperação instantânea).
+- Fogão 1 Boca Indução Linha Profissional Tramontina 3500W: R$ 3.599,90
+  (Potência de 3,5 kW em 220V, mesa vitrocerâmica, controle touch com 10 níveis de potência e timer digital).
+- FC-N Fritadeira Elétrica Skymsen: R$ 3.099,00
+  (Gabinete e cuba em aço inox escovado, termostato de segurança e alta durabilidade).
+- Fritadeira Zona Fria 15 Litros de Mesa Fzm8 Croydon 220V: R$ 2.406,00
+  (15 Litros de capacidade, zona fria decantadora no fundo que economiza até 60% de óleo, 5.000W em 220V).
+
+3. PANIFICAÇÃO, MASSAS & CONFEITARIA:
+- Amassadeira Semi Rápida AM25 G.Paniz (25kg de Massa Pronta): R$ 7.199,00
+  (Capacidade para até 25kg de massa pronta, espiral estanhado em ferro fundido, tacho em inox 304, alto torque para pães e pizzas).
+- Batedeira com Pedestal Industrial G.Paniz Bambina BP-05B Bivolt (5L): R$ 2.923,00
+  (Acompanha 3 batedores: globo, raquete e gancho; velocidade ajustável para chantilly, cremes e massas leves).
+- Chocolateira Marchesoni 3L - Potência Versátil: R$ 2.699,00
+  (3 Litros, pá giratória contínua para manter chocolate encorpado sem queimar no fundo, termostato até 90°C).
+
+4. PESAGEM COMERCIAL, AUTOMAÇÃO & CHECK-OUT:
+- Balança Automação Comercial Ramuza Atena II 35Kg com Wi-Fi: R$ 4.160,00
+  (Impressor térmico integrado de etiquetas de código de barras e tabela nutricional, Wi-Fi e Ethernet homologada INMETRO).
+- Balança Comercial Toledo 8217 Capacidade 32Kg de Check-out: R$ 2.899,00
+  (Para embutir em balcões de caixa de supermercados e atacarejos, comunicação RS-232 e USB com PDV).
+- Balança Eletrônica Plataforma Triunfo 300Kg Inox 40x60 Bivolt: R$ 1.787,00
+  (Plataforma reforçada em inox para recebimento de mercadorias em docas e câmaras frias, coluna articulada).
+- Balança Eletrônica Display Remoto Blue One Upx SolutiBon: R$ 1.662,00
+  (Indicador digital remoto para balcões e bancadas de atendimento).
+- Balança Digital Toledo Prix 3 Plus 30Kg com Bateria: R$ 1.100,00
+  (A mais vendida do Brasil! Display duplo para cliente e operador com backlight azul, bateria com 200h de autonomia).
+- Balança Digital Toledo Prix 3 Fit 15Kg com Bateria: R$ 889,00
+  (Compacta para buffets por quilo, hortifrútis e pequenos comércios).
+
+5. PROCESSAMENTO DE ALIMENTOS & FRIOS:
+- Cortador de Frios GLP-300 Semiautomático Lâmina 25cm Gural: A partir de R$ 6.467,00
+  (Lâmina alemã temperada, deslizamento macio com rolamentos blindados, acabamento nobre sanitário).
+- Fatiador de Frios Cortador 202mm BM06 Inox Bivolt Bermar: R$ 2.270,00
+  (Compacto, potente, motor bivolt chaveado, lâmina de 202mm).
+- ESB Super-N Skymsen Extrator de Suco Inox: R$ 1.719,00
+  (Motor comercial de 0,5 CV para extração contínua em lanchonetes e bares).
+- EXB-N 1,2L Extrator de Suco Industrial Inox Skymsen: R$ 989,00
+  (Copo de 1,2L com peneira acoplada, castanhas para laranja e limão).
+- Liquidificadores Industriais: Alta Rotação (sucos e shakes, 18.000 a 22.000 RPM) vs Baixa Rotação (açaí, polpas e massas densas, 3.500 RPM alto torque, de 2L a 25L).
+
+6. UTENSÍLIOS PROFISSIONAIS & FRIGIDEIRAS:
+- Frigideira Tramontina em Aço Inox com Fundo Triplo: A partir de R$ 709,00
+  (Linha Tramontina Grano / Professional com fundo triplo inox + alumínio + inox, tampa e cabo térmico).
+- Frigideira Pergaminho 20 cm Kit com 10 Peças: R$ 499,00
+  (Kit com 10 unidades para servir porções, petiscos e pratos à la carte à mesa com charme rústico).
+
+7. CANAIS DE CONTATO E SUPORTE:
 - Telefone Fixo: (11) 3313-2875
 - WhatsApp Comercial: (11) 97333-4135
 - E-mail: primoequipamentos@hotmail.com
 
-3. PAGAMENTO, FRETE E ENTREGAS:
-- Formas de Pagamento: Pix com confirmação instantânea, boleto bancário e cartões de crédito/débito via intermediador seguro na Loja Integrada.
-- Frete e Prazos: O cálculo exato do frete e o prazo de entrega são realizados de forma automatizada no site ao informar o CEP de destino. Atendimento para todo o Brasil, com agilidade em envios para São Paulo e Grande SP.
+8. PAGAMENTO, FRETE E ENTREGAS:
+- Formas de Pagamento: Pix com confirmação instantânea e desconto especial, parcelamento em até 12x no cartão de crédito via Pagali / Loja Integrada.
+- Frete e Prazos: O cálculo exato do frete e o prazo de entrega são realizados a partir do CEP de destino informado pelo cliente. Atendimento para todo o Brasil com transporte rodoviário paletizado e seguro total de carga. Pronta-entrega para São Paulo e Grande SP.
 - Garantia: Equipamentos com garantia de fábrica contra defeitos de fabricação e assistência técnica especializada.`,
       uploadedAt: new Date().toISOString(),
     },

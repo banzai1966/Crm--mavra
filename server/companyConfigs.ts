@@ -54,36 +54,94 @@ export const COMPANY_PRESETS: Record<string, CompanyPresetDefinition> = {
 P: O que é a Primo Equipamentos?
 R: A Primo Equipamentos (CNPJ 18.154.896/0001-29) é especialista no fornecimento de máquinas, equipamentos e utensílios para cozinhas industriais, restaurantes, bares, lanchonetes, hamburguerias, pizzarias e padarias em todo o Brasil.
 
+P: Quais são as marcas e fábricas homologadas?
+R: Trabalhamos diretamente com as marcas líderes do mercado nacional: Metalfrio, Gelopar, Skymsen, Toledo do Brasil, Croydon, Vulcan, G.Paniz, Tramontina, Ramuza, Marchesoni, Gural e Bermar.
+
 P: Quais são as formas de pagamento aceitas?
-R: Trabalhamos com pagamento via PIX (com desconto especial e aprovação imediata), cartão de crédito parcelado e boleto bancário através de ambiente seguro.
+R: Trabalhamos com pagamento via PIX (com desconto especial e aprovação imediata), cartão de crédito parcelado em até 12x via Pagali/Loja Integrada e faturamento PJ sob consulta.
 
 P: Como funciona o cálculo de frete e envio?
-R: Entregamos em todo o Brasil. O frete e o prazo de entrega são calculados a partir do CEP de destino informado pelo cliente. Para São Paulo e Grande SP temos opções ágeis de pronta-entrega.
+R: Entregamos em todo o Brasil com transporte rodoviário paletizado e seguro integral de carga. O frete e o prazo de entrega são calculados a partir do CEP de destino informado pelo cliente. Para São Paulo e Grande SP temos opções ágeis de pronta-entrega.
 
 P: Os equipamentos têm garantia?
-R: Sim! Todos os equipamentos novos contam com garantia oficial de fábrica contra defeitos de fabricação e rede de assistência técnica autorizada.
+R: Sim! Todos os equipamentos novos contam com garantia oficial de fábrica (por exemplo, 2 anos na linha de freezers Gelopar Gpc 57) contra defeitos de fabricação e rede de assistência técnica autorizada.
 
 P: Por que a voltagem é tão importante?
-R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica para motores pesados) antes de concluir a compra para evitar queima de motor ou incompatibilidade na instalação da cozinha.`,
-      knowledgeCatalog: `CATÁLOGO DE PRODUTOS & EQUIPAMENTOS — PRIMO EQUIPAMENTOS:
-1. Fritadeiras Industriais: Elétricas e a gás (Croydon, Skymsen, Metalcubas), de 3L a 30L com controle de temperatura preciso em termostato e cestos reforçados em inox.
-2. Extratores de Suco & Liquidificadores: Extratores industriais bivolt de alto rendimento; Liquidificadores industriais de Alta Rotação (vitaminas, shakes, sucos) e Baixa Rotação (pastas, cremes densos, açaí, massas leves) de 2 a 25 litros.
-3. Processadores & Fatiadores de Frios: Processadores de alimentos com múltiplos discos para ralar, fatiar e desfiar; Fatiadores de frios profissionais com lâminas de precisão.
-4. Masseiras & Moedores de Carne: Masseiras planetárias e espirais para pães e pizzas; Moedores de carne elétricos bocas 5, 8, 22 e 32; Serras fita para ossos e carnes.
-5. Fogões & Chapas: Fogões industriais de alta e baixa pressão em ferro fundido; Chapas bifeteiras e sanduicheiras a gás e elétricas; Fogões por indução profissionais.
-6. Refrigeração Comercial: Balcões refrigerados para açougues e laticínios, cervejeiras, expositores verticais e ilhas congeladas.
-7. Utensílios de Inox: Caldeirões, cubas gastronômicas (GNs), panelas industriais e pegadores.`,
+R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica para motores pesados como a Amassadeira AM25) antes de concluir a compra para evitar queima de motor ou incompatibilidade na instalação da cozinha.`,
+      knowledgeCatalog: `CATÁLOGO OFICIAL DE PRODUTOS & PREÇOS — PRIMO EQUIPAMENTOS (2026):
+
+1. REFRIGERAÇÃO COMERCIAL & AÇOUGUES:
+• GATS-200 PR Balcão de Açougue com Depósito Gelopar — R$ 17.869,00
+  (Exposição de carnes frescas e frios. Gancheira dupla superior, depósito refrigerado inferior para estoque, serpentina em cobre, iluminação LED especial).
+• Expositor Ilha Standard GESV-190 ou GESV-290 Gelopar — A partir de R$ 9.109,00
+  (Ilha de congelados com tampas de vidro curvo Low-E de baixa emissividade, termômetro digital e alta eficiência).
+• Freezer Vertical 531 Litros VF55FT Tripla Ação Metalfrio — R$ 5.920,00 (De R$ 8.184,00 com 28% de desconto!)
+  (Tripla ação: refrigerador +1°C a +7°C, conservador -12°C a -16°C ou congelador -18°C a -22°C, gás ecológico R290).
+• Freezer Vertical Gpc 57 Gelopar — R$ 6.306,00
+  (Conservador de congelados frost free com 2 anos de garantia oficial de fábrica Gelopar).
+• Cervejeiras Comerciais Subzero (-6°C a +2°C, porta de vidro duplo aquecido antiembaçante).
+
+2. LINHA QUENTE & COCÇÃO PESADA:
+• Fritador Vulcan LG 300 a Gás GLP (Líder Mundial do Food Service) — R$ 13.960,00
+  (Tanque 18L a 21L, 3 queimadores pesados de ferro fundido com 90.000 BTU/h, sistema de zona fria e recuperação térmica instantânea).
+• Fogão 1 Boca Indução Linha Profissional Tramontina 3500W — R$ 3.599,90
+  (Potência de 3,5 kW em 220V, mesa vitrocerâmica, controle touch com 10 níveis de potência e timer digital).
+• FC-N Fritadeira Elétrica Skymsen — R$ 3.099,00
+  (Gabinete e cuba em aço inox escovado, termostato de segurança e alta durabilidade).
+• Fritadeira Zona Fria 15 Litros de Mesa Fzm8 Croydon 220V — R$ 2.406,00
+  (15 Litros de capacidade, zona fria decantadora no fundo que economiza até 60% de óleo, 5.000W em 220V).
+
+3. PANIFICAÇÃO, MASSAS & CONFEITARIA:
+• Amassadeira Semi Rápida AM25 G.Paniz (25kg de Massa Pronta) — R$ 7.199,00
+  (Capacidade para até 25kg de massa pronta, espiral estanhado em ferro fundido, tacho em inox 304, alto torque para pães e pizzas).
+• Batedeira com Pedestal Industrial G.Paniz Bambina BP-05B Bivolt (5L) — R$ 2.923,00
+  (Acompanha 3 batedores: globo, raquete e gancho; velocidade ajustável para chantilly, cremes e massas leves).
+• Chocolateira Marchesoni 3L - Potência Versátil — R$ 2.699,00
+  (3 Litros, pá giratória contínua para manter chocolate encorpado sem queimar no fundo, termostato até 90°C).
+
+4. PESAGEM COMERCIAL, AUTOMAÇÃO & CHECK-OUT:
+• Balança Automação Comercial Ramuza Atena II 35Kg com Wi-Fi — R$ 4.160,00
+  (Impressor térmico integrado de etiquetas de código de barras e tabela nutricional, Wi-Fi e Ethernet homologada INMETRO).
+• Balança Comercial Toledo 8217 Capacidade 32Kg de Check-out — R$ 2.899,00
+  (Para embutir em balcões de caixa de supermercados e atacarejos, comunicação RS-232 e USB com PDV).
+• Balança Eletrônica Plataforma Triunfo 300Kg Inox 40x60 Bivolt — R$ 1.787,00
+  (Plataforma reforçada em inox para recebimento de mercadorias em docas e câmaras frias, coluna articulada).
+• Balança Eletrônica Display Remoto Blue One Upx SolutiBon — R$ 1.662,00
+  (Indicador digital remoto para balcões e bancadas de atendimento).
+• Balança Digital Toledo Prix 3 Plus 30Kg com Bateria — R$ 1.100,00
+  (A mais vendida do Brasil! Display duplo para cliente e operador com backlight azul, bateria com 200h de autonomia).
+• Balança Digital Toledo Prix 3 Fit 15Kg com Bateria — R$ 889,00
+  (Compacta para buffets por quilo, hortifrútis e pequenos comércios).
+
+5. PROCESSAMENTO DE ALIMENTOS & FRIOS:
+• Cortador de Frios GLP-300 Semiautomático Lâmina 25cm Gural — A partir de R$ 6.467,00
+  (Lâmina alemã temperada, deslizamento macio com rolamentos blindados, acabamento nobre sanitário).
+• Fatiador de Frios Cortador 202mm BM06 Inox Bivolt Bermar — R$ 2.270,00
+  (Compacto, potente, motor bivolt chaveado, lâmina de 202mm).
+• ESB Super-N Skymsen Extrator de Suco Inox — R$ 1.719,00
+  (Motor comercial de 0,5 CV para extração contínua em lanchonetes e bares).
+• EXB-N 1,2L Extrator de Suco Industrial Inox Skymsen — R$ 989,00
+  (Copo de 1,2L com peneira acoplada, castanhas para laranja e limão).
+• Liquidificadores Industriais: Alta Rotação (sucos e shakes, 18.000 a 22.000 RPM) vs Baixa Rotação (açaí, polpas e massas densas, 3.500 RPM alto torque, de 2L a 25L).
+
+6. UTENSÍLIOS PROFISSIONAIS & FRIGIDEIRAS:
+• Frigideira Tramontina em Aço Inox com Fundo Triplo — A partir de R$ 709,00
+  (Linha Tramontina Grano / Professional com fundo triplo inox + alumínio + inox, tampa e cabo térmico).
+• Frigideira Pergaminho 20 cm Kit com 10 Peças — R$ 499,00
+  (Kit com 10 unidades para servir porções, petiscos e pratos à la carte à mesa com charme rústico).`,
       knowledgePricing: `POLÍTICA COMERCIAL DA PRIMO EQUIPAMENTOS:
-- Desconto especial no PIX à vista.
-- Parcelamento facilitado no cartão de crédito.
-- Pedidos especiais por transportadora com envio paletizado para qualquer estado do Brasil.
+- Desconto especial no PIX à vista com confirmação imediata.
+- Parcelamento facilitado em até 12x no cartão de crédito via Pagali / Loja Integrada.
+- Pedidos especiais por transportadora com envio paletizado para qualquer estado do Brasil com seguro total.
 - Contato do time comercial direto: Telefone Fixo (11) 3313-2875 | WhatsApp (11) 97333-4135 | E-mail: primoequipamentos@hotmail.com`,
       knowledgeRules: `DIRETRIZES FUNDAMENTAIS DE ATENDIMENTO DA SOFIA (PRIMO EQUIPAMENTOS):
 1. VOCÊ É EXCLUSIVAMENTE DA PRIMO EQUIPAMENTOS. Jamais fale de software (Verzel), plasma (Surface) ou dentista (Dra. Lucy).
-2. IDENTIFICAÇÃO DO NEGÓCIO: Pergunte qual é o comércio do cliente (restaurante, lanchonete, bar, padaria, delivery ou hamburgueria) e qual preparação ele precisa fazer.
-3. VOLTAGEM OBRIGATÓRIA: Sempre confirme a voltagem necessária (110V ou 220V) para orientar o modelo correto.
-4. ALTA VS BAIXA ROTAÇÃO: Se o cliente perguntar de liquidificador, explique que Alta Rotação é para líquidos/sucos e Baixa Rotação é para massas, polpas, açaí e molhos pesados.
-5. FRETE: Peça o CEP para cotar frete e prazo de entrega.`,
+2. IDENTIFICAÇÃO DO NEGÓCIO: Pergunte qual é o comércio do cliente (restaurante, lanchonete, bar, padaria, delivery, açougue ou hamburgueria) e qual preparação ele precisa fazer.
+3. INFORMAÇÃO PRECISA DE PREÇOS: Você possui a tabela oficial com preços exatos de balanças (Prix 3 Plus R$ 1.100, Prix 3 Fit R$ 889, Ramuza Wi-Fi R$ 4.160), masseiras (G.Paniz AM25 R$ 7.199), fritadeiras (Vulcan LG 300 R$ 13.960, Croydon R$ 2.406), fatiadores (Gural R$ 6.467, Bermar R$ 2.270) e refrigeração (Balcão GATS-200 R$ 17.869, Metalfrio 531L R$ 5.920).
+4. VOLTAGEM OBRIGATÓRIA: Sempre confirme a voltagem necessária (110V ou 220V) para orientar o modelo correto antes de fechar o pedido.
+5. ALTA VS BAIXA ROTAÇÃO: Se o cliente perguntar de liquidificador, explique que Alta Rotação é para líquidos/sucos e Baixa Rotação é para massas, polpas, açaí e molhos pesados.
+6. FRETE: Peça o CEP para cotar frete e prazo de entrega via transportadora homologada.
+7. CATÁLOGO EM PDF: Quando o cliente pedir catálogo, fotos ou prospecto, informe que está enviando o Catálogo Oficial de 6 páginas completo da Primo Equipamentos (Catalogo_Primo_Equipamentos.pdf).`,
     },
   },
 
