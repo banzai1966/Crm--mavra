@@ -622,31 +622,37 @@ async function generatePrimoPdf(outputPath: string) {
   const fontOblique = await doc.embedFont(StandardFonts.HelveticaOblique);
 
   const primoDir = path.join(process.cwd(), 'public', 'assets', 'primo');
-  const aistudioDir = path.join(process.cwd(), 'public', 'assets', 'aistudio');
 
   const imgRefrigPath = path.join(primoDir, 'refrigeracao_comercial.jpg');
   const imgCoccaoPath = path.join(primoDir, 'coccao_industrial.jpg');
   const imgPreparoPath = path.join(primoDir, 'preparo_processamento.jpg');
-
-  // Real store screenshots sent by user
-  const shotBalancasPath = path.join(aistudioDir, 'Captura_de_tela_de_2026-11-02_14-01-25_ffd2c6f5.png');
-  const shotProcessamentoPath = path.join(aistudioDir, 'Captura_de_tela_de_2026-11-02_14-01-28_1602e991.png');
-  const shotRefrigPath = path.join(aistudioDir, 'Captura_de_tela_de_2026-11-02_14-01-32_233f59e2.png');
+  const imgLiquidificadorPath = path.join(primoDir, 'liquidificador_baixa.jpg');
+  const imgBalancaPath = path.join(primoDir, 'balanca_prix3.jpg');
+  const imgGeloparPath = path.join(primoDir, 'refrigerador_gelopar.jpg');
+  const imgVulcanPath = path.join(primoDir, 'fritador_vulcan.jpg');
+  const imgFatiadorPath = path.join(primoDir, 'fatiador_gural.jpg');
+  const imgPanelaPath = path.join(primoDir, 'panela_tramontina.jpg');
 
   let imgRefrig: any = null;
   let imgCoccao: any = null;
   let imgPreparo: any = null;
-  let shotBalancas: any = null;
-  let shotProcessamento: any = null;
-  let shotRefrig: any = null;
+  let imgLiquidificador: any = null;
+  let imgBalanca: any = null;
+  let imgGelopar: any = null;
+  let imgVulcan: any = null;
+  let imgFatiador: any = null;
+  let imgPanela: any = null;
 
   try {
     if (fs.existsSync(imgRefrigPath)) imgRefrig = await doc.embedJpg(fs.readFileSync(imgRefrigPath));
     if (fs.existsSync(imgCoccaoPath)) imgCoccao = await doc.embedJpg(fs.readFileSync(imgCoccaoPath));
     if (fs.existsSync(imgPreparoPath)) imgPreparo = await doc.embedJpg(fs.readFileSync(imgPreparoPath));
-    if (fs.existsSync(shotBalancasPath)) shotBalancas = await doc.embedPng(fs.readFileSync(shotBalancasPath));
-    if (fs.existsSync(shotProcessamentoPath)) shotProcessamento = await doc.embedPng(fs.readFileSync(shotProcessamentoPath));
-    if (fs.existsSync(shotRefrigPath)) shotRefrig = await doc.embedPng(fs.readFileSync(shotRefrigPath));
+    if (fs.existsSync(imgLiquidificadorPath)) imgLiquidificador = await doc.embedJpg(fs.readFileSync(imgLiquidificadorPath));
+    if (fs.existsSync(imgBalancaPath)) imgBalanca = await doc.embedJpg(fs.readFileSync(imgBalancaPath));
+    if (fs.existsSync(imgGeloparPath)) imgGelopar = await doc.embedJpg(fs.readFileSync(imgGeloparPath));
+    if (fs.existsSync(imgVulcanPath)) imgVulcan = await doc.embedJpg(fs.readFileSync(imgVulcanPath));
+    if (fs.existsSync(imgFatiadorPath)) imgFatiador = await doc.embedJpg(fs.readFileSync(imgFatiadorPath));
+    if (fs.existsSync(imgPanelaPath)) imgPanela = await doc.embedJpg(fs.readFileSync(imgPanelaPath));
   } catch (err) {
     console.warn('[PDF Generator Primo] Aviso ao carregar imagens da Primo Equipamentos:', err);
   }
@@ -773,7 +779,7 @@ async function generatePrimoPdf(outputPath: string) {
 
   // Banner Foto 1
   if (imgRefrig) {
-    const imgH = 165;
+    const imgH = 160;
     page1.drawImage(imgRefrig, {
       x: 35,
       y: y - imgH,
@@ -832,11 +838,11 @@ async function generatePrimoPdf(outputPath: string) {
   // Box 2: Segmentos Atendidos
   page1.drawRectangle({
     x: 35,
-    y: y - 135,
+    y: y - 100,
     width: p1W - 70,
-    height: 135,
-    color: rgb(0.99, 0.97, 0.94),
-    borderColor: rgb(0.92, 0.8, 0.65),
+    height: 100,
+    color: rgb(0.99, 0.97, 0.95),
+    borderColor: rgb(0.9, 0.82, 0.75),
     borderWidth: 1,
   });
   page1.drawText('2. SEGMENTOS & NEGOCIOS ATENDIDOS PELA PRIMO EQUIPAMENTOS', {
@@ -863,121 +869,233 @@ async function generatePrimoPdf(outputPath: string) {
   drawPageFooter(page1);
 
   // ==========================================
-  // PAGINA 2: REFRIGERACAO COMERCIAL & ACOUGUES
+  // PAGINA 2: REFRIGERACAO COMERCIAL & ACOUGUES (COM FOTO REAL GELOPAR)
   // ==========================================
   const page2 = doc.addPage([595.28, 841.89]);
   const { width: p2W, height: p2H } = page2.getSize();
   drawPageHeader(page2, 'Secao I: Linha de Refrigeracao Comercial, Freezers & Balcoes de Acougue', 2);
 
-  y = p2H - 75;
+  y = p2H - 72;
 
   page2.drawText('3. REFRIGERACAO INDUSTRIAL & CONGELADOS (GELOPAR & METALFRIO)', {
     x: 35,
     y: y,
-    size: 12,
+    size: 11.5,
     font: fontBold,
     color: rgb(0.12, 0.16, 0.22),
   });
-  y -= 15;
+  y -= 14;
 
-  // Tabela de Produtos de Refrigeração
-  const refrigProducts = [
-    {
-      name: 'GATS-200 PR BALCAO DE ACOUGUE COM DEPOSITO GELOPAR',
-      price: 'R$ 17.869,00',
-      specs: 'Exposicao de carnes frescas e frios. Gancheira superior dupla, deposito refrigerado inferior de estoque, vidro reto temperado, serpentina em cobre, iluminacao LED especial para valorizar a cor da carne.',
-      badge: 'DESTAQUE ACOUGUE',
-    },
-    {
-      name: 'Expositor Ilha Standard GESV-190 ou GESV-290 Gelopar',
-      price: 'A partir de R$ 9.109,00',
-      specs: 'Ilha para congelados e produtos embalados. Tampas de vidro curvo temperado de baixa emissividade (Low-E), termometro digital, divisórias internas moduladas, degelo manual e alta eficiencia energetica.',
-      badge: 'ALTA CAPACIDADE',
-    },
-    {
-      name: 'Freezer Vertical Metalfrio 531 Litros VF55FT Tripla Acao',
-      price: 'R$ 5.920,00 (De R$ 8.184,00 - 28% OFF)',
-      specs: 'Funcao tripla: Refrigerador (+1C a +7C), Conservador (-12C a -16C) ou Congelador (-18C a -22C). Porta com aquecimento periferico antiembacante, prateleiras regulaveis e gas ecologico R290.',
-      badge: '28% DE DESCONTO',
-    },
-    {
-      name: 'Freezer Vertical Gpc 57 Gelopar 2 Anos de Garantia',
-      price: 'R$ 6.306,00',
-      specs: 'Conservacao de congelados ou resfriados com tecnologia Frost Free. Display digital externo, 2 anos de garantia oficial de fabrica Gelopar, acabamento premium e baixo consumo de energia.',
-      badge: '2 ANOS GARANTIA',
-    },
-  ];
+  // Produto 1: GATS-200 Balcão Açougue
+  page2.drawRectangle({
+    x: 35,
+    y: y - 68,
+    width: p2W - 70,
+    height: 68,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.75, 0.85, 0.95),
+    borderWidth: 1,
+  });
+  page2.drawText('GATS-200 PR BALCAO DE ACOUGUE COM DEPOSITO GELOPAR', {
+    x: 45,
+    y: y - 18,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.55),
+  });
+  page2.drawRectangle({
+    x: p2W - 165,
+    y: y - 20,
+    width: 120,
+    height: 15,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page2.drawText('DESTAQUE ACOUGUE', {
+    x: p2W - 155,
+    y: y - 16,
+    size: 7,
+    font: fontBold,
+    color: rgb(1, 1, 1),
+  });
+  page2.drawText('Valor Comercial: R$ 17.869,00', {
+    x: 45,
+    y: y - 32,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page2.drawText('Exposicao de carnes frescas e frios. Gancheira superior dupla, deposito refrigerado inferior de estoque, vidro reto temperado, serpentina em cobre, iluminacao LED especial para valorizar o produto.', {
+    x: 45,
+    y: y - 48,
+    size: 7.2,
+    font: fontRegular,
+    color: rgb(0.25, 0.3, 0.35),
+    maxWidth: p2W - 95,
+    lineHeight: 10,
+  });
+  y -= 76;
 
-  for (const item of refrigProducts) {
+  // Seção com FOTO REAL GELOPAR + 2 Produtos Lado a Lado
+  const photoW = 210;
+  const photoH = 155;
+  const photoX = 35;
+  const photoY = y - photoH;
+
+  if (imgGelopar) {
+    page2.drawImage(imgGelopar, {
+      x: photoX,
+      y: photoY,
+      width: photoW,
+      height: photoH,
+    });
+    // Borda elegante
     page2.drawRectangle({
-      x: 35,
-      y: y - 88,
-      width: p2W - 70,
-      height: 88,
-      color: rgb(0.97, 0.98, 1),
-      borderColor: rgb(0.75, 0.85, 0.95),
-      borderWidth: 1,
+      x: photoX,
+      y: photoY,
+      width: photoW,
+      height: photoH,
+      borderColor: rgb(0.88, 0.45, 0.08),
+      borderWidth: 1.5,
     });
-
-    page2.drawText(item.name, {
-      x: 45,
-      y: y - 20,
-      size: 10,
-      font: fontBold,
-      color: rgb(0.08, 0.28, 0.55),
-    });
-
+    // Tarja de legenda
     page2.drawRectangle({
-      x: p2W - 165,
-      y: y - 24,
-      width: 120,
-      height: 16,
-      color: rgb(0.88, 0.45, 0.08),
+      x: photoX,
+      y: photoY,
+      width: photoW,
+      height: 20,
+      color: rgb(0.08, 0.12, 0.18),
     });
-    page2.drawText(item.badge, {
-      x: p2W - 155,
-      y: y - 19,
-      size: 7.5,
+    page2.drawText('Expositor Vertical Gelopar Inox 2 Portas', {
+      x: photoX + 10,
+      y: photoY + 6,
+      size: 7.2,
       font: fontBold,
       color: rgb(1, 1, 1),
     });
-
-    page2.drawText(`Valor Comercial: ${item.price}`, {
-      x: 45,
-      y: y - 36,
-      size: 9.5,
-      font: fontBold,
-      color: rgb(0.12, 0.16, 0.22),
-    });
-
-    // Specs lines
-    page2.drawText(item.specs, {
-      x: 45,
-      y: y - 54,
-      size: 7.5,
-      font: fontRegular,
-      color: rgb(0.25, 0.3, 0.35),
-      maxWidth: p2W - 95,
-      lineHeight: 11,
-    });
-
-    y -= 98;
   }
+
+  // Lado direito da foto: Produtos 2 e 3
+  const sideX = photoX + photoW + 12;
+  const sideW = p2W - 35 - sideX;
+
+  // Produto 2: Ilha Standard GESV
+  page2.drawRectangle({
+    x: sideX,
+    y: y - 72,
+    width: sideW,
+    height: 72,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.75, 0.85, 0.95),
+    borderWidth: 1,
+  });
+  page2.drawText('Expositor Ilha Standard GESV Gelopar', {
+    x: sideX + 8,
+    y: y - 16,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.55),
+  });
+  page2.drawText('A partir de R$ 9.109,00', {
+    x: sideX + 8,
+    y: y - 30,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page2.drawText('Ilha para congelados e embalados. Tampas de vidro curvo temperado Low-E, termometro digital e alta eficiencia energetica.', {
+    x: sideX + 8,
+    y: y - 44,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.25, 0.3, 0.35),
+    maxWidth: sideW - 16,
+    lineHeight: 9.5,
+  });
+
+  // Produto 3: Freezer Metalfrio 531L
+  page2.drawRectangle({
+    x: sideX,
+    y: y - 155,
+    width: sideW,
+    height: 78,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.75, 0.85, 0.95),
+    borderWidth: 1,
+  });
+  page2.drawText('Freezer Metalfrio 531L VF55FT', {
+    x: sideX + 8,
+    y: y - 99,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.55),
+  });
+  page2.drawText('R$ 5.920,00 (28% OFF)', {
+    x: sideX + 8,
+    y: y - 113,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page2.drawText('Funcao tripla: Refrigerador, Conservador ou Congelador (-18C a -22C). Porta com aquecimento antiembacante e gas ecologico R290.', {
+    x: sideX + 8,
+    y: y - 127,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.25, 0.3, 0.35),
+    maxWidth: sideW - 16,
+    lineHeight: 9.5,
+  });
+
+  y -= (photoH + 10);
+
+  // Produto 4: Freezer Vertical Gpc 57 Gelopar
+  page2.drawRectangle({
+    x: 35,
+    y: y - 62,
+    width: p2W - 70,
+    height: 62,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.75, 0.85, 0.95),
+    borderWidth: 1,
+  });
+  page2.drawText('Freezer Vertical Gpc 57 Gelopar - 2 Anos de Garantia Oficial de Fabrica', {
+    x: 45,
+    y: y - 16,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.55),
+  });
+  page2.drawText('Valor Comercial: R$ 6.306,00', {
+    x: 45,
+    y: y - 30,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page2.drawText('Conservacao Frost Free para congelados ou resfriados com display digital externo e baixissimo consumo de energia.', {
+    x: 45,
+    y: y - 44,
+    size: 7.2,
+    font: fontRegular,
+    color: rgb(0.25, 0.3, 0.35),
+    maxWidth: p2W - 95,
+  });
+  y -= 70;
 
   // Mini Banner Técnico Refrigeração
   page2.drawRectangle({
     x: 35,
-    y: y - 95,
+    y: y - 88,
     width: p2W - 70,
-    height: 95,
+    height: 88,
     color: rgb(0.95, 0.97, 0.99),
     borderColor: rgb(0.85, 0.88, 0.92),
     borderWidth: 1,
   });
   page2.drawText('DIRETRIZES DE REFRIGERACAO COMERCIAL PRIMO EQUIPAMENTOS:', {
     x: 45,
-    y: y - 20,
-    size: 9.5,
+    y: y - 18,
+    size: 9,
     font: fontBold,
     color: rgb(0.12, 0.16, 0.22),
   });
@@ -987,128 +1105,239 @@ async function generatePrimoPdf(outputPath: string) {
     '- CONGELADOS (-18C a -22C): Freezers Metalfrio e Gelopar com sistema ecologico R290 de baixissimo consumo.',
     '- VOLTAGEM OBRIGATORIA: Todos os refrigeradores disponiveis em 110V ou 220V sob confirmacao no pedido.',
   ];
-  let rty = y - 36;
+  let rty = y - 32;
   for (const t of refrigTips) {
-    page2.drawText(t, { x: 45, y: rty, size: 7.5, font: fontRegular, color: rgb(0.25, 0.28, 0.32) });
-    rty -= 13;
+    page2.drawText(t, { x: 45, y: rty, size: 7.3, font: fontRegular, color: rgb(0.25, 0.28, 0.32) });
+    rty -= 12;
   }
 
   drawPageFooter(page2);
 
   // ==========================================
-  // PAGINA 3: COCÇÃO PESADA & FRITADEIRAS
+  // PAGINA 3: COCÇÃO PESADA & FRITADEIRAS (COM FOTO REAL VULCAN)
   // ==========================================
   const page3 = doc.addPage([595.28, 841.89]);
   const { width: p3W, height: p3H } = page3.getSize();
   drawPageHeader(page3, 'Secao II: Equipamentos de Coccao Pesada, Fritadeiras & Inducao', 3);
 
-  y = p3H - 75;
+  y = p3H - 72;
 
   page3.drawText('4. LINHA QUENTE PROFISSIONAL: FRITADORES, FOGOES E INDUCAO', {
     x: 35,
     y: y,
-    size: 12,
+    size: 11.5,
     font: fontBold,
     color: rgb(0.12, 0.16, 0.22),
   });
-  y -= 15;
+  y -= 14;
 
-  const coccaoProducts = [
-    {
-      name: 'Fritador Vulcan LG 300 a Gas GLP (A Melhor do Mercado)',
-      price: 'R$ 13.960,00',
-      specs: 'Lider mundial indiscutivel do food service. Tanque de alta capacidade (18 a 21 Litros), 3 queimadores pesados de ferro fundido com 90.000 BTU/h, sistema de zona fria que prolonga a vida do oleo e recuperacao termica instantanea para batatas e empanados crocantes.',
-      badge: 'TOP MUNDIAL FAST FOOD',
-    },
-    {
-      name: 'Fogao 1 Boca Inducao Linha Profissional Tramontina 3500W',
-      price: 'R$ 3.599,90',
-      specs: 'Potencia profissional de 3,5 kW em 220V. Mesa vitroceramica ultrarresistente, painel touch com 10 niveis precisos de temperatura, desligamento automatico de seguranca e sem calor irradiado no ambiente da cozinha.',
-      badge: 'ALTA TECNOLOGIA',
-    },
-    {
-      name: 'FC-N Fritadeira Eletrica Skymsen',
-      price: 'R$ 3.099,00',
-      specs: 'Gabinete e tacho em aco inox escovado. Termostato com corte de seguranca, cesta niquelada reforcada, rapida retomada termica para operacoes comerciais continuas em lanchonetes e bares.',
-      badge: 'SKYMSEN ORIGINAL',
-    },
-    {
-      name: 'Fritadeira Zona Fria 15 Litros De Mesa Fzm8 Croydon 220V',
-      price: 'R$ 2.406,00',
-      specs: 'Capacidade para 15 Litros de oleo. Sistema de zona fria no fundo do tacho que decanta particulas evitando queima prematura da gordura. Potencia de 5.000W em 220V com excelente rendimento.',
-      badge: 'CROYDON 15 LITROS',
-    },
-  ];
+  // Produto 1: Fritador Vulcan LG 300
+  page3.drawRectangle({
+    x: 35,
+    y: y - 68,
+    width: p3W - 70,
+    height: 68,
+    color: rgb(0.99, 0.98, 0.96),
+    borderColor: rgb(0.92, 0.85, 0.75),
+    borderWidth: 1,
+  });
+  page3.drawText('Fritador Vulcan LG 300 a Gas GLP (Lider Mundial Food Service)', {
+    x: 45,
+    y: y - 18,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page3.drawRectangle({
+    x: p3W - 175,
+    y: y - 20,
+    width: 130,
+    height: 15,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page3.drawText('TOP MUNDIAL FAST FOOD', {
+    x: p3W - 165,
+    y: y - 16,
+    size: 7,
+    font: fontBold,
+    color: rgb(1, 1, 1),
+  });
+  page3.drawText('Valor Comercial: R$ 13.960,00', {
+    x: 45,
+    y: y - 32,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page3.drawText('Tanque de alta capacidade (18 a 21L), 3 queimadores pesados com 90.000 BTU/h, sistema de zona fria que prolonga a vida util do oleo e recuperacao termica instantanea para batatas e empanados crocantes.', {
+    x: 45,
+    y: y - 48,
+    size: 7.2,
+    font: fontRegular,
+    color: rgb(0.25, 0.2, 0.15),
+    maxWidth: p3W - 95,
+    lineHeight: 10,
+  });
+  y -= 76;
 
-  for (const item of coccaoProducts) {
+  // Seção com FOTO REAL VULCAN + 2 Produtos Lado a Lado
+  const vulcanPhotoW = 210;
+  const vulcanPhotoH = 155;
+  const vulcanPhotoX = 35;
+  const vulcanPhotoY = y - vulcanPhotoH;
+
+  if (imgVulcan) {
+    page3.drawImage(imgVulcan, {
+      x: vulcanPhotoX,
+      y: vulcanPhotoY,
+      width: vulcanPhotoW,
+      height: vulcanPhotoH,
+    });
     page3.drawRectangle({
-      x: 35,
-      y: y - 88,
-      width: p3W - 70,
-      height: 88,
-      color: rgb(0.99, 0.98, 0.96),
-      borderColor: rgb(0.92, 0.85, 0.75),
-      borderWidth: 1,
+      x: vulcanPhotoX,
+      y: vulcanPhotoY,
+      width: vulcanPhotoW,
+      height: vulcanPhotoH,
+      borderColor: rgb(0.88, 0.45, 0.08),
+      borderWidth: 1.5,
     });
-
-    page3.drawText(item.name, {
-      x: 45,
-      y: y - 20,
-      size: 10,
-      font: fontBold,
-      color: rgb(0.88, 0.45, 0.08),
-    });
-
     page3.drawRectangle({
-      x: p3W - 175,
-      y: y - 24,
-      width: 130,
-      height: 16,
-      color: rgb(0.12, 0.16, 0.22),
+      x: vulcanPhotoX,
+      y: vulcanPhotoY,
+      width: vulcanPhotoW,
+      height: 20,
+      color: rgb(0.08, 0.12, 0.18),
     });
-    page3.drawText(item.badge, {
-      x: p3W - 165,
-      y: y - 19,
-      size: 7.5,
+    page3.drawText('Fritador Vulcan LG 300 Inox em Operacao', {
+      x: vulcanPhotoX + 10,
+      y: vulcanPhotoY + 6,
+      size: 7.2,
       font: fontBold,
       color: rgb(1, 1, 1),
     });
-
-    page3.drawText(`Valor Comercial: ${item.price}`, {
-      x: 45,
-      y: y - 36,
-      size: 9.5,
-      font: fontBold,
-      color: rgb(0.12, 0.16, 0.22),
-    });
-
-    page3.drawText(item.specs, {
-      x: 45,
-      y: y - 54,
-      size: 7.5,
-      font: fontRegular,
-      color: rgb(0.25, 0.2, 0.15),
-      maxWidth: p3W - 95,
-      lineHeight: 11,
-    });
-
-    y -= 98;
   }
 
-  // Box Comparativo: Agua e Oleo vs Zona Fria
+  const vSideX = vulcanPhotoX + vulcanPhotoW + 12;
+  const vSideW = p3W - 35 - vSideX;
+
+  // Produto 2: Fogão Indução Tramontina
+  page3.drawRectangle({
+    x: vSideX,
+    y: y - 72,
+    width: vSideW,
+    height: 72,
+    color: rgb(0.99, 0.98, 0.96),
+    borderColor: rgb(0.92, 0.85, 0.75),
+    borderWidth: 1,
+  });
+  page3.drawText('Fogao 1 Boca Inducao Tramontina 3500W', {
+    x: vSideX + 8,
+    y: y - 16,
+    size: 8,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page3.drawText('R$ 3.599,90', {
+    x: vSideX + 8,
+    y: y - 30,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page3.drawText('Potencia profissional de 3,5 kW em 220V. Mesa vitroceramica, painel touch com 10 niveis precisos e sem irradiar calor no ambiente.', {
+    x: vSideX + 8,
+    y: y - 44,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.25, 0.2, 0.15),
+    maxWidth: vSideW - 16,
+    lineHeight: 9.5,
+  });
+
+  // Produto 3: FC-N Fritadeira Skymsen
+  page3.drawRectangle({
+    x: vSideX,
+    y: y - 155,
+    width: vSideW,
+    height: 78,
+    color: rgb(0.99, 0.98, 0.96),
+    borderColor: rgb(0.92, 0.85, 0.75),
+    borderWidth: 1,
+  });
+  page3.drawText('FC-N Fritadeira Eletrica Skymsen', {
+    x: vSideX + 8,
+    y: y - 99,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page3.drawText('R$ 3.099,00', {
+    x: vSideX + 8,
+    y: y - 113,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page3.drawText('Gabinete e tacho em aco inox escovado. Termostato de seguranca, cesta niquelada reforcada e rapida retomada termica.', {
+    x: vSideX + 8,
+    y: y - 127,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.25, 0.2, 0.15),
+    maxWidth: vSideW - 16,
+    lineHeight: 9.5,
+  });
+
+  y -= (vulcanPhotoH + 10);
+
+  // Produto 4: Croydon 15L
   page3.drawRectangle({
     x: 35,
-    y: y - 95,
+    y: y - 62,
     width: p3W - 70,
-    height: 95,
+    height: 62,
+    color: rgb(0.99, 0.98, 0.96),
+    borderColor: rgb(0.92, 0.85, 0.75),
+    borderWidth: 1,
+  });
+  page3.drawText('Fritadeira Zona Fria 15 Litros De Mesa Fzm8 Croydon 220V', {
+    x: 45,
+    y: y - 16,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page3.drawText('Valor Comercial: R$ 2.406,00', {
+    x: 45,
+    y: y - 30,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page3.drawText('Capacidade de 15L de oleo. Sistema de decantacao no fundo para evitar queima precoce da gordura. Potencia de 5.000W em 220V.', {
+    x: 45,
+    y: y - 44,
+    size: 7.2,
+    font: fontRegular,
+    color: rgb(0.25, 0.2, 0.15),
+    maxWidth: p3W - 95,
+  });
+  y -= 70;
+
+  // Box Comparativo
+  page3.drawRectangle({
+    x: 35,
+    y: y - 88,
+    width: p3W - 70,
+    height: 88,
     color: rgb(0.98, 0.97, 1),
     borderColor: rgb(0.85, 0.85, 0.95),
     borderWidth: 1,
   });
   page3.drawText('VANTAGENS DAS FRITADEIRAS DE ZONA FRIA & AGUA E OLEO:', {
     x: 45,
-    y: y - 20,
-    size: 9.5,
+    y: y - 18,
+    size: 9,
     font: fontBold,
     color: rgb(0.12, 0.16, 0.22),
   });
@@ -1118,119 +1347,201 @@ async function generatePrimoPdf(outputPath: string) {
     '- FOGAO DE INDUCAO TRAMONTINA: Ideal para preparos a vista do cliente, buffets executivos e cozinhas gourmet.',
     '- EXIGENCIA ELETRICA: Fritadeiras eletricas exigem disjuntores adequados e tomadas 20A exclusivas sem adaptadores.',
   ];
-  let cty = y - 36;
+  let cty = y - 32;
   for (const t of coccaoTips) {
-    page3.drawText(t, { x: 45, y: cty, size: 7.5, font: fontRegular, color: rgb(0.2, 0.25, 0.3) });
-    cty -= 13;
+    page3.drawText(t, { x: 45, y: cty, size: 7.3, font: fontRegular, color: rgb(0.2, 0.25, 0.3) });
+    cty -= 12;
   }
 
   drawPageFooter(page3);
 
   // ==========================================
-  // PAGINA 4: PANIFICACAO, MASSAS & CHOCOLATE
+  // PAGINA 4: PANIFICACAO, MASSAS & LIQUIDIFICADORES (COM FOTO REAL SKYMSEN)
   // ==========================================
   const page4 = doc.addPage([595.28, 841.89]);
   const { width: p4W, height: p4H } = page4.getSize();
-  drawPageHeader(page4, 'Secao III: Panificacao, Confeitaria, Massas & Chocolateiras', 4);
+  drawPageHeader(page4, 'Secao III: Panificacao, Confeitaria, Massas & Liquidificadores Industriais', 4);
 
-  y = p4H - 75;
+  y = p4H - 72;
 
-  page4.drawText('5. EQUIPAMENTOS DE PREPARO DE MASSAS & CONFEITARIA (G.PANIZ & MARCHESONI)', {
+  page4.drawText('5. EQUIPAMENTOS DE PREPARO DE MASSAS & PROCESSAMENTO (G.PANIZ, MARCHESONI & SKYMSEN)', {
     x: 35,
     y: y,
-    size: 12,
+    size: 11,
     font: fontBold,
     color: rgb(0.12, 0.16, 0.22),
   });
-  y -= 15;
+  y -= 14;
 
-  const panifProducts = [
-    {
-      name: 'Amassadeira Semi Rapida AM25 G.Paniz (25 Kg de Massa)',
-      price: 'R$ 7.199,00',
-      specs: 'Capacidade de producao de ate 25kg de massa pronta. Espiral em ferro fundido nodular estanhado, tacho basculante em aco inox 304, corpo em chapa de aco carbono reforcada e motor de alto torque para paes, pizzas e salgados pesados.',
-      badge: 'PRODUCAO PESADA 25KG',
-    },
-    {
-      name: 'Batedeira com Pedestal Industrial G.Paniz Bambina BP-05B Bivolt',
-      price: 'R$ 2.923,00',
-      specs: 'Capacidade de 5 Litros. Acompanha conjunto completo com 3 batedores (globo, raquete e gancho) em aluminio fundido. Corpo com pintura epoxi branca, motor robusto e variacao de velocidade para chantilly, glacê, cremes e massas leves.',
-      badge: 'CONFEITARIA PROFISSIONAL',
-    },
-    {
-      name: 'Chocolateira Marchesoni 3L - Potencia Versatil',
-      price: 'R$ 2.699,00',
-      specs: 'Capacidade para 3 Litros de chocolate quente cremoso, caldas ou leite. Pa giratoria continua para homogeneizacao sem queimar no fundo da cuba. Termostato ajustavel ate 90C, torneira de alto fluxo e visual atrativo para balcao de cafeterias.',
-      badge: 'MARCHESONI 3L',
-    },
-  ];
+  // Produto 1: Amassadeira AM25
+  page4.drawRectangle({
+    x: 35,
+    y: y - 68,
+    width: p4W - 70,
+    height: 68,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.8, 0.85, 0.95),
+    borderWidth: 1,
+  });
+  page4.drawText('Amassadeira Semi Rapida AM25 G.Paniz (25 Kg de Massa Pronta)', {
+    x: 45,
+    y: y - 18,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.12, 0.25, 0.55),
+  });
+  page4.drawRectangle({
+    x: p4W - 185,
+    y: y - 20,
+    width: 140,
+    height: 15,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page4.drawText('PRODUCAO PESADA 25KG', {
+    x: p4W - 175,
+    y: y - 16,
+    size: 7,
+    font: fontBold,
+    color: rgb(1, 1, 1),
+  });
+  page4.drawText('Valor Comercial: R$ 7.199,00', {
+    x: 45,
+    y: y - 32,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page4.drawText('Espiral em ferro fundido nodular estanhado, tacho basculante em aco inox 304, corpo em chapa de aco carbono reforcada e motor de alto torque para massas pesadas de paes e pizzas.', {
+    x: 45,
+    y: y - 48,
+    size: 7.2,
+    font: fontRegular,
+    color: rgb(0.2, 0.25, 0.3),
+    maxWidth: p4W - 95,
+  });
+  y -= 76;
 
-  for (const item of panifProducts) {
+  // Seção com FOTO REAL LIQUIDIFICADOR SKYMSEN + Produtos 2 e 3
+  const liqPhotoW = 200;
+  const liqPhotoH = 155;
+  const liqPhotoX = 35;
+  const liqPhotoY = y - liqPhotoH;
+
+  if (imgLiquidificador) {
+    page4.drawImage(imgLiquidificador, {
+      x: liqPhotoX,
+      y: liqPhotoY,
+      width: liqPhotoW,
+      height: liqPhotoH,
+    });
     page4.drawRectangle({
-      x: 35,
-      y: y - 92,
-      width: p4W - 70,
-      height: 92,
-      color: rgb(0.97, 0.98, 1),
-      borderColor: rgb(0.8, 0.85, 0.95),
-      borderWidth: 1,
+      x: liqPhotoX,
+      y: liqPhotoY,
+      width: liqPhotoW,
+      height: liqPhotoH,
+      borderColor: rgb(0.88, 0.45, 0.08),
+      borderWidth: 1.5,
     });
-
-    page4.drawText(item.name, {
-      x: 45,
-      y: y - 20,
-      size: 10,
-      font: fontBold,
-      color: rgb(0.12, 0.25, 0.55),
-    });
-
     page4.drawRectangle({
-      x: p4W - 185,
-      y: y - 24,
-      width: 140,
-      height: 16,
-      color: rgb(0.88, 0.45, 0.08),
+      x: liqPhotoX,
+      y: liqPhotoY,
+      width: liqPhotoW,
+      height: 20,
+      color: rgb(0.08, 0.12, 0.18),
     });
-    page4.drawText(item.badge, {
-      x: p4W - 175,
-      y: y - 19,
-      size: 7.5,
+    page4.drawText('Liquidificador Skymsen Inox Baixa Rotacao', {
+      x: liqPhotoX + 8,
+      y: liqPhotoY + 6,
+      size: 7.2,
       font: fontBold,
       color: rgb(1, 1, 1),
     });
-
-    page4.drawText(`Valor Comercial: ${item.price}`, {
-      x: 45,
-      y: y - 36,
-      size: 9.5,
-      font: fontBold,
-      color: rgb(0.12, 0.16, 0.22),
-    });
-
-    page4.drawText(item.specs, {
-      x: 45,
-      y: y - 54,
-      size: 7.5,
-      font: fontRegular,
-      color: rgb(0.2, 0.25, 0.3),
-      maxWidth: p4W - 95,
-      lineHeight: 11,
-    });
-
-    y -= 102;
   }
+
+  const liqSideX = liqPhotoX + liqPhotoW + 12;
+  const liqSideW = p4W - 35 - liqSideX;
+
+  // Produto 2: Batedeira Bambina
+  page4.drawRectangle({
+    x: liqSideX,
+    y: y - 72,
+    width: liqSideW,
+    height: 72,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.8, 0.85, 0.95),
+    borderWidth: 1,
+  });
+  page4.drawText('Batedeira G.Paniz Bambina BP-05B', {
+    x: liqSideX + 8,
+    y: y - 16,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.25, 0.55),
+  });
+  page4.drawText('R$ 2.923,00 (Bivolt)', {
+    x: liqSideX + 8,
+    y: y - 30,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page4.drawText('5 Litros de capacidade. Acompanha 3 batedores (globo, raquete e gancho) para chantilly, cremes e massas leves.', {
+    x: liqSideX + 8,
+    y: y - 44,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.2, 0.25, 0.3),
+    maxWidth: liqSideW - 16,
+    lineHeight: 9.5,
+  });
+
+  // Produto 3: Chocolateira Marchesoni
+  page4.drawRectangle({
+    x: liqSideX,
+    y: y - 155,
+    width: liqSideW,
+    height: 78,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.8, 0.85, 0.95),
+    borderWidth: 1,
+  });
+  page4.drawText('Chocolateira Marchesoni 3L', {
+    x: liqSideX + 8,
+    y: y - 99,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.25, 0.55),
+  });
+  page4.drawText('R$ 2.699,00', {
+    x: liqSideX + 8,
+    y: y - 113,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page4.drawText('Pa giratoria continua anti-queima no fundo. Termostato ajustavel ate 90C, torneira de alto fluxo e cuba transparente atrativa.', {
+    x: liqSideX + 8,
+    y: y - 127,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.2, 0.25, 0.3),
+    maxWidth: liqSideW - 16,
+    lineHeight: 9.5,
+  });
+
+  y -= (liqPhotoH + 12);
 
   // Tabela Comparativa de Liquidificadores
   page4.drawRectangle({
     x: 35,
-    y: y - 145,
+    y: y - 155,
     width: p4W - 70,
-    height: 145,
+    height: 155,
     color: rgb(0.99, 0.97, 0.94),
     borderColor: rgb(0.92, 0.8, 0.65),
     borderWidth: 1,
   });
-  page4.drawText('TABELA DE DECISAO CRITICA: ALTA ROTACAO VS BAIXA ROTACAO', {
+  page4.drawText('TABELA DE DECISAO CRITICA: ALTA ROTACAO VS BAIXA ROTACAO (SKYMSEN)', {
     x: 45,
     y: y - 20,
     size: 10,
@@ -1239,82 +1550,191 @@ async function generatePrimoPdf(outputPath: string) {
   });
 
   const liquidText = [
-    '- ALTA ROTACAO (18.000 a 22.000 RPM): Exclusivo para sucos de frutas, vitaminas, shakes e liquidos leves. Copo em inox ou policarbonato de 1,5L a 4L. NUNCA utilize para massas ou acai (induzido queima por sobrecarga).',
-    '- BAIXA ROTACAO (3.500 RPM COM ALTO TORQUE): Indispensavel para polpas congeladas, acai puro concentrado, cremes, maionese artesanal, molhos de tomate e pastas. Copos em inox 304 de 4L, 6L, 8L, 10L, 15L e 25L.',
-    '- AMASSADEIRA SEMI RAPIDA: Desenvolve o gluten da massa com maciez e oxigenacao controlada para paes artesanais e pizzas.',
-    '- BATEDEIRA PLANETARIA: Movimento de rotacao planetario com batedor globo para aerear misturas e gancho para massas leves.',
+    '• ALTA ROTACAO (18.000 a 22.000 RPM - Modelos LAR / LI): Exclusivo para sucos de frutas, vitaminas, shakes e liquidos leves. Copo em inox ou policarbonato de 1,5L a 4L. NUNCA utilize para massas pesadas ou acai concentrado.',
+    '• BAIXA ROTACAO (3.500 RPM COM ALTO TORQUE - Modelos LDB / Basculantes LB): Indispensavel para polpas congeladas, acai puro concentrado, cremes, maionese artesanal, molhos de tomate e pastas. Copos em inox 304 de 4L, 6L, 8L, 10L, 15L e 25L basculante.',
+    '• MODELOS E PRECOS SKYMSEN DISPONIVEIS:',
+    '  - Basculante LB 25L: R$ 2.959,00  |  Basculante LB 15L: R$ 2.879,00  |  Comercial LS 10L: R$ 1.950,00',
+    '  - Comercial LS 8L: R$ 1.850,00  |  Comercial LS 6L: R$ 1.720,00  |  Comercial LS 4L: R$ 1.650,00',
+    '  - Monobloco TA 4L: R$ 1.654,00  |  Inox Alta LI 1.5L: R$ 822,00  |  Copo Policarbonato LT 1.5L: R$ 749,00',
   ];
-  let lty = y - 38;
+  let lty = y - 36;
   for (const lt of liquidText) {
-    page4.drawText(lt, { x: 45, y: lty, size: 7.5, font: fontRegular, color: rgb(0.25, 0.22, 0.2), maxWidth: p4W - 95, lineHeight: 11 });
-    lty -= 26;
+    page4.drawText(lt, {
+      x: 45,
+      y: lty,
+      size: 7.2,
+      font: lt.includes('MODELOS') ? fontBold : fontRegular,
+      color: lt.includes('MODELOS') ? rgb(0.12, 0.16, 0.22) : rgb(0.25, 0.22, 0.2),
+      maxWidth: p4W - 95,
+      lineHeight: 10.5,
+    });
+    lty -= (lt.includes('•') ? 19 : 13);
   }
 
   drawPageFooter(page4);
 
   // ==========================================
-  // PAGINA 5: PESAGEM COMERCIAL & BALANCAS
+  // PAGINA 5: PESAGEM COMERCIAL & BALANCAS (COM FOTO REAL TOLEDO PRIX 3)
   // ==========================================
   const page5 = doc.addPage([595.28, 841.89]);
   const { width: p5W, height: p5H } = page5.getSize();
   drawPageHeader(page5, 'Secao IV: Balancas Digitais, Automacao Comercial & Check-out', 5);
 
-  y = p5H - 75;
+  y = p5H - 72;
 
   page5.drawText('6. LINHA COMPLETA DE PESAGEM (TOLEDO, RAMUZA, TRIUNFO & UPX)', {
     x: 35,
     y: y,
-    size: 12,
+    size: 11.5,
     font: fontBold,
     color: rgb(0.12, 0.16, 0.22),
   });
-  y -= 15;
+  y -= 14;
 
-  const balancasProducts = [
-    {
-      name: 'Balanca Automacao Comercial Ramuza Atena II 35Kg Com Wi-Fi',
-      price: 'R$ 4.160,00',
-      specs: 'Capacidade de 35kg. Impressor termico acoplado para etiquetas com codigo de barras e tabela nutricional, comunicacao Wi-Fi e Ethernet homologada INMETRO para padarias, mercados e acougues.',
-      badge: 'ETIQUETADORA WI-FI',
-    },
-    {
-      name: 'Balanca Comercial Toledo 8217 Capacidade 32Kg de Check-out',
-      price: 'R$ 2.899,00',
-      specs: 'Projetada para embutir em balcoes de caixa de supermercados e atacarejos. Prato em aco inox, comunicacao serial RS-232 e USB com os principais softwares de PDV do mercado.',
-      badge: 'CHECK-OUT TOLEDO',
-    },
-    {
-      name: 'Balanca Eletronica Plataforma Triunfo 300Kg Inox 40x60 Bivolt',
-      price: 'R$ 1.787,00',
-      specs: 'Plataforma reforcada 40x60cm em aco inox, coluna com display digital articulado, bateria interna recarregavel, ideal para recebimento de mercadorias em docas e camaras frias.',
-      badge: 'PLATAFORMA 300KG',
-    },
-    {
-      name: 'Balanca Eletronica Display Remoto Blue One Upx SolutiBon',
-      price: 'R$ 1.662,00',
-      specs: 'Indicador digital remoto conectado por cabo flexivel, prato em aco inox sanitario, divisao de precisao e facil visualizacao em balcoes de atendimento comercial.',
-      badge: 'DISPLAY REMOTO',
-    },
+  // Seção com FOTO REAL BALANCA TOLEDO PRIX 3 + Balança Ramuza e Toledo 8217
+  const balPhotoW = 210;
+  const balPhotoH = 155;
+  const balPhotoX = 35;
+  const balPhotoY = y - balPhotoH;
+
+  if (imgBalanca) {
+    page5.drawImage(imgBalanca, {
+      x: balPhotoX,
+      y: balPhotoY,
+      width: balPhotoW,
+      height: balPhotoH,
+    });
+    page5.drawRectangle({
+      x: balPhotoX,
+      y: balPhotoY,
+      width: balPhotoW,
+      height: balPhotoH,
+      borderColor: rgb(0.88, 0.45, 0.08),
+      borderWidth: 1.5,
+    });
+    page5.drawRectangle({
+      x: balPhotoX,
+      y: balPhotoY,
+      width: balPhotoW,
+      height: 20,
+      color: rgb(0.08, 0.12, 0.18),
+    });
+    page5.drawText('Balanca Toledo Prix 3 Plus com Display Duplo', {
+      x: balPhotoX + 8,
+      y: balPhotoY + 6,
+      size: 7.2,
+      font: fontBold,
+      color: rgb(1, 1, 1),
+    });
+  }
+
+  const bSideX = balPhotoX + balPhotoW + 12;
+  const bSideW = p5W - 35 - bSideX;
+
+  // Produto 1: Ramuza Atena II
+  page5.drawRectangle({
+    x: bSideX,
+    y: y - 72,
+    width: bSideW,
+    height: 72,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.8, 0.86, 0.94),
+    borderWidth: 1,
+  });
+  page5.drawText('Ramuza Atena II 35Kg Wi-Fi', {
+    x: bSideX + 8,
+    y: y - 16,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.55),
+  });
+  page5.drawText('R$ 4.160,00', {
+    x: bSideX + 8,
+    y: y - 30,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.88, 0.45, 0.08),
+  });
+  page5.drawText('Impressor termico acoplado para codigo de barras e tabela nutricional, comunicacao Wi-Fi e Ethernet homologada INMETRO.', {
+    x: bSideX + 8,
+    y: y - 44,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.2, 0.25, 0.3),
+    maxWidth: bSideW - 16,
+    lineHeight: 9.5,
+  });
+
+  // Produto 2: Toledo 8217 Check-out
+  page5.drawRectangle({
+    x: bSideX,
+    y: y - 155,
+    width: bSideW,
+    height: 78,
+    color: rgb(0.97, 0.98, 1),
+    borderColor: rgb(0.8, 0.86, 0.94),
+    borderWidth: 1,
+  });
+  page5.drawText('Toledo 8217 Check-out 32Kg', {
+    x: bSideX + 8,
+    y: y - 99,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.08, 0.28, 0.55),
+  });
+  page5.drawText('R$ 2.899,00', {
+    x: bSideX + 8,
+    y: y - 113,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.12, 0.16, 0.22),
+  });
+  page5.drawText('Projetada para embutir em balcoes de caixa. Prato em inox, comunicacao RS-232 e USB com PDV.', {
+    x: bSideX + 8,
+    y: y - 127,
+    size: 6.8,
+    font: fontRegular,
+    color: rgb(0.2, 0.25, 0.3),
+    maxWidth: bSideW - 16,
+    lineHeight: 9.5,
+  });
+
+  y -= (balPhotoH + 10);
+
+  // Lista de Balanças restantes
+  const restBalancas = [
     {
       name: 'Balanca Digital Toledo Prix 3 Plus 30Kg c/ Bateria',
       price: 'R$ 1.100,00',
-      specs: 'A balanca computadora mais vendida do Brasil. Display duplo (operador e cliente) em cristal liquido com backlight azul, bateria com ate 200 horas de autonomia e saida serial.',
+      specs: 'A mais vendida do Brasil. Display duplo backlight azul, bateria 200h autonomia e saida serial.',
       badge: 'LIDER DE VENDAS',
     },
     {
       name: 'Balanca Digital Toledo Prix 3 Fit 15Kg c/ Bateria',
       price: 'R$ 889,00',
-      specs: 'Compacta e rapida. Capacidade de 15kg com divisao de 2g/5g, bateria interna recarregavel, ideal para buffets por quilo, hortifrutis, rotisserias e pequenos comercios.',
-      badge: 'PRIX 3 FIT 15KG',
+      specs: 'Compacta e rapida. Bateria interna recarregavel, ideal para buffets por quilo, hortifrutis e rotisserias.',
+      badge: 'PRIX 3 FIT',
+    },
+    {
+      name: 'Balanca Eletronica Plataforma Triunfo 300Kg Inox 40x60',
+      price: 'R$ 1.787,00',
+      specs: 'Plataforma reforcada em inox, coluna com display articulado, ideal para recebimento de mercadorias.',
+      badge: 'PLATAFORMA 300KG',
+    },
+    {
+      name: 'Balanca Display Remoto Blue One Upx SolutiBon',
+      price: 'R$ 1.662,00',
+      specs: 'Indicador remoto conectado por cabo flexivel, prato em inox sanitario e facil visualizacao no balcao.',
+      badge: 'DISPLAY REMOTO',
     },
   ];
 
-  for (const item of balancasProducts) {
+  for (const item of restBalancas) {
     page5.drawRectangle({
       x: 35,
-      y: y - 62,
+      y: y - 48,
       width: p5W - 70,
-      height: 62,
+      height: 48,
       color: rgb(0.97, 0.98, 1),
       borderColor: rgb(0.8, 0.86, 0.94),
       borderWidth: 1,
@@ -1323,45 +1743,46 @@ async function generatePrimoPdf(outputPath: string) {
     page5.drawText(item.name, {
       x: 45,
       y: y - 16,
-      size: 9.5,
+      size: 9,
       font: fontBold,
       color: rgb(0.08, 0.28, 0.55),
     });
 
     page5.drawRectangle({
-      x: p5W - 160,
+      x: p5W - 150,
       y: y - 18,
-      width: 115,
+      width: 105,
       height: 14,
       color: rgb(0.88, 0.45, 0.08),
     });
     page5.drawText(item.badge, {
-      x: p5W - 152,
+      x: p5W - 142,
       y: y - 14,
-      size: 7,
+      size: 6.8,
       font: fontBold,
       color: rgb(1, 1, 1),
     });
 
-    page5.drawText(`Preco: ${item.price} - ${item.specs}`, {
+    page5.drawText(`Preco: ${item.price}  -  ${item.specs}`, {
       x: 45,
       y: y - 32,
       size: 7.2,
       font: fontRegular,
       color: rgb(0.2, 0.25, 0.3),
       maxWidth: p5W - 95,
-      lineHeight: 10,
     });
 
-    y -= 68;
+    y -= 54;
   }
+
+  y -= 4;
 
   // Box Homologação INMETRO
   page5.drawRectangle({
     x: 35,
-    y: y - 55,
+    y: y - 50,
     width: p5W - 70,
-    height: 55,
+    height: 50,
     color: rgb(0.95, 0.98, 0.95),
     borderColor: rgb(0.7, 0.85, 0.7),
     borderWidth: 1,
@@ -1376,72 +1797,135 @@ async function generatePrimoPdf(outputPath: string) {
   page5.drawText('Todas as balancas fornecidas pela Primo Equipamentos possuem lacre inviolavel e selo de conformidade metrologica do INMETRO, aptas para fiscalizacao do IPEM e integracao com sistemas fiscais SAT/NFC-e.', {
     x: 45,
     y: y - 30,
-    size: 7.3,
+    size: 7.2,
     font: fontRegular,
     color: rgb(0.15, 0.35, 0.2),
     maxWidth: p5W - 95,
-    lineHeight: 10,
   });
 
   drawPageFooter(page5);
 
   // ==========================================
-  // PAGINA 6: PROCESSAMENTO, UTENSILIOS & ENCERRAMENTO
+  // PAGINA 6: PROCESSAMENTO, UTENSILIOS & CONDICOES FINAIS (COM FOTOS REAIS GURAL E TRAMONTINA)
   // ==========================================
   const page6 = doc.addPage([595.28, 841.89]);
   const { width: p6W, height: p6H } = page6.getSize();
   drawPageHeader(page6, 'Secao V: Processamento de Frios, Utensilios Inox & Condicoes Finais', 6);
 
-  y = p6H - 75;
+  y = p6H - 72;
 
   page6.drawText('7. CORTADORES DE FRIOS, EXTRATORES & UTENSILIOS DE INOX', {
     x: 35,
     y: y,
-    size: 12,
+    size: 11.5,
     font: fontBold,
     color: rgb(0.12, 0.16, 0.22),
   });
-  y -= 15;
+  y -= 14;
+
+  // Duas Fotos Reais Lado a Lado (Gural e Tramontina)
+  const duoW = 255;
+  const duoH = 135;
+
+  if (imgFatiador) {
+    page6.drawImage(imgFatiador, {
+      x: 35,
+      y: y - duoH,
+      width: duoW,
+      height: duoH,
+    });
+    page6.drawRectangle({
+      x: 35,
+      y: y - duoH,
+      width: duoW,
+      height: duoH,
+      borderColor: rgb(0.88, 0.45, 0.08),
+      borderWidth: 1.5,
+    });
+    page6.drawRectangle({
+      x: 35,
+      y: y - duoH,
+      width: duoW,
+      height: 20,
+      color: rgb(0.08, 0.12, 0.18),
+    });
+    page6.drawText('Cortador de Frios Profissional Gural GLP-300', {
+      x: 42,
+      y: y - duoH + 6,
+      size: 7.2,
+      font: fontBold,
+      color: rgb(1, 1, 1),
+    });
+  }
+
+  if (imgPanela) {
+    const pX = 35 + duoW + 15;
+    page6.drawImage(imgPanela, {
+      x: pX,
+      y: y - duoH,
+      width: duoW,
+      height: duoH,
+    });
+    page6.drawRectangle({
+      x: pX,
+      y: y - duoH,
+      width: duoW,
+      height: duoH,
+      borderColor: rgb(0.88, 0.45, 0.08),
+      borderWidth: 1.5,
+    });
+    page6.drawRectangle({
+      x: pX,
+      y: y - duoH,
+      width: duoW,
+      height: 20,
+      color: rgb(0.08, 0.12, 0.18),
+    });
+    page6.drawText('Panela Pressao 35L Fulgor & Caldeirao Inox', {
+      x: pX + 8,
+      y: y - duoH + 6,
+      size: 7.2,
+      font: fontBold,
+      color: rgb(1, 1, 1),
+    });
+  }
+
+  y -= (duoH + 12);
 
   const friosProducts = [
     {
       name: 'Cortador de Frios GLP-300 Semiautomatico Lamina 25cm Gural',
       price: 'A partir de R$ 6.467,00',
-      specs: 'Linha nobre profissional Gural. Lamina alema de alta dureza, deslizamento suave com rolamentos blindados, estrutura em aluminio anodizado brilhante e afiador incorporado.',
+      specs: 'Linha nobre profissional Gural. Lamina alema de alta dureza, rolamentos blindados e estrutura em aluminio anodizado.',
     },
     {
       name: 'Fatiador De Frios Cortador 202mm BM06 Inox Bivolt Bermar',
       price: 'R$ 2.270,00',
-      specs: 'Gabinete compacto com acabamento em inox e aluminio. Lamina de 202mm, motor bivolt chaveado, ideal para padarias, pizzarias e hamburguerias artesanais.',
+      specs: 'Gabinete compacto com acabamento em inox e motor bivolt chaveado para padarias, pizzarias e hamburguerias.',
     },
     {
       name: 'ESB Super-N Skymsen Extrator de Suco Inox',
       price: 'R$ 1.719,00',
-      specs: 'Motor superpotente de 0,5 CV para operacao comercial pesada. Corpo em inox escovado, castanhas resistentes para laranja e limao com câmara coletora antirespingos.',
+      specs: 'Motor comercial de 0,5 CV para operacao pesada. Corpo em inox escovado e castanhas resistentes.',
     },
     {
-      name: 'EXB-N 1,2L Extrator de Suco Industrial Inox Skymsen',
-      price: 'R$ 989,00',
-      specs: 'Classico confiavel para balcao. Copo de 1,2 Litros em inox com peneira integrada, silencioso, rapido e de altissima durabilidade.',
+      name: 'Panela de Pressao Industrial 35 Litros Fulgor',
+      price: 'R$ 1.698,00',
+      specs: 'Capacidade de 35L para cozinhas de escolas, hospitais e buffets. Valvula de peso pesada e fecho hermetico reforcado.',
     },
     {
-      name: 'Frigideira Tramontina em Aco Inox com Fundo Triplo',
-      price: 'A partir de R$ 709,00',
-      specs: 'Linha Tramontina Grano / Professional. Fundo triplo (inox + aluminio + inox) com tampa, alca e cabo termoisolante. Nao solta residuos e economiza energia.',
-    },
-    {
-      name: 'Frigideira Pergaminho 20 cm Kit com 10 Pecas',
-      price: 'R$ 499,00',
-      specs: 'Kit profissional com 10 unidades. Perfeita para servir porcoes individuais, petiscos, carnes na chapa e guarnicoes diretamente a mesa do cliente com charme rustico.',
+      name: 'Frigideira Tramontina Fundo Triplo Inox & Kit Pergaminho 20cm',
+      price: 'A partir de R$ 499,00',
+      specs: 'Frigideiras profissionais fundo triplo inox Tramontina e kits pergaminho 10 pecas para servir porcoes a mesa.',
     },
   ];
 
   for (const item of friosProducts) {
     page6.drawRectangle({
       x: 35,
-      y: y - 56,
+      y: y - 48,
       width: p6W - 70,
-      height: 56,
+      height: 48,
       color: rgb(0.99, 0.98, 0.96),
       borderColor: rgb(0.9, 0.85, 0.78),
       borderWidth: 1,
@@ -1450,7 +1934,7 @@ async function generatePrimoPdf(outputPath: string) {
     page6.drawText(`${item.name} - ${item.price}`, {
       x: 45,
       y: y - 16,
-      size: 9,
+      size: 8.5,
       font: fontBold,
       color: rgb(0.12, 0.16, 0.22),
     });
@@ -1462,20 +1946,19 @@ async function generatePrimoPdf(outputPath: string) {
       font: fontRegular,
       color: rgb(0.3, 0.28, 0.25),
       maxWidth: p6W - 95,
-      lineHeight: 10,
     });
 
-    y -= 62;
+    y -= 54;
   }
 
-  y -= 8;
+  y -= 4;
 
   // Box Voltagem & Central de Vendas Oficial
   page6.drawRectangle({
     x: 35,
-    y: y - 135,
+    y: y - 128,
     width: p6W - 70,
-    height: 135,
+    height: 128,
     color: rgb(0.12, 0.16, 0.22),
     borderColor: rgb(0.88, 0.45, 0.08),
     borderWidth: 2,
@@ -1483,8 +1966,8 @@ async function generatePrimoPdf(outputPath: string) {
 
   page6.drawText('ATENDIMENTO COMERCIAL & CONDICOES DE FECHAMENTO', {
     x: 48,
-    y: y - 22,
-    size: 11,
+    y: y - 20,
+    size: 10.5,
     font: fontBold,
     color: rgb(0.88, 0.45, 0.08),
   });
@@ -1499,16 +1982,16 @@ async function generatePrimoPdf(outputPath: string) {
     '• E-MAIL OFICIAL: primoequipamentos@hotmail.com  •  SAO PAULO / SP  •  CNPJ: 18.154.896/0001-29',
   ];
 
-  let fty = y - 38;
+  let fty = y - 35;
   for (const fb of finalBullets) {
     page6.drawText(fb, {
       x: 48,
       y: fty,
-      size: 7.7,
+      size: 7.5,
       font: fb.includes('CENTRAL') || fb.includes('LOJA') ? fontBold : fontRegular,
       color: fb.includes('CENTRAL') ? rgb(0.95, 0.95, 1) : rgb(0.88, 0.9, 0.94),
     });
-    fty -= 13;
+    fty -= 12.5;
   }
 
   drawPageFooter(page6);

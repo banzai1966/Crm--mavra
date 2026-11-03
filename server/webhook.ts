@@ -1094,6 +1094,66 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       }
     }
 
+    // 10c. If the lead specifically asked for photos or equipment of Primo Equipamentos, send high-res photo directly via WhatsApp
+    const isPrimoWorkspace =
+      incomingInstance === 'primo-equipamentos' ||
+      targetWorkspaceId === 'primo' ||
+      (instanceConfig.role || '').includes('Primo Equipamentos') ||
+      (instanceConfig.businessName || '').toLowerCase().includes('primo');
+
+    const askedForPrimoPhoto =
+      /foto|imagem|fotos|imagens|veja|olha|mostrar|mostra|liquidificador|balan[cç]a|geladeira|freezer|fritador|fritadeira|fatiador|cortador|panela|caldeir[aã]o/i.test(messageText);
+
+    if (isPrimoWorkspace && askedForPrimoPhoto) {
+      const lower = messageText.toLowerCase();
+      let primoPhotoFile = 'liquidificador_baixa.jpg';
+      let primoPhotoCaption = '🥤 Liquidificador Skymsen Inox Baixa Rotação / Alta Potência (Açaí e Massas) — Primo Equipamentos';
+
+      if (lower.includes('liquidificador') || lower.includes('skymsen') || lower.includes('lar') || lower.includes('ldb') || lower.includes('batedeira') || lower.includes('amassadeira')) {
+        primoPhotoFile = 'liquidificador_baixa.jpg';
+        primoPhotoCaption = '🥤 Liquidificador Skymsen Inox Baixa Rotação / Alta Potência (Açaí, Massas e Polpas) — Primo Equipamentos';
+      } else if (lower.includes('balan') || lower.includes('toledo') || lower.includes('ramuza') || lower.includes('prix') || lower.includes('pesagem')) {
+        primoPhotoFile = 'balanca_prix3.jpg';
+        primoPhotoCaption = '⚖️ Balança Comercial Toledo Prix 3 Plus com Bateria & Display Duplo — Primo Equipamentos';
+      } else if (lower.includes('geladeira') || lower.includes('freezer') || lower.includes('refrigerador') || lower.includes('gelopar') || lower.includes('expositor') || lower.includes('cervej')) {
+        primoPhotoFile = 'refrigerador_gelopar.jpg';
+        primoPhotoCaption = '🧊 Expositor Vertical Refrigerado Gelopar Inox 2 Portas — Primo Equipamentos';
+      } else if (lower.includes('fritador') || lower.includes('fritadeira') || lower.includes('vulcan') || lower.includes('fogão') || lower.includes('fogao') || lower.includes('induc') || lower.includes('croydon')) {
+        primoPhotoFile = 'fritador_vulcan.jpg';
+        primoPhotoCaption = '🍟 Fritador Industrial a Gás Vulcan LG 300 Inox (Líder Mundial Food Service) — Primo Equipamentos';
+      } else if (lower.includes('fatiador') || lower.includes('cortador') || lower.includes('frios') || lower.includes('gural') || lower.includes('bermar') || lower.includes('suco') || lower.includes('extrator')) {
+        primoPhotoFile = 'fatiador_gural.jpg';
+        primoPhotoCaption = '🥓 Cortador e Fatiador de Frios Profissional Gural GLP-300 Inox — Primo Equipamentos';
+      } else if (lower.includes('panela') || lower.includes('press') || lower.includes('caldeir') || lower.includes('tramontina') || lower.includes('fulgor') || lower.includes('frigideira')) {
+        primoPhotoFile = 'panela_tramontina.jpg';
+        primoPhotoCaption = '🍲 Panela de Pressão Industrial 35L Fulgor & Caldeirão Inox Tramontina — Primo Equipamentos';
+      }
+
+      const primoPhotoPath = path.join(process.cwd(), 'public', 'assets', 'primo', primoPhotoFile);
+      if (fs.existsSync(primoPhotoPath)) {
+        try {
+          const photoBase64 = fs.readFileSync(primoPhotoPath).toString('base64');
+          console.log(`[Webhook] Enviando foto real (${primoPhotoFile}) da Primo Equipamentos para ${cleanPhone}...`);
+          await sendWhatsAppImage(cleanPhone, `data:image/jpeg;base64,${photoBase64}`, primoPhotoCaption, incomingInstance);
+          db.messages.push({
+            id: 'msg-' + Date.now() + '-photo-primo',
+            leadId: lead.id,
+            phone: cleanPhone,
+            sender: 'ai',
+            text: `📷 [Foto Enviada]: ${primoPhotoCaption}`,
+            mediaType: 'image',
+            mediaUrl: `/assets/primo/${primoPhotoFile}`,
+            timestamp: new Date().toISOString(),
+            status: 'delivered',
+            workspaceId: targetWorkspaceId,
+            instanceName: incomingInstance,
+          });
+        } catch (imgSendErr: any) {
+          console.warn('[Webhook] Falha ao enviar foto da Primo Equipamentos:', imgSendErr.message);
+        }
+      }
+    }
+
     // 11. If the lead requested PIX information, send copy-paste key box
     const targetPixKey = instanceConfig.pixKey || db.agentConfig.pixKey;
     if (aiResult.sendPixInfo && targetPixKey) {

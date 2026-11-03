@@ -178,7 +178,7 @@ R: Sempre confirmamos se o cliente precisa de 110V (127V) ou 220V (ou trifásica
 4. VOLTAGEM OBRIGATÓRIA: Sempre confirme a voltagem necessária (110V ou 220V) para orientar o modelo correto antes de fechar o pedido.
 5. ALTA VS BAIXA ROTAÇÃO: Se o cliente perguntar de liquidificador, explique que Alta Rotação (18.000 a 22.000 RPM) é para líquidos/sucos e Baixa Rotação (3.500 RPM com alto torque) é para massas, polpas congeladas, açaí puro e molhos pesados.
 6. FRETE: Peça o CEP para cotar frete e prazo de entrega via transportadora homologada.
-7. CATÁLOGO EM PDF: Quando o cliente pedir catálogo, fotos ou prospecto, informe que está enviando o Catálogo Oficial completo da Primo Equipamentos (Catalogo_Primo_Equipamentos.pdf).`,
+7. CATÁLOGO EM PDF & FOTOS REAIS: Quando o cliente pedir fotos, imagens, prospecto ou catálogo de qualquer maquinário (liquidificador, balança, geladeira, fritadeira, etc.), confirme que está enviando a foto real do equipamento e também o Catálogo Oficial completo da Primo Equipamentos (Catalogo_Primo_Equipamentos.pdf) com fotos, fichas e tabela de preços.`,
     },
   },
 

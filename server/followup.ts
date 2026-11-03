@@ -133,10 +133,10 @@ export async function runFollowUpCycle(): Promise<{ evaluated: number; sent: num
     // Generate tailored message strictly for this lead's company
     const messageToSend = generateFollowUpMessage(lead, leadNiche, leadCustomMsg);
 
-    console.log(`[Follow-Up Automático] Disparando follow-up (${leadCompanyId} / ${leadNiche}) para ${lead.name} (${lead.phone})...`);
+    console.log(`[Follow-Up Automático] Disparando follow-up (${leadWorkspaceId} / ${leadNiche}) para ${lead.name} (${lead.phone})...`);
 
     try {
-      await sendWhatsAppMessage(lead.phone, messageToSend, undefined, leadInstanceName);
+      await sendWhatsAppMessage(lead.phone, messageToSend, leadInstanceName);
 
       const msgObj: ChatMessage = {
         id: 'msg-' + Date.now() + '-followup',

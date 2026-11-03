@@ -1075,7 +1075,7 @@ async function callGemini(
 
   // If all models hit 503, quota, or leaked key, provide smart contextual knowledge reply based on DB
   console.warn('[Gemini] Modelos Gemini indisponíveis. Gerando resposta contextual inteligente pela Base de Conhecimento...');
-  return generateRuleBasedSafetyReply(prompt);
+  return generateRuleBasedSafetyReply(systemInstruction ? `${systemInstruction}\n\n${prompt}` : prompt);
 }
 
 // Função de teste direto de chave do Gemini com retorno em tempo real
@@ -1148,6 +1148,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   }
 
   const config = db.agentConfig;
+  const promptLower = (prompt || '').toLowerCase();
   const lowerRole = (config.role || '').toLowerCase();
   const lowerPersona = (config.personaName || '').toLowerCase();
   const lowerWorkspace = (config.activeWorkspaceName || '').toLowerCase();
@@ -1157,11 +1158,13 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     lowerPersona.includes('alex') || 
     (config.followUpNiche === 'nexa_sales');
 
-  const isSurface = lowerRole.includes('surface') || lowerPersona.includes('surface') || lowerWorkspace.includes('surface');
-  const isVerzel = lowerRole.includes('verzel') || lowerPersona.includes('verzel') || lowerWorkspace.includes('verzel');
-  const isPrimo = lowerRole.includes('primo') || lowerPersona.includes('primo') || lowerWorkspace.includes('primo');
+  const isPrimo = promptLower.includes('primo') || lowerRole.includes('primo') || lowerPersona.includes('primo') || lowerWorkspace.includes('primo');
+  const isSurface = promptLower.includes('surface') || lowerRole.includes('surface') || lowerPersona.includes('surface') || lowerWorkspace.includes('surface');
+  const isVerzel = promptLower.includes('verzel') || lowerRole.includes('verzel') || lowerPersona.includes('verzel') || lowerWorkspace.includes('verzel');
+  const isPsi = promptLower.includes('equipamentos psi') || promptLower.includes('emdr') || lowerRole.includes('psi') || lowerWorkspace.includes('psi');
+  const isCantareira = promptLower.includes('cantareira') || promptLower.includes('cemitério') || promptLower.includes('jazigo') || lowerRole.includes('cantareira');
 
-  const isLucyOrDental = !isNexaSales && !isSurface && !isVerzel && !isPrimo && (
+  const isLucyOrDental = !isNexaSales && !isSurface && !isVerzel && !isPrimo && !isPsi && !isCantareira && (
     lowerRole.includes('lucy') || 
     lowerRole.includes('odonto') || 
     lowerRole.includes('dent') || 
@@ -1169,11 +1172,13 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     lowerRole.includes('biologica') || 
     lowerRole.includes('clínica') || 
     lowerRole.includes('clinica') || 
-    lowerPersona.includes('sofia')
+    (lowerPersona.includes('sofia') && !isPrimo && !isPsi && !isCantareira)
   );
 
   let reply = isNexaSales
     ? `Perfeito! Estou à disposição para tirar suas dúvidas sobre o NEXA CRM e agendar uma demonstração rápida de 15 minutos ao vivo na tela. Como posso te orientar?`
+    : isPrimo
+    ? `Olá! Sou a Sofia, consultora técnica da Primo Equipamentos Gastronômicos. Estou à sua disposição com nossa tabela oficial de maquinários profissionais e catálogo técnico completo!`
     : isLucyOrDental
     ? `Perfeito! Estou à disposição para tirar qualquer dúvida e organizar seu agendamento com a Dra. Lucy aqui no consultório do Euroville Mall. Em que posso te orientar?`
     : `Perfeito! Estou à disposição para tirar suas dúvidas e dar andamento ao seu atendimento. Como posso te orientar?`;
@@ -1237,6 +1242,91 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('boa noite')
     ) {
       reply = 'Olá! Tudo bem? Sou o Alex, especialista comercial da NEXA CRM. Como posso te ajudar a automatizar o WhatsApp da sua empresa com inteligência artificial hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isPrimo) {
+    if (
+      lower.includes('liquidificador') ||
+      lower.includes('skymsen') ||
+      lower.includes('baixa rota') ||
+      lower.includes('alta rota') ||
+      lower.includes('batedeira') ||
+      lower.includes('amassadeira')
+    ) {
+      reply = 'Com certeza! Trabalhamos com a linha industrial pesada da Skymsen: modelos de baixa rotação com alto torque (essenciais para açaí concentrado, polpas e massas) e alta rotação para sucos. Estou te enviando a foto real do equipamento e o nosso catálogo oficial completo! Qual é a capacidade que você precisa?';
+      suggestedStage = 'stage-2';
+      interest = 'Liquidificadores Industriais Skymsen';
+      estimatedValue = 1650;
+    } else if (
+      lower.includes('balan') ||
+      lower.includes('toledo') ||
+      lower.includes('ramuza') ||
+      lower.includes('prix') ||
+      lower.includes('pesagem')
+    ) {
+      reply = 'Perfeito! Temos a linha completa de balanças comerciais homologadas pelo INMETRO: a Toledo Prix 3 Plus (com bateria interna de 200h e display duplo) e a Ramuza Atena II com etiquetadora Wi-Fi para açougues e padarias. Estou te enviando a foto real da Toledo Prix 3 Plus e o catálogo técnico!';
+      suggestedStage = 'stage-2';
+      interest = 'Balanças Comerciais Toledo & Ramuza';
+      estimatedValue = 1100;
+    } else if (
+      lower.includes('geladeira') ||
+      lower.includes('freezer') ||
+      lower.includes('refrigerador') ||
+      lower.includes('gelopar') ||
+      lower.includes('expositor') ||
+      lower.includes('acougue') ||
+      lower.includes('açougue')
+    ) {
+      reply = 'Trabalhamos com os melhores refrigeradores e freezers do Brasil: Balcões de açougue Gelopar GATS-200, expositores verticais em inox, freezers Metalfrio 531L tripla ação e ilhas para congelados GESV. Já te enviei a foto real do expositor Gelopar e o catálogo completo. Qual é a voltagem da sua instalação (110V ou 220V)?';
+      suggestedStage = 'stage-2';
+      interest = 'Refrigeração Comercial Gelopar & Metalfrio';
+      estimatedValue = 6300;
+    } else if (
+      lower.includes('fritador') ||
+      lower.includes('fritadeira') ||
+      lower.includes('vulcan') ||
+      lower.includes('fog') ||
+      lower.includes('induc')
+    ) {
+      reply = 'Excelente escolha! O Fritador Vulcan LG 300 a gás GLP é o líder mundial do food service, com 90.000 BTU/h e sistema de zona fria que economiza até 60% de óleo. Também temos fogões por indução Tramontina e fritadeiras Croydon. Te enviei a foto real da Vulcan operando e o catálogo técnico!';
+      suggestedStage = 'stage-2';
+      interest = 'Fritadores Vulcan & Linha Quente';
+      estimatedValue = 13960;
+    } else if (
+      lower.includes('fatiador') ||
+      lower.includes('cortador') ||
+      lower.includes('frios') ||
+      lower.includes('gural') ||
+      lower.includes('bermar')
+    ) {
+      reply = 'Temos a linha nobre de fatiadores profissionais: o Cortador Gural GLP-300 semiautomático com lâmina alemã de 25cm e os modelos Bermar em inox. Te enviei a foto do Gural GLP-300 e o catálogo oficial!';
+      suggestedStage = 'stage-2';
+      interest = 'Cortadores de Frios Gural & Bermar';
+      estimatedValue = 6467;
+    } else if (
+      lower.includes('panela') ||
+      lower.includes('press') ||
+      lower.includes('caldeir') ||
+      lower.includes('tramontina') ||
+      lower.includes('fulgor')
+    ) {
+      reply = 'Temos panelas de pressão industriais Fulgor de 35 Litros para grandes volumes e caldeirões Tramontina em aço inox com fundo triplo difusor térmico. Te enviei a foto e o catálogo com todos os tamanhos e preços!';
+      suggestedStage = 'stage-2';
+      interest = 'Panelas Industriais Fulgor & Tramontina';
+      estimatedValue = 1698;
+    } else if (
+      lower.includes('foto') ||
+      lower.includes('imagem') ||
+      lower.includes('fotos') ||
+      lower.includes('imagens') ||
+      lower.includes('mostra') ||
+      lower.includes('veja')
+    ) {
+      reply = 'Com certeza! Estou te enviando a foto real do maquinário e também o nosso Catálogo Técnico Oficial completo com fotos de todas as linhas de produtos, especificações e tabela de preços. Qual maquinário você gostaria de dimensionar hoje?';
+      suggestedStage = 'stage-2';
+      interest = 'Solicitação de Fotos e Catálogo';
+    } else {
+      reply = 'Olá! Sou a Sofia, consultora técnica da Primo Equipamentos Gastronômicos. Trabalhamos com a linha completa de equipamentos profissionais para cozinhas industriais, restaurantes, lanchonetes, padarias e açougues (balanças, refrigeração, cocção, liquidificadores e frios). Como posso te orientar hoje?';
       suggestedStage = 'stage-1';
     }
   } else if (isLucyOrDental) {

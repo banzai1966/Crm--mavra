@@ -1239,7 +1239,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
                       instance: instKey,
                       company: instKey.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
                       niche: 'Instância Personalizada (Dedicada)',
-                      defaultToken: tokenVal || MASTER_GLOBAL_TOKEN,
+                      defaultToken: (tokenVal as string) || MASTER_GLOBAL_TOKEN,
                       badge: 'bg-emerald-100 text-emerald-900 border-emerald-300',
                       iconColor: 'text-emerald-600',
                     });
