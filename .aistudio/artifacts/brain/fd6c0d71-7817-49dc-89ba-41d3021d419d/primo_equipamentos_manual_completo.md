@@ -13,7 +13,8 @@ Este documento consolida o material técnico, visual e comercial da **Primo Equi
 * **WhatsApp Comercial:** (11) 97333-4135
 * **Central Telefônica Fixa:** (11) 3313-2875
 * **E-mail Oficial:** primoequipamentos@hotmail.com
-* **Localização:** São Paulo - SP com pronta-entrega para capital/Grande SP e frete paletizado seguro para todo o Brasil.
+* **Endereço da Sede / Registro CNPJ:** Rua Dez de Janeiro, 130 - Centro, Cotia - SP (CEP: 06700-075).
+* **Localização Operacional & Envios:** Base em São Paulo e Grande SP com pronta-entrega local e frete rodoviário paletizado seguro para todo o Brasil. Retiradas presenciais podem ser agendadas diretamente com a equipe comercial.
 
 ---
 

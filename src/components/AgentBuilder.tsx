@@ -841,12 +841,17 @@ R: Sim, disponibilizamos onboarding guiado para toda a sua equipe e suporte via 
 P: Quem é a Primo Equipamentos?
 R: A Primo Equipamentos (Razão Social: PRIMO EQUIPAMENTOS LTDA, CNPJ: 18.154.896/0001-29) foi criada estrategicamente em 2010 com o objetivo de facilitar a compra de equipamentos e utensílios para comércios como bares, restaurantes, lanchonetes, padarias, hamburguerias, pizzarias e cozinhas industriais. Fornecemos produtos de alta durabilidade e excelente custo-benefício para quem deseja economizar tempo e dinheiro na montagem ou reposição do seu negócio.
 
-P: Quais são os canais oficiais de atendimento e contato?
+P: Quais são os canais oficiais de atendimento, contato e endereço?
 R: 
 - Telefone Fixo: (11) 3313-2875
 - WhatsApp Comercial: (11) 97333-4135
 - E-mail: primoequipamentos@hotmail.com
 - Loja Virtual Oficial: https://primo-equipamentos.lojaintegrada.com.br/
+- Endereço da Sede / Registro: Rua Dez de Janeiro, 130 - Centro, Cotia - SP (CEP: 06700-075).
+- Operação Logística: Galpão e centro de expedição atendendo toda a Grande São Paulo e despachando via transportadora paletizada para todo o Brasil.
+
+P: O cliente pode retirar presencialmente na loja ou galpão?
+R: Sim! Caso o cliente prefira retirar presencialmente, o endereço é na nossa base em Cotia/SP (Rua Dez de Janeiro, 130 - Centro) ou alinhado com o setor de expedição para separação das peças em estoque. Para comodidade do cliente, também oferecemos entrega rápida para São Paulo e Grande SP e frete para todo o Brasil.
 
 P: Quais são as formas de pagamento aceitas?
 R: Aceitamos pagamento à vista com desconto via Pix e intermediadores integrados e seguros (como Pagali, cartões de crédito com parcelamento facilitado e boleto bancário).
