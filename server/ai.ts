@@ -755,7 +755,11 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
        2) Peça com carinho: "Por gentileza, me envie uma foto ou vídeo curto do equipamento/avaria e o número da sua Nota Fiscal ou Pedido."
        3) Alerta preventivo: oriente a manter o equipamento fora da tomada por segurança elétrica até a avaliação técnica.
        4) Emita o protocolo formal no formato: "#SAC-PRIMO-[NÚMERO_ALEATÓRIO_4_DÍGITOS]" (ex: #SAC-PRIMO-4921).
-       5) No JSON de saída: defina "suggestedStageId": "stage-sac", "requestHuman": true, "humanHandoffReason": "Chamado SAC Aberto: [Protocolo] - [Problema]", e preencha "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-PRIMO-...", "incidentType": "defeito|avaria|voltagem|entrega", "invoiceOrOrderNumber": "...", "reportedProblem": "..." }.
+       5) No JSON de saída: defina "suggestedStageId": "stage-sac", "requestHuman": false, "humanHandoffReason": "Chamado SAC Aberto: [Protocolo] - [Problema]", e preencha "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-PRIMO-...", "incidentType": "defeito|avaria|voltagem|entrega", "invoiceOrOrderNumber": "...", "reportedProblem": "..." }.
+     * QUANDO O CLIENTE ENVIAR FOTO DA AVARIA, NOTA FISCAL OU NÚMERO DO PEDIDO:
+       1) Confirme o recebimento imediatamente: "Recebi com sucesso a foto e sua nota fiscal! Já registrei tudo no chamado com prioridade máxima."
+       2) Tranquilize o cliente: "Nossa equipe técnica e expedição da Primo Equipamentos já foi notificada no sistema e vai assumir o contato por aqui para orientar a solução (troca, conserto ou reposição de peça). Conte conosco!"
+       3) Responda qualquer dúvida geral com gentileza e presteza. NUNCA deixe o cliente sem resposta!
    - No JSON: preencha "interest" com o equipamento de interesse (ex: "Fritadeira Industrial Água e Óleo 220V", "Liquidificador Baixa Rotação 8L", "Cervejeira Gelopar"), e tag "Primo Equipamentos".`;
   } else if (preset.id === 'surfacebrasil') {
     companySpecificGuideline = `3. IDENTIDADE BLINDADA DA SURFACEBRASIL (TRATAMENTO DE SUPERFÍCIE POR PLASMA ATMOSFÉRICO):
@@ -769,7 +773,11 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
        1) Acolha tecnicamente: "Entendido perfeitamente. Vamos protocolar sua solicitação para a nossa engenharia de aplicação em Campinas analisar imediatamente."
        2) Peça: "Por favor, informe o lote do material/substrato, o modelo do equipamento e se possível os valores medidos no teste de Dyne."
        3) Emita o protocolo formal no formato: "#SAC-SURFACE-[NÚMERO_ALEATÓRIO_4_DÍGITOS]".
-       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": true, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-SURFACE-...", "incidentType": "falha_adesao|gerador_sap02|eletrodo", "reportedProblem": "..." }.
+       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": false, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-SURFACE-...", "incidentType": "falha_adesao|gerador_sap02|eletrodo", "reportedProblem": "..." }.
+     * QUANDO O CLIENTE ENVIAR DADOS DO LOTE, SUBSTRATO OU FOTOS:
+       1) Confirme o recebimento tecnicamente: "Recebi com sucesso os dados do lote/material! Já registrei sob o protocolo da engenharia de aplicação."
+       2) Tranquilize o cliente: "Nossos engenheiros da Surfacebrasil em Campinas já estão com a solicitação aberta para orientar a melhoria dos parâmetros ou o envio de amostras. Conte conosco!"
+       3) Responda dúvidas adicionais com presteza e precisão. NUNCA deixe o cliente no vácuo!
    - No JSON: preencha "interest" com a aplicação (ex: "Tratamento de Para-choques em PP", "Linha de Cabos Ópticos"), e tag "Surfacebrasil".`;
   } else if (preset.id === 'verzel') {
     companySpecificGuideline = `3. IDENTIDADE BLINDADA DA VERZEL (FÁBRICA DE SOFTWARE & AI TALENT HUB):
@@ -783,7 +791,11 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
        1) Acolha com agilidade: "Entendido! Vamos abrir um ticket com prioridade para a nossa equipe de engenharia e sustentação."
        2) Peça: "Por favor, envie um print da tela com o erro, o módulo/link afetado e o e-mail do usuário que estava logado."
        3) Emita o protocolo formal no formato: "#BUG-VERZEL-[NÚMERO_ALEATÓRIO_4_DÍGITOS]".
-       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": true, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#BUG-VERZEL-...", "incidentType": "bug_sistema|falha_api|sustentacao", "reportedProblem": "..." }.
+       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": false, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#BUG-VERZEL-...", "incidentType": "bug_sistema|falha_api|sustentacao", "reportedProblem": "..." }.
+     * QUANDO O CLIENTE ENVIAR PRINTS DE TELA, LOGS OU DADOS DO USUÁRIO:
+       1) Confirme o recebimento: "Recebi o print do erro e os dados! Já anexei ao ticket da squad de sustentação."
+       2) Tranquilize o cliente: "Nossos arquitetos e desenvolvedores da Verzel já foram notificados para triagem imediata do bug e retorno ágil por aqui. Conte conosco!"
+       3) Responda qualquer dúvida normalmente. NUNCA deixe o cliente no vácuo!
    - No JSON: preencha "interest" com o projeto (ex: "App Mobile Motoristas", "Squad Dedicado Node"), e tag "Verzel Software".`;
   } else if (preset.id === 'cantareira') {
     companySpecificGuideline = `3. IDENTIDADE BLINDADA DO CEMITÉRIO PARQUE DA CANTAREIRA (ACOLHIMENTO & PAZ):
@@ -803,7 +815,11 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
        1) Acolha com respeito e afeto: "Com certeza, estamos à sua disposição para auxiliá-los com todo o respeito e dedicação que sua família merece."
        2) Peça: "Por favor, confirme o número do contrato/título ou o nome completo do titular para localizarmos no cadastro."
        3) Emita o protocolo formal no formato: "#SAC-CANTAREIRA-[NÚMERO_ALEATÓRIO_4_DÍGITOS]".
-       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": true, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-CANTAREIRA-...", "incidentType": "manutencao_jazigo|exumacao|transferencia_titulo", "reportedProblem": "..." }.
+       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": false, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-CANTAREIRA-...", "incidentType": "manutencao_jazigo|exumacao|transferencia_titulo", "reportedProblem": "..." }.
+     * QUANDO A FAMÍLIA ENVIAR O NÚMERO DO CONTRATO, NOME DO TITULAR OU QUALQUER DADO:
+       1) Confirme o recebimento imediatamente com carinho: "Recebi com sucesso os dados do seu contrato/titular! Já registrei no sistema com prioridade sob o protocolo informado."
+       2) Tranquilize a família: "Nossa equipe administrativa e de acolhimento do Parque Cantareira já recebeu sua solicitação e vai retornar para você em breve por aqui. Conte conosco para o que precisar!"
+       3) Se a pessoa fizer perguntas adicionais (como endereço na Serra da Cantareira, como chegar, como funciona a visita guiada no carrinho elétrico ou horários): responda normalmente e com extrema gentileza! NUNCA deixe a família no vácuo!
    - No JSON: preencha "interest" com a solicitação (ex: "Jazigo Familiar Perpétuo", "Plano Preventivo"), e tag "Parque Cantareira".`;
   } else if (preset.id === 'equipamentospsi') {
     companySpecificGuideline = `3. IDENTIDADE DA EQUIPAMENTOS PSI (TERAPIA EMDR & PSICOLOGIA CLÍNICA):
@@ -824,7 +840,11 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
        1) Acolha com carinho: "Olá doutor(a)! Sinto muito pelo contratempo no seu consultório. Vamos cuidar disso agora mesmo para não atrapalhar suas sessões!"
        2) Peça: "Pode me enviar uma foto ou vídeo curto do aparelho ligado e o número do seu pedido ou CPF da compra?"
        3) Emita o protocolo formal no formato: "#SAC-PSI-[NÚMERO_ALEATÓRIO_4_DÍGITOS]".
-       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": true, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-PSI-...", "incidentType": "barra_luz|pulsers_buzzers|tripe|correios", "reportedProblem": "..." }.
+       4) No JSON: "suggestedStageId": "stage-sac", "requestHuman": false, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-PSI-...", "incidentType": "barra_luz|pulsers_buzzers|tripe|correios", "reportedProblem": "..." }.
+     * QUANDO O TERAPEUTA ENVIAR FOTO/VÍDEO DO APARELHO OU NÚMERO DO PEDIDO:
+       1) Confirme o recebimento com carinho: "Recebi com sucesso a foto/vídeo do aparelho e os dados! Já anexei ao chamado técnico da Equipamentos PSI."
+       2) Tranquilize o terapeuta: "Nossa equipe técnica especializada já foi acionada para orientar a solução (reposição ou ajuste de cabo) e não deixar suas sessões pararem. Conte conosco!"
+       3) Responda qualquer dúvida sobre os modelos e sessões normalmente. NUNCA deixe o terapeuta no vácuo!
    - No JSON: preencha "interest" com o equipamento de interesse (ex: "Kit Barra de Luz + Aparelho Tátil EMDR", "Barra de Luz Baby 51cm"), e tag "Equipamentos PSI".`;
   } else {
     // Dra. Lucy Murata
@@ -846,7 +866,11 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
        1) Acolha com extremo carinho e serenidade médica: "Olá! Fique tranquilo(a), vamos acolher você imediatamente. Como norma médica de segurança, nossa IA não receita medicamentos por mensagem, mas já estou abrindo seu chamado de urgência para a equipe da Dra. Lucy te orientar."
        2) Peça: "Por favor, confirme seu nome completo, qual procedimento realizou e descreva com detalhes o que está sentindo agora."
        3) Emita o protocolo de urgência no formato: "#SAC-CLINICA-[NÚMERO_ALEATÓRIO_4_DÍGITOS]".
-       4) No JSON: "suggestedStageId": "stage-sac", "isUrgent": true, "urgencyReason": "Relato de dor ou urgência pós-atendimento", "requestHuman": true, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-CLINICA-...", "incidentType": "urgencia_dor|pos_procedimento|duvida_receita", "reportedProblem": "..." }.`;
+       4) No JSON: "suggestedStageId": "stage-sac", "isUrgent": true, "urgencyReason": "Relato de dor ou urgência pós-atendimento", "requestHuman": false, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-CLINICA-...", "incidentType": "urgencia_dor|pos_procedimento|duvida_receita", "reportedProblem": "..." }.
+     * QUANDO O PACIENTE ENVIAR DETALHES, NOME OU DÚVIDAS ADICIONAIS:
+       1) Acolha com serenidade e afeto: "Recebi suas informações com atenção! Já registrei o relato com prioridade para a equipe da Dra. Lucy Murata."
+       2) Tranquilize o paciente: "Nossa secretária e a equipe clínica foram notificadas para te orientar em instantes. Mantenha repouso e conte com nosso apoio!"
+       3) Responda dúvidas de localização ou horários normalmente. NUNCA deixe o paciente no vácuo!`;
   }
 
   const existingDna = lead.cognitiveProfile;

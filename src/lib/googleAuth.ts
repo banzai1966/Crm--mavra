@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User, signOut } from 'firebase/auth';
 import firebaseConfig from '../../firebase-applet-config.json';
+import { safeStorage } from '../utils/safeStorage';
 
 export const CALENDAR_SCOPES = [
   'https://www.googleapis.com/auth/calendar.events',
@@ -19,9 +20,9 @@ provider.setCustomParameters({
   access_type: 'offline',
 });
 
-// Cache in-memory e no localStorage do access token para persistência permanente
+// Cache in-memory e no safeStorage do access token para persistência permanente
 const TOKEN_KEY = 'nexa_gcal_access_token_v2';
-let cachedAccessToken: string | null = typeof window !== 'undefined' ? (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) : null;
+let cachedAccessToken: string | null = safeStorage.getItem(TOKEN_KEY);
 let isSigningIn = false;
 
 export const initAuth = (

@@ -984,6 +984,7 @@ async function startServer() {
 
     db.messages.push(newMsg);
     lead.lastInteraction = new Date().toISOString();
+    lead.lastManualMessageAt = new Date().toISOString();
 
     // Optionally send via Evolution API (WhatsApp)
     if (sendViaWhatsApp !== false) {
@@ -1031,6 +1032,7 @@ async function startServer() {
 
     db.messages.push(newMsg);
     lead.lastInteraction = new Date().toISOString();
+    lead.lastManualMessageAt = new Date().toISOString();
 
     // Optionally dispatch via Evolution API
     if (sendViaWhatsApp !== false) {
@@ -2246,6 +2248,7 @@ async function startServer() {
       server: {
         middlewareMode: true,
         allowedHosts: ['crm.makprojetosmake.com.br', '.makprojetosmake.com.br', 'localhost'],
+        hmr: false,
       },
       appType: 'spa',
     });

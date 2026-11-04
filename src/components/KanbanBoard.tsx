@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Plus,
   Search,
@@ -31,6 +31,7 @@ import {
   Stethoscope,
 } from 'lucide-react';
 import { Lead, KanbanStage, EvolutionConfig, AgentConfig } from '../types';
+import { safeStorage } from '../utils/safeStorage';
 import { NewLeadModal } from './NewLeadModal';
 import { ResetDataModal } from './ResetDataModal';
 import { ImportLeadsModal } from './ImportLeadsModal';
@@ -237,26 +238,22 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   agentConfig,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const detectedNiche = React.useMemo(() => detectDefaultNicheFromConfig(agentConfig), [agentConfig]);
+  const detectedNiche = useMemo(() => detectDefaultNicheFromConfig(agentConfig), [agentConfig]);
   const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('nexa_crm_kanban_niche');
-      if (saved === 'all' || saved === 'restaurant' || saved === 'health') {
-        // If current agent is general sales / equipment, don't stay stuck on restaurant from previous view!
-        if (detectedNiche === 'all' && saved === 'restaurant') return 'all';
-        return saved as any;
-      }
+    const saved = safeStorage.getItem('nexa_crm_kanban_niche');
+    if (saved === 'all' || saved === 'restaurant' || saved === 'health') {
+      // If current agent is general sales / equipment, don't stay stuck on restaurant from previous view!
+      if (detectedNiche === 'all' && saved === 'restaurant') return 'all';
+      return saved as any;
     }
     return detectedNiche;
   });
 
   // Keep in sync whenever workspace or agent changes (both in Admin and Client mode!)
-  React.useEffect(() => {
+  useEffect(() => {
     const currentDetected = detectDefaultNicheFromConfig(agentConfig);
     setNicheFilter(currentDetected);
-    try {
-      localStorage.setItem('nexa_crm_kanban_niche', currentDetected);
-    } catch {}
+    safeStorage.setItem('nexa_crm_kanban_niche', currentDetected);
   }, [agentConfig?.activeWorkspaceName, agentConfig?.personaName, agentConfig?.role, agentConfig?.followUpNiche]);
 
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);

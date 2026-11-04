@@ -22,6 +22,7 @@ export interface Lead {
   tags: string[];
   notes?: string;
   aiPaused: boolean; // True if human took over
+  lastManualMessageAt?: string; // Timestamp ISO da última mensagem enviada por operador humano
   lastInteraction: string;
   createdAt: string;
   unreadCount?: number;

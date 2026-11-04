@@ -871,35 +871,29 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
               {/* Action buttons on header */}
               <div className="flex items-center gap-1.5 md:gap-2">
-                <button
-                  type="button"
-                  id="btn-toggle-ai-chat"
-                  onClick={() => onToggleAi(activeLead.id)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
-                    activeLead.aiPaused
-                      ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  }`}
-                  title={
-                    activeLead.aiPaused
-                      ? 'Clique para devolver o controle para a IA'
-                      : 'Clique para assumir a conversa (pausar IA)'
-                  }
-                >
-                  {activeLead.aiPaused ? (
-                    <>
-                      <UserCheck className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Assumido (IA Pausada)</span>
-                      <span className="sm:hidden">Humano</span>
-                    </>
-                  ) : (
-                    <>
-                      <Bot className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">IA Ativa</span>
-                      <span className="sm:hidden">IA</span>
-                    </>
-                  )}
-                </button>
+                {/* Discreet, reassuring Sofia 24h status badge (Zero Vácuo) */}
+                {activeLead.aiPaused ? (
+                  <button
+                    type="button"
+                    id="btn-toggle-ai-chat"
+                    onClick={() => onToggleAi(activeLead.id)}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-slate-100 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                    title="Clique para reativar o atendimento automático da Sofia 24h"
+                  >
+                    <UserCheck className="w-3.5 h-3.5 text-slate-500" />
+                    <span className="hidden sm:inline">Operador Humano</span>
+                    <span className="text-[10px] text-emerald-600 font-bold">(Reativar Sofia)</span>
+                  </button>
+                ) : (
+                  <div
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs select-none"
+                    title="Sofia está ativa 24h acolhendo o cliente e garantindo zero vácuo"
+                  >
+                    <Bot className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                    <span className="hidden sm:inline">Sofia Ativa 24h</span>
+                    <span className="sm:hidden">Sofia</span>
+                  </div>
+                )}
 
                 <button
                   type="button"

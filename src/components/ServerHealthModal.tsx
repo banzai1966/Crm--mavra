@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { safeStorage } from '../utils/safeStorage';
 import {
   Server,
   Cpu,
@@ -36,7 +37,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
 
   // Sentinel Notification Settings state
   const [alertsConfig, setAlertsConfig] = useState<SentinelAlertConfig>(() => {
-    const savedLocal = typeof window !== 'undefined' ? localStorage.getItem('nexa_sentinel_alerts') : null;
+    const savedLocal = safeStorage.getItem('nexa_sentinel_alerts');
     if (savedLocal) {
       try {
         return JSON.parse(savedLocal);
@@ -100,9 +101,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
         body: JSON.stringify(alertsConfig),
       });
       if (!res.ok) throw new Error('Falha ao salvar configurações de alerta');
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('nexa_sentinel_alerts', JSON.stringify(alertsConfig));
-      }
+      safeStorage.setItem('nexa_sentinel_alerts', JSON.stringify(alertsConfig));
       setTestSentMsg('Configurações do Sentinela salvas com sucesso!');
       setTimeout(() => setTestSentMsg(null), 3000);
     } catch (err: any) {

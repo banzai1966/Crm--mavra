@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Header } from './components/Header';
 import { KanbanBoard } from './components/KanbanBoard';
 import { LiveChat } from './components/LiveChat';
@@ -14,6 +14,7 @@ import { PublicOrderTracking } from './components/PublicOrderTracking';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { usePWA } from './hooks/usePWA';
 import { PWAUpdateBanner } from './components/PWAUpdateBanner';
+import { safeStorage } from './utils/safeStorage';
 import {
   Lead,
   KanbanStage,
@@ -305,16 +306,12 @@ export const getUrlParamNiche = (): string | null => {
   
   if (raw && raw.trim()) {
     const normalized = normalizeNicheKey(raw);
-    try {
-      localStorage.setItem('nexa_client_nicho', normalized);
-    } catch {}
+    safeStorage.setItem('nexa_client_nicho', normalized);
     return normalized;
   }
   
-  try {
-    const saved = localStorage.getItem('nexa_client_nicho');
-    if (saved && saved.trim()) return normalizeNicheKey(saved);
-  } catch {}
+  const saved = safeStorage.getItem('nexa_client_nicho');
+  if (saved && saved.trim()) return normalizeNicheKey(saved);
   return 'clinic';
 };
 
@@ -350,6 +347,19 @@ export default function App() {
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+
+  // Check if current URL is in public order tracking mode (?rastreio=PED-XXX or ?track=PED-XXX)
+  const [publicTrackingOrder, setPublicTrackingOrder] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const trackingCode = params.get('rastreio') || params.get('track') || params.get('pedido');
+      if (trackingCode) return trackingCode;
+      if (window.location.pathname.startsWith('/track/')) {
+        return window.location.pathname.replace('/track/', '');
+      }
+    }
+    return null;
+  });
 
   // Sync workspace from URL changes
   useEffect(() => {
@@ -417,15 +427,15 @@ export default function App() {
         return false;
       }
     }
-    const stored = localStorage.getItem('nexa_admin_unlocked');
+    const stored = safeStorage.getItem('nexa_admin_unlocked');
     if (stored === 'false') return false;
     // Default to true
-    localStorage.setItem('nexa_admin_unlocked', 'true');
+    safeStorage.setItem('nexa_admin_unlocked', 'true');
     return true;
   });
 
   // Restrict tabs in client mode (!isAdminUnlocked)
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAdminUnlocked && (activeTab === 'sales' || activeTab === 'agent' || activeTab === 'evolution' || activeTab === 'supabase')) {
       setActiveTab('kanban');
     }
@@ -437,11 +447,12 @@ export default function App() {
   const [showIOSGuideModal, setShowIOSGuideModal] = useState(false);
 
   const handleUnlockAdmin = () => {
+    safeStorage.setItem('nexa_admin_unlocked', 'true');
     setIsAdminUnlocked(true);
   };
 
   const handleLockAdmin = () => {
-    localStorage.removeItem('nexa_admin_unlocked');
+    safeStorage.removeItem('nexa_admin_unlocked');
     setIsAdminUnlocked(false);
     // If on a technical tab, return safely to kanban
     if (activeTab === 'agent' || activeTab === 'evolution' || activeTab === 'supabase') {
@@ -871,9 +882,7 @@ export default function App() {
         if (config.instanceName) {
           const newWk = normalizeNicheKey(config.instanceName);
           setActiveUrlNiche(newWk);
-          try {
-            localStorage.setItem('nexa_client_nicho', newWk);
-          } catch {}
+          safeStorage.setItem('nexa_client_nicho', newWk);
           if (typeof window !== 'undefined') {
             const url = new URL(window.location.href);
             url.searchParams.set('nicho', newWk);
@@ -1007,19 +1016,19 @@ export default function App() {
   const handleSwitchWorkspacePreset = async (workspaceId: string) => {
     const normalizedWk = normalizeNicheKey(workspaceId);
     setActiveUrlNiche(normalizedWk);
-    try {
-      localStorage.setItem('nexa_client_nicho', normalizedWk);
-      const kanbanMode =
-        normalizedWk === 'clinic'
-          ? 'health'
-          : normalizedWk === 'delivery'
-          ? 'restaurant'
-          : 'all';
-      localStorage.setItem('nexa_crm_kanban_niche', kanbanMode);
+    safeStorage.setItem('nexa_client_nicho', normalizedWk);
+    const kanbanMode =
+      normalizedWk === 'clinic'
+        ? 'health'
+        : normalizedWk === 'delivery'
+        ? 'restaurant'
+        : 'all';
+    safeStorage.setItem('nexa_crm_kanban_niche', kanbanMode);
+    if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       url.searchParams.set('nicho', normalizedWk);
       window.history.replaceState({}, '', url.pathname + url.search);
-    } catch {}
+    }
 
     const chosen = WORKSPACE_PRESETS[normalizedWk];
     const targetInst =
@@ -1072,7 +1081,7 @@ export default function App() {
   };
 
   // Strictly isolate leads per workspace box! Never fallback to returning all leads when a box is empty.
-  const filteredLeads = React.useMemo(() => {
+  const filteredLeads = useMemo(() => {
     if (!activeUrlNiche || activeUrlNiche === 'all') {
       return leads;
     }
@@ -1095,18 +1104,6 @@ export default function App() {
   const hotCount = filteredLeads.filter((l) => l.isHotLead).length;
   const deliveryOrdersCount = filteredLeads.filter((l) => Boolean(l.deliveryInfo)).length;
 
-  // Check if current URL is in public order tracking mode (?rastreio=PED-XXX or ?track=PED-XXX)
-  const [publicTrackingOrder, setPublicTrackingOrder] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const trackingCode = params.get('rastreio') || params.get('track') || params.get('pedido');
-      if (trackingCode) return trackingCode;
-      if (window.location.pathname.startsWith('/track/')) {
-        return window.location.pathname.replace('/track/', '');
-      }
-    }
-    return null;
-  });
 
   if (publicTrackingOrder) {
     return (

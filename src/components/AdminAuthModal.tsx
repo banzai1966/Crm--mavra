@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Lock, Unlock, KeyRound, AlertCircle, Eye, EyeOff, X } from 'lucide-react';
+import { safeStorage } from '../utils/safeStorage';
 
 interface AdminAuthModalProps {
   isOpen: boolean;
@@ -16,7 +17,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onClose,
 
   const handleVerify = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const storedPin = (localStorage.getItem('nexa_admin_custom_pin') || 'admin123').toLowerCase();
+    const storedPin = (safeStorage.getItem('nexa_admin_custom_pin') || 'admin123').toLowerCase();
     const entered = pin.trim().toLowerCase();
 
     if (
@@ -26,7 +27,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onClose,
       entered === '2026' ||
       entered === 'nexa2026'
     ) {
-      localStorage.setItem('nexa_admin_unlocked', 'true');
+      safeStorage.setItem('nexa_admin_unlocked', 'true');
       setError('');
       setPin('');
       onSuccess();

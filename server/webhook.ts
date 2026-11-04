@@ -641,10 +641,22 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     }
   }
 
-  // 4c. Check if AI is paused for this specific lead (human agent has taken over)
+  // 4c. Protocolo Inteligente Anti-Vácuo (Zero Vácuo para o Cliente):
+  // Mesmo se o lead estiver marcado com atendimento humano, o cliente NUNCA fica no vácuo!
   if (lead.aiPaused) {
-    console.log(`[Webhook] Atendimento humano ativo para ${lead.name} (${cleanPhone}). IA pausada.`);
-    return;
+    const lastManualTime = lead.lastManualMessageAt ? new Date(lead.lastManualMessageAt).getTime() : 0;
+    const minutesSinceManual = lastManualTime > 0 ? (Date.now() - lastManualTime) / (1000 * 60) : 999;
+
+    // Se um operador humano enviou mensagem manual pelo painel nos últimos 10 minutos, respeitamos o diálogo humano em curso
+    if (minutesSinceManual < 10) {
+      console.log(`[Webhook 👤 OPERADOR ATIVO] Operador conversou com ${lead.name} (${cleanPhone}) há ${Math.round(minutesSinceManual)}m. Respeitando atendimento.`);
+      return;
+    }
+
+    // Se já se passaram mais de 10 minutos sem operador respondendo (ou à noite/madrugada),
+    // a Sofia auto-reativa o acolhimento para responder com cordialidade e nunca deixar no vácuo!
+    console.log(`[Webhook 🛡️ ZERO VÁCUO] Reativando Sofia para acolher ${lead.name} (${cleanPhone}) sem deixar no vácuo!`);
+    lead.aiPaused = false;
   }
 
   // 4d. Check Automatic Operating Schedule (Escala de Horários & Modo Fora de Expediente)
@@ -760,12 +772,12 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
 
     // Handle Explicit Human Handoff (Transbordo Humano quando o cliente insistiu ou caso delicado)
     if (aiResult.requestHuman) {
-      lead.aiPaused = true;
       if (!lead.tags.includes('#Humano')) {
         lead.tags.unshift('#Humano');
       }
       lead.notes = `${lead.notes || ''}\n👤 [TRANSBORDO HUMANO ${new Date().toLocaleTimeString('pt-BR')}]: ${aiResult.humanHandoffReason || 'Cliente solicitou atendimento humano direto'}`;
       console.log(`[Webhook 👤 TRANSBORDO HUMANO] Lead ${lead.name} (${cleanPhone}) direcionado para secretária humana: ${aiResult.humanHandoffReason}`);
+      // Zero Vácuo: Sofia permanece acolhedora caso o cliente envie dados adicionais ou fora de hora
     }
 
     // Handle Automatic SAC & Post-Sales Incident Protocol (90% Engine)
@@ -785,7 +797,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
 
       lead.isUrgent = true;
       lead.urgencyReason = `SAC [${generatedTicket}]: ${aiResult.sacTicket.reportedProblem || 'Chamado de suporte/pós-venda registrado'}`;
-      lead.aiPaused = true; // Safe human handoff for post-sales
+      // Zero Vácuo: Não pausamos a IA para que a Sofia possa acolher quando o cliente enviar o contrato, foto ou nota fiscal!
 
       if (!lead.tags.includes('⚠️ SAC / Pós-Venda')) {
         lead.tags.unshift('⚠️ SAC / Pós-Venda');
