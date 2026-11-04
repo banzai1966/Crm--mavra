@@ -61,6 +61,10 @@ export interface NichePreset {
   triagesTitle: string;
   triagesSubLabel: string;
   actionButtonText: string;
+  sacTitle?: string;
+  sacBadge?: string;
+  sacDescription?: string;
+  sacSetupPitch?: string;
 }
 
 export const NICHE_PRESETS: Record<string, NichePreset> = {
@@ -78,6 +82,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Triagens & Agendas',
     triagesSubLabel: 'confirmados',
     actionButtonText: 'Ver no Kanban',
+    sacTitle: 'Central de Triagem de Dor & Pós-Procedimento Clínico',
+    sacBadge: 'SAC Clínico & Urgências',
+    sacDescription: 'Acolhe pacientes em dor, coleta sintomas e horário de cirurgia sem receitar remédios, gerando protocolo seguro e acionando a equipe médica.',
+    sacSetupPitch: 'Deseja cadastrar instruções pós-operatórias personalizadas ou regras de anestesia da sua clínica? Ative o Setup Avançado (10%).',
   },
   medical: {
     id: 'medical',
@@ -93,6 +101,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Consultas & Triagens',
     triagesSubLabel: 'confirmadas',
     actionButtonText: 'Ver no Kanban',
+    sacTitle: 'Triagem de Sintomas Agudos & Suporte Pós-Consulta',
+    sacBadge: 'SAC Médico',
+    sacDescription: 'Identifica casos febris ou sintomas de urgência pós-atendimento, gera protocolo imediato e transborda com segurança para o corpo clínico.',
+    sacSetupPitch: 'Deseja cadastrar guias de preparo de exames laboratoriais ou termos de consentimento da clínica? Ative o Setup Avançado (10%).',
   },
   retail: {
     id: 'retail',
@@ -108,6 +120,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Pedidos & Cotações',
     triagesSubLabel: 'pedidos fechados',
     actionButtonText: 'Ver no Funil',
+    sacTitle: 'SAC Comercial: Trocas, Devoluções & Rastreio de Mercadoria',
+    sacBadge: 'SAC Varejo & E-commerce',
+    sacDescription: 'Coleta fotos de itens avariados pelo transporte, dados da Nota Fiscal e emite protocolo oficial de troca/estorno com IA pausada.',
+    sacSetupPitch: 'Deseja conectar sua política de devolução em 7 dias, tabela de transportadoras ou ERP (Bling/Tiny)? Ative o Setup Avançado (10%).',
   },
   sales: {
     id: 'sales',
@@ -123,6 +139,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Reuniões & Demos',
     triagesSubLabel: 'reuniões marcadas',
     actionButtonText: 'Ver Oportunidades',
+    sacTitle: 'SAC & Pós-Venda B2B: Garantias, Avarias & Contratos',
+    sacBadge: 'SAC Corporativo',
+    sacDescription: 'Triagem imediata de queixas técnicas de maquinário ou pedidos corporativos com emissão de protocolo oficial e transbordo seguro no CRM.',
+    sacSetupPitch: 'Deseja conectar a planilha com lista de assistências autorizadas e manuais em PDF? Ative o Setup Avançado (10%).',
   },
   real_estate: {
     id: 'real_estate',
@@ -138,6 +158,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Visitas Agendadas',
     triagesSubLabel: 'visitas marcadas',
     actionButtonText: 'Ver Imóveis/Leads',
+    sacTitle: 'SAC Imobiliário: Manutenção, 2ª Via de Boletos & Vistoria',
+    sacBadge: 'SAC Locação & Vendas',
+    sacDescription: 'Atendimento estruturado para chamados de reparos em imóveis alugados, dúvidas de contrato e protocolo de vistorias.',
+    sacSetupPitch: 'Deseja integrar sua régua de manutenção predial e prestadores parceiros? Ative o Setup Avançado (10%).',
   },
   services: {
     id: 'services',
@@ -153,6 +177,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Agendamentos de Serviço',
     triagesSubLabel: 'serviços agendados',
     actionButtonText: 'Ver Ordens de Serviço',
+    sacTitle: 'SAC Técnico: Garantia de Serviços & Ordens de Reparo',
+    sacBadge: 'SAC Serviços & OS',
+    sacDescription: 'Gera chamados de retorno de garantia com coleta de fotos e dados da ordem de serviço com agendamento do técnico.',
+    sacSetupPitch: 'Deseja integrar sua tabela de garantia por tipo de serviço e rotas técnicas? Ative o Setup Avançado (10%).',
   },
   general: {
     id: 'general',
@@ -168,6 +196,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Triagens & Reuniões',
     triagesSubLabel: 'confirmados',
     actionButtonText: 'Ver no Kanban',
+    sacTitle: 'Central de Atendimento ao Cliente, Suporte & Pós-Venda',
+    sacBadge: 'SAC Geral',
+    sacDescription: 'Acolhimento 24/7 com registro de ocorrências, coleta de dados comprobatórios, emissão de protocolo formal e transbordo seguro.',
+    sacSetupPitch: 'Deseja cadastrar suas políticas específicas de suporte, planilhas CSV ou integrar seu ERP? Ative o Setup Avançado (10%).',
   },
   restaurant_delivery: {
     id: 'restaurant_delivery',
@@ -183,6 +215,10 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     triagesTitle: 'Pedidos em Rota / Entregues',
     triagesSubLabel: 'pedidos ativos',
     actionButtonText: 'Ver Pedidos',
+    sacTitle: 'SAC Delivery: Pedido Trocado, Atraso de Motoboy & Estornos',
+    sacBadge: 'SAC Delivery',
+    sacDescription: 'Atendimento imediato para pedidos incorretos ou demorados com protocolo automático e aviso urgente à cozinha e expedição.',
+    sacSetupPitch: 'Deseja conectar sua política de cupons de desculpas e estorno automático via PIX? Ative o Setup Avançado (10%).',
   },
 };
 
@@ -235,6 +271,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   const [guideTab, setGuideTab] = useState<'kanban_flow' | 'reativacao' | 'agendamento' | 'atendimento_24h'>('kanban_flow');
   const [showReactivationExplainModal, setShowReactivationExplainModal] = useState(false);
   const [showAppointmentExplainModal, setShowAppointmentExplainModal] = useState(false);
+  const [showSacExplainModal, setShowSacExplainModal] = useState(false);
 
   const handleOpenBriefingPreview = async () => {
     setShowBriefingModal(true);
@@ -318,6 +355,16 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
     baseAntigaLeads.length > 0
       ? ((reactivatedLeads.length / baseAntigaLeads.length) * 100).toFixed(1)
       : '0.0';
+
+  // SAC / Pós-Venda Metrics (90% Engine)
+  const sacLeads = leads.filter(
+    (l) =>
+      Boolean(l.sacTicket) ||
+      l.stageId === 'stage-sac' ||
+      l.tags?.some((t) => t.includes('SAC') || t.startsWith('#SAC-') || t.startsWith('#BUG-'))
+  );
+  const openSacLeads = sacLeads.filter((l) => !l.sacTicket || l.sacTicket.status !== 'resolved');
+  const resolvedSacLeads = sacLeads.filter((l) => l.sacTicket?.status === 'resolved');
 
   // State for discreet Quick QR Modal
   const [showQrModal, setShowQrModal] = useState(false);
@@ -745,6 +792,103 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             </span>
             <span className="text-[10px] text-amber-300/80 block">Vendas que estavam perdidas</span>
           </div>
+        </div>
+      </div>
+
+      {/* Módulo SAC & Pós-Venda Inteligente (90% Automatizado) */}
+      <div className="bg-gradient-to-r from-slate-900 via-amber-950/40 to-slate-900 border border-amber-500/30 rounded-2xl p-4 sm:p-5 text-white shadow-lg space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center shrink-0 shadow-inner">
+              <ShieldCheck className="w-6 h-6 text-amber-400" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/30 text-amber-200 border border-amber-400/30">
+                  ✨ Módulo SAC & Pós-Venda Ativo (90% Automatizado)
+                </span>
+                <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  🛡️ Blindado por Empresa (Zero Contaminação)
+                </span>
+                {openSacLeads.length > 0 && (
+                  <span className="text-[10px] text-rose-300 font-bold bg-rose-500/20 px-2 py-0.5 rounded-full border border-rose-500/30 animate-pulse">
+                    ⚠️ {openSacLeads.length} chamado(s) em aberto
+                  </span>
+                )}
+              </div>
+              <h3 className="text-base font-bold text-white tracking-tight mt-1 flex items-center gap-2">
+                {currentNiche.sacTitle || 'Central de SAC, Garantia & Pós-Venda Inteligente'}
+              </h3>
+              <p className="text-xs text-slate-300 mt-0.5 max-w-2xl leading-relaxed">
+                {currentNiche.sacDescription || 'A Sofia atende reclamações, defeitos e ocorrências 24h, colhe fotos da avaria e dados da nota fiscal, emite Protocolo Oficial e pausa a IA com transbordo seguro no Kanban!'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowSacExplainModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs font-bold transition-all cursor-pointer border border-amber-400/30"
+              title="Ver detalhes de como o SAC dos 90% funciona e como ativar os 10% de Setup"
+            >
+              <Info className="w-3.5 h-3.5 text-amber-300" />
+              <span>Como Funciona o SAC & Setup (10%)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigateToTab('kanban')}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+            >
+              <span>Ver Chamados no Kanban</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Pilares Automatizados dos 90% */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
+          <div className="text-left space-y-0.5">
+            <span className="text-[10px] text-amber-300 uppercase font-bold block">1. Acolhimento 24/7</span>
+            <span className="text-xs font-bold text-white block">Zero Vácuo p/ o Cliente</span>
+            <span className="text-[10px] text-slate-400 block">Atende em 3s com calma e empatia sem discussão.</span>
+          </div>
+
+          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">
+            <span className="text-[10px] text-amber-300 uppercase font-bold block">2. Coleta de Avaria & NF</span>
+            <span className="text-xs font-bold text-white block">Triagem Cirúrgica</span>
+            <span className="text-[10px] text-slate-400 block">Pede fotos/vídeos da peça, relato e dados da compra.</span>
+          </div>
+
+          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">
+            <span className="text-[10px] text-amber-300 uppercase font-bold block">3. Protocolo Formal</span>
+            <span className="text-xs font-bold text-white block">Postura de Empresa Séria</span>
+            <span className="text-[10px] text-slate-400 block">Gera código rastreável (ex: #SAC-PRIMO-4091).</span>
+          </div>
+
+          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">
+            <span className="text-[10px] text-amber-300 uppercase font-bold block">4. Transbordo Seguro</span>
+            <span className="text-xs font-bold text-white block">IA Pausada no Kanban</span>
+            <span className="text-[10px] text-slate-400 block">Sua equipe assume sabendo tudo mastigado.</span>
+          </div>
+        </div>
+
+        {/* Setup 10% Upsell Box */}
+        <div className="bg-amber-500/10 border border-amber-400/20 rounded-xl p-3 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-200">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>
+              <strong>Personalização Avançada (10% de Setup):</strong> {currentNiche.sacSetupPitch || 'Deseja cadastrar sua planilha exclusiva de regras, manuais em PDF ou integrar ERP para esta empresa?'}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowSacExplainModal(true)}
+            className="underline font-bold text-white hover:text-amber-300 text-xs whitespace-nowrap cursor-pointer shrink-0"
+          >
+            Saiba mais sobre o Setup
+          </button>
         </div>
       </div>
 
@@ -2115,6 +2259,159 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               >
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Abrir Calendário de Agendamentos</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Educativo: Como Funciona o SAC dos 90% & Personalização dos 10% */}
+      {showSacExplainModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">
+                    Como Funciona o SAC & Pós-Venda (90% Pronto vs 10% Setup)
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Atendimento humanizado de ocorrências e blindagem da sua equipe no WhatsApp
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSacExplainModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto space-y-4 pr-1 text-xs text-slate-600">
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 space-y-2">
+                <span className="font-bold text-amber-950 flex items-center gap-2 text-sm">
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  Os 90% que já vêm 100% prontos no NEXA CRM:
+                </span>
+                <p className="text-slate-700 leading-relaxed text-[11px]">
+                  Você não precisa programar nada. O motor central do NEXA CRM já identifica intenções de reclamação, defeitos de maquinário, dor clínica ou bugs, executa a triagem e protege sua reputação comercial:
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-amber-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">1</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Acolhimento Imediato sem Discussão (Anti-Estresse)</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      Quem está com uma máquina quebrada ou com dor não pode esperar. A Sofia atende em 3 segundos, acolhe o cliente com respeito e tranquiliza que o caso já está sob os cuidados da empresa.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-emerald-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">2</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Coleta Estruturada de Provas (Fotos, Vídeos & Nota Fiscal)</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      A IA solicita a foto da avaria, número do pedido ou CPF e relato do que aconteceu. Tudo fica salvo na ficha do lead no CRM.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-indigo-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">3</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Geração de Protocolo Oficial Rastreável</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      O cliente recebe um número formal (ex: <code className="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded font-mono font-bold">#SAC-PRIMO-4921</code>). Isso passa seriedade e auditoria imediata.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="w-6 h-6 rounded-lg bg-rose-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">4</span>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Transbordo Seguro no Kanban com IA Pausada</h4>
+                    <p className="text-slate-500 mt-0.5">
+                      Para não correr risco da IA prometer prazos de garantia errados, ela <strong>pausa a conversa</strong>, move o cartão para a coluna de SAC e avisa o atendente humano para finalizar.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* O que são os 10% de Setup */}
+              <div className="bg-slate-900 text-white p-4 rounded-2xl space-y-2 border border-slate-800">
+                <span className="font-bold text-amber-300 flex items-center gap-1.5 text-xs">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  O que são os 10% restantes (Setup Avançado Personalizado)?
+                </span>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Os 10% são os dados exclusivos da sua empresa que você pode carregar para a Sofia responder dúvidas específicas sem nem precisar de atendente humano:
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-400 pl-1">
+                  <li>Planilhas do Excel (CSV) ou catálogos em PDF com suas políticas de troca;</li>
+                  <li>Tabela de endereços e telefones de oficinas autorizadas por cidade/estado;</li>
+                  <li>Padrão personalizado de código de chamado (ex: usar o próprio número da sua Nota Fiscal);</li>
+                  <li>Integração direta com a API do seu sistema ERP ou transportadora.</li>
+                </ul>
+                <div className="pt-2 text-center sm:text-left">
+                  <span className="text-[11px] text-amber-200 font-bold block">
+                    💬 Deseja ativar regras avançadas personalizadas para sua empresa? Entre em contato com nosso suporte para contratar o Setup Exclusivo!
+                  </span>
+                </div>
+              </div>
+
+              {/* Exemplo de Conversa no WhatsApp */}
+              <div className="space-y-1.5 pt-1">
+                <span className="font-bold text-slate-800 block">Exemplo Real de Atendimento de Ocorrência:</span>
+                <div className="bg-emerald-950/90 rounded-2xl p-4 space-y-3 font-sans border border-emerald-900">
+                  <div className="bg-white text-slate-900 p-3 rounded-xl rounded-tl-xs max-w-sm mr-auto text-xs shadow-xs">
+                    <span className="text-[10px] text-slate-400 font-bold block mb-0.5">Cliente:</span>
+                    Comprei um liquidificador industrial e a lâmina travou no segundo dia de uso! Preciso de ajuda urgente!
+                  </div>
+
+                  <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
+                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
+                    Sinto muito pelo ocorrido! Vou registrar seu chamado agora mesmo para resolvermos isso o mais rápido possível. Por gentileza, me envie uma foto ou vídeo curto do equipamento e o número da sua Nota Fiscal ou Pedido. Por segurança, mantenha o aparelho fora da tomada, tá bom?
+                  </div>
+
+                  <div className="bg-white text-slate-900 p-3 rounded-xl rounded-tl-xs max-w-sm mr-auto text-xs shadow-xs">
+                    <span className="text-[10px] text-slate-400 font-bold block mb-0.5">Cliente:</span>
+                    [Foto do Liquidificador] - Nota Fiscal 8492.
+                  </div>
+
+                  <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
+                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
+                    Perfeito! Já registrei seu chamado no sistema sob o Protocolo Oficial #SAC-PRIMO-4921. Nossa equipe técnica já foi notificada com a sua foto e a nota fiscal e vai assumir o atendimento diretamente por aqui em instantes!
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowSacExplainModal(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 cursor-pointer"
+              >
+                Fechar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSacExplainModal(false);
+                  onNavigateToTab('kanban');
+                }}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Ver Chamados de SAC no Kanban</span>
               </button>
             </div>
           </div>

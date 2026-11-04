@@ -116,6 +116,7 @@ export const CLINIC_STAGES: KanbanStage[] = [
   { id: 'stage-4', name: 'Plano de Tratamento Apresentado', color: '#06b6d4', order: 5 },
   { id: 'stage-5', name: 'Tratamento em Curso / Concluído', color: '#10b981', order: 6 },
   { id: 'stage-6', name: 'Remarcação / Não Compareceu', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '🚨 SAC / Urgências & Dúvidas Pós-Consulta', color: '#ea580c', order: 8 },
 ];
 
 export const PRIMO_STAGES: KanbanStage[] = [
@@ -127,6 +128,7 @@ export const PRIMO_STAGES: KanbanStage[] = [
   { id: 'stage-4', name: 'Negociação / Fechamento PIX', color: '#06b6d4', order: 5 },
   { id: 'stage-5', name: 'Pedido Pago / Expedição', color: '#10b981', order: 6 },
   { id: 'stage-6', name: 'Perdido / Desistência', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '⚠️ SAC / Garantia, Avarias & Pós-Venda', color: '#ea580c', order: 8 },
 ];
 
 export const SURFACE_STAGES: KanbanStage[] = [
@@ -138,6 +140,7 @@ export const SURFACE_STAGES: KanbanStage[] = [
   { id: 'stage-4', name: 'Proposta Comercial do Sistema', color: '#06b6d4', order: 5 },
   { id: 'stage-5', name: 'Sistema Vendido / Implantado', color: '#10b981', order: 6 },
   { id: 'stage-6', name: 'Invigilância / Standby', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '⚙️ SAC / Suporte Técnico & Dyne', color: '#ea580c', order: 8 },
 ];
 
 export const VERZEL_STAGES: KanbanStage[] = [
@@ -149,6 +152,7 @@ export const VERZEL_STAGES: KanbanStage[] = [
   { id: 'stage-4', name: 'Proposta de Squad / Projeto', color: '#06b6d4', order: 5 },
   { id: 'stage-5', name: 'Contrato Assinado / Kickoff', color: '#10b981', order: 6 },
   { id: 'stage-6', name: 'Sem Budget / Pausado', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '🛠️ Suporte / Bugs & Sustentação N1', color: '#ea580c', order: 8 },
 ];
 
 export const CANTAREIRA_STAGES: KanbanStage[] = [
@@ -160,6 +164,7 @@ export const CANTAREIRA_STAGES: KanbanStage[] = [
   { id: 'stage-4', name: 'Apresentação de Plano Preventivo', color: '#06b6d4', order: 5 },
   { id: 'stage-5', name: 'Jazigo / Plano Formalizado', color: '#10b981', order: 6 },
   { id: 'stage-6', name: 'Atendimento Concluído', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '🕊️ SAC / Atendimento Familiar & Manutenção', color: '#ea580c', order: 8 },
 ];
 
 export const EQUIPAMENTOS_PSI_STAGES: KanbanStage[] = [
@@ -171,6 +176,7 @@ export const EQUIPAMENTOS_PSI_STAGES: KanbanStage[] = [
   { id: 'stage-4', name: 'Pedido Fechado / Aguardando PIX', color: '#06b6d4', order: 5 },
   { id: 'stage-5', name: 'Pago / Embalado & Enviado', color: '#10b981', order: 6 },
   { id: 'stage-6', name: 'Perdido / Desistência', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '⚠️ SAC / Suporte Técnico EMDR & Peças', color: '#ea580c', order: 8 },
 ];
 
 export function getStagesForNiche(niche?: string): KanbanStage[] {

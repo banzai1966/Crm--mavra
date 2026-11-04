@@ -768,6 +768,43 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       console.log(`[Webhook 👤 TRANSBORDO HUMANO] Lead ${lead.name} (${cleanPhone}) direcionado para secretária humana: ${aiResult.humanHandoffReason}`);
     }
 
+    // Handle Automatic SAC & Post-Sales Incident Protocol (90% Engine)
+    if (aiResult.sacTicket && aiResult.sacTicket.isSacIncident) {
+      const generatedTicket =
+        aiResult.sacTicket.ticketNumber ||
+        `#SAC-${targetWorkspaceId.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      lead.sacTicket = {
+        ticketNumber: generatedTicket,
+        incidentType: aiResult.sacTicket.incidentType || 'defeito',
+        invoiceOrOrderNumber: aiResult.sacTicket.invoiceOrOrderNumber || undefined,
+        reportedProblem: aiResult.sacTicket.reportedProblem || undefined,
+        openedAt: new Date().toISOString(),
+        status: 'open',
+      };
+
+      lead.isUrgent = true;
+      lead.urgencyReason = `SAC [${generatedTicket}]: ${aiResult.sacTicket.reportedProblem || 'Chamado de suporte/pós-venda registrado'}`;
+      lead.aiPaused = true; // Safe human handoff for post-sales
+
+      if (!lead.tags.includes('⚠️ SAC / Pós-Venda')) {
+        lead.tags.unshift('⚠️ SAC / Pós-Venda');
+      }
+      if (!lead.tags.includes(generatedTicket)) {
+        lead.tags.push(generatedTicket);
+      }
+
+      // Move lead to SAC stage if it exists in current workspace
+      const sacStage = db.stages.find((s) => s.id === 'stage-sac');
+      if (sacStage) {
+        lead.stageId = sacStage.id;
+        stageTriggered = sacStage.id;
+      }
+
+      lead.notes = `${lead.notes || ''}\n⚠️ [CHAMADO SAC ${new Date().toLocaleTimeString('pt-BR')}]: Protocolo ${generatedTicket} aberto. Problema: ${aiResult.sacTicket.reportedProblem || 'Aguardando avaliação humana'}.`;
+      console.log(`[Webhook ⚠️ SAC & PÓS-VENDA] Lead ${lead.name} (${cleanPhone}) com protocolo ${generatedTicket}: ${aiResult.sacTicket.reportedProblem}`);
+    }
+
     // Handle Pre-appointment Triage Extraction
     if (aiResult.triage && (aiResult.triage.procedure || aiResult.triage.preferredPeriod || aiResult.triage.preferredDays)) {
       lead.triage = {

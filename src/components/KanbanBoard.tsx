@@ -1147,6 +1147,25 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </div>
                       )}
 
+                      {/* SAC & Post-Sales Protocol Banner */}
+                      {lead.sacTicket && (
+                        <div className="flex items-center justify-between gap-1.5 p-1.5 mb-2 bg-amber-50 border border-amber-300 rounded text-[10px] text-amber-950 font-bold shadow-2xs">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="px-1.5 py-0.2 bg-amber-600 text-white rounded font-mono text-[9px] shrink-0">
+                              {lead.sacTicket.ticketNumber}
+                            </span>
+                            <div className="truncate">
+                              <span className="font-semibold text-amber-900">{lead.sacTicket.reportedProblem || 'Chamado de suporte'}</span>
+                              {lead.sacTicket.invoiceOrOrderNumber && (
+                                <span className="text-[9px] text-slate-500 font-normal ml-1">
+                                  (NF: {lead.sacTicket.invoiceOrOrderNumber})
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Urgent banner if flagged by AI */}
                       {lead.isUrgent && (
                         <div className="flex items-center justify-between gap-1.5 p-1.5 mb-2 bg-rose-50 border border-rose-200 rounded text-[10px] text-rose-800">

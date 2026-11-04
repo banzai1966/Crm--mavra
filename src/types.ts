@@ -32,6 +32,14 @@ export interface Lead {
   scheduledDate?: string; // ISO ou Data legível da consulta
   scheduledTime?: string; // Horário formatado da consulta (ex: 14:00)
   triage?: PreAppointmentTriage;
+  sacTicket?: {
+    ticketNumber: string;
+    incidentType: string;
+    invoiceOrOrderNumber?: string;
+    reportedProblem?: string;
+    openedAt: string;
+    status: 'open' | 'in_progress' | 'resolved';
+  };
   lastFollowUpAt?: string;
   followUpCount?: number;
   dispatchedAudioIds?: string[];
