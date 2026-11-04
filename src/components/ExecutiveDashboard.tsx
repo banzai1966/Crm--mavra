@@ -2329,7 +2329,19 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   <div>
                     <h4 className="font-bold text-slate-900">Geração de Protocolo Oficial Rastreável</h4>
                     <p className="text-slate-500 mt-0.5">
-                      O cliente recebe um número formal (ex: <code className="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded font-mono font-bold">#SAC-PRIMO-4921</code>). Isso passa seriedade e auditoria imediata.
+                      O cliente recebe um número formal (ex: <code className="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded font-mono font-bold">{
+                        (() => {
+                          const n = (agentConfig.followUpNiche || 'dental').toLowerCase();
+                          const w = (agentConfig.activeWorkspaceName || '').toLowerCase();
+                          if (n.includes('cantareira') || w.includes('cantareira')) return '#SAC-CANTAREIRA-4921';
+                          if (n.includes('surface') || w.includes('surface')) return '#SAC-SURFACE-4921';
+                          if (n.includes('verzel') || w.includes('verzel')) return '#BUG-VERZEL-4921';
+                          if (n.includes('psi') || w.includes('psi')) return '#SAC-PSI-4921';
+                          if (n.includes('primo') || w.includes('primo')) return '#SAC-PRIMO-4921';
+                          if (n.includes('dental') || n.includes('clinic') || w.includes('lucy')) return '#SAC-CLINICA-4921';
+                          return '#SAC-CRM-4921';
+                        })()
+                      }</code>). Isso passa seriedade e auditoria imediata.
                     </p>
                   </div>
                 </div>
@@ -2345,53 +2357,142 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 </div>
               </div>
 
-              {/* O que são os 10% de Setup */}
-              <div className="bg-slate-900 text-white p-4 rounded-2xl space-y-2 border border-slate-800">
-                <span className="font-bold text-amber-300 flex items-center gap-1.5 text-xs">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  O que são os 10% restantes (Setup Avançado Personalizado)?
-                </span>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Os 10% são os dados exclusivos da sua empresa que você pode carregar para a Sofia responder dúvidas específicas sem nem precisar de atendente humano:
+              {/* O que são os 10% de Setup Personalizado (Arquivos vs Integração via API/ERP) */}
+              <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 text-white p-4 sm:p-5 rounded-2xl space-y-3 border border-amber-500/30 shadow-lg">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                  <span className="font-bold text-amber-300 flex items-center gap-1.5 text-xs sm:text-sm">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    O que são os 10% do Setup Técnico Personalizado?
+                  </span>
+                  <span className="text-[10px] bg-amber-500/20 text-amber-300 font-extrabold px-2 py-0.5 rounded-full border border-amber-400/30">
+                    🛠️ Configurado pela Nossa Equipe
+                  </span>
+                </div>
+
+                <p className="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                  Enquanto os 90% já resolvem o acolhimento humano, protocolo e triagem em qualquer empresa, os <strong>10% de Setup</strong> são a personalização dos dados e processos exclusivos do cliente. Isso é feito de 2 formas pela nossa equipe de arquitetura técnica:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-400 pl-1">
-                  <li>Planilhas do Excel (CSV) ou catálogos em PDF com suas políticas de troca;</li>
-                  <li>Tabela de endereços e telefones de oficinas autorizadas por cidade/estado;</li>
-                  <li>Padrão personalizado de código de chamado (ex: usar o próprio número da sua Nota Fiscal);</li>
-                  <li>Integração direta com a API do seu sistema ERP ou transportadora.</li>
-                </ul>
-                <div className="pt-2 text-center sm:text-left">
-                  <span className="text-[11px] text-amber-200 font-bold block">
-                    💬 Deseja ativar regras avançadas personalizadas para sua empresa? Entre em contato com nosso suporte para contratar o Setup Exclusivo!
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-1">
+                    <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                      📄 Modo 1: Carga por Arquivos (Excel, CSV, PDF ou Word)
+                    </span>
+                    <p className="text-[10px] text-slate-300 leading-relaxed">
+                      O cliente nos envia os arquivos do dia a dia (planilhas de pedidos, notas fiscais, catálogos em PDF ou regras de troca). Nossa equipe carrega esses dados na base da Sofia para ela consultar sozinha sem depender de atendente humano.
+                    </p>
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-1">
+                    <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
+                      🔌 Modo 2: Integração Direct API / ERP (100% Automático)
+                    </span>
+                    <p className="text-[10px] text-slate-300 leading-relaxed">
+                      Se o cliente usa sistema de gestão (ERP, Bling, Tiny, TOTVS ou API de transportadoras), nossa equipe faz a ponte técnica via API. A Sofia valida se a Nota Fiscal ou Contrato é verdadeiro direto no banco do cliente em tempo real!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <span className="text-[11px] text-amber-200 font-semibold text-center sm:text-left">
+                    💼 Quer implementar o Setup Avançado dos 10% para o seu cliente?
+                  </span>
+                  <span className="text-[10px] text-slate-300 font-mono bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-400/30 font-bold whitespace-nowrap">
+                    Fale com nossa Equipe de Arquitetura Técnica
                   </span>
                 </div>
               </div>
 
-              {/* Exemplo de Conversa no WhatsApp */}
-              <div className="space-y-1.5 pt-1">
-                <span className="font-bold text-slate-800 block">Exemplo Real de Atendimento de Ocorrência:</span>
-                <div className="bg-emerald-950/90 rounded-2xl p-4 space-y-3 font-sans border border-emerald-900">
-                  <div className="bg-white text-slate-900 p-3 rounded-xl rounded-tl-xs max-w-sm mr-auto text-xs shadow-xs">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-0.5">Cliente:</span>
-                    Comprei um liquidificador industrial e a lâmina travou no segundo dia de uso! Preciso de ajuda urgente!
-                  </div>
+              {/* Exemplo Real de Atendimento Dinâmico por Empresa */}
+              {(() => {
+                const n = (agentConfig.followUpNiche || 'dental').toLowerCase();
+                const w = (agentConfig.activeWorkspaceName || '').toLowerCase();
+                
+                let dialog = {
+                  code: '#SAC-CRM-4921',
+                  userMsg1: 'Preciso de suporte referente a um contrato ou pedido recente com a empresa.',
+                  aiMsg1: 'Com certeza! Vou registrar sua solicitação com prioridade. Por gentileza, confirme o número do pedido ou nota fiscal e descreva a solicitação.',
+                  userMsg2: 'Nota Fiscal / Pedido 8492.',
+                  aiMsg2: 'Perfeito! Registrei seu chamado no sistema sob o Protocolo Oficial #SAC-CRM-4921. Nosso time de suporte já recebeu sua solicitação e vai assumir em instantes!',
+                };
 
-                  <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
-                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
-                    Sinto muito pelo ocorrido! Vou registrar seu chamado agora mesmo para resolvermos isso o mais rápido possível. Por gentileza, me envie uma foto ou vídeo curto do equipamento e o número da sua Nota Fiscal ou Pedido. Por segurança, mantenha o aparelho fora da tomada, tá bom?
-                  </div>
+                if (n.includes('cantareira') || w.includes('cantareira')) {
+                  dialog = {
+                    code: '#SAC-CANTAREIRA-4921',
+                    userMsg1: 'Preciso de informações sobre a 2ª via da manutenção do jazigo da minha família e atualização cadastral.',
+                    aiMsg1: 'Com certeza! Estamos à sua disposição para auxiliá-los com todo o respeito que sua família merece. Por gentileza, me informe o número do contrato/título ou o nome completo do titular.',
+                    userMsg2: 'Contrato 8492 - Titular João Duarte.',
+                    aiMsg2: 'Perfeito! Já registrei seu chamado no sistema sob o Protocolo Oficial #SAC-CANTAREIRA-4921. Nossa equipe de acolhimento do Parque Cantareira já recebeu sua solicitação e vai te retornar em breve por aqui!',
+                  };
+                } else if (n.includes('surface') || w.includes('surface')) {
+                  dialog = {
+                    code: '#SAC-SURFACE-4921',
+                    userMsg1: 'Nossa linha de tratamento de peças em PP apresentou descolamento de pintura no lote de hoje. Preciso de suporte da engenharia.',
+                    aiMsg1: 'Entendido perfeitamente! Vamos protocolar sua solicitação para a nossa engenharia de aplicação em Campinas analisar. Por favor, informe o substrato, o equipamento de plasma e o teste de Dyne.',
+                    userMsg2: '[Foto do Material] - Substrato PP com Dyne 34.',
+                    aiMsg2: 'Perfeito! Registrei sob o Protocolo Oficial #SAC-SURFACE-4921. Nossos engenheiros da Surfacebrasil já receberam a foto e a medição e vão assumir o contato em instantes!',
+                  };
+                } else if (n.includes('verzel') || w.includes('verzel')) {
+                  dialog = {
+                    code: '#BUG-VERZEL-4921',
+                    userMsg1: 'O aplicativo mobile entregue apresentou erro 500 no módulo de checkout durante o pico de acesso. Preciso de suporte!',
+                    aiMsg1: 'Entendido! Vamos abrir um ticket com prioridade para a nossa equipe de sustentação N1. Por favor, envie um print da tela com o erro e o e-mail do usuário afetado.',
+                    userMsg2: '[Print do Erro 500] - Usuário checkout@empresa.com.',
+                    aiMsg2: 'Perfeito! Protocolado sob o Ticket Oficial #BUG-VERZEL-4921. Nossa squad de sustentação e engenheiros da Verzel já foram notificados para triagem imediata!',
+                  };
+                } else if (n.includes('psi') || w.includes('psi')) {
+                  dialog = {
+                    code: '#SAC-PSI-4921',
+                    userMsg1: 'O cabo do buzzer do meu Aparelho Tátil EMDR apresentou oscilação de sinal antes da minha sessão clínica.',
+                    aiMsg1: 'Olá doutor(a)! Sinto muito pelo contratempo no seu consultório. Me envie uma foto/vídeo do aparelho e o número do seu pedido ou CPF da compra.',
+                    userMsg2: '[Foto do Aparelho] - Pedido 8492.',
+                    aiMsg2: 'Perfeito! Registrei sob o Protocolo Oficial #SAC-PSI-4921. Nossa equipe técnica da Equipamentos PSI já foi acionada para orientar a substituição rápida do cabo!',
+                  };
+                } else if (n.includes('dental') || n.includes('clinic') || w.includes('lucy')) {
+                  dialog = {
+                    code: '#SAC-CLINICA-4921',
+                    userMsg1: 'Estou com uma dúvida sobre a orientação de posologia pós-procedimento e um pouco de desconforto. Como devo proceder?',
+                    aiMsg1: 'Olá! Fique tranquilo(a), vamos acolher você imediatamente. Por favor, confirme seu nome completo e descreva com detalhes o que está sentindo.',
+                    userMsg2: 'Maria Silva - Procedimento no consultório Euroville.',
+                    aiMsg2: 'Perfeito! Registrei com prioridade sob o Protocolo Oficial #SAC-CLINICA-4921. Nossa recepção clínica da Dra. Lucy Murata já foi notificada para te orientar em instantes!',
+                  };
+                } else if (n.includes('primo') || w.includes('primo')) {
+                  dialog = {
+                    code: '#SAC-PRIMO-4921',
+                    userMsg1: 'Comprei um equipamento para minha cozinha comercial e o motor travou no segundo dia! Preciso de ajuda urgente!',
+                    aiMsg1: 'Sinto muito pelo ocorrido! Por gentileza, me envie uma foto/vídeo do equipamento e o número da sua Nota Fiscal ou Pedido. Por segurança, mantenha o aparelho fora da tomada, tá bom?',
+                    userMsg2: '[Foto do Equipamento] - Nota Fiscal 8492.',
+                    aiMsg2: 'Perfeito! Já registrei seu chamado no sistema sob o Protocolo Oficial #SAC-PRIMO-4921. Nossa equipe técnica e expedição da Primo Equipamentos já foi notificada!',
+                  };
+                }
 
-                  <div className="bg-white text-slate-900 p-3 rounded-xl rounded-tl-xs max-w-sm mr-auto text-xs shadow-xs">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-0.5">Cliente:</span>
-                    [Foto do Liquidificador] - Nota Fiscal 8492.
-                  </div>
+                return (
+                  <div className="space-y-1.5 pt-1">
+                    <span className="font-bold text-slate-800 block">Exemplo Real de Atendimento de Ocorrência:</span>
+                    <div className="bg-emerald-950/90 rounded-2xl p-4 space-y-3 font-sans border border-emerald-900">
+                      <div className="bg-white text-slate-900 p-3 rounded-xl rounded-tl-xs max-w-sm mr-auto text-xs shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-bold block mb-0.5">Cliente:</span>
+                        {dialog.userMsg1}
+                      </div>
 
-                  <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
-                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
-                    Perfeito! Já registrei seu chamado no sistema sob o Protocolo Oficial #SAC-PRIMO-4921. Nossa equipe técnica já foi notificada com a sua foto e a nota fiscal e vai assumir o atendimento diretamente por aqui em instantes!
+                      <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
+                        <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
+                        {dialog.aiMsg1}
+                      </div>
+
+                      <div className="bg-white text-slate-900 p-3 rounded-xl rounded-tl-xs max-w-sm mr-auto text-xs shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-bold block mb-0.5">Cliente:</span>
+                        {dialog.userMsg2}
+                      </div>
+
+                      <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
+                        <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
+                        {dialog.aiMsg2}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
 
             <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">

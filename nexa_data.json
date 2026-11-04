@@ -52,6 +52,134 @@
   ],
   "leads": [
     {
+      "id": "lead-primo-1793712637457",
+      "name": "Marco Teste",
+      "phone": "5511988887777",
+      "email": "",
+      "stageId": "stage-1",
+      "value": 0,
+      "interest": "Novo contato via WhatsApp (Primo Equipamentos)",
+      "tags": [
+        "WhatsApp",
+        "Instância: primo-equipamentos",
+        "Primo Equipamentos",
+        "Follow-up Enviado"
+      ],
+      "notes": "Lead recebido pela instância \"primo-equipamentos\" (Primo Equipamentos).\n🔁 [Follow-up Automático #1]: 17:31:33\n🔁 [Follow-up Automático #1]: 21:36:25\n🔁 [Follow-up Automático #1]: 01:36:39\n🔁 [Follow-up Automático #1]: 14:51:56",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-04T14:51:56.025+00:00",
+      "createdAt": "2026-11-03T13:30:37.458+00:00",
+      "unreadCount": 0,
+      "workspaceId": "primo"
+    },
+    {
+      "id": "lead-primo-1793712818535",
+      "name": "Marco Teste Primo",
+      "phone": "5511966665555",
+      "email": "",
+      "stageId": "stage-1",
+      "value": 0,
+      "interest": "Novo contato via WhatsApp (Primo Equipamentos)",
+      "tags": [
+        "WhatsApp",
+        "Instância: primo-equipamentos",
+        "Primo Equipamentos",
+        "Follow-up Enviado"
+      ],
+      "notes": "Lead recebido pela instância \"primo-equipamentos\" (Primo Equipamentos).\n🔁 [Follow-up Automático #1]: 17:36:35\n🔁 [Follow-up Automático #1]: 21:41:25\n🔁 [Follow-up Automático #1]: 01:41:39\n🔁 [Follow-up Automático #1]: 14:51:55",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-04T14:51:55.885+00:00",
+      "createdAt": "2026-11-03T13:33:38.535+00:00",
+      "unreadCount": 0,
+      "workspaceId": "primo"
+    },
+    {
+      "id": "lead-primo-1793712775840",
+      "name": "Marco Teste Primo",
+      "phone": "5511977776666",
+      "email": "",
+      "stageId": "stage-1",
+      "value": 0,
+      "interest": "Novo contato via WhatsApp (Primo Equipamentos)",
+      "tags": [
+        "WhatsApp",
+        "Instância: primo-equipamentos",
+        "Primo Equipamentos",
+        "Follow-up Enviado"
+      ],
+      "notes": "Lead recebido pela instância \"primo-equipamentos\" (Primo Equipamentos).\n🔁 [Follow-up Automático #1]: 17:36:37\n🔁 [Follow-up Automático #1]: 21:41:25\n🔁 [Follow-up Automático #1]: 01:41:39\n🔁 [Follow-up Automático #1]: 14:51:55",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-04T14:51:55.75+00:00",
+      "createdAt": "2026-11-03T13:32:55.84+00:00",
+      "unreadCount": 0,
+      "workspaceId": "primo"
+    },
+    {
+      "id": "lead-1",
+      "name": "Dr. Roberto Silva",
+      "phone": "5511987654321",
+      "email": "roberto.silva@clinica.com.br",
+      "stageId": "stage-3",
+      "value": 145,
+      "interest": "Plano Enterprise + Integração WhatsApp",
+      "tags": [
+        "🍣 Japonês/Delivery",
+        "📦 Chegando (5min)",
+        "🔥 LEAD QUENTE",
+        "Follow-up Enviado",
+        "Status: dispatched"
+      ],
+      "notes": "Solicitou proposta para 10 atendentes com IA conversacional.\n🔁 [Follow-up Automático #1]: 02:30:39\n🔁 [Follow-up Automático #2]: 06:35:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:29:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:06:08\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:06\n🔁 [Follow-up Automático #1]: 12:59:10\n🔁 [Follow-up Automático #1]: 18:34:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:32\n🔁 [Follow-up Automático #1]: 16:20:20\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:06\n🔁 [Follow-up Automático #1]: 19:11:43\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:29:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:01:41\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:21\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:37\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:28:07\n🔁 [Follow-up Automático #1]: 03:31:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:27:48\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:03\n🔁 [Follow-up Automático #1]: 19:55:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:34:01\n🔁 [Follow-up Automático #1]: 12:21:21\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:41\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:13\n🔁 [Follow-up Automático #1]: 13:29:20\n🔁 [Follow-up Automático #1]: 17:29:49\n🔁 [Follow-up Automático #1]: 23:10:20\n🔁 [Follow-up Automático #1]: 03:17:18\n🔁 [Follow-up Automático #1]: 11:59:32\n🔁 [Follow-up Automático #1]: 16:19:15\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:26:11\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:09\n🔁 [Follow-up Automático #1]: 19:37:45\n🔁 [Follow-up Automático #1]: 13:21:18\n🔁 [Follow-up Automático #1]: 18:29:59\n🔁 [Follow-up Automático #1]: 22:32:26\n🔁 [Follow-up Automático #1]: 15:58:14\n🔁 [Follow-up Automático #1]: 15:22:22\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:51\n🔁 [Follow-up Automático #1]: 17:55:58\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:08\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:26\n🔁 [Follow-up Automático #1]: 01:49:56\n🔁 [Follow-up Automático #1]: 14:51:55",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-04T14:51:55.603+00:00",
+      "createdAt": "2026-09-18T22:45:38.575+00:00",
+      "unreadCount": 0,
+      "deliveryInfo": {
+        "orderNumber": "PED-1023",
+        "itemsDescription": "2x Combinado Sushi Premium 30 Peças + Temaki Salmão Grelhado",
+        "motoboyName": "Carlos Motoboy",
+        "motoboyPhone": "5511999887766",
+        "motoboyPlate": "ABC-1234",
+        "deliveryAddress": "Rua Oscar Freire, 800 - Jardins, SP",
+        "etaMinutes": 4,
+        "dispatchedAt": "2026-10-14T20:04:43.931Z",
+        "status": "arriving",
+        "verificationCode": "4321"
+      },
+      "workspaceId": "delivery"
+    },
+    {
+      "id": "lead-1790015029550",
+      "name": "Tania Maria",
+      "phone": "5511982220223",
+      "email": "",
+      "stageId": "stage-3",
+      "value": 0,
+      "interest": "Como Funciona a Odontologia Integrativa",
+      "tags": [
+        "WhatsApp",
+        "Novo Lead",
+        "Follow-up Enviado",
+        "📅 Agendado"
+      ],
+      "notes": "Lead criado automaticamente via Evolution API v2.\n[21/09/2026] Movido para \"Qualificado / Interesse\" pela IA.\n🔁 [Follow-up Automático #1]: 22:58:41\n🔁 [Follow-up Automático #2]: 03:03:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:34\n🔁 [Follow-up Automático #1]: 21:27:14\n🔁 [Follow-up Automático #1]: 01:27:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:05:08\n🔁 [Follow-up Automático #1]: 00:05:19\n🔁 [Follow-up Automático #2]: 04:10:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:56:09\n🔁 [Follow-up Automático #1]: 18:36:18\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:42\n🔁 [Follow-up Automático #1]: 16:20:09\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:15\n🔁 [Follow-up Automático #1]: 18:42:01\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:21\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:36\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:07\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:05\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:15\n🔁 [Follow-up Automático #1]: 17:23:46\n🔁 [Follow-up Automático #1]: 21:30:53\n🔁 [Follow-up Automático #1]: 11:58:54\n🔁 [Follow-up Automático #1]: 16:02:41\n🔁 [Follow-up Automático #1]: 20:05:24\n🔁 [Follow-up Automático #1]: 00:09:23\n🔁 [Follow-up Automático #1]: 13:27:05\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:28:07\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:34:00\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:41\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:13\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:49\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:15\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:25:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:09\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:26\n🔁 [Follow-up Automático #1]: 15:58:14\n🔁 [Follow-up Automático #1]: 15:22:22\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:56\n🔁 [Follow-up Automático #1]: 14:51:55",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-04T14:51:55.457+00:00",
+      "createdAt": "2026-09-21T18:23:49.55+00:00",
+      "unreadCount": 0,
+      "workspaceId": "b2b"
+    },
+    {
       "id": "lead-2",
       "name": "Camila Castro",
       "phone": "5521991234567",
@@ -65,11 +193,11 @@
         "Lead Quente",
         "Follow-up Enviado"
       ],
-      "notes": "Quer automatizar respostas para 200 pedidos/dia.\n🔁 [Follow-up Automático #1]: 02:00:39\n🔁 [Follow-up Automático #2]: 06:05:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:10\n🔁 [Follow-up Automático #1]: 15:48:34\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:46\n🔁 [Follow-up Automático #1]: 17:24:32\n🔁 [Follow-up Automático #1]: 21:30:15\n🔁 [Follow-up Automático #1]: 02:07:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:08:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:57:10\n🔁 [Follow-up Automático #1]: 18:36:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:41\n🔁 [Follow-up Automático #1]: 16:20:18\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:14\n🔁 [Follow-up Automático #1]: 17:19:50\n🔁 [Follow-up Automático #1]: 21:23:16\n🔁 [Follow-up Automático #1]: 13:14:20\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:42\n🔁 [Follow-up Automático #1]: 13:19:13\n🔁 [Follow-up Automático #1]: 17:23:59\n🔁 [Follow-up Automático #1]: 21:27:53\n🔁 [Follow-up Automático #1]: 12:02:09\n🔁 [Follow-up Automático #1]: 16:06:41\n🔁 [Follow-up Automático #1]: 20:10:25\n🔁 [Follow-up Automático #1]: 00:14:22\n🔁 [Follow-up Automático #1]: 13:27:05\n🔁 [Follow-up Automático #1]: 00:04:27\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:51\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:33:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:29:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:56\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:01:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:27\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:21\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:47\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:25:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:25\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:32\n🔁 [Follow-up Automático #1]: 13:14:41\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46",
+      "notes": "Quer automatizar respostas para 200 pedidos/dia.\n🔁 [Follow-up Automático #1]: 02:00:39\n🔁 [Follow-up Automático #2]: 06:05:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:10\n🔁 [Follow-up Automático #1]: 15:48:34\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:46\n🔁 [Follow-up Automático #1]: 17:24:32\n🔁 [Follow-up Automático #1]: 21:30:15\n🔁 [Follow-up Automático #1]: 02:07:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:08:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:57:10\n🔁 [Follow-up Automático #1]: 18:36:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:41\n🔁 [Follow-up Automático #1]: 16:20:18\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:14\n🔁 [Follow-up Automático #1]: 17:19:50\n🔁 [Follow-up Automático #1]: 21:23:16\n🔁 [Follow-up Automático #1]: 13:14:20\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:42\n🔁 [Follow-up Automático #1]: 13:19:13\n🔁 [Follow-up Automático #1]: 17:23:59\n🔁 [Follow-up Automático #1]: 21:27:53\n🔁 [Follow-up Automático #1]: 12:02:09\n🔁 [Follow-up Automático #1]: 16:06:41\n🔁 [Follow-up Automático #1]: 20:10:25\n🔁 [Follow-up Automático #1]: 00:14:22\n🔁 [Follow-up Automático #1]: 13:27:05\n🔁 [Follow-up Automático #1]: 00:04:27\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:51\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:33:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:29:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:56\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:01:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:27\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:21\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:47\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:25:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:25\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:32\n🔁 [Follow-up Automático #1]: 13:14:41\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:57\n🔁 [Follow-up Automático #1]: 14:51:55",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-11-01T01:22:46.661+00:00",
+      "lastInteraction": "2026-11-04T14:51:55.317+00:00",
       "createdAt": "2026-09-20T10:45:38.575+00:00",
       "unreadCount": 0,
       "deliveryInfo": {
@@ -99,35 +227,12 @@
         "Comentou AVALIACAO",
         "Follow-up Enviado"
       ],
-      "notes": "Comentou no post \"Reels: Odontologia Biológica & Implantes de Zircônia\" com a mensagem: \"Dra. Lucy, quero fazer uma AVALIACAO com você!\". Sofia acionada no Direct.\n🏁 [FECHAMENTO FINALIZADO 16:10:29]: Lead atendido ou oportunidade concluída.\n🔁 [Follow-up Automático #1]: 19:19:48\n🔁 [Follow-up Automático #1]: 23:21:12\n🔁 [Follow-up Automático #1]: 03:21:55\n🔁 [Follow-up Automático #1]: 13:01:53\n[05/10/2026] Movido manualmente para \"Proposta / Apresentação\".\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:56\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:27\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:44\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:24:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:16\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:23\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:56\n🔁 [Follow-up Automático #1]: 21:58:32\n🔁 [Follow-up Automático #1]: 13:14:41\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:24\n🔁 [Follow-up Automático #1]: 01:22:46",
+      "notes": "Comentou no post \"Reels: Odontologia Biológica & Implantes de Zircônia\" com a mensagem: \"Dra. Lucy, quero fazer uma AVALIACAO com você!\". Sofia acionada no Direct.\n🏁 [FECHAMENTO FINALIZADO 16:10:29]: Lead atendido ou oportunidade concluída.\n🔁 [Follow-up Automático #1]: 19:19:48\n🔁 [Follow-up Automático #1]: 23:21:12\n🔁 [Follow-up Automático #1]: 03:21:55\n🔁 [Follow-up Automático #1]: 13:01:53\n[05/10/2026] Movido manualmente para \"Proposta / Apresentação\".\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:56\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:27\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:44\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:24:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:16\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:23\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:56\n🔁 [Follow-up Automático #1]: 21:58:32\n🔁 [Follow-up Automático #1]: 13:14:41\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:24\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:57\n🔁 [Follow-up Automático #1]: 14:51:55",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-11-01T01:22:46.661+00:00",
+      "lastInteraction": "2026-11-04T14:51:55.137+00:00",
       "createdAt": "2026-10-04T15:19:18.451+00:00",
-      "unreadCount": 0,
-      "workspaceId": "clinic"
-    },
-    {
-      "id": "lead-insta-1791217658483",
-      "name": "@paciente_teste",
-      "phone": "Aguardando no Direct",
-      "email": "",
-      "stageId": "stage-1",
-      "value": 4500,
-      "interest": "Interesse via Instagram: Quero agendar uma AVALIACAO",
-      "tags": [
-        "📸 Instagram Direct",
-        "Comentou AVALIACAO",
-        "🔥 LEAD QUENTE",
-        "Follow-up Enviado"
-      ],
-      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:52\n🔁 [Follow-up Automático #1]: 21:29:53\n🔁 [Follow-up Automático #1]: 11:59:01\n🔁 [Follow-up Automático #1]: 16:01:41\n🔁 [Follow-up Automático #1]: 20:05:24\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:47\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:24:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:23\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-11-01T01:22:46.403+00:00",
-      "createdAt": "2026-10-05T16:27:38.483+00:00",
       "unreadCount": 0,
       "workspaceId": "clinic"
     },
@@ -145,73 +250,59 @@
         "🔥 LEAD QUENTE",
         "Follow-up Enviado"
       ],
-      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:13\n🔁 [Follow-up Automático #1]: 17:23:58\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n[17/10/2026] Movido manualmente para \"Novo Lead\".\n[17/10/2026] Movido manualmente para \"⚡ Em Reativação (Disparo IA)\".\n[17/10/2026] Movido manualmente para \"Novo Lead\".\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:28:07\n🔁 [Follow-up Automático #1]: 03:31:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:27:53\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:34:00\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:41\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:13\n🔁 [Follow-up Automático #1]: 13:29:20\n🔁 [Follow-up Automático #1]: 17:29:49\n🔁 [Follow-up Automático #1]: 23:10:20\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:32\n🔁 [Follow-up Automático #1]: 16:19:15\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:25:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:09\n🔁 [Follow-up Automático #1]: 19:37:45\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:29:59\n🔁 [Follow-up Automático #1]: 22:32:26\n🔁 [Follow-up Automático #1]: 15:58:14\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:51\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46",
+      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:08\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:13\n🔁 [Follow-up Automático #1]: 17:23:58\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n[17/10/2026] Movido manualmente para \"Novo Lead\".\n[17/10/2026] Movido manualmente para \"⚡ Em Reativação (Disparo IA)\".\n[17/10/2026] Movido manualmente para \"Novo Lead\".\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:28:07\n🔁 [Follow-up Automático #1]: 03:31:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:27:53\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:34:00\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:41\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:13\n🔁 [Follow-up Automático #1]: 13:29:20\n🔁 [Follow-up Automático #1]: 17:29:49\n🔁 [Follow-up Automático #1]: 23:10:20\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:32\n🔁 [Follow-up Automático #1]: 16:19:15\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:25:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:09\n🔁 [Follow-up Automático #1]: 19:37:45\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:29:59\n🔁 [Follow-up Automático #1]: 22:32:26\n🔁 [Follow-up Automático #1]: 15:58:14\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:51\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:57\n🔁 [Follow-up Automático #1]: 14:51:55",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-11-01T01:22:46.403+00:00",
+      "lastInteraction": "2026-11-04T14:51:55.137+00:00",
       "createdAt": "2026-10-05T16:29:25.321+00:00",
       "unreadCount": 0,
       "workspaceId": "clinic"
     },
     {
-      "id": "lead-1790015029550",
-      "name": "Tania Maria",
-      "phone": "5511982220223",
+      "id": "lead-insta-1791217658483",
+      "name": "@paciente_teste",
+      "phone": "Aguardando no Direct",
       "email": "",
-      "stageId": "stage-3",
+      "stageId": "stage-1",
+      "value": 4500,
+      "interest": "Interesse via Instagram: Quero agendar uma AVALIACAO",
+      "tags": [
+        "📸 Instagram Direct",
+        "Comentou AVALIACAO",
+        "🔥 LEAD QUENTE",
+        "Follow-up Enviado"
+      ],
+      "notes": "Comentou no post \"Reels Odontologia Biológica\" com a mensagem: \"Quero agendar uma AVALIACAO\". Sofia acionada no Direct.\n🔁 [Follow-up Automático #1]: 20:33:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:48\n🔁 [Follow-up Automático #2]: 22:10:48\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:52\n🔁 [Follow-up Automático #1]: 21:29:53\n🔁 [Follow-up Automático #1]: 11:59:01\n🔁 [Follow-up Automático #1]: 16:01:41\n🔁 [Follow-up Automático #1]: 20:05:24\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:47\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:24:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:23\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:57\n🔁 [Follow-up Automático #1]: 14:51:55",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-04T14:51:55.136+00:00",
+      "createdAt": "2026-10-05T16:27:38.483+00:00",
+      "unreadCount": 0,
+      "workspaceId": "clinic"
+    },
+    {
+      "id": "lead-1790015749543",
+      "name": "Lead 8888",
+      "phone": "5511999998888",
+      "email": "",
+      "stageId": "stage-1",
       "value": 0,
-      "interest": "Como Funciona a Odontologia Integrativa",
+      "interest": "Novo contato via WhatsApp",
       "tags": [
         "WhatsApp",
         "Novo Lead",
-        "Follow-up Enviado",
-        "📅 Agendado"
+        "Follow-up Enviado"
       ],
-      "notes": "Lead criado automaticamente via Evolution API v2.\n[21/09/2026] Movido para \"Qualificado / Interesse\" pela IA.\n🔁 [Follow-up Automático #1]: 22:58:41\n🔁 [Follow-up Automático #2]: 03:03:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:34\n🔁 [Follow-up Automático #1]: 21:27:14\n🔁 [Follow-up Automático #1]: 01:27:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:05:08\n🔁 [Follow-up Automático #1]: 00:05:19\n🔁 [Follow-up Automático #2]: 04:10:19\n🔁 [Follow-up Automático #1]: 20:37:19\n🔁 [Follow-up Automático #1]: 00:40:00\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:56:09\n🔁 [Follow-up Automático #1]: 18:36:18\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:42\n🔁 [Follow-up Automático #1]: 16:20:09\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:15\n🔁 [Follow-up Automático #1]: 18:42:01\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:21\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:36\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:07\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:05\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:15\n🔁 [Follow-up Automático #1]: 17:23:46\n🔁 [Follow-up Automático #1]: 21:30:53\n🔁 [Follow-up Automático #1]: 11:58:54\n🔁 [Follow-up Automático #1]: 16:02:41\n🔁 [Follow-up Automático #1]: 20:05:24\n🔁 [Follow-up Automático #1]: 00:09:23\n🔁 [Follow-up Automático #1]: 13:27:05\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:28:07\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:34:00\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:41\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:13\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:49\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:15\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:25:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:09\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:17\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:26\n🔁 [Follow-up Automático #1]: 15:58:14\n🔁 [Follow-up Automático #1]: 15:22:22\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:57\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46",
+      "notes": "Lead criado automaticamente via Evolution API v2.\n🔁 [Follow-up Automático #1]: 22:38:40\n🔁 [Follow-up Automático #2]: 02:43:40\n🔁 [Follow-up Automático #1]: 22:07:13\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:28:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:07:09\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:07\n🔁 [Follow-up Automático #1]: 12:58:10\n🔁 [Follow-up Automático #1]: 18:35:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:40\n🔁 [Follow-up Automático #1]: 16:20:19\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:11\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:58\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:01:06\n🔁 [Follow-up Automático #1]: 16:07:41\n🔁 [Follow-up Automático #1]: 20:10:24\n🔁 [Follow-up Automático #1]: 00:14:23\n🔁 [Follow-up Automático #1]: 13:26:52\n🔁 [Follow-up Automático #1]: 00:04:28\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:51\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:26:06\n🔁 [Follow-up Automático #1]: 03:34:36\n🔁 [Follow-up Automático #1]: 12:11:43\n🔁 [Follow-up Automático #1]: 16:30:59\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:56\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:53:33\n🔁 [Follow-up Automático #1]: 00:02:54\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:15\n🔁 [Follow-up Automático #1]: 03:33:45\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:27\n🔁 [Follow-up Automático #2]: 01:39:27\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:21\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:44\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:15:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:21\n🔁 [Follow-up Automático #1]: 00:24:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:16\n🔁 [Follow-up Automático #1]: 18:30:01\n🔁 [Follow-up Automático #1]: 22:32:23\n🔁 [Follow-up Automático #1]: 15:58:16\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:37\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:56\n🔁 [Follow-up Automático #1]: 21:58:32\n🔁 [Follow-up Automático #1]: 13:14:41\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:24\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:34\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:57\n🔁 [Follow-up Automático #1]: 14:51:55",
       "aiPaused": false,
       "isHotLead": false,
       "hotReason": "",
-      "lastInteraction": "2026-11-01T01:22:46.403+00:00",
-      "createdAt": "2026-09-21T18:23:49.55+00:00",
+      "lastInteraction": "2026-11-04T14:51:55.04+00:00",
+      "createdAt": "2026-09-21T18:35:49.543+00:00",
       "unreadCount": 0,
       "workspaceId": "b2b"
-    },
-    {
-      "id": "lead-1",
-      "name": "Dr. Roberto Silva",
-      "phone": "5511987654321",
-      "email": "roberto.silva@clinica.com.br",
-      "stageId": "stage-3",
-      "value": 145,
-      "interest": "Plano Enterprise + Integração WhatsApp",
-      "tags": [
-        "🍣 Japonês/Delivery",
-        "📦 Chegando (5min)",
-        "🔥 LEAD QUENTE",
-        "Follow-up Enviado",
-        "Status: dispatched"
-      ],
-      "notes": "Solicitou proposta para 10 atendentes com IA conversacional.\n🔁 [Follow-up Automático #1]: 02:30:39\n🔁 [Follow-up Automático #2]: 06:35:39\n🔁 [Follow-up Automático #1]: 22:07:14\n🔁 [Follow-up Automático #1]: 02:10:11\n🔁 [Follow-up Automático #1]: 15:48:33\n🔁 [Follow-up Automático #1]: 19:49:00\n🔁 [Follow-up Automático #1]: 13:19:45\n🔁 [Follow-up Automático #1]: 17:24:33\n🔁 [Follow-up Automático #1]: 21:29:14\n🔁 [Follow-up Automático #1]: 01:32:47\n🔁 [Follow-up Automático #1]: 16:02:04\n🔁 [Follow-up Automático #1]: 20:06:08\n🔁 [Follow-up Automático #1]: 00:10:19\n🔁 [Follow-up Automático #2]: 04:15:19\n🔁 [Follow-up Automático #1]: 20:37:18\n🔁 [Follow-up Automático #1]: 00:40:01\n🔁 [Follow-up Automático #1]: 16:09:36\n🔁 [Follow-up Automático #1]: 20:13:51\n🔁 [Follow-up Automático #1]: 00:24:06\n🔁 [Follow-up Automático #1]: 12:59:10\n🔁 [Follow-up Automático #1]: 18:34:17\n🔁 [Follow-up Automático #1]: 02:17:32\n🔁 [Follow-up Automático #1]: 12:17:32\n🔁 [Follow-up Automático #1]: 16:20:20\n🔁 [Follow-up Automático #1]: 20:23:09\n🔁 [Follow-up Automático #1]: 00:26:26\n🔁 [Follow-up Automático #1]: 13:02:06\n🔁 [Follow-up Automático #1]: 19:11:43\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:12\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:29:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:01:41\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:21\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:37\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:28:07\n🔁 [Follow-up Automático #1]: 03:31:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:27:48\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:57\n🔁 [Follow-up Automático #1]: 15:17:03\n🔁 [Follow-up Automático #1]: 19:55:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:34:01\n🔁 [Follow-up Automático #1]: 12:21:21\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:26\n🔁 [Follow-up Automático #1]: 13:56:41\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:13\n🔁 [Follow-up Automático #1]: 13:29:20\n🔁 [Follow-up Automático #1]: 17:29:49\n🔁 [Follow-up Automático #1]: 23:10:20\n🔁 [Follow-up Automático #1]: 03:17:18\n🔁 [Follow-up Automático #1]: 11:59:32\n🔁 [Follow-up Automático #1]: 16:19:15\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:26:11\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:09\n🔁 [Follow-up Automático #1]: 19:37:45\n🔁 [Follow-up Automático #1]: 13:21:18\n🔁 [Follow-up Automático #1]: 18:29:59\n🔁 [Follow-up Automático #1]: 22:32:26\n🔁 [Follow-up Automático #1]: 15:58:14\n🔁 [Follow-up Automático #1]: 15:22:22\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:51\n🔁 [Follow-up Automático #1]: 17:55:58\n🔁 [Follow-up Automático #1]: 21:58:31\n🔁 [Follow-up Automático #1]: 13:14:42\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:25\n🔁 [Follow-up Automático #1]: 01:22:46",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-11-01T01:22:46.132+00:00",
-      "createdAt": "2026-09-18T22:45:38.575+00:00",
-      "unreadCount": 0,
-      "deliveryInfo": {
-        "orderNumber": "PED-1023",
-        "itemsDescription": "2x Combinado Sushi Premium 30 Peças + Temaki Salmão Grelhado",
-        "motoboyName": "Carlos Motoboy",
-        "motoboyPhone": "5511999887766",
-        "motoboyPlate": "ABC-1234",
-        "deliveryAddress": "Rua Oscar Freire, 800 - Jardins, SP",
-        "etaMinutes": 4,
-        "dispatchedAt": "2026-10-14T20:04:43.931Z",
-        "status": "arriving",
-        "verificationCode": "4321"
-      },
-      "workspaceId": "delivery"
     },
     {
       "id": "lead-psi-marco",
@@ -259,28 +350,6 @@
       "workspaceId": "surfacebrasil"
     },
     {
-      "id": "lead-verzel-1",
-      "name": "Diretoria de Inovação - Grupo Logística S.A.",
-      "phone": "5511985443322",
-      "email": "inovacao@grupologistica.com.br",
-      "stageId": "stage-1",
-      "value": 145000,
-      "interest": "Novo App Mobile iOS/Android para Motoristas & Integração SAP",
-      "tags": [
-        "💻 Verzel Software",
-        "AI Talent Hub",
-        "🔥 LEAD QUENTE"
-      ],
-      "notes": "Solicitou reunião de Discovery com arquitetos da Verzel para escopo de aplicativo mobile com tracking em tempo real e integração ERP SAP.",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-10-31T17:34:12.688+00:00",
-      "createdAt": "2026-10-31T17:04:12.688+00:00",
-      "unreadCount": 0,
-      "workspaceId": "verzel"
-    },
-    {
       "id": "lead-psi-1",
       "name": "Dra. Camila Vasconcelos (Psicóloga Clínica)",
       "phone": "5511984219988",
@@ -301,6 +370,28 @@
       "createdAt": "2026-10-31T17:09:12.688+00:00",
       "unreadCount": 0,
       "workspaceId": "equipamentospsi"
+    },
+    {
+      "id": "lead-verzel-1",
+      "name": "Diretoria de Inovação - Grupo Logística S.A.",
+      "phone": "5511985443322",
+      "email": "inovacao@grupologistica.com.br",
+      "stageId": "stage-1",
+      "value": 145000,
+      "interest": "Novo App Mobile iOS/Android para Motoristas & Integração SAP",
+      "tags": [
+        "💻 Verzel Software",
+        "AI Talent Hub",
+        "🔥 LEAD QUENTE"
+      ],
+      "notes": "Solicitou reunião de Discovery com arquitetos da Verzel para escopo de aplicativo mobile com tracking em tempo real e integração ERP SAP.",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-31T17:34:12.688+00:00",
+      "createdAt": "2026-10-31T17:04:12.688+00:00",
+      "unreadCount": 0,
+      "workspaceId": "verzel"
     },
     {
       "id": "lead-verzel-2",
@@ -345,6 +436,28 @@
       "createdAt": "2026-05-04T17:49:12.688+00:00",
       "unreadCount": 0,
       "workspaceId": "surfacebrasil"
+    },
+    {
+      "id": "lead-5",
+      "name": "Carlos Albuquerque",
+      "phone": "5581977776666",
+      "email": "carlos@albuquerquelaw.adv.br",
+      "stageId": "stage-3",
+      "value": 9500,
+      "interest": "Atendimento Jurídico Pré-triagem",
+      "tags": [
+        "Advocacia",
+        "Cliente Ativo",
+        "📅 Agendado"
+      ],
+      "notes": "Assinou contrato trimestral com sucesso!",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-10-05T15:03:13.131+00:00",
+      "createdAt": "2026-09-17T22:45:38.575+00:00",
+      "unreadCount": 0,
+      "workspaceId": "b2b"
     },
     {
       "id": "lead-4",
@@ -400,6 +513,27 @@
       "createdAt": "2026-10-04T14:41:26.593+00:00",
       "unreadCount": 0,
       "workspaceId": "clinic"
+    },
+    {
+      "id": "lead-3",
+      "name": "Lucas Mendes",
+      "phone": "5531988887777",
+      "email": "lucas@techmendes.io",
+      "stageId": "stage-1",
+      "value": 89,
+      "interest": "NEXA CRM Starter",
+      "tags": [
+        "🍕 Pizzaria/Delivery",
+        "📦 Na Cozinha"
+      ],
+      "notes": "Chegou pelo anúncio do Instagram querendo demonstração.\n[29/09/2026] Movido manualmente para \"Base Antiga / Reativação\".\n[29/09/2026] Movido manualmente para \"Novo Lead\".",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-09-20T21:25:38.575+00:00",
+      "createdAt": "2026-09-20T20:45:38.575+00:00",
+      "unreadCount": 0,
+      "workspaceId": "delivery"
     },
     {
       "id": "lead-ind-base-2",
@@ -596,6 +730,15 @@
       "timestamp": "2026-09-21T18:35:49.174+00:00"
     },
     {
+      "id": "msg-1790015749543-in",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "lead",
+      "text": "Teste de deduplicacao",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:35:49.543+00:00"
+    },
+    {
       "id": "msg-1790015750683-ai",
       "leadId": "lead-1790015029550",
       "phone": "5511982220223",
@@ -603,6 +746,15 @@
       "text": "🎙️ [Áudio de Voz Enviado]: \"Com certeza! Pode me enviar áudios tranquilamente, eu escuto perfeitamente e também posso te responder por voz para tornar tudo mais prático para você. Como posso te orientar sobre seu tratamento hoje?\"",
       "status": "delivered",
       "timestamp": "2026-09-21T18:35:50.683+00:00"
+    },
+    {
+      "id": "msg-1790015751057-ai",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Aqui é a Sofia, secretária e assistente da Dra. Lucy Murata (Odontologia Integrativa & Biológica). Como posso te ajudar hoje? 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T18:35:51.057+00:00"
     },
     {
       "id": "msg-1790015782489-in",
@@ -677,6 +829,15 @@
       "timestamp": "2026-09-21T18:55:18.168+00:00"
     },
     {
+      "id": "msg-1790030320885-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-21T22:38:40.885+00:00"
+    },
+    {
       "id": "msg-1790031521097-followup",
       "leadId": "lead-1790015029550",
       "phone": "5511982220223",
@@ -684,6 +845,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-21T22:58:41.097+00:00"
+    },
+    {
+      "id": "msg-1790045020911-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T02:43:40.911+00:00"
     },
     {
       "id": "msg-1790046220892-followup",
@@ -702,6 +872,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-22T22:07:13.317+00:00"
+    },
+    {
+      "id": "msg-1790114833946-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-22T22:07:13.946+00:00"
     },
     {
       "id": "msg-1790114834097-followup",
@@ -740,6 +919,15 @@
       "timestamp": "2026-09-23T02:10:11.279+00:00"
     },
     {
+      "id": "msg-1790129411450-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T02:10:11.45+00:00"
+    },
+    {
       "id": "msg-1790129411605-followup",
       "leadId": "lead-1790015029550",
       "phone": "5511982220223",
@@ -756,6 +944,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-23T15:48:33.128+00:00"
+    },
+    {
+      "id": "msg-1790178513770-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T15:48:33.77+00:00"
     },
     {
       "id": "msg-1790178513929-followup",
@@ -794,6 +991,15 @@
       "timestamp": "2026-09-23T19:49:00.635+00:00"
     },
     {
+      "id": "msg-1790192940795-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-23T19:49:00.795+00:00"
+    },
+    {
       "id": "msg-1790192940921-followup",
       "leadId": "lead-1790015029550",
       "phone": "5511982220223",
@@ -810,6 +1016,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-26T13:16:43.69+00:00"
+    },
+    {
+      "id": "msg-1790428603946-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:16:43.946+00:00"
     },
     {
       "id": "msg-1790428604086-followup",
@@ -837,6 +1052,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-26T13:19:45.268+00:00"
+    },
+    {
+      "id": "msg-1790428785784-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T13:19:45.784+00:00"
     },
     {
       "id": "msg-1790428785925-followup",
@@ -875,6 +1099,15 @@
       "timestamp": "2026-09-26T17:24:33.409+00:00"
     },
     {
+      "id": "msg-1790443473901-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T17:24:33.901+00:00"
+    },
+    {
       "id": "msg-1790443474069-followup",
       "leadId": "lead-1790015029550",
       "phone": "5511982220223",
@@ -891,6 +1124,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-26T21:27:14.122+00:00"
+    },
+    {
+      "id": "msg-1790458094736-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-26T21:28:14.736+00:00"
     },
     {
       "id": "msg-1790458154887-followup",
@@ -929,6 +1171,15 @@
       "timestamp": "2026-09-27T01:32:47.203+00:00"
     },
     {
+      "id": "msg-1790472767715-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T01:32:47.715+00:00"
+    },
+    {
       "id": "msg-1790474867220-followup",
       "leadId": "lead-2",
       "phone": "5521991234567",
@@ -945,6 +1196,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-27T15:58:46.868+00:00"
+    },
+    {
+      "id": "msg-1790524727135-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T15:58:47.135+00:00"
     },
     {
       "id": "msg-1790524727282-followup",
@@ -974,6 +1234,15 @@
       "timestamp": "2026-09-27T16:02:04.013+00:00"
     },
     {
+      "id": "msg-1790524924527-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:04.527+00:00"
+    },
+    {
       "id": "msg-1790524924664-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -999,6 +1268,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-27T16:02:38.724+00:00"
+    },
+    {
+      "id": "msg-1790524970324-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T16:02:50.324+00:00"
     },
     {
       "id": "msg-1790524971223-followup",
@@ -1037,6 +1315,15 @@
       "timestamp": "2026-09-27T20:06:08.898+00:00"
     },
     {
+      "id": "msg-1790539629057-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-27T20:07:09.057+00:00"
+    },
+    {
       "id": "msg-1790539689209-followup",
       "leadId": "lead-2",
       "phone": "5521991234567",
@@ -1073,6 +1360,15 @@
       "timestamp": "2026-09-28T00:10:19.181+00:00"
     },
     {
+      "id": "msg-1790554219681-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:10:19.681+00:00"
+    },
+    {
       "id": "msg-1790554219818-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1089,6 +1385,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-28T00:10:58.767+00:00"
+    },
+    {
+      "id": "msg-1790554259668-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T00:10:59.668+00:00"
     },
     {
       "id": "msg-1790554264466-followup",
@@ -1118,6 +1423,15 @@
       "timestamp": "2026-09-28T04:15:19.191+00:00"
     },
     {
+      "id": "msg-1790568919823-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T04:15:19.823+00:00"
+    },
+    {
       "id": "msg-1790568919957-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1134,6 +1448,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-09-28T20:37:18.453+00:00"
+    },
+    {
+      "id": "msg-1790627838961-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-28T20:37:18.961+00:00"
     },
     {
       "id": "msg-1790627839090-followup",
@@ -1172,6 +1495,15 @@
       "timestamp": "2026-09-29T00:40:00.97+00:00"
     },
     {
+      "id": "msg-1790642401124-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-09-29T00:40:01.124+00:00"
+    },
+    {
       "id": "msg-1790642401275-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1188,6 +1520,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-02T16:09:36.098+00:00"
+    },
+    {
+      "id": "msg-1790957376650-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T16:09:36.65+00:00"
     },
     {
       "id": "msg-1790957376803-followup",
@@ -1226,6 +1567,15 @@
       "timestamp": "2026-10-02T20:13:51.543+00:00"
     },
     {
+      "id": "msg-1790972031667-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-02T20:13:51.667+00:00"
+    },
+    {
       "id": "msg-1790972031793-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1242,6 +1592,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-03T00:24:06.707+00:00"
+    },
+    {
+      "id": "msg-1790987047194-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-03T00:24:07.194+00:00"
     },
     {
       "id": "msg-1790987047336-followup",
@@ -1289,6 +1648,15 @@
       "timestamp": "2026-10-03T12:56:09.943+00:00"
     },
     {
+      "id": "msg-1791032217806-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-03T12:56:57.806+00:00"
+    },
+    {
       "id": "msg-1791032230082-followup",
       "leadId": "lead-2",
       "phone": "5521991234567",
@@ -1307,6 +1675,15 @@
       "timestamp": "2026-10-03T12:57:58.07+00:00"
     },
     {
+      "id": "msg-1791032290219-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-03T12:58:10.219+00:00"
+    },
+    {
       "id": "msg-1791032350684-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1323,6 +1700,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-03T18:34:17.264+00:00"
+    },
+    {
+      "id": "msg-1791052517468-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-03T18:35:17.468+00:00"
     },
     {
       "id": "msg-1791052577940-followup",
@@ -1361,6 +1747,15 @@
       "timestamp": "2026-10-04T02:17:32.606+00:00"
     },
     {
+      "id": "msg-1791080252738-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-04T02:17:32.738+00:00"
+    },
+    {
       "id": "msg-1791080252864-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1377,6 +1772,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-04T12:13:53.673+00:00"
+    },
+    {
+      "id": "msg-1791116034223-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-04T12:13:54.223+00:00"
     },
     {
       "id": "msg-1791116034433-followup",
@@ -1406,6 +1810,15 @@
       "timestamp": "2026-10-04T12:14:56.823+00:00"
     },
     {
+      "id": "msg-1791116097072-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-04T12:14:57.072+00:00"
+    },
+    {
       "id": "msg-1791116097200-followup",
       "leadId": "lead-2",
       "phone": "5521991234567",
@@ -1431,6 +1844,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-04T12:17:32.884+00:00"
+    },
+    {
+      "id": "msg-1791116260784-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-04T12:17:40.784+00:00"
     },
     {
       "id": "msg-1791116261984-followup",
@@ -1487,6 +1909,15 @@
       "timestamp": "2026-10-04T16:19:15.908+00:00"
     },
     {
+      "id": "msg-1791130756036-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-04T16:19:16.036+00:00"
+    },
+    {
       "id": "msg-1791130756161-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1514,6 +1945,15 @@
       "timestamp": "2026-10-04T16:20:18.734+00:00"
     },
     {
+      "id": "msg-1791130819834-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-04T16:20:19.834+00:00"
+    },
+    {
       "id": "msg-1791130820634-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1539,6 +1979,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-04T20:23:09.484+00:00"
+    },
+    {
+      "id": "msg-1791145389699-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-04T20:23:09.699+00:00"
     },
     {
       "id": "msg-1791145389826-followup",
@@ -1586,6 +2035,15 @@
       "timestamp": "2026-10-05T00:26:26.479+00:00"
     },
     {
+      "id": "msg-1791159986613-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-05T00:26:26.613+00:00"
+    },
+    {
       "id": "msg-1791159986785-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -1611,6 +2069,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-05T00:27:31.094+00:00"
+    },
+    {
+      "id": "msg-1791160053194-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-05T00:27:33.194+00:00"
     },
     {
       "id": "msg-1791160053794-followup",
@@ -1649,6 +2116,15 @@
       "timestamp": "2026-10-05T12:57:53.81+00:00"
     },
     {
+      "id": "msg-1791205073984-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-05T12:57:53.984+00:00"
+    },
+    {
       "id": "msg-1791205074165-followup",
       "leadId": "lead-2",
       "phone": "5521991234567",
@@ -1674,6 +2150,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-05T13:00:55.89+00:00"
+    },
+    {
+      "id": "msg-1791205256054-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-05T13:00:56.054+00:00"
     },
     {
       "id": "msg-1791205256253-followup",
@@ -1710,6 +2195,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-05T13:02:06.628+00:00"
+    },
+    {
+      "id": "msg-1791205331629-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-05T13:02:11.629+00:00"
     },
     {
       "id": "msg-1791205334929-followup",
@@ -1928,6 +2422,15 @@
       "timestamp": "2026-10-05T16:29:26.321+00:00"
     },
     {
+      "id": "msg-1791219891574-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-05T17:04:51.574+00:00"
+    },
+    {
       "id": "msg-1791219891575-followup",
       "leadId": "lead-insta-1791127158451",
       "phone": "Aguardando no Direct",
@@ -2027,6 +2530,15 @@
       "timestamp": "2026-10-05T21:08:16.526+00:00"
     },
     {
+      "id": "msg-1791234496677-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-05T21:08:16.677+00:00"
+    },
+    {
       "id": "msg-1791235396669-followup",
       "leadId": "lead-2",
       "phone": "5521991234567",
@@ -2052,6 +2564,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-08T18:06:13.607+00:00"
+    },
+    {
+      "id": "msg-1791482778505-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-08T18:06:18.505+00:00"
     },
     {
       "id": "msg-1791482778506-followup",
@@ -2126,6 +2647,15 @@
       "timestamp": "2026-10-13T17:22:22.722+00:00"
     },
     {
+      "id": "msg-1791912142864-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-13T17:22:22.864+00:00"
+    },
+    {
       "id": "msg-1791912142865-followup",
       "leadId": "lead-insta-1791217765321",
       "phone": "Aguardando no Direct",
@@ -2198,6 +2728,15 @@
       "timestamp": "2026-10-14T16:06:41.086+00:00"
     },
     {
+      "id": "msg-1791994061239-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-14T16:07:41.239+00:00"
+    },
+    {
       "id": "msg-1792671681941-followup",
       "leadId": "lead-1",
       "phone": "5511987654321",
@@ -2252,6 +2791,24 @@
       "timestamp": "2026-10-22T12:21:22.312+00:00"
     },
     {
+      "id": "msg-1792671682459-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-22T12:21:22.459+00:00"
+    },
+    {
+      "id": "msg-1793029028125-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-26T15:37:08.125+00:00"
+    },
+    {
       "id": "msg-1793029028144-followup",
       "leadId": "lead-insta-1791127158451",
       "phone": "Aguardando no Direct",
@@ -2304,6 +2861,15 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-26T15:37:09.337+00:00"
+    },
+    {
+      "id": "msg-1793140343291-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-27T22:32:23.291+00:00"
     },
     {
       "id": "msg-1793140343315-followup",
@@ -2385,6 +2951,177 @@
       "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
       "status": "delivered",
       "timestamp": "2026-10-30T13:51:52.352+00:00"
+    },
+    {
+      "id": "msg-1793368312662-followup",
+      "leadId": "lead-1790015749543",
+      "phone": "5511999998888",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨",
+      "status": "delivered",
+      "timestamp": "2026-10-30T13:51:52.662+00:00"
+    },
+    {
+      "id": "msg-1793712637458-in",
+      "leadId": "lead-primo-1793712637457",
+      "phone": "5511988887777",
+      "sender": "lead",
+      "text": "Sofia, boa tarde! Você tem foto do liquidificador industrial?",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:30:37.458+00:00"
+    },
+    {
+      "id": "msg-1793712638939-ai",
+      "leadId": "lead-primo-1793712637457",
+      "phone": "5511988887777",
+      "sender": "ai",
+      "text": "Perfeito! Já registrei sua preferência de dia e período. Vou consultar a agenda da Dra. Lucy aqui no consultório do Euroville Mall e a nossa recepção já te confirma as opções exatas de horário, combinado?",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:30:38.939+00:00"
+    },
+    {
+      "id": "msg-1793712641544-photo-primo",
+      "leadId": "lead-primo-1793712637457",
+      "phone": "5511988887777",
+      "sender": "ai",
+      "text": "📷 [Foto Enviada]: 🍟 Fritador Industrial a Gás Vulcan LG 300 Inox (Líder Mundial Food Service) — Primo Equipamentos",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:30:41.544+00:00"
+    },
+    {
+      "id": "msg-1793712775840-in",
+      "leadId": "lead-primo-1793712775840",
+      "phone": "5511977776666",
+      "sender": "lead",
+      "text": "Sofia, boa tarde! Você tem foto do liquidificador industrial?",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:32:55.84+00:00"
+    },
+    {
+      "id": "msg-1793712777361-ai",
+      "leadId": "lead-primo-1793712775840",
+      "phone": "5511977776666",
+      "sender": "ai",
+      "text": "Perfeito! Já registrei sua preferência de dia e período. Vou consultar a agenda da Dra. Lucy aqui no consultório do Euroville Mall e a nossa recepção já te confirma as opções exatas de horário, combinado?",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:32:57.361+00:00"
+    },
+    {
+      "id": "msg-1793712784118-photo-primo",
+      "leadId": "lead-primo-1793712775840",
+      "phone": "5511977776666",
+      "sender": "ai",
+      "text": "📷 [Foto Enviada]: 🥤 Liquidificador Skymsen Inox Baixa Rotação / Alta Potência (Açaí, Massas e Polpas) — Primo Equipamentos",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:33:04.118+00:00"
+    },
+    {
+      "id": "msg-1793712818536-in",
+      "leadId": "lead-primo-1793712818535",
+      "phone": "5511966665555",
+      "sender": "lead",
+      "text": "Sofia, boa tarde! Você tem foto do liquidificador industrial?",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:33:38.536+00:00"
+    },
+    {
+      "id": "msg-1793712819993-ai",
+      "leadId": "lead-primo-1793712818535",
+      "phone": "5511966665555",
+      "sender": "ai",
+      "text": "Com certeza! Trabalhamos com a linha industrial pesada da Skymsen: modelos de baixa rotação com alto torque (essenciais para açaí concentrado, polpas e massas) e alta rotação para sucos. Estou te enviando a foto real do equipamento e o nosso catálogo oficial completo! Qual é a capacidade que você precisa?",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:33:39.993+00:00"
+    },
+    {
+      "id": "msg-1793712826657-photo-primo",
+      "leadId": "lead-primo-1793712818535",
+      "phone": "5511966665555",
+      "sender": "ai",
+      "text": "📷 [Foto Enviada]: 🥤 Liquidificador Skymsen Inox Baixa Rotação / Alta Potência (Açaí, Massas e Polpas) — Primo Equipamentos",
+      "status": "delivered",
+      "timestamp": "2026-11-03T13:33:46.657+00:00"
+    },
+    {
+      "id": "msg-1793727093324-followup",
+      "leadId": "lead-primo-1793712637457",
+      "phone": "5511988887777",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-03T17:31:33.324+00:00"
+    },
+    {
+      "id": "msg-1793727395112-followup",
+      "leadId": "lead-primo-1793712818535",
+      "phone": "5511966665555",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-03T17:36:35.112+00:00"
+    },
+    {
+      "id": "msg-1793727397763-followup",
+      "leadId": "lead-primo-1793712775840",
+      "phone": "5511977776666",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-03T17:36:37.763+00:00"
+    },
+    {
+      "id": "msg-1793741785349-followup",
+      "leadId": "lead-primo-1793712637457",
+      "phone": "5511988887777",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-03T21:36:25.349+00:00"
+    },
+    {
+      "id": "msg-1793742085338-followup",
+      "leadId": "lead-primo-1793712775840",
+      "phone": "5511977776666",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-03T21:41:25.338+00:00"
+    },
+    {
+      "id": "msg-1793742085840-followup",
+      "leadId": "lead-primo-1793712818535",
+      "phone": "5511966665555",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-03T21:41:25.84+00:00"
+    },
+    {
+      "id": "msg-1793756199428-followup",
+      "leadId": "lead-primo-1793712637457",
+      "phone": "5511988887777",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-04T01:36:39.428+00:00"
+    },
+    {
+      "id": "msg-1793756499396-followup",
+      "leadId": "lead-primo-1793712818535",
+      "phone": "5511966665555",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-04T01:41:39.396+00:00"
+    },
+    {
+      "id": "msg-1793756499543-followup",
+      "leadId": "lead-primo-1793712775840",
+      "phone": "5511977776666",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳",
+      "status": "delivered",
+      "timestamp": "2026-11-04T01:41:39.543+00:00"
     }
   ],
   "agentConfig": {
