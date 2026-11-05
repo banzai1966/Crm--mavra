@@ -28,8 +28,14 @@ export function usePWA() {
     const isIOSDevice = /iphone|ipad|ipod/.test(ua);
     setIsIOS(isIOSDevice);
 
-    // Register Service Worker if supported
-    if ('serviceWorker' in navigator) {
+    // Register Service Worker if supported and NOT running inside an iframe (e.g. AI Studio preview)
+    let isInsideIframe = false;
+    try {
+      isInsideIframe = window.self !== window.top;
+    } catch {
+      isInsideIframe = true;
+    }
+    if ('serviceWorker' in navigator && !isInsideIframe) {
       navigator.serviceWorker
         .register('/sw.js')
         .then((reg) => {
@@ -56,15 +62,6 @@ export function usePWA() {
         .catch((err) => {
           console.warn('[PWA] Service worker registration error:', err);
         });
-
-      // Reload when controller changes
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-          refreshing = true;
-          window.location.reload();
-        }
-      });
     }
 
     // Capture install prompt
@@ -129,13 +126,32 @@ export function usePWA() {
     return false;
   }, [swRegistration]);
 
-  // Reload the application with the new version
-  const reloadApp = useCallback(() => {
-    if (swRegistration && swRegistration.waiting) {
-      swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    } else {
-      // Force clean reload bypass cache
-      window.location.reload();
+  // Reload the application with the new version (guaranteed cache purge)
+  const reloadApp = useCallback(async () => {
+    try {
+      // 1. Tell SW to clear its cache
+      if (swRegistration?.active) {
+        swRegistration.active.postMessage({ type: 'CLEAR_CACHE' });
+      }
+      if (swRegistration?.waiting) {
+        swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+      // 2. Clear browser CacheStorage directly
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((name) => caches.delete(name)));
+      }
+      // 3. Try to trigger sw update check
+      if (swRegistration) {
+        await swRegistration.update().catch(() => {});
+      }
+    } catch (e) {
+      console.warn('[PWA] Cache purge error (continuing reload):', e);
+    } finally {
+      // 4. Force hard reload with timestamp to bust any intermediary proxy cache
+      const url = new URL(window.location.href);
+      url.searchParams.set('_v', Date.now().toString());
+      window.location.href = url.toString();
     }
   }, [swRegistration]);
 

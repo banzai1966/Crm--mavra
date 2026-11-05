@@ -12,6 +12,7 @@ const PRECACHE_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Immediately activate new version on deploy
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
@@ -19,7 +20,6 @@ self.addEventListener('install', (event) => {
       });
     })
   );
-  // Do not automatically skipWaiting, allow UI banner to prompt user unless instructed
 });
 
 self.addEventListener('activate', (event) => {
@@ -38,7 +38,8 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  if (event.data && (event.data.type === 'SKIP_WAITING' || event.data.type === 'CLEAR_CACHE')) {
+    caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
     self.skipWaiting();
   }
 });

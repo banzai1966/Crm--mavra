@@ -8,16 +8,49 @@ export const CALENDAR_SCOPES = [
   'https://www.googleapis.com/auth/calendar.readonly',
 ];
 
-// Reutilizar instância existente se já inicializada
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
+let appInstance: any = null;
+let authInstance: any = null;
+let providerInstance: GoogleAuthProvider | null = null;
 
-const provider = new GoogleAuthProvider();
-CALENDAR_SCOPES.forEach((scope) => provider.addScope(scope));
-// Forçar seleção de conta para permitir conectar a conta do cliente/colega
-provider.setCustomParameters({
-  prompt: 'select_account',
-  access_type: 'offline',
+export const getFirebaseApp = () => {
+  if (!appInstance) {
+    appInstance = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  }
+  return appInstance;
+};
+
+export const getFirebaseAuth = () => {
+  if (!authInstance) {
+    const app = getFirebaseApp();
+    authInstance = getAuth(app);
+  }
+  return authInstance;
+};
+
+export const getGoogleProvider = () => {
+  if (!providerInstance) {
+    providerInstance = new GoogleAuthProvider();
+    CALENDAR_SCOPES.forEach((scope) => providerInstance!.addScope(scope));
+    providerInstance.setCustomParameters({
+      prompt: 'select_account',
+      access_type: 'offline',
+    });
+  }
+  return providerInstance;
+};
+
+// Safe auth accessor proxy so existing code referencing auth still works
+export const auth = new Proxy({} as any, {
+  get(target, prop) {
+    try {
+      const actualAuth = getFirebaseAuth();
+      const val = (actualAuth as any)[prop];
+      return typeof val === 'function' ? val.bind(actualAuth) : val;
+    } catch (e) {
+      console.warn('[GoogleAuth] Auth not ready yet for property:', prop);
+      return undefined;
+    }
+  },
 });
 
 // Cache in-memory e no safeStorage do access token para persistência permanente
@@ -29,26 +62,35 @@ export const initAuth = (
   onAuthSuccess?: (user: User, token: string) => void,
   onAuthFailure?: () => void
 ) => {
-  return onAuthStateChanged(auth, async (user: User | null) => {
-    const token = cachedAccessToken || (typeof window !== 'undefined' ? (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) : null);
-    if (user && token) {
-      cachedAccessToken = token;
-      if (onAuthSuccess) onAuthSuccess(user, token);
-    } else if (user && !token) {
-      // User is logged in with Firebase Auth, notify app with user
-      if (onAuthSuccess) onAuthSuccess(user, '');
-    } else {
-      if (!isSigningIn) {
-        if (onAuthFailure) onAuthFailure();
+  try {
+    const authInstance = getFirebaseAuth();
+    return onAuthStateChanged(authInstance, async (user: User | null) => {
+      const token = cachedAccessToken || (typeof window !== 'undefined' ? (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) : null);
+      if (user && token) {
+        cachedAccessToken = token;
+        if (onAuthSuccess) onAuthSuccess(user, token);
+      } else if (user && !token) {
+        // User is logged in with Firebase Auth, notify app with user
+        if (onAuthSuccess) onAuthSuccess(user, '');
+      } else {
+        if (!isSigningIn) {
+          if (onAuthFailure) onAuthFailure();
+        }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.warn('[GoogleAuth] Deferred initAuth (auth component not ready yet):', err);
+    if (onAuthFailure) onAuthFailure();
+    return () => {};
+  }
 };
 
 export const googleSignIn = async (): Promise<{ user: User; accessToken: string } | null> => {
   try {
     isSigningIn = true;
-    const result = await signInWithPopup(auth, provider);
+    const authInstance = getFirebaseAuth();
+    const providerInstance = getGoogleProvider();
+    const result = await signInWithPopup(authInstance, providerInstance);
     const credential = GoogleAuthProvider.credentialFromResult(result);
     if (!credential?.accessToken) {
       throw new Error('Não foi possível obter o token de acesso do Google Calendar.');

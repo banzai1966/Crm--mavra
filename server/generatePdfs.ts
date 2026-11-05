@@ -2827,3 +2827,6 @@ async function generateCantareiraPdf(outputPath: string) {
   console.log('[PDF Generator Cantareira] Dossiê oficial de 4 páginas com fotos gerado com sucesso em:', outputPath);
 }
 
+
+
+
