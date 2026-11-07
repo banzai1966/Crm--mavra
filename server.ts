@@ -2160,13 +2160,15 @@ async function startServer() {
 
   // Background Sentinel Health Daemon: checks status every 60 seconds
   function startSentinelBackgroundWatcher() {
+    let wasConnectedLastCheck: boolean | null = null;
+
     setInterval(async () => {
       try {
         const config = db.sentinelAlerts;
         if (!config || !config.enabled) return;
 
         const now = Date.now();
-        const cooldownMs = (config.cooldownMinutes || 30) * 60 * 1000;
+        const cooldownMs = (config.cooldownMinutes || 120) * 60 * 1000;
         const lastSent = config.lastAlertSentAt ? new Date(config.lastAlertSentAt).getTime() : 0;
         if (now - lastSent < cooldownMs) return;
 
@@ -2174,34 +2176,37 @@ async function startServer() {
         let alertReason = '';
 
         // 1. WhatsApp status check:
-        // Only trigger an alert if the WhatsApp instance was previously connected and then dropped,
-        // OR if it's currently disconnected while actively configured and expected to be live.
-        // This prevents spamming when instances are idle/standby and haven't been paired yet.
-        const currentInstance = db.evolutionConfig.instanceName || 'dra-lucy-murata';
-        const isActuallyConnected = db.evolutionConfig.isConnected;
-        
-        if (config.alertOnWhatsAppDisconnect && !isActuallyConnected) {
-          // Check if it was ever connected in this session or marked as previously active
-          if (db.evolutionConfig.wasEverConnected && db.evolutionConfig.state !== 'connecting') {
-            shouldAlert = true;
-            alertReason = `⚠️ O WhatsApp da instância <b>[${currentInstance}]</b> caiu ou foi DESCONECTADO (Evolution API). É necessário ler um novo QR Code para restabelecer os atendimentos da IA Sofia.`;
-          }
+        // Silenced by default (alertOnWhatsAppDisconnect: false) so Marco's Telegram is not spammed.
+        // Even if explicitly enabled, only alerts once on real connection drop transition, NEVER loops repeatedly while disconnected.
+        const isActuallyConnected = Boolean(db.evolutionConfig.isConnected);
+        if (wasConnectedLastCheck === null) {
+          wasConnectedLastCheck = isActuallyConnected;
         }
 
-        // 2. RAM check
+        if (config.alertOnWhatsAppDisconnect) {
+          // Trigger only on real transition: was connected in previous check, now dropped
+          if (wasConnectedLastCheck === true && !isActuallyConnected) {
+            const currentInstance = db.evolutionConfig.instanceName || 'instância-ativa';
+            shouldAlert = true;
+            alertReason = `⚠️ A conexão do WhatsApp com a Evolution API na instância <b>[${currentInstance}]</b> foi interrompida.`;
+          }
+        }
+        wasConnectedLastCheck = isActuallyConnected;
+
+        // 2. RAM check (Contabo VPS Server Health)
         if (!shouldAlert && config.alertOnHighMemory) {
           const totalMem = os.totalmem();
           const usedMem = totalMem - os.freemem();
           const pct = (usedMem / totalMem) * 100;
-          if (pct >= 88) {
+          if (pct >= 92) {
             shouldAlert = true;
-            alertReason = `⚠️ Consumo crítico de memória RAM no servidor (${Math.round(pct)}% em uso).`;
+            alertReason = `⚠️ Consumo crítico de memória RAM no servidor Contabo (${Math.round(pct)}% em uso). O sistema continua no ar, mas necessita de atenção.`;
           }
         }
 
         if (shouldAlert) {
-          const msg = `🚨 <b>ALERTA URGENTE DO SENTINELA - CRM</b>\n\n${alertReason}\n\n⏱️ Horário: ${new Date().toLocaleTimeString('pt-BR')}\n🔗 Acesse o painel: https://crm.makprojetosmake.com.br`;
-          console.warn('[Sentinela Background] Disparando alerta de emergência multicanal...');
+          const msg = `🚨 <b>ALERTA DO SENTINELA - SERVIDOR CONTABO</b>\n\n${alertReason}\n\n⏱️ Horário: ${new Date().toLocaleTimeString('pt-BR')}\n🔗 Acesse o painel: https://crm.makprojetosmake.com.br`;
+          console.warn('[Sentinela Background] Disparando alerta de infraestrutura Contabo:', alertReason);
           const dispatchRes = await dispatchSentinelAlert(msg);
           if (dispatchRes.channels.length > 0) {
             config.lastAlertSentAt = new Date().toISOString();

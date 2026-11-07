@@ -983,11 +983,11 @@ Automatiza a estimulação, garantindo ritmo constante e eliminando dores muscul
     telegramChatId: '6789341084',
     notifyOnEmail: true,
     notifyEmail: 'marco.agduarte22@gmail.com',
-    alertOnWhatsAppDisconnect: true,
+    alertOnWhatsAppDisconnect: false,
     alertOnHighMemory: true,
     alertOnHighDisk: true,
     alertOnAiFailure: true,
-    cooldownMinutes: 30,
+    cooldownMinutes: 120,
     lastAlertSentAt: '',
   };
 

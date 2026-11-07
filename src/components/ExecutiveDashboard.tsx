@@ -864,7 +864,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">
             <span className="text-[10px] text-amber-300 uppercase font-bold block">3. Protocolo Formal</span>
             <span className="text-xs font-bold text-white block">Postura de Empresa Séria</span>
-            <span className="text-[10px] text-slate-400 block">Gera código rastreável (ex: #SAC-PRIMO-4091).</span>
+            <span className="text-[10px] text-slate-400 block">Gera código rastreável oficial.</span>
           </div>
 
           <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">

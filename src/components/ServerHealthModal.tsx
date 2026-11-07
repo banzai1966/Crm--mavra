@@ -52,11 +52,11 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
       telegramChatId: '6789341084',
       notifyOnEmail: true,
       notifyEmail: 'marco.agduarte22@gmail.com',
-      alertOnWhatsAppDisconnect: true,
+      alertOnWhatsAppDisconnect: false,
       alertOnHighMemory: true,
       alertOnHighDisk: true,
       alertOnAiFailure: true,
-      cooldownMinutes: 30,
+      cooldownMinutes: 120,
     };
   });
   const [activeChannelTab, setActiveChannelTab] = useState<'telegram' | 'whatsapp' | 'email'>('telegram');
@@ -902,7 +902,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
                             className="rounded text-indigo-600 focus:ring-indigo-500"
                           />
                           <span className="text-slate-700 font-medium">
-                            WhatsApp da Instância Ativa Desconectou (Só avisa se já esteve conectado)
+                            WhatsApp da Instância Desconectou <span className="text-[10px] text-slate-400 font-normal">(Silenciado por padrão para não encher o Telegram)</span>
                           </span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer p-0.5 rounded hover:bg-slate-50">
@@ -914,7 +914,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
                             }
                             className="rounded text-indigo-600 focus:ring-indigo-500"
                           />
-                          <span className="text-slate-700 font-medium">Memória RAM acima de 85%</span>
+                          <span className="text-slate-700 font-medium">Memória RAM do Servidor (VPS Contabo) acima de 90%</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer p-0.5 rounded hover:bg-slate-50">
                           <input
@@ -925,7 +925,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
                             }
                             className="rounded text-indigo-600 focus:ring-indigo-500"
                           />
-                          <span className="text-slate-700 font-medium">Disco SSD acima de 90%</span>
+                          <span className="text-slate-700 font-medium">Disco SSD do Servidor (VPS Contabo) acima de 90%</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer p-0.5 rounded hover:bg-slate-50">
                           <input
@@ -936,7 +936,7 @@ export const ServerHealthModal: React.FC<{ isOpen: boolean; onClose: () => void 
                             }
                             className="rounded text-indigo-600 focus:ring-indigo-500"
                           />
-                          <span className="text-slate-700 font-medium">Falha no Motor de IA (API Key sem cota)</span>
+                          <span className="text-slate-700 font-medium">Falha no Motor de IA (API Key sem cota ou indisponível)</span>
                         </label>
                       </div>
                     </div>
