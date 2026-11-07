@@ -1213,8 +1213,8 @@ Atua com foco preventivo, artesanal e contencioso nos Tribunais Estaduais, TRFs,
       'cemiterio-cantareira-48zvof': 'cemiterio-cantareira-48zvof',
       'equipamentospsi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
       'psi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
-      'amaro-advogados': 'AMARO-ADV-7821-4E62-8BCF-991A4E7F1A02',
-      'amaroadvogados': 'AMARO-ADV-7821-4E62-8BCF-991A4E7F1A02',
+      'amaro-advogados': 'FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4',
+      'amaroadvogados': 'FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4',
     },
   };
 

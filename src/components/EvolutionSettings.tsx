@@ -39,12 +39,22 @@ const KNOWN_DEFAULT_KEYS: Record<string, string> = {
   'cemiterio-cantareira-48zvof': 'cemiterio-cantareira-48zvof',
   'equipamentospsi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
   'psi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
+  'amaro-advogados': 'FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4',
+  'amaroadvogados': 'FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4',
   'agente-ia': 'b2efa885a71ee22edf72b597df1a0ce9',
 };
 
 const MASTER_GLOBAL_TOKEN = 'b2efa885a71ee22edf72b597df1a0ce9';
 
 const MANAGED_COMPANIES = [
+  {
+    instance: 'amaro-advogados',
+    company: 'Amaro Advogados Associados',
+    niche: 'Advocacia & Direito Estratégico (Sofia)',
+    defaultToken: 'FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4',
+    badge: 'bg-amber-100 text-amber-900 border-amber-300',
+    iconColor: 'text-amber-600',
+  },
   {
     instance: 'primo-equipamentos',
     company: 'Primo Equipamentos',

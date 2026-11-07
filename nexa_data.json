@@ -52,6 +52,146 @@
   ],
   "leads": [
     {
+      "id": "lead-verzel-1",
+      "name": "Diretoria de Inovação - Grupo Logística S.A.",
+      "phone": "5511985443322",
+      "email": "inovacao@grupologistica.com.br",
+      "stageId": "stage-1",
+      "value": 145000,
+      "interest": "Novo App Mobile iOS/Android para Motoristas & Integração SAP",
+      "tags": [
+        "💻 Verzel Software",
+        "AI Talent Hub",
+        "🔥 LEAD QUENTE",
+        "Follow-up Enviado"
+      ],
+      "notes": "Solicitou reunião de Discovery com arquitetos da Verzel para escopo de aplicativo mobile com tracking em tempo real e integração ERP SAP.\n🔁 [Follow-up Automático #1]: 21:25:33",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-07T21:25:33.776+00:00",
+      "createdAt": "2026-10-31T17:04:12.688+00:00",
+      "unreadCount": 0,
+      "workspaceId": "verzel"
+    },
+    {
+      "id": "lead-psi-1",
+      "name": "Dra. Camila Vasconcelos (Psicóloga Clínica)",
+      "phone": "5511984219988",
+      "email": "dra.camila@clinicapensar.com.br",
+      "stageId": "stage-1",
+      "value": 1384,
+      "interest": "Barra de Luz Tradicional (74cm) com Tripé para EMDR",
+      "tags": [
+        "🧠 Equipamentos PSI",
+        "Terapia EMDR",
+        "🔥 LEAD QUENTE",
+        "Follow-up Enviado"
+      ],
+      "notes": "Psicóloga clínica especialista em TEPT. Busca Barra de Luz para substituir movimentos manuais que estão gerando dor no ombro. Solicitou cálculo de frete para Campinas/SP.\n🔁 [Follow-up Automático #1]: 21:25:33",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-07T21:25:33.34+00:00",
+      "createdAt": "2026-10-31T17:09:12.688+00:00",
+      "unreadCount": 0,
+      "workspaceId": "equipamentospsi"
+    },
+    {
+      "id": "lead-psi-marco",
+      "name": "Marco",
+      "phone": "5511976143323",
+      "email": "marco.agduarte22@gmail.com",
+      "stageId": "stage-2",
+      "value": 1973,
+      "interest": "Barra de Luz Tradicional e Aparelho Tátil com Pulsers para EMDR",
+      "tags": [
+        "🧠 Equipamentos PSI",
+        "Qualificado / Interesse",
+        "WhatsApp Conectado",
+        "🔥 LEAD QUENTE",
+        "Follow-up Enviado"
+      ],
+      "notes": "Interessado em estimulação bilateral (Barra de Luz e Aparelho Tátil com pulsers). Enviado dossiê técnico com fotos e catálogo.\n🔁 [Follow-up Automático #1]: 21:25:33",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-07T21:25:33.102+00:00",
+      "createdAt": "2026-10-31T17:49:12.688+00:00",
+      "unreadCount": 0,
+      "workspaceId": "equipamentospsi"
+    },
+    {
+      "id": "lead-amaro-1",
+      "name": "Mariana Albuquerque",
+      "phone": "5511988442211",
+      "email": "mariana.albuquerque@gmail.com",
+      "stageId": "stage-2",
+      "value": 12000,
+      "interest": "Divórcio Consensual em Cartório com Partilha de Bens e Guarda Compartilhada",
+      "tags": [
+        "⚖️ Amaro Advogados",
+        "Direito de Família",
+        "Moema / SP",
+        "🔥 LEAD QUENTE"
+      ],
+      "notes": "Cliente busca divórcio amigável com partilha de 2 imóveis em São Paulo e regulamentação de convivência com filho menor. Agendando consulta com Dr. Bruno Amaro.",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-07T21:10:32.153+00:00",
+      "createdAt": "2026-11-07T20:50:32.153+00:00",
+      "unreadCount": 0,
+      "workspaceId": "amaro",
+      "instanceName": "amaro-advogados"
+    },
+    {
+      "id": "lead-amaro-3",
+      "name": "Carlos Eduardo Brandão (Servidor Público)",
+      "phone": "5511972118833",
+      "email": "carlos.brandao@sp.gov.br",
+      "stageId": "stage-1",
+      "value": 18500,
+      "interest": "Defesa em Processo Administrativo Disciplinar (PAD) & Cobrança de Gratificações Retidas",
+      "tags": [
+        "⚖️ Amaro Advogados",
+        "Servidor Público",
+        "Direito Administrativo"
+      ],
+      "notes": "Recebeu notificação preliminar de PAD em órgão estadual. Precisa de assessoria jurídica especializada para apresentação de defesa prévia no prazo.",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-07T21:00:32.153+00:00",
+      "createdAt": "2026-11-07T20:30:32.153+00:00",
+      "unreadCount": 0,
+      "workspaceId": "amaro",
+      "instanceName": "amaro-advogados"
+    },
+    {
+      "id": "lead-amaro-2",
+      "name": "Dr. Fernando Siqueira (Empresário)",
+      "phone": "5511997335588",
+      "email": "fernando@siqueiragroup.com.br",
+      "stageId": "stage-3",
+      "value": 45000,
+      "interest": "Planejamento Sucessório Patrimonial, Holding Familiar & Inventário Preventivo",
+      "tags": [
+        "⚖️ Amaro Advogados",
+        "Sucessões & Holding",
+        "Alto Padrão"
+      ],
+      "notes": "Empresário com patrimônio imobiliário familiar. Deseja constituir Holding Familiar para planejamento sucessório e redução legal de ITCMD.",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-07T20:35:32.153+00:00",
+      "createdAt": "2026-11-06T21:20:32.153+00:00",
+      "unreadCount": 0,
+      "workspaceId": "amaro",
+      "instanceName": "amaro-advogados"
+    },
+    {
       "id": "lead-primo-1793712637457",
       "name": "Marco Teste",
       "phone": "5511988887777",
@@ -238,6 +378,28 @@
       "workspaceId": "delivery"
     },
     {
+      "id": "lead-insta-1791127158451",
+      "name": "@marcoduarte_oficial",
+      "phone": "Aguardando no Direct",
+      "email": "",
+      "stageId": "stage-3",
+      "value": 4500,
+      "interest": "Interesse via Instagram: Dra. Lucy, quero fazer uma AVALIACAO com você!",
+      "tags": [
+        "📸 Instagram Direct",
+        "Comentou AVALIACAO",
+        "Follow-up Enviado"
+      ],
+      "notes": "Comentou no post \"Reels: Odontologia Biológica & Implantes de Zircônia\" com a mensagem: \"Dra. Lucy, quero fazer uma AVALIACAO com você!\". Sofia acionada no Direct.\n🏁 [FECHAMENTO FINALIZADO 16:10:29]: Lead atendido ou oportunidade concluída.\n🔁 [Follow-up Automático #1]: 19:19:48\n🔁 [Follow-up Automático #1]: 23:21:12\n🔁 [Follow-up Automático #1]: 03:21:55\n🔁 [Follow-up Automático #1]: 13:01:53\n[05/10/2026] Movido manualmente para \"Proposta / Apresentação\".\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:56\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:27\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:44\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:24:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:16\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:23\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:56\n🔁 [Follow-up Automático #1]: 21:58:32\n🔁 [Follow-up Automático #1]: 13:14:41\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:24\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:57\n🔁 [Follow-up Automático #1]: 14:51:55\n🔁 [Follow-up Automático #1]: 18:52:27\n🔁 [Follow-up Automático #1]: 22:52:32\n🔁 [Follow-up Automático #1]: 13:29:00\n🔁 [Follow-up Automático #1]: 17:41:13\n🔁 [Follow-up Automático #1]: 23:14:59\n🔁 [Follow-up Automático #1]: 12:25:01\n🔁 [Follow-up Automático #1]: 16:29:59\n🔁 [Follow-up Automático #1]: 20:45:55\n🔁 [Follow-up Automático #1]: 11:20:51\n🔁 [Follow-up Automático #2]: 15:25:51\n🔁 [Follow-up Automático #1]: 19:29:38",
+      "aiPaused": false,
+      "isHotLead": false,
+      "hotReason": "",
+      "lastInteraction": "2026-11-07T19:29:38.481+00:00",
+      "createdAt": "2026-10-04T15:19:18.451+00:00",
+      "unreadCount": 0,
+      "workspaceId": "clinic"
+    },
+    {
       "id": "lead-insta-1791217765321",
       "name": "@paciente_1",
       "phone": "Aguardando no Direct",
@@ -258,28 +420,6 @@
       "hotReason": "",
       "lastInteraction": "2026-11-07T19:29:38.481+00:00",
       "createdAt": "2026-10-05T16:29:25.321+00:00",
-      "unreadCount": 0,
-      "workspaceId": "clinic"
-    },
-    {
-      "id": "lead-insta-1791127158451",
-      "name": "@marcoduarte_oficial",
-      "phone": "Aguardando no Direct",
-      "email": "",
-      "stageId": "stage-3",
-      "value": 4500,
-      "interest": "Interesse via Instagram: Dra. Lucy, quero fazer uma AVALIACAO com você!",
-      "tags": [
-        "📸 Instagram Direct",
-        "Comentou AVALIACAO",
-        "Follow-up Enviado"
-      ],
-      "notes": "Comentou no post \"Reels: Odontologia Biológica & Implantes de Zircônia\" com a mensagem: \"Dra. Lucy, quero fazer uma AVALIACAO com você!\". Sofia acionada no Direct.\n🏁 [FECHAMENTO FINALIZADO 16:10:29]: Lead atendido ou oportunidade concluída.\n🔁 [Follow-up Automático #1]: 19:19:48\n🔁 [Follow-up Automático #1]: 23:21:12\n🔁 [Follow-up Automático #1]: 03:21:55\n🔁 [Follow-up Automático #1]: 13:01:53\n[05/10/2026] Movido manualmente para \"Proposta / Apresentação\".\n🔁 [Follow-up Automático #1]: 17:04:51\n🔁 [Follow-up Automático #1]: 21:08:16\n🔁 [Follow-up Automático #1]: 13:14:21\n🔁 [Follow-up Automático #1]: 18:50:22\n🔁 [Follow-up Automático #1]: 18:05:49\n🔁 [Follow-up Automático #2]: 22:10:49\n🔁 [Follow-up Automático #1]: 22:49:37\n🔁 [Follow-up Automático #1]: 23:42:11\n🔁 [Follow-up Automático #1]: 12:39:08\n🔁 [Follow-up Automático #1]: 16:41:09\n🔁 [Follow-up Automático #1]: 20:43:32\n🔁 [Follow-up Automático #1]: 18:41:04\n🔁 [Follow-up Automático #1]: 23:02:41\n🔁 [Follow-up Automático #1]: 13:19:14\n🔁 [Follow-up Automático #1]: 17:23:55\n🔁 [Follow-up Automático #1]: 21:28:53\n🔁 [Follow-up Automático #1]: 12:00:05\n🔁 [Follow-up Automático #1]: 16:00:40\n🔁 [Follow-up Automático #1]: 20:05:25\n🔁 [Follow-up Automático #1]: 00:09:22\n🔁 [Follow-up Automático #1]: 13:27:06\n🔁 [Follow-up Automático #1]: 00:04:26\n🔁 [Follow-up Automático #1]: 12:06:20\n🔁 [Follow-up Automático #1]: 16:08:26\n🔁 [Follow-up Automático #1]: 20:10:52\n🔁 [Follow-up Automático #1]: 01:24:50\n🔁 [Follow-up Automático #1]: 20:08:36\n🔁 [Follow-up Automático #1]: 12:53:49\n🔁 [Follow-up Automático #1]: 23:27:06\n🔁 [Follow-up Automático #1]: 03:32:36\n🔁 [Follow-up Automático #1]: 12:11:44\n🔁 [Follow-up Automático #1]: 16:28:57\n🔁 [Follow-up Automático #1]: 20:32:27\n🔁 [Follow-up Automático #1]: 00:35:30\n🔁 [Follow-up Automático #1]: 11:12:56\n🔁 [Follow-up Automático #1]: 15:17:04\n🔁 [Follow-up Automático #1]: 19:54:34\n🔁 [Follow-up Automático #1]: 00:00:53\n🔁 [Follow-up Automático #1]: 19:28:39\n🔁 [Follow-up Automático #1]: 23:32:14\n🔁 [Follow-up Automático #1]: 03:33:57\n🔁 [Follow-up Automático #1]: 12:21:22\n🔁 [Follow-up Automático #1]: 16:22:47\n🔁 [Follow-up Automático #1]: 21:34:26\n🔁 [Follow-up Automático #2]: 01:39:27\n🔁 [Follow-up Automático #1]: 13:56:40\n🔁 [Follow-up Automático #1]: 23:22:20\n🔁 [Follow-up Automático #1]: 03:26:12\n🔁 [Follow-up Automático #1]: 13:29:21\n🔁 [Follow-up Automático #1]: 17:29:44\n🔁 [Follow-up Automático #1]: 23:10:23\n🔁 [Follow-up Automático #1]: 03:16:18\n🔁 [Follow-up Automático #1]: 11:59:35\n🔁 [Follow-up Automático #1]: 16:19:14\n🔁 [Follow-up Automático #1]: 20:20:20\n🔁 [Follow-up Automático #1]: 00:24:10\n🔁 [Follow-up Automático #1]: 11:34:35\n🔁 [Follow-up Automático #1]: 15:37:08\n🔁 [Follow-up Automático #1]: 19:37:46\n🔁 [Follow-up Automático #1]: 13:21:16\n🔁 [Follow-up Automático #1]: 18:30:00\n🔁 [Follow-up Automático #1]: 22:32:23\n🔁 [Follow-up Automático #1]: 15:58:15\n🔁 [Follow-up Automático #1]: 15:22:21\n🔁 [Follow-up Automático #1]: 19:22:36\n🔁 [Follow-up Automático #1]: 23:25:43\n🔁 [Follow-up Automático #1]: 13:51:52\n🔁 [Follow-up Automático #1]: 17:55:56\n🔁 [Follow-up Automático #1]: 21:58:32\n🔁 [Follow-up Automático #1]: 13:14:41\n🔁 [Follow-up Automático #1]: 17:18:19\n🔁 [Follow-up Automático #1]: 21:20:24\n🔁 [Follow-up Automático #1]: 01:22:46\n🔁 [Follow-up Automático #1]: 13:40:07\n🔁 [Follow-up Automático #1]: 17:41:33\n🔁 [Follow-up Automático #1]: 21:46:25\n🔁 [Follow-up Automático #1]: 01:49:57\n🔁 [Follow-up Automático #1]: 14:51:55\n🔁 [Follow-up Automático #1]: 18:52:27\n🔁 [Follow-up Automático #1]: 22:52:32\n🔁 [Follow-up Automático #1]: 13:29:00\n🔁 [Follow-up Automático #1]: 17:41:13\n🔁 [Follow-up Automático #1]: 23:14:59\n🔁 [Follow-up Automático #1]: 12:25:01\n🔁 [Follow-up Automático #1]: 16:29:59\n🔁 [Follow-up Automático #1]: 20:45:55\n🔁 [Follow-up Automático #1]: 11:20:51\n🔁 [Follow-up Automático #2]: 15:25:51\n🔁 [Follow-up Automático #1]: 19:29:38",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-11-07T19:29:38.481+00:00",
-      "createdAt": "2026-10-04T15:19:18.451+00:00",
       "unreadCount": 0,
       "workspaceId": "clinic"
     },
@@ -306,29 +446,6 @@
       "workspaceId": "b2b"
     },
     {
-      "id": "lead-psi-marco",
-      "name": "Marco",
-      "phone": "5511976143323",
-      "email": "marco.agduarte22@gmail.com",
-      "stageId": "stage-2",
-      "value": 1973,
-      "interest": "Barra de Luz Tradicional e Aparelho Tátil com Pulsers para EMDR",
-      "tags": [
-        "🧠 Equipamentos PSI",
-        "Qualificado / Interesse",
-        "WhatsApp Conectado",
-        "🔥 LEAD QUENTE"
-      ],
-      "notes": "Interessado em estimulação bilateral (Barra de Luz e Aparelho Tátil com pulsers). Enviado dossiê técnico com fotos e catálogo.",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-10-31T17:49:12.688+00:00",
-      "createdAt": "2026-10-31T17:49:12.688+00:00",
-      "unreadCount": 0,
-      "workspaceId": "equipamentospsi"
-    },
-    {
       "id": "lead-ind-1",
       "name": "Indústria Metalúrgica SAP S.A.",
       "phone": "5511994328811",
@@ -349,50 +466,6 @@
       "createdAt": "2026-10-31T17:24:12.688+00:00",
       "unreadCount": 0,
       "workspaceId": "surfacebrasil"
-    },
-    {
-      "id": "lead-verzel-1",
-      "name": "Diretoria de Inovação - Grupo Logística S.A.",
-      "phone": "5511985443322",
-      "email": "inovacao@grupologistica.com.br",
-      "stageId": "stage-1",
-      "value": 145000,
-      "interest": "Novo App Mobile iOS/Android para Motoristas & Integração SAP",
-      "tags": [
-        "💻 Verzel Software",
-        "AI Talent Hub",
-        "🔥 LEAD QUENTE"
-      ],
-      "notes": "Solicitou reunião de Discovery com arquitetos da Verzel para escopo de aplicativo mobile com tracking em tempo real e integração ERP SAP.",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-10-31T17:34:12.688+00:00",
-      "createdAt": "2026-10-31T17:04:12.688+00:00",
-      "unreadCount": 0,
-      "workspaceId": "verzel"
-    },
-    {
-      "id": "lead-psi-1",
-      "name": "Dra. Camila Vasconcelos (Psicóloga Clínica)",
-      "phone": "5511984219988",
-      "email": "dra.camila@clinicapensar.com.br",
-      "stageId": "stage-1",
-      "value": 1384,
-      "interest": "Barra de Luz Tradicional (74cm) com Tripé para EMDR",
-      "tags": [
-        "🧠 Equipamentos PSI",
-        "Terapia EMDR",
-        "🔥 LEAD QUENTE"
-      ],
-      "notes": "Psicóloga clínica especialista em TEPT. Busca Barra de Luz para substituir movimentos manuais que estão gerando dor no ombro. Solicitou cálculo de frete para Campinas/SP.",
-      "aiPaused": false,
-      "isHotLead": false,
-      "hotReason": "",
-      "lastInteraction": "2026-10-31T17:34:12.688+00:00",
-      "createdAt": "2026-10-31T17:09:12.688+00:00",
-      "unreadCount": 0,
-      "workspaceId": "equipamentospsi"
     },
     {
       "id": "lead-verzel-2",
@@ -3215,21 +3288,21 @@
       "timestamp": "2026-11-05T17:40:13.926+00:00"
     },
     {
-      "id": "msg-1793968897140-pix-ai",
-      "leadId": "lead-insta-1791217765321",
-      "phone": "Aguardando no Direct",
-      "sender": "ai",
-      "text": "✅ *Recebemos e validamos seu comprovante PIX de R$ 4.500,00 automaticamente!* Muito obrigada pela confiança, @paciente_1! Já confirmamos sua reserva prioritária no sistema. ✨",
-      "status": "sent",
-      "timestamp": "2026-11-06T12:41:37.139+00:00"
-    },
-    {
       "id": "msg-1793968897139-pix-in",
       "leadId": "lead-insta-1791217765321",
       "phone": "Aguardando no Direct",
       "sender": "lead",
       "text": "📄 [Comprovante PIX Recebido]: Transferência PIX de R$ 4.500,00 enviada pelo cliente.",
       "status": "delivered",
+      "timestamp": "2026-11-06T12:41:37.139+00:00"
+    },
+    {
+      "id": "msg-1793968897140-pix-ai",
+      "leadId": "lead-insta-1791217765321",
+      "phone": "Aguardando no Direct",
+      "sender": "ai",
+      "text": "✅ *Recebemos e validamos seu comprovante PIX de R$ 4.500,00 automaticamente!* Muito obrigada pela confiança, @paciente_1! Já confirmamos sua reserva prioritária no sistema. ✨",
+      "status": "sent",
       "timestamp": "2026-11-06T12:41:37.139+00:00"
     },
     {
@@ -3312,11 +3385,198 @@
       "text": "Olá! Tudo bem? Passando para saber se conseguiu avaliar nossa proposta de automação comercial no WhatsApp com o NEXA CRM. Podemos agendar uma demonstração rápida de 15 minutos ao vivo? 🚀",
       "status": "delivered",
       "timestamp": "2026-11-06T16:26:03.296+00:00"
+    },
+    {
+      "id": "msg-v-1",
+      "leadId": "lead-verzel-1",
+      "phone": "5511985443322",
+      "sender": "lead",
+      "text": "Olá! Sou diretor de operações de um grupo logístico. Estamos precisando desenvolver um aplicativo mobile para nossos 400 motoristas com integração ao nosso ERP SAP. A Verzel tem experiência nesse tipo de projeto?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:00:32.154+00:00"
+    },
+    {
+      "id": "msg-amaro-1",
+      "leadId": "lead-amaro-1",
+      "phone": "5511988442211",
+      "sender": "lead",
+      "text": "Olá, boa tarde! Gostaria de tirar uma dúvida sobre divórcio consensual e partilha de bens. Vocês atendem presencialmente em Moema?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:02:32.154+00:00"
+    },
+    {
+      "id": "msg-psi-1",
+      "leadId": "lead-psi-1",
+      "phone": "5511984219988",
+      "sender": "lead",
+      "text": "Olá! Sou psicóloga e atendo com EMDR aqui em Campinas. Estou tendo muita dor no braço e tendinite de fazer o movimento com os dedos. A Barra de Luz de vocês de 74cm acompanha o tripé? E qual o valor com envio para o CEP 13010-111?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:02:32.154+00:00"
+    },
+    {
+      "id": "msg-v-2",
+      "leadId": "lead-verzel-1",
+      "phone": "5511985443322",
+      "sender": "ai",
+      "text": "Olá! Que excelente iniciativa! Sou a Sofia, consultora técnica da Verzel. Há mais de 16 anos desenvolvemos sistemas sob medida e aplicativos móveis de alta performance para empresas como Shell Brasil, Mutant e Zignet. Temos vasta experiência em apps corporativos com conectividade offline e integração profunda com ERPs de grande porte como SAP e Totvs. O app precisa rodar tanto em Android quanto iOS?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:02:32.154+00:00"
+    },
+    {
+      "id": "msg-amaro-2",
+      "leadId": "lead-amaro-1",
+      "phone": "5511988442211",
+      "sender": "ai",
+      "text": "Olá, Mariana! Boa tarde! Seja muito bem-vinda à Amaro Advogados. Sim, nossa sede fica localizada aqui em Moema, na Avenida Rouxinol, nº 84, sala 62. Atendemos presencialmente com todo o conforto e discrição, e também por videoconferência segura pelo Google Meet. O Dr. Bruno Amaro e nossa equipe de Direito de Família são especialistas em divórcios consensuais com agilidade e total segurança patrimonial. Vocês possuem filhos menores ou já possuem um acordo prévio sobre a divisão dos bens?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:03:32.154+00:00"
+    },
+    {
+      "id": "msg-v-3",
+      "leadId": "lead-verzel-1",
+      "phone": "5511985443322",
+      "sender": "lead",
+      "text": "Sim, a maioria dos motoristas usa Android mas os coordenadores usam iPhone. Queremos também saber sobre prazos e se vocês usam inteligência artificial.",
+      "status": "read",
+      "timestamp": "2026-11-07T21:04:32.154+00:00"
+    },
+    {
+      "id": "msg-psi-marco-1",
+      "leadId": "lead-psi-marco",
+      "phone": "5511976143323",
+      "sender": "lead",
+      "text": "Oi de onde fala?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:05:32.153+00:00"
+    },
+    {
+      "id": "msg-psi-2",
+      "leadId": "lead-psi-1",
+      "phone": "5511984219988",
+      "sender": "ai",
+      "text": "Olá, Dra. Camila! Que alegria falar com você! Sou a Sofia, consultora técnica da Equipamentos PSI. Compreendo perfeitamente o seu relato; inclusive, nossa fundadora, a psicóloga Priscila Alves, criou a empresa em 2015 exatamente para proteger a saúde física dos terapeutas contra a sobrecarga nos braços e punhos. Sim! A nossa Barra de Luz Tradicional de 74 cm já acompanha o tripé metálico robusto com regulagem de altura e cabeça articulada, além de controle remoto com ajuste de velocidade e fonte bivolt automática. Comprando no PIX à vista, fica por apenas R$ 1.314,80 (ou parcelado no cartão em até 12x). Para o seu CEP em Campinas, o SEDEX expresso chega em até 2 dias úteis! Gostaria que eu formalizasse o seu pedido agora com garantia oficial de 1 ano?",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:05:32.154+00:00"
+    },
+    {
+      "id": "msg-psi-marco-2",
+      "leadId": "lead-psi-marco",
+      "phone": "5511976143323",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Aqui é a Sofia, da Equipamentos PSI. Nós fabricamos equipamentos de estimulação bilateral visual e tátil para terapia EMDR e psicologia clínica. Como posso te ajudar hoje?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:06:32.153+00:00"
+    },
+    {
+      "id": "msg-amaro-3",
+      "leadId": "lead-amaro-1",
+      "phone": "5511988442211",
+      "sender": "lead",
+      "text": "Temos um filho de 7 anos e já combinamos a guarda compartilhada e a divisão de 2 apartamentos. Queríamos resolver o quanto antes sem desgaste emocional.",
+      "status": "read",
+      "timestamp": "2026-11-07T21:06:32.154+00:00"
+    },
+    {
+      "id": "msg-v-4",
+      "leadId": "lead-verzel-1",
+      "phone": "5511985443322",
+      "sender": "ai",
+      "text": "Perfeito! Para esse cenário híbrido recomendamos Flutter ou React Native, garantindo uma única base de código nativa, fluida e com custo otimizado. E sobre inteligência artificial: com o nosso AI Talent Hub, nossos squads seniores utilizam IA generativa em todo o ciclo de desenvolvimento, acelerando as entregas em até 40%! Para desenharmos o escopo e a estimativa precisa, podemos marcar uma Reunião Técnica de Discovery online (gratuita e sem compromisso) com nossos arquitetos de software? Qual o melhor horário para você esta semana?",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:06:32.154+00:00"
+    },
+    {
+      "id": "msg-psi-marco-3",
+      "leadId": "lead-psi-marco",
+      "phone": "5511976143323",
+      "sender": "lead",
+      "text": "🎤 [Áudio Transcrito]: \"Oi, Sofia, me desculpe. Que equipamentos vocês trabalham? Como é esse estimulador bilateral, por gentileza? E quanto ele custa? E você teria alguma imagem dele ou coisa parecida?\"",
+      "status": "read",
+      "timestamp": "2026-11-07T21:07:32.153+00:00"
+    },
+    {
+      "id": "msg-psi-marco-4",
+      "leadId": "lead-psi-marco",
+      "phone": "5511976143323",
+      "sender": "ai",
+      "text": "Trabalhamos com a Barra de Luz para estimulação visual, a partir de R$ 1.286,00, e o Aparelho Tátil com pulsers vibratórios a partir de R$ 687,00. Eles garantem um ritmo bilateral constante e evitam a fadiga muscular do terapeuta nas sessões de EMDR. Já estou anexando aqui o nosso catálogo oficial com todas as fotos e detalhes técnicos. Você costuma atender em consultório fixo ou precisa de algo mais compacto para transportar?",
+      "status": "read",
+      "timestamp": "2026-11-07T21:08:32.153+00:00"
+    },
+    {
+      "id": "msg-psi-marco-5",
+      "leadId": "lead-psi-marco",
+      "phone": "5511976143323",
+      "sender": "ai",
+      "text": "📄 Documento Enviado: \"Dossie_Tecnico_Equipamentos_PSI.pdf\"",
+      "status": "read",
+      "timestamp": "2026-11-07T21:08:32.154+00:00"
+    },
+    {
+      "id": "msg-amaro-4",
+      "leadId": "lead-amaro-1",
+      "phone": "5511988442211",
+      "sender": "ai",
+      "text": "Compreendo perfeitamente, Mariana. Saber que vocês já possuem essa harmonia é fundamental para o bem-estar do seu filho e agiliza todo o processo. Com os termos consensuais alinhados, nós formalizamos o plano de partilha, pensão e convivência com máxima rapidez técnica. Podemos agendar uma Consulta de Avaliação Estratégica com o Dr. Bruno Amaro esta semana para avaliarmos as certidões e darmos entrada com segurança? Temos horários disponíveis presencialmente aqui em Moema ou online pelo Meet!",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:08:32.154+00:00"
+    },
+    {
+      "id": "msg-1794086733102-followup",
+      "leadId": "lead-psi-marco",
+      "phone": "5511976143323",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:25:33.102+00:00"
+    },
+    {
+      "id": "msg-1794086733340-followup",
+      "leadId": "lead-psi-1",
+      "phone": "5511984219988",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:25:33.34+00:00"
+    },
+    {
+      "id": "msg-1794086733776-followup",
+      "leadId": "lead-verzel-1",
+      "phone": "5511985443322",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:25:33.776+00:00"
+    },
+    {
+      "id": "msg-1794086766255-followup",
+      "leadId": "lead-psi-marco",
+      "phone": "5511976143323",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:26:06.255+00:00"
+    },
+    {
+      "id": "msg-1794086773454-followup",
+      "leadId": "lead-psi-1",
+      "phone": "5511984219988",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:26:13.454+00:00"
+    },
+    {
+      "id": "msg-1794086776755-followup",
+      "leadId": "lead-verzel-1",
+      "phone": "5511985443322",
+      "sender": "ai",
+      "text": "Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀",
+      "status": "delivered",
+      "timestamp": "2026-11-07T21:26:16.755+00:00"
     }
   ],
   "agentConfig": {
-    "businessName": "Amaro Advogados Associados",
-    "activeWorkspaceName": "Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)",
     "personaName": "Sofia da Amaro Advogados",
     "role": "Consultora de Triagem Jurídica & Atendimento Estratégico da Amaro Advogados",
     "toneOfVoice": "Elegante, acolhedor, empático, discreto, técnico e seguro, em estrita conformidade com as normas e o Código de Ética da OAB",
@@ -3326,10 +3586,6 @@
     "geminiApiKey": "AIzaSyAaM2rf2lpAh7FM2cpWDJ7EOjSWJpcYJIY",
     "openaiApiKey": "",
     "anthropicApiKey": "",
-    "followUpNiche": "b2b_services",
-    "catalogPdfUrl": "https://amaroadvogados.com.br/",
-    "catalogPdfName": "Apresentacao_Amaro_Advogados.pdf",
-    "followUpCustomMessage": "Olá! Tudo bem? Passando para saber se ficou alguma dúvida sobre as orientações iniciais ou se deseja agendar a Consulta de Avaliação com o Dr. Bruno Amaro e nossa equipe de advogados especialistas aqui na Amaro Advogados. Estamos à disposição para acolher o seu caso com total sigilo e discrição. ⚖️🏛️",
     "knowledgeFaq": "PERGUNTAS FREQUENTES (AMARO ADVOGADOS ASSOCIADOS - MOEMA/SP):\n\nP: O que é a Amaro Advogados?\nR: A Amaro Advogados é um escritório de advocacia de excelência fundado pela fusão de duas bancas com mais de 20 anos de experiência jurídica. Sediado no bairro de Moema, em São Paulo/SP (Avenida Rouxinol, 84, sala 62), é reconhecido nacionalmente com selos de 'Escritório Mais Admirado' e sócio 'Advogado Mais Admirado' (Análise Editorial).\n\nP: Quem é o responsável técnico pelo escritório?\nR: O Dr. Bruno Amaro Alves de Almeida (OAB/SP), advogado sócio-fundador com sólida trajetória e atuação destacada em Direito de Família, Sucessões, Direito Público, Imobiliário e Contencioso Estratégico.\n\nP: Quais são as principais áreas de atuação do escritório?\nR: Atuamos em 10 grandes áreas especializadas: Direito de Família (divórcios, partilhas, pensão, guarda), Sucessões (inventários em cartório e judiciais, testamentos, holding familiar), Trabalhista, Imobiliário & Locações, Consumidor & Saúde (liminares de cirurgia e remédios), Recuperação de Créditos, Servidores Públicos/PAD, Direito Digital/LGPD, Trânsito/CNH e Profissionais Liberais.\n\nP: Como funciona a consulta com os advogados?\nR: Presencial em nossa sede em Moema (Av. Rouxinol, 84, sala 62 - SP) ou Online via Google Meet com agendamento prévio.",
     "knowledgeCatalog": "SERVIÇOS JURÍDICOS ESPECIALIZADOS (AMARO ADVOGADOS):\n1. Direito de Família: Divórcios consensuais e litigiosos, Pensão Alimentícia, Guarda e Convivência com filhos, Partilha de Bens e União Estável.\n2. Sucessões & Herança: Inventário Extrajudicial em Cartório, Inventário Judicial, Testamentos e Holding Familiar.\n3. Direito Trabalhista: Rescisão Indireta, fraude na CLT/salário por fora, horas extras, insalubridade e assédio moral.\n4. Direito Imobiliário: Despejo liminar, cobrança de aluguéis, contratos e due diligence imobiliária.\n5. Servidores Públicos: Defesa em PAD, ações contra improbidade e reintegração de servidores.\n6. Direito Digital & LGPD: Remoção urgente de imagens vazadas ('revenge porn') e adequação LGPD.",
     "knowledgePricing": "POLÍTICA DE HONORÁRIOS & ATENDIMENTO (AMARO ADVOGADOS):\n- Consultas de Avaliação Estratégica agendadas com a secretaria.\n- Honorários contratuais fixados com transparência em contrato formal, respeitando a Tabela Oficial da OAB/SP.\n- Sede: Av. Rouxinol, 84, sala 62 – Moema – São Paulo/SP | Tel: (11) 5531-4303 | WhatsApp: (11) 95586-3534.",
@@ -3341,13 +3597,92 @@
     "testNumberWhitelist": "",
     "autoTranscribeAudio": true,
     "typingDelayMs": 1500,
+    "catalogPdfUrl": "https://amaroadvogados.com.br/",
+    "catalogPdfName": "Apresentacao_Amaro_Advogados.pdf",
     "voiceResponseEnabled": true,
     "voiceResponseMode": "smart_discernment",
     "voiceEngine": "native_sofia",
     "voiceVoiceName": "pt-BR-FranciscaNeural",
     "voiceSpeed": 0.9,
     "maxConsecutiveAudios": 4,
-    "maxAudioChars": 450
+    "maxAudioChars": 450,
+    "googleTtsApiKey": "",
+    "elevenLabsApiKey": "",
+    "pixKey": "marco.agduarte22@gmail.com",
+    "pixKeyType": "email",
+    "preRecordedAudiosEnabled": true,
+    "preRecordedAudios": [
+      {
+        "id": "audio-welcome-dra-lucy",
+        "title": "Boas-Vindas & Acolhimento Humanizado",
+        "speakerName": "Dra. Lucy Murata",
+        "triggerType": "welcome",
+        "contextDescription": "Disparar na abertura da conversa quando o lead fizer uma saudação inicial (olá, bom dia) querendo conhecer os serviços, se ele ainda não ouviu a Dra. NUNCA disparar se ele veio com pergunta técnica/pontual (ex: preço, convênio, horário específico) ou se já foi recepcionado.",
+        "transcript": "Olá! Tudo bem? Sou a Dra. Lucy Murata! Que bom que você entrou em contato com o nosso consultório. A Sofia, da minha equipe, já vai te dar todas as informações, mas eu fiz questão de te dar as boas-vindas pessoalmente. Me conta: o que você gostaria de cuidar no seu sorriso hoje?",
+        "durationSeconds": 16,
+        "enabled": true,
+        "maxPerLead": 1
+      },
+      {
+        "id": "audio-pitch-dra-lucy",
+        "title": "Convite para Consulta de Avaliação Integrativa",
+        "speakerName": "Dra. Lucy Murata",
+        "triggerType": "schedule_pitch",
+        "contextDescription": "Disparar quando o lead já tirou as primeiras dúvidas e demonstrar interesse em marcar consulta, agendar ou conhecer os horários da agenda. Acalma a decisão e reforça a importância da avaliação presencial no Euroville Mall.",
+        "transcript": "Oi! Que excelente decisão. Fazer uma avaliação com calma é o melhor passo pra gente entender direitinho a sua saúde bucal e indicar o melhor tratamento pra você. Já avisei a recepção pra priorizar os melhores horários pra você. Pode escolher o dia e a hora que ficarem mais confortáveis pra você, tá bom? Te espero aqui!",
+        "durationSeconds": 18,
+        "enabled": true,
+        "maxPerLead": 1
+      },
+      {
+        "id": "audio-urgency-dra-lucy",
+        "title": "Acolhimento Cuidadoso em Dor ou Desconforto",
+        "speakerName": "Dra. Lucy Murata",
+        "triggerType": "urgency_care",
+        "contextDescription": "Disparar quando o paciente relatar dor forte, incômodo ou urgência confirmada pela triagem clínica. Transmite calma, empatia e compromisso de encaixe prioritário.",
+        "transcript": "Oi, tudo bem? Sou a Dra. Lucy. Vi aqui que você mencionou que está com incômodo ou dor. Não se preocupa, a gente cuida de você. Minha equipe vai verificar o quanto antes a nossa escala pra te encaixar com carinho e resolver isso logo. Fica tranquilo(a), tá bom?",
+        "durationSeconds": 15,
+        "enabled": true,
+        "maxPerLead": 1
+      }
+    ],
+    "autoFollowUpEnabled": true,
+    "followUpDelayHours": 4,
+    "followUpNiche": "b2b_services",
+    "followUpCustomMessage": "Olá! Tudo bem? Passando para saber se ficou alguma dúvida sobre as orientações iniciais ou se deseja agendar a Consulta de Avaliação com o Dr. Bruno Amaro e nossa equipe de advogados especialistas aqui na Amaro Advogados. Estamos à disposição para acolher o seu caso com total sigilo e discrição. ⚖️🏛️",
+    "maxFollowUpsPerLead": 2,
+    "calendarEnabled": false,
+    "calendarConnectedEmail": "",
+    "calendarDefaultDurationMinutes": 45,
+    "calendarDefaultTitle": "",
+    "calendarDefaultLocation": "",
+    "calendarAllowAiBooking": true,
+    "showCalendarModuleInMenu": true,
+    "instagramConfig": {
+      "enabled": true,
+      "isConnected": false,
+      "username": "",
+      "fullName": "",
+      "profilePicUrl": "",
+      "pageId": "1625068255684485",
+      "instagramId": "",
+      "autoReplyComments": true,
+      "commentTriggerKeywords": [
+        "AVALIACAO",
+        "AGENDA",
+        "CRM",
+        "SORRISO",
+        "BIOODONTO"
+      ],
+      "commentPublicReplyText": "Olá! Te respondi com todos os detalhes no seu Direct, dá uma olhadinha lá! ✨😊",
+      "directWelcomePrompt": "Olá! Vi que você comentou no nosso post. Sou a Sofia, especialista de atendimento! Como posso te ajudar hoje?",
+      "directAutoQualify": true,
+      "leadCaptureMoveToStage": "stage-1",
+      "tokenExpiresAt": "02081193cf850572d4e22a378e01dff2",
+      "accessToken": "IGAAXFZCbAdp4VBZAGEzaXk4anMxZAkJabmpKS0RLUm44d25hQjFtaGprVGNrb3VPalJ4a3l0T2lzMmgwMFlsWGw4YXZAza3o3bldaRERSWFA1X1QzdTNPUENHc1k4R2psVzRTX01VOFBHZA29oZAFNHU0Q1X2wyVHI0NU5Bd3FIMkJOSQZDZD"
+    },
+    "businessName": "Amaro Advogados Associados",
+    "activeWorkspaceName": "Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)"
   },
   "workspaceConfigs": {},
   "documents": [
@@ -3402,10 +3737,10 @@
   ],
   "evolutionConfig": {
     "serverUrl": "https://api.makprojetosmake.com.br",
-    "apiKey": "b2efa885a71ee22edf72b597df1a0ce9",
+    "apiKey": "FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4",
     "instanceName": "amaro-advogados",
     "isConnected": false,
-    "state": "disconnected",
+    "state": "connecting",
     "lastTestedAt": "2026-10-03T00:19:06.125Z",
     "wasEverConnected": false,
     "instanceApiKeys": {
@@ -3417,8 +3752,8 @@
       "cemiterio-cantareira-48zvof": "cemiterio-cantareira-48zvof",
       "equipamentospsi": "2EE0711F-2838-41E5-9BE0-466D03995E3F",
       "psi": "2EE0711F-2838-41E5-9BE0-466D03995E3F",
-      "amaro-advogados": "AMARO-ADV-7821-4E62-8BCF-991A4E7F1A02",
-      "amaroadvogados": "AMARO-ADV-7821-4E62-8BCF-991A4E7F1A02"
+      "amaro-advogados": "FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4",
+      "amaroadvogados": "FD50BEA8-0F42-4FFB-A64E-FEFD1D257BB4"
     }
   },
   "supabaseConfig": {
