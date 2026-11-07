@@ -106,6 +106,17 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿',
   },
+  amaro: {
+    activeWorkspaceName: 'Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)',
+    personaName: 'Sofia da Amaro Advogados',
+    role: 'Consultora de Triagem Jurídica & Atendimento Estratégico da Amaro Advogados',
+    toneOfVoice: 'Elegante, acolhedor, empático, discreto, técnico e seguro, em estrita conformidade com as normas e o Código de Ética da OAB',
+    salesGoal: 'Acolher o cliente com discrição e respeito absoluto ao sigilo profissional, identificar a área do Direito necessária, verificar se há prazos ou intimações urgentes e agendar a Consulta de Avaliação Estratégica presencial em Moema/SP ou online via Google Meet com o Dr. Bruno Amaro e a equipe sênior de advogados.',
+    followUpNiche: 'b2b_services',
+    catalogPdfName: 'Apresentacao_Amaro_Advogados.pdf',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se ficou alguma dúvida sobre as orientações iniciais ou se deseja agendar a Consulta de Avaliação com o Dr. Bruno Amaro e nossa equipe de advogados especialistas aqui na Amaro Advogados. Estamos à disposição para acolher o seu caso com total sigilo e discrição. ⚖️🏛️',
+  },
 };
 
 export const CLINIC_STAGES: KanbanStage[] = [
@@ -180,12 +191,25 @@ export const EQUIPAMENTOS_PSI_STAGES: KanbanStage[] = [
   { id: 'stage-sac', name: '⚠️ SAC / Suporte Técnico EMDR & Peças', color: '#ea580c', order: 8 },
 ];
 
+export const AMARO_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base de Contatos / Consultas Antigas', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação Preventiva (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Triagem Inicial & Acolhimento', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Caso Qualificado / Análise de Documentos', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Consulta Agendada (Presencial / Meet)', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Proposta de Honorários & Procuração', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Contrato Fechado & Ação Distribuída', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Arquivo / Desistência', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '⚖️ Prazos & Intimações Urgentes', color: '#ea580c', order: 8 },
+];
+
 export function getStagesForNiche(niche?: string): KanbanStage[] {
   if (niche === 'primo') return PRIMO_STAGES;
   if (niche === 'surfacebrasil') return SURFACE_STAGES;
   if (niche === 'verzel') return VERZEL_STAGES;
   if (niche === 'cantareira') return CANTAREIRA_STAGES;
   if (niche === 'equipamentospsi') return EQUIPAMENTOS_PSI_STAGES;
+  if (niche === 'amaro' || niche === 'amaroadvogados' || niche === 'amaro-advogados') return AMARO_STAGES;
   return CLINIC_STAGES;
 }
 
@@ -232,6 +256,17 @@ export function normalizeNicheKey(raw?: string | null): string {
   }
   if (clean === 'primo' || clean.includes('primo-equipamento') || clean.includes('primo_equipamento')) {
     return 'primo';
+  }
+  if (
+    clean === 'amaro' ||
+    clean === 'amaroadvogados' ||
+    clean === 'amaro-advogados' ||
+    clean === 'amaro_advogados' ||
+    clean === 'advocacia' ||
+    clean === 'juridico' ||
+    clean === 'profile-amaro-advogados'
+  ) {
+    return 'amaro';
   }
   if (clean === 'delivery' || clean === 'restaurant_delivery' || clean === 'pizzaria' || clean === 'restaurante') {
     return 'delivery';
@@ -630,6 +665,7 @@ export default function App() {
                 else if (activeUrlNiche === 'verzel') targetInst = 'verzel';
                 else if (activeUrlNiche === 'primo') targetInst = 'primo-equipamentos';
                 else if (activeUrlNiche === 'equipamentospsi') targetInst = 'equipamentospsi';
+                else if (activeUrlNiche === 'amaro' || activeUrlNiche === 'amaroadvogados') targetInst = 'amaro-advogados';
                 else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
                 else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
                 else if (activeUrlNiche === 'b2b') targetInst = 'agente-ia';
@@ -1040,6 +1076,8 @@ export default function App() {
         ? 'primo-equipamentos'
         : normalizedWk === 'equipamentospsi'
         ? 'equipamentospsi'
+        : normalizedWk === 'amaro' || normalizedWk === 'amaroadvogados'
+        ? 'amaro-advogados'
         : normalizedWk === 'cantareira'
         ? 'cemiterio-cantareira'
         : normalizedWk === 'clinic'

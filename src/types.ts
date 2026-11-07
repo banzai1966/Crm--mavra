@@ -169,6 +169,7 @@ export type BusinessNiche =
   | 'sales'
   | 'real_estate'
   | 'legal'
+  | 'amaro'
   | 'services'
   | 'b2b_services'
   | 'surfacebrasil'

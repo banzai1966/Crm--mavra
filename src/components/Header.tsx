@@ -30,6 +30,7 @@ import {
   HelpCircle,
   RefreshCw,
   Smartphone,
+  ShieldCheck,
 } from 'lucide-react';
 import { EvolutionConfig, AgentConfig } from '../types';
 import { ClientLinkModal } from './ClientLinkModal';
@@ -184,6 +185,10 @@ export const Header: React.FC<HeaderProps> = ({
         agentConfig.role?.toLowerCase().includes('emdr') ||
         agentConfig.activeWorkspaceName?.toLowerCase().includes('psi')
       ? 'equipamentospsi'
+      : agentConfig.personaName?.toLowerCase().includes('amaro') ||
+        agentConfig.role?.toLowerCase().includes('amaro') ||
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('amaro')
+      ? 'amaro'
       : agentConfig.followUpNiche === 'sales'
       ? 'b2b'
       : 'clinic';
@@ -198,6 +203,7 @@ export const Header: React.FC<HeaderProps> = ({
     b2b: { label: 'Comercial B2B', icon: Building2, badge: 'B2B' },
     surfacebrasil: { label: 'Surfacebrasil (Plasma)', icon: Zap, badge: 'Indústria' },
     verzel: { label: 'Verzel (Software & AI)', icon: Code2, badge: 'Tech' },
+    amaro: { label: 'Amaro Advogados', icon: ShieldCheck, badge: 'Jurídico' },
   };
 
   const nicheMeta = builtInMeta[currentNiche] || {
@@ -425,6 +431,25 @@ export const Header: React.FC<HeaderProps> = ({
                           {currentNiche === 'equipamentospsi' && <span className="text-[10px] text-purple-700 font-bold">(Ativo)</span>}
                         </div>
                         <p className="text-[10px] text-slate-400 font-normal">Foco: Barras de luz, pulsers táteis & terapia EMDR</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onSwitchWorkspace('amaro');
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                        currentNiche === 'amaro' ? 'bg-amber-50/80 font-bold text-amber-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <ShieldCheck className="w-4 h-4 text-amber-700" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>Amaro Advogados (Moema)</span>
+                          {currentNiche === 'amaro' && <span className="text-[10px] text-amber-800 font-bold">(Ativo)</span>}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-normal">Foco: Família, Sucessões, Trabalhista, Servidores & OAB</p>
                       </div>
                     </button>
                   </div>

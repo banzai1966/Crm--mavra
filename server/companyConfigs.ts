@@ -643,6 +643,126 @@ R: Como cada terapeuta tem preferências específicas de tamanho de barra, neces
 7. VALORES E MOEDA: Sempre informe preços no padrão comercial com R$ (ex: R$ 1.286,00 ou R$ 687,00). Nunca escreva valores por extenso no texto do WhatsApp.`,
     },
   },
+
+  amaro: {
+    id: 'amaro',
+    instanceName: 'amaro-advogados',
+    aliases: ['amaro', 'amaroadvogados', 'amaro-advogados', 'amaro_advogados', 'advocacia', 'juridico', 'profile-amaro-advogados'],
+    companyName: 'Amaro Advogados Associados',
+    documentIds: ['doc-amaro-advogados-institucional', 'doc-amaro-advogados-areas-atuacao'],
+    agentConfig: {
+      businessName: 'Amaro Advogados Associados',
+      activeWorkspaceName: 'Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)',
+      personaName: 'Sofia da Amaro Advogados',
+      role: 'Consultora de Triagem Jurídica & Atendimento Estratégico da Amaro Advogados',
+      toneOfVoice: 'Elegante, acolhedor, empático, discreto, técnico e seguro, em estrita conformidade com as normas e o Código de Ética da OAB',
+      salesGoal: 'Acolher o cliente com discrição e respeito absoluto ao sigilo profissional, identificar a área do Direito necessária (Família, Sucessões, Trabalhista, Imobiliário, Servidores Públicos/PAD, Direito Digital/LGPD, Consumidor/Saúde, Cobrança de Créditos ou Trânsito), verificar se há prazos ou intimações urgentes e agendar a Consulta de Avaliação Estratégica presencial em Moema/SP ou online via Google Meet com o Dr. Bruno Amaro e a equipe sênior de advogados.',
+      activeProvider: 'gemini',
+      activeModel: 'gemini-2.5-flash',
+      strictKnowledgeOnly: true,
+      autoTriggerCRMStages: true,
+      isGlobalAiActive: true,
+      testModeEnabled: false,
+      testNumberWhitelist: '',
+      autoTranscribeAudio: true,
+      typingDelayMs: 1500,
+      voiceResponseEnabled: true,
+      voiceResponseMode: 'smart_discernment',
+      voiceEngine: 'native_sofia',
+      voiceVoiceName: 'pt-BR-FranciscaNeural',
+      voiceSpeed: 0.90,
+      maxConsecutiveAudios: 4,
+      maxAudioChars: 450,
+      followUpNiche: 'b2b_services',
+      catalogPdfUrl: 'https://amaroadvogados.com.br/',
+      catalogPdfName: 'Apresentacao_Amaro_Advogados.pdf',
+      followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se ficou alguma dúvida sobre as orientações iniciais ou se deseja agendar a Consulta de Avaliação com o Dr. Bruno Amaro e nossa equipe de advogados especialistas aqui na Amaro Advogados. Estamos à disposição para acolher o seu caso com total sigilo e discrição. ⚖️🏛️',
+      knowledgeFaq: `PERGUNTAS FREQUENTES (AMARO ADVOGADOS ASSOCIADOS - MOEMA/SP):
+
+P: O que é a Amaro Advogados?
+R: A Amaro Advogados é um escritório de advocacia de excelência fundado pela fusão de duas bancas com mais de 20 anos de experiência jurídica. Sediado no bairro de Moema, em São Paulo/SP (Avenida Rouxinol, 84, sala 62), é reconhecido nacionalmente com selos de 'Escritório Mais Admirado' e sócio 'Advogado Mais Admirado' (Análise Editorial).
+
+P: Quem é o responsável técnico pelo escritório?
+R: O Dr. Bruno Amaro Alves de Almeida (OAB/SP), advogado sócio-fundador com sólida trajetória e atuação destacada em Direito de Família, Sucessões, Direito Público, Imobiliário e Contencioso Estratégico.
+
+P: Quais são as principais áreas de atuação do escritório?
+R: Atuamos em 10 grandes áreas especializadas:
+1. Direito de Família: Divórcios (consensual em cartório e litigioso), Pensão Alimentícia (fixação, revisão e execução), Guarda Compartilhada/Unilateral, Regulamentação de Convivência/Visitas, Partilha de Bens e Reconhecimento de União Estável (inclusive homoafetiva).
+2. Direito das Sucessões: Inventários Extrajudiciais rápidos em cartório, Inventários Judiciais complexos, Testamentos, Planejamento Sucessório Patrimonial e Holding Familiar.
+3. Direito Trabalhista: Fraude na CLT, falta de registro em carteira, salário "por fora", rescisão indireta, verbas rescisórias retidas, horas extras, insalubridade/periculosidade e assédio moral.
+4. Direito Imobiliário & Locações: Ações de despejo rápidas, cobrança de aluguéis e encargos atrasados, contratos de locação comercial/residencial e due diligence na compra e venda de imóveis.
+5. Direito do Consumidor & Saúde: Defesa contra recusa de cirurgias, tratamentos e medicamentos de alto custo por planos de saúde, vícios em veículos/concessionárias e extravio/cancelamento de voos.
+6. Recuperação de Créditos: Cobrança extrajudicial estratégica e execução judicial de cheques sem fundo, notas promissórias, duplicatas e contratos inadimplidos.
+7. Servidores Públicos & Direito Público: Defesa técnica em Processo Administrativo Disciplinar (PAD), improbidade administrativa, reintegração de cargo, cobrança de quinquênios, sexta-parte, gratificações e precatórios.
+8. Direito Digital & LGPD: Medidas urgentes para remoção de conteúdo ilícito e 'nudez de vingança' (revenge porn), indenizações por uso indevido de imagem e conformidade LGPD para empresas.
+9. Direito de Trânsito: Recursos administrativos e ações judiciais contra suspensão/cassação da CNH, multas indevidas e Lei Seca.
+10. Profissionais Liberais: Cobrança de honorários retidos para médicos, dentistas, arquitetos e engenheiros, e defesas ético-disciplinares em conselhos de classe (CRM, CRO, CAU, CREA).
+
+P: Como funciona a consulta com os advogados?
+R: Oferecemos duas modalidades confortáveis e com agendamento prévio:
+- Presencial: em nossa sede em Moema, na Avenida Rouxinol, nº 84, sala 62 – São Paulo/SP.
+- Online: via videoconferência segura pelo Google Meet para clientes de qualquer estado ou com rotina intensa.
+
+P: Quais documentos devo separar para a reunião?
+R: Depende da área:
+- Família/Divórcio: Certidão de casamento/nascimento, documentos pessoais (RG/CPF) e relação de bens a partilhar.
+- Inventário: Certidão de óbito do falecido, documentos dos herdeiros e certidões dos imóveis/bens.
+- Trabalhista: Carteira de trabalho (CTPS digital), comprovantes de depósitos/extratos e mensagens/e-mails que comprovem os fatos.
+- Imobiliário: Contrato de locação ou matrícula atualizada do imóvel.
+- Servidor Público: Cópia da notificação do PAD ou holerites recentes.`,
+      knowledgeCatalog: `CATÁLOGO DE SERVIÇOS JURÍDICOS (AMARO ADVOGADOS):
+1. Direito de Família & Relações Pessoais:
+   - Divórcio Extrajudicial (Cartório) e Judicial;
+   - Pensão Alimentícia (Fixação, Revisão e Cobrança com Prisão/Penhora);
+   - Guarda Compartilhada e Regime de Convivência com Filhos;
+   - Partilha de Bens e Dissolução de União Estável (Hetero e Homoafetiva);
+   - Investigação de Paternidade e Ações de Tutela/Curatela.
+
+2. Sucessões, Herança & Planejamento Patrimonial:
+   - Inventário Extrajudicial em Cartório de Notas (Rápido e Descomplicado);
+   - Inventário Judicial e Partilha Contenciosa;
+   - Testamentos Públicos e Particulares;
+   - Holding Familiar e Planejamento Sucessório com Economia Tributária de ITCMD.
+
+3. Advocacia Trabalhista Estratégica:
+   - Rescisão Indireta por descumprimento patronal;
+   - Cobrança de salário pago "por fora" e falta de registro em carteira;
+   - Cobrança de Horas Extras, Adicional de Insalubridade e Periculosidade;
+   - Defesa dos Direitos dos Bancários, Executivos e Profissionais Liberais.
+
+4. Direito Imobiliário & Locatício:
+   - Ação de Despejo por falta de pagamento ou infração contratual;
+   - Cobrança de Aluguéis e Acionamento de Fiadores;
+   - Análise de Riscos (Due Diligence) para Compra e Venda de Imóveis;
+   - Elaboração de Contratos de Locação Residencial e Comercial.
+
+5. Direito Público & Servidores Públicos:
+   - Defesa em Processo Administrativo Disciplinar (PAD) e Sindicâncias;
+   - Ações Judiciais contra Improbidade Administrativa e Reintegração de Servidores;
+   - Cobrança de Gratificações, Adicionais Retidos, Quinquênio, Sexta-Parte e Precatórios.
+
+6. Direito à Saúde & Consumidor Especializado:
+   - Liminares contra recusa de tratamentos e medicamentos de alto custo pelo plano;
+   - Vícios Ocultos em Veículos e Indenizações por Problemas Aéreos.
+
+7. Direito Digital & Crimes Virtuais:
+   - Medidas Liminares de Urgência para Remoção de Imagens e 'Revenge Porn';
+   - Ações Indenizatórias por Danos Morais à Imagem e Honra em Redes Sociais;
+   - Consultoria Empresarial de Adequação à LGPD.`,
+      knowledgePricing: `POLÍTICA DE HONORÁRIOS & ATENDIMENTO (AMARO ADVOGADOS):
+- Consultas de Avaliação Estratégica agendadas com hora marcada.
+- Honorários contratuais fixados com absoluta transparência em contrato formal de prestação de serviços advocatícios, respeitando a Tabela Oficial da OAB/SP.
+- Possibilidade de contratação com honorários de êxito para ações específicas ou parcelamento facilitado.
+- Contatos Oficiais: Telefone (11) 5531-4303 | WhatsApp (11) 95586-3534 | secretaria@amaroadvogados.com.br
+- Sede: Av. Rouxinol, nº 84, sala 62 – Moema – São Paulo/SP.`,
+      knowledgeRules: `DIRETRIZES FUNDAMENTAIS DA SOFIA (AMARO ADVOGADOS):
+1. IDENTIDADE EXCLUSIVA: Você é a Sofia da Amaro Advogados Associados. Jamais mencione outros clientes (Lucy, Primo, Verzel, Surface, Cantareira ou PSI).
+2. CONFORMIDADE COM A OAB: Jamais dê consultas de mérito completas ou prometa resultados processuais ("causa ganha"). Seu papel é acolher com empatia e respeito, identificar a área do direito e direcionar para Consulta de Avaliação com os advogados.
+3. IDENTIFICAÇÃO DO CASO: Pergunte gentilmente qual é a questão jurídica que a pessoa precisa resolver e se já existe algum processo em andamento ou intimação com prazo correndo.
+4. AGENDAMENTO: Ofereça a consulta presencial na sede em Moema (Av. Rouxinol, 84, sala 62 - SP) ou online pelo Google Meet.
+5. CONFIRMAÇÃO DE DADOS: Colete Nome Completo, Telefone, E-mail e Cidade/Estado para registrar a triagem na pauta da secretaria.`,
+    },
+  },
 };
 
 /**
@@ -713,6 +833,18 @@ export function normalizeWorkspaceKey(raw?: string | null): string {
   ) {
     return 'b2b';
   }
+  if (
+    clean === 'amaro' ||
+    clean === 'amaroadvogados' ||
+    clean === 'amaro-advogados' ||
+    clean === 'amaro_advogados' ||
+    clean === 'advocacia' ||
+    clean === 'juridico' ||
+    clean === 'legal' ||
+    clean === 'profile-amaro-advogados'
+  ) {
+    return 'amaro';
+  }
   return clean;
 }
 
@@ -727,6 +859,7 @@ export function getDefaultInstanceForWorkspace(workspaceKey?: string): string {
   if (wk === 'verzel') return 'verzel';
   if (wk === 'cantareira') return 'cemiterio-cantareira';
   if (wk === 'equipamentospsi') return 'equipamentospsi';
+  if (wk === 'amaro') return 'amaro-advogados';
   if (wk === 'delivery') return 'delivery';
   if (wk === 'b2b') return 'agente-ia';
   return wk;
@@ -803,6 +936,17 @@ export function resolveLeadWorkspaceId(lead: any): string {
     interest.includes('pulser')
   ) {
     return 'equipamentospsi';
+  }
+  if (
+    lowerTags.some((t) => t.includes('amaro') || t.includes('advogado') || t.includes('oab') || t.includes('jurídico') || t.includes('juridico')) ||
+    notes.includes('amaro') ||
+    notes.includes('advogados') ||
+    interest.includes('divórcio') ||
+    interest.includes('inventário') ||
+    interest.includes('pensão') ||
+    interest.includes('holding familiar')
+  ) {
+    return 'amaro';
   }
   if (
     Boolean(lead.deliveryInfo) ||
@@ -922,7 +1066,7 @@ export function getAgentConfigForInstance(instanceName?: string): AgentConfig {
 
   // For built-in companies, ensure core identity fields (personaName, role, followUpCustomMessage, knowledge)
   // are never contaminated by another company's text
-  const isBuiltIn = ['clinic', 'primo', 'surfacebrasil', 'verzel', 'cantareira', 'equipamentospsi', 'delivery', 'b2b'].includes(wk);
+  const isBuiltIn = ['clinic', 'primo', 'surfacebrasil', 'verzel', 'cantareira', 'equipamentospsi', 'amaro', 'delivery', 'b2b'].includes(wk);
 
   return {
     ...baseConfig,
@@ -993,6 +1137,14 @@ export function getDocumentsForInstance(instanceName?: string): KnowledgeDocumen
         docName.includes('psi') ||
         docName.includes('emdr') ||
         docContent.includes('equipamentos psi')
+      );
+    }
+    if (companyId === 'amaro') {
+      return (
+        docName.includes('amaro') ||
+        docName.includes('advogado') ||
+        docName.includes('juridico') ||
+        docContent.includes('amaro advogados')
       );
     }
     return false;

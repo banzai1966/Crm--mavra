@@ -230,6 +230,63 @@ export const DEFAULT_DEMO_LEADS: Lead[] = [
     workspaceId: 'equipamentospsi',
     instanceName: 'equipamentospsi',
   },
+  {
+    id: 'lead-amaro-1',
+    name: 'Mariana Albuquerque',
+    phone: '5511988442211',
+    email: 'mariana.albuquerque@gmail.com',
+    stageId: 'stage-2',
+    value: 12000,
+    interest: 'Divórcio Consensual em Cartório com Partilha de Bens e Guarda Compartilhada',
+    tags: ['⚖️ Amaro Advogados', 'Direito de Família', 'Moema / SP', '🔥 LEAD QUENTE'],
+    notes: 'Cliente busca divórcio amigável com partilha de 2 imóveis em São Paulo e regulamentação de convivência com filho menor. Agendando consulta com Dr. Bruno Amaro.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Ambas as partes estão de acordo e desejam formalizar com agilidade e discrição',
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+    unreadCount: 1,
+    workspaceId: 'amaro',
+    instanceName: 'amaro-advogados',
+  },
+  {
+    id: 'lead-amaro-2',
+    name: 'Dr. Fernando Siqueira (Empresário)',
+    phone: '5511997335588',
+    email: 'fernando@siqueiragroup.com.br',
+    stageId: 'stage-3',
+    value: 45000,
+    interest: 'Planejamento Sucessório Patrimonial, Holding Familiar & Inventário Preventivo',
+    tags: ['⚖️ Amaro Advogados', 'Sucessões & Holding', 'Alto Padrão'],
+    notes: 'Empresário com patrimônio imobiliário familiar. Deseja constituir Holding Familiar para planejamento sucessório e redução legal de ITCMD.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Solicitou reunião de diagnóstico societário e tributário com o Dr. Bruno Amaro',
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    unreadCount: 0,
+    workspaceId: 'amaro',
+    instanceName: 'amaro-advogados',
+  },
+  {
+    id: 'lead-amaro-3',
+    name: 'Carlos Eduardo Brandão (Servidor Público)',
+    phone: '5511972118833',
+    email: 'carlos.brandao@sp.gov.br',
+    stageId: 'stage-1',
+    value: 18500,
+    interest: 'Defesa em Processo Administrativo Disciplinar (PAD) & Cobrança de Gratificações Retidas',
+    tags: ['⚖️ Amaro Advogados', 'Servidor Público', 'Direito Administrativo'],
+    notes: 'Recebeu notificação preliminar de PAD em órgão estadual. Precisa de assessoria jurídica especializada para apresentação de defesa prévia no prazo.',
+    aiPaused: false,
+    isHotLead: true,
+    hotReason: 'Prazo legal de 10 dias correndo para apresentação de defesa escrita',
+    lastInteraction: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 50).toISOString(),
+    unreadCount: 1,
+    workspaceId: 'amaro',
+    instanceName: 'amaro-advogados',
+  },
 ];
 
 export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
@@ -391,6 +448,50 @@ export const DEFAULT_DEMO_MESSAGES: ChatMessage[] = [
     timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
     status: 'read',
   },
+  {
+    id: 'msg-amaro-1',
+    leadId: 'lead-amaro-1',
+    phone: '5511988442211',
+    sender: 'lead',
+    text: 'Olá, boa tarde! Gostaria de tirar uma dúvida sobre divórcio consensual e partilha de bens. Vocês atendem presencialmente em Moema?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+    status: 'read',
+    workspaceId: 'amaro',
+    instanceName: 'amaro-advogados',
+  },
+  {
+    id: 'msg-amaro-2',
+    leadId: 'lead-amaro-1',
+    phone: '5511988442211',
+    sender: 'ai',
+    text: 'Olá, Mariana! Boa tarde! Seja muito bem-vinda à Amaro Advogados. Sim, nossa sede fica localizada aqui em Moema, na Avenida Rouxinol, nº 84, sala 62. Atendemos presencialmente com todo o conforto e discrição, e também por videoconferência segura pelo Google Meet. O Dr. Bruno Amaro e nossa equipe de Direito de Família são especialistas em divórcios consensuais com agilidade e total segurança patrimonial. Vocês possuem filhos menores ou já possuem um acordo prévio sobre a divisão dos bens?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 17).toISOString(),
+    status: 'read',
+    workspaceId: 'amaro',
+    instanceName: 'amaro-advogados',
+  },
+  {
+    id: 'msg-amaro-3',
+    leadId: 'lead-amaro-1',
+    phone: '5511988442211',
+    sender: 'lead',
+    text: 'Temos um filho de 7 anos e já combinamos a guarda compartilhada e a divisão de 2 apartamentos. Queríamos resolver o quanto antes sem desgaste emocional.',
+    timestamp: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
+    status: 'read',
+    workspaceId: 'amaro',
+    instanceName: 'amaro-advogados',
+  },
+  {
+    id: 'msg-amaro-4',
+    leadId: 'lead-amaro-1',
+    phone: '5511988442211',
+    sender: 'ai',
+    text: 'Compreendo perfeitamente, Mariana. Saber que vocês já possuem essa harmonia é fundamental para o bem-estar do seu filho e agiliza todo o processo. Com os termos consensuais alinhados, nós formalizamos o plano de partilha, pensão e convivência com máxima rapidez técnica. Podemos agendar uma Consulta de Avaliação Estratégica com o Dr. Bruno Amaro esta semana para avaliarmos as certidões e darmos entrada com segurança? Temos horários disponíveis presencialmente aqui em Moema ou online pelo Meet!',
+    timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+    status: 'delivered',
+    workspaceId: 'amaro',
+    instanceName: 'amaro-advogados',
+  },
 ];
 
 export function createNexaAgentConfig(baseConfig?: Partial<AgentConfig>): AgentConfig {
@@ -513,6 +614,69 @@ R: Nós agendamos uma demonstração rápida de 15 minutos via videoconferência
     testModeEnabled: false,
     testNumberWhitelist: '',
     autoTranscribeAudio: true,
+  };
+}
+
+export function createAmaroAgentConfig(baseConfig?: Partial<AgentConfig>): AgentConfig {
+  return {
+    businessName: 'Amaro Advogados Associados',
+    activeWorkspaceName: 'Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)',
+    personaName: 'Sofia da Amaro Advogados',
+    role: 'Consultora de Triagem Jurídica & Atendimento Estratégico da Amaro Advogados',
+    toneOfVoice: 'Elegante, acolhedor, empático, discreto, técnico e seguro, em estrita conformidade com as normas e o Código de Ética da OAB',
+    salesGoal: 'Acolher o cliente com discrição e respeito absoluto ao sigilo profissional, identificar a área do Direito necessária (Família, Sucessões, Trabalhista, Imobiliário, Servidores Públicos/PAD, Direito Digital/LGPD, Consumidor/Saúde, Cobrança de Créditos ou Trânsito), verificar se há prazos ou intimações urgentes e agendar a Consulta de Avaliação Estratégica presencial em Moema/SP ou online via Google Meet com o Dr. Bruno Amaro e a equipe sênior de advogados.',
+    activeProvider: baseConfig?.activeProvider || 'gemini',
+    activeModel: baseConfig?.activeModel || 'gemini-2.5-flash',
+    geminiApiKey: baseConfig?.geminiApiKey || (process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('p80qfADWas1aX40qx1TMkUmwGf6kg') && !process.env.GEMINI_API_KEY.startsWith('AQ.Ab8RN6J') ? process.env.GEMINI_API_KEY : ''),
+    openaiApiKey: baseConfig?.openaiApiKey || '',
+    anthropicApiKey: baseConfig?.anthropicApiKey || '',
+    followUpNiche: 'b2b_services',
+    catalogPdfUrl: 'https://amaroadvogados.com.br/',
+    catalogPdfName: 'Apresentacao_Amaro_Advogados.pdf',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se ficou alguma dúvida sobre as orientações iniciais ou se deseja agendar a Consulta de Avaliação com o Dr. Bruno Amaro e nossa equipe de advogados especialistas aqui na Amaro Advogados. Estamos à disposição para acolher o seu caso com total sigilo e discrição. ⚖️🏛️',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (AMARO ADVOGADOS ASSOCIADOS - MOEMA/SP):
+
+P: O que é a Amaro Advogados?
+R: A Amaro Advogados é um escritório de advocacia de excelência fundado pela fusão de duas bancas com mais de 20 anos de experiência jurídica. Sediado no bairro de Moema, em São Paulo/SP (Avenida Rouxinol, 84, sala 62), é reconhecido nacionalmente com selos de 'Escritório Mais Admirado' e sócio 'Advogado Mais Admirado' (Análise Editorial).
+
+P: Quem é o responsável técnico pelo escritório?
+R: O Dr. Bruno Amaro Alves de Almeida (OAB/SP), advogado sócio-fundador com sólida trajetória e atuação destacada em Direito de Família, Sucessões, Direito Público, Imobiliário e Contencioso Estratégico.
+
+P: Quais são as principais áreas de atuação do escritório?
+R: Atuamos em 10 grandes áreas especializadas: Direito de Família (divórcios, partilhas, pensão, guarda), Sucessões (inventários em cartório e judiciais, testamentos, holding familiar), Trabalhista, Imobiliário & Locações, Consumidor & Saúde (liminares de cirurgia e remédios), Recuperação de Créditos, Servidores Públicos/PAD, Direito Digital/LGPD, Trânsito/CNH e Profissionais Liberais.
+
+P: Como funciona a consulta com os advogados?
+R: Presencial em nossa sede em Moema (Av. Rouxinol, 84, sala 62 - SP) ou Online via Google Meet com agendamento prévio.`,
+    knowledgeCatalog: `SERVIÇOS JURÍDICOS ESPECIALIZADOS (AMARO ADVOGADOS):
+1. Direito de Família: Divórcios consensuais e litigiosos, Pensão Alimentícia, Guarda e Convivência com filhos, Partilha de Bens e União Estável.
+2. Sucessões & Herança: Inventário Extrajudicial em Cartório, Inventário Judicial, Testamentos e Holding Familiar.
+3. Direito Trabalhista: Rescisão Indireta, fraude na CLT/salário por fora, horas extras, insalubridade e assédio moral.
+4. Direito Imobiliário: Despejo liminar, cobrança de aluguéis, contratos e due diligence imobiliária.
+5. Servidores Públicos: Defesa em PAD, ações contra improbidade e reintegração de servidores.
+6. Direito Digital & LGPD: Remoção urgente de imagens vazadas ('revenge porn') e adequação LGPD.`,
+    knowledgePricing: `POLÍTICA DE HONORÁRIOS & ATENDIMENTO (AMARO ADVOGADOS):
+- Consultas de Avaliação Estratégica agendadas com a secretaria.
+- Honorários contratuais fixados com transparência em contrato formal, respeitando a Tabela Oficial da OAB/SP.
+- Sede: Av. Rouxinol, 84, sala 62 – Moema – São Paulo/SP | Tel: (11) 5531-4303 | WhatsApp: (11) 95586-3534.`,
+    knowledgeRules: `DIRETRIZES DA SOFIA (AMARO ADVOGADOS):
+1. Você é a Sofia da Amaro Advogados Associados.
+2. Respeite as normas da OAB: não dê consultas completas de mérito nem prometa causa ganha.
+3. Acolha com empatia, identifique a área jurídica e verifique se há prazos correndo.
+4. Agende a Consulta de Avaliação presencial em Moema ou online pelo Meet.`,
+    strictKnowledgeOnly: true,
+    autoTriggerCRMStages: true,
+    isGlobalAiActive: true,
+    testModeEnabled: false,
+    testNumberWhitelist: '',
+    autoTranscribeAudio: true,
+    typingDelayMs: 1500,
+    voiceResponseEnabled: true,
+    voiceResponseMode: 'smart_discernment',
+    voiceEngine: 'native_sofia',
+    voiceVoiceName: 'pt-BR-FranciscaNeural',
+    voiceSpeed: 0.90,
+    maxConsecutiveAudios: 4,
+    maxAudioChars: 450,
   };
 }
 
@@ -951,6 +1115,84 @@ Automatiza a estimulação, garantindo ritmo constante e eliminando dores muscul
       size: 1200,
       contentText: 'Padrão de Atendimento NEXA CRM: Disponibilidade contínua 24/7, privacidade e conformidade rigorosa com a LGPD, garantindo respostas rápidas, acolhedoras e personalizadas para cada lead.',
       uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+    },
+    {
+      id: 'doc-amaro-advogados-institucional',
+      name: 'Apresentacao_Institucional_Amaro_Advogados.txt',
+      type: 'txt',
+      size: 11500,
+      contentText: `APRESENTAÇÃO INSTITUCIONAL — AMARO ADVOGADOS ASSOCIADOS
+Website Oficial: https://amaroadvogados.com.br/
+Sede Oficial: Avenida Rouxinol, nº 84, Conjunto 62 — Moema, São Paulo/SP — CEP: 04516-000
+Telefones: +55 (11) 5531-4303 | WhatsApp Oficial: +55 (11) 95586-3534
+E-mail: secretaria@amaroadvogados.com.br
+Sócio-Fundador Responsável: Dr. Bruno Amaro Alves de Almeida (OAB/SP)
+
+1. HISTÓRIA & PRESTÍGIO:
+A Amaro Advogados é fruto da fusão de dois escritórios com mais de 20 anos de trajetória no mercado jurídico paulista e nacional.
+Sediado no bairro de Moema, é premiado com selos de 'Escritório Mais Admirado' e sócio eleito 'Advogado Mais Admirado' pela Análise Editorial.
+Atua com foco preventivo, artesanal e contencioso nos Tribunais Estaduais, TRFs, TST, STJ e STF, com estrito apego ao Código de Ética da OAB e ao sigilo advogado-cliente.
+
+2. FORMA DE ATENDIMENTO & CONSULTAS:
+- Presencial: Na sede em Moema, com sala de reunião privativa, acessibilidade e total conforto.
+- Online (Google Meet): Para clientes de outros estados ou com rotinas intensas.
+- Agendamento prévio com a secretaria para análise prévia de documentos.`,
+      uploadedAt: new Date().toISOString(),
+    },
+    {
+      id: 'doc-amaro-advogados-areas-atuacao',
+      name: 'Guia_Completo_Areas_de_Atuacao_Amaro_Advogados.txt',
+      type: 'txt',
+      size: 18200,
+      contentText: `GUIA DE ÁREAS DE ATUAÇÃO JURÍDICA — AMARO ADVOGADOS
+1. DIREITO DE FAMÍLIA:
+- Divórcio Consensual em Cartório (rápido e sem burocracia para casais sem litígio) e Divórcio Judicial.
+- Pensão Alimentícia: Fixação com base no binômio necessidade x possibilidade, Ação Revisional e Execução com prisão/penhora.
+- Guarda Compartilhada prioritária e Convivência com filhos menores.
+- Partilha de Bens e Dissolução de União Estável (inclusive homoafetiva).
+- Investigação de Paternidade, Tutela e Curatela de incapazes.
+
+2. DIREITO DAS SUCESSÕES & PLANEJAMENTO SUCESSÓRIO:
+- Inventário Extrajudicial em Cartório de Notas e Inventário Judicial Contencioso.
+- Testamentos Públicos e Particulares.
+- Holding Familiar e Planejamento Sucessório Patrimonial (redução legal de ITCMD e proteção de bens).
+
+3. DIREITO TRABALHISTA:
+- Fraude na CLT, falta de registro em carteira e salário pago "por fora".
+- Rescisão Indireta por falta grave patronal e cobrança de verbas rescisórias integrais.
+- Horas extras, adicional de insalubridade e periculosidade, assédio moral e comissões retidas.
+
+4. DIREITO IMOBILIÁRIO & LOCAÇÕES:
+- Ação de Despejo por falta de pagamento ou infração contratual com pedido liminar.
+- Cobrança de aluguéis e encargos em atraso com acionamento de fiadores.
+- Elaboração e revisão de contratos de locação comercial e residencial.
+- Due Diligence e análise de risco para compra e venda de imóveis.
+
+5. DIREITO DO CONSUMIDOR & SAÚDE:
+- Medidas liminares contra recusa de cirurgias, tratamentos e medicamentos de alto custo pelo plano de saúde.
+- Reajustes abusivos por mudança de faixa etária para idosos.
+- Vícios ocultos em veículos/concessionárias e extravio/cancelamento de voos.
+
+6. RECUPERAÇÃO DE CRÉDITOS:
+- Notificação extrajudicial e Execução judicial de títulos de crédito (cheques sem fundo, notas promissórias, duplicatas).
+- Ações monitórias e rescisão de contratos comerciais com restituição de valores.
+
+7. SERVIDORES PÚBLICOS & DIREITO ADMINISTRATIVO:
+- Defesa técnica especializada em Processo Administrativo Disciplinar (PAD) e sindicâncias.
+- Ações judiciais contra improbidade administrativa e reintegração de servidores.
+- Cobrança de adicionais retidos, gratificações, quinquênios, sexta-parte e precatórios.
+
+8. DIREITO DIGITAL & LGPD:
+- Medidas de urgência para remoção de conteúdo ilícito, difamação e 'nudez de vingança' (revenge porn).
+- Ações de indenização por uso indevido de imagem e consultoria LGPD.
+
+9. DIREITO DE TRÂNSITO:
+- Recursos administrativos e judiciais contra suspensão e cassação da CNH, multas indevidas e Lei Seca.
+
+10. PROFISSIONAIS LIBERAIS:
+- Cobrança judicial de honorários médicos, odontológicos e arquitetônicos.
+- Defesas ético-disciplinares nos Conselhos de Classe (CRM, CRO, CAU, CREA).`,
+      uploadedAt: new Date().toISOString(),
     }
   ];
 
@@ -971,6 +1213,8 @@ Automatiza a estimulação, garantindo ritmo constante e eliminando dores muscul
       'cemiterio-cantareira-48zvof': 'cemiterio-cantareira-48zvof',
       'equipamentospsi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
       'psi': '2EE0711F-2838-41E5-9BE0-466D03995E3F',
+      'amaro-advogados': 'AMARO-ADV-7821-4E62-8BCF-991A4E7F1A02',
+      'amaroadvogados': 'AMARO-ADV-7821-4E62-8BCF-991A4E7F1A02',
     },
   };
 
@@ -1024,6 +1268,14 @@ Automatiza a estimulação, garantindo ritmo constante e eliminando dores muscul
       nicheTag: 'Tecnologia / SaaS',
       evolutionInstanceName: 'nexa-crm-comercial',
       agentConfig: createNexaAgentConfig(this.agentConfig),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'profile-amaro-advogados',
+      name: 'Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)',
+      nicheTag: 'Advocacia / Jurídico',
+      evolutionInstanceName: 'amaro-advogados',
+      agentConfig: createAmaroAgentConfig(this.agentConfig),
       updatedAt: new Date().toISOString(),
     },
   ];
@@ -1448,6 +1700,17 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
               updatedAt: new Date().toISOString(),
             });
           }
+          const hasAmaro = this.savedProfiles.some((p) => p.id === 'profile-amaro-advogados');
+          if (!hasAmaro) {
+            this.savedProfiles.push({
+              id: 'profile-amaro-advogados',
+              name: 'Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)',
+              nicheTag: 'Advocacia / Jurídico',
+              evolutionInstanceName: 'amaro-advogados',
+              agentConfig: createAmaroAgentConfig(this.agentConfig),
+              updatedAt: new Date().toISOString(),
+            });
+          }
         } else {
           // Garante os perfis base iniciais
           this.savedProfiles = [
@@ -1465,6 +1728,14 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
               nicheTag: 'Tecnologia / SaaS',
               evolutionInstanceName: 'nexa-crm-comercial',
               agentConfig: createNexaAgentConfig(this.agentConfig),
+              updatedAt: new Date().toISOString(),
+            },
+            {
+              id: 'profile-amaro-advogados',
+              name: 'Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)',
+              nicheTag: 'Advocacia / Jurídico',
+              evolutionInstanceName: 'amaro-advogados',
+              agentConfig: createAmaroAgentConfig(this.agentConfig),
               updatedAt: new Date().toISOString(),
             },
           ];
@@ -1558,8 +1829,15 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
             createdAt: row.created_at || new Date().toISOString(),
             unreadCount: row.unread_count || 0,
             deliveryInfo: row.delivery_info || existingLocal?.deliveryInfo,
+            workspaceId: row.workspace_id || existingLocal?.workspaceId,
+            instanceName: row.instance_name || existingLocal?.instanceName,
           };
         });
+        for (const demoLead of DEFAULT_DEMO_LEADS) {
+          if (!this.leads.some((l) => l.id === demoLead.id)) {
+            this.leads.push(demoLead);
+          }
+        }
         console.log(`[Supabase] ${this.leads.length} leads restaurados diretamente da nuvem.`);
       }
 
@@ -1576,6 +1854,11 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
           extractedInfo: m.extracted_info,
           timestamp: m.created_at,
         }));
+        for (const demoMsg of DEFAULT_DEMO_MESSAGES) {
+          if (!this.messages.some((m) => m.id === demoMsg.id)) {
+            this.messages.push(demoMsg);
+          }
+        }
         console.log(`[Supabase] ${this.messages.length} mensagens de chat restauradas da nuvem.`);
       }
     } catch (err: any) {
