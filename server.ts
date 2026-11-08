@@ -42,6 +42,8 @@ import {
   getDefaultInstanceForWorkspace,
   getAgentConfigForInstance,
 } from './server/companyConfigs';
+import { generateProposalPdf } from './server/documentGenerator';
+import { startReminderScheduler, sendManualReminder } from './server/reminderScheduler';
 
 // Global process stability guards to prevent server crashes in production
 process.on('uncaughtException', (err) => {
@@ -1330,6 +1332,141 @@ async function startServer() {
     res.json({ success: true, message: 'Agendamento excluído com sucesso' });
   });
 
+  // Disparo manual de lembrete Anti-Falta (24h ou 2h)
+  app.post('/api/appointments/:id/send-reminder', async (req: Request, res: Response) => {
+    try {
+      const type = (req.body?.type === '2h' ? '2h' : '24h') as '24h' | '2h';
+      const result = await sendManualReminder(req.params.id, type);
+      res.json(result);
+    } catch (err: any) {
+      console.error('[Send Reminder Error]:', err);
+      res.status(500).json({ error: err?.message || 'Falha ao disparar lembrete' });
+    }
+  });
+
+  // Atualização / Geração de Dossiê Executivo da Triagem
+  app.post('/api/leads/:id/dossier', (req: Request, res: Response) => {
+    try {
+      const lead = db.leads.find((l) => l.id === req.params.id);
+      if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+
+      const { legalArea, factsAndAssets, urgencyLevel, urgencyNotes, nextStep } = req.body;
+      lead.dossier = {
+        legalArea: legalArea || lead.interest || 'Consultoria Jurídica / Atendimento Geral',
+        factsAndAssets: factsAndAssets || lead.notes || 'Fatos levantados durante a triagem inicial com a Sofia.',
+        urgencyLevel: urgencyLevel || (lead.isUrgent ? 'alta_imediata' : 'baixa'),
+        urgencyNotes: urgencyNotes || (lead.isUrgent ? lead.urgencyReason : 'Sem processos urgentes com prazo fatal.'),
+        nextStep: nextStep || (lead.scheduledDate ? `Reunião agendada para ${lead.scheduledDate}` : 'Agendamento de Consulta Estratégica'),
+        lastGeneratedAt: new Date().toISOString(),
+      };
+
+      lead.executiveSummary = `📋 Dossiê Sofia: ${lead.dossier.legalArea} • Fatos: ${(lead.dossier.factsAndAssets || '').slice(0, 80)}... • Urgência: ${(lead.dossier.urgencyLevel || '').toUpperCase()} • Próximo Passo: ${lead.dossier.nextStep}`;
+      lead.lastInteraction = new Date().toISOString();
+
+      db.saveToFile();
+      res.json({ success: true, dossier: lead.dossier, executiveSummary: lead.executiveSummary });
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message || 'Erro ao salvar dossiê' });
+    }
+  });
+
+  // Geração de Minuta / Proposta em 1 Clique (PDF Timbrado Leve)
+  app.post('/api/documents/generate-proposal', async (req: Request, res: Response) => {
+    try {
+      const {
+        leadId,
+        serviceOrObject,
+        totalValue,
+        paymentTerms,
+        clientCpfOrCnpj,
+        clientAddress,
+        jurisdictionOrNotes,
+        documentType,
+        workspaceKey,
+      } = req.body;
+
+      const lead = db.leads.find((l) => l.id === leadId);
+      if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+
+      const generated = await generateProposalPdf(lead, {
+        serviceOrObject: serviceOrObject || lead.interest || 'Prestação de Serviços Especializados',
+        totalValue: Number(totalValue) || lead.value || 0,
+        paymentTerms: paymentTerms || 'À vista via Pix ou parcelamento ajustado',
+        clientCpfOrCnpj,
+        clientAddress,
+        jurisdictionOrNotes,
+        documentType: documentType || 'honorarios',
+        workspaceKey: workspaceKey || lead.workspaceId || 'amaro',
+      });
+
+      if (!lead.proposals) lead.proposals = [];
+      lead.proposals.unshift(generated.proposal);
+      lead.value = Number(totalValue) || lead.value;
+      if (!lead.tags.includes('📄 Minuta Emitida')) {
+        lead.tags.push('📄 Minuta Emitida');
+      }
+      lead.lastInteraction = new Date().toISOString();
+
+      db.saveToFile();
+      res.json({
+        success: true,
+        proposal: generated.proposal,
+        fileUrl: generated.fileUrl,
+        fileName: generated.fileName,
+      });
+    } catch (err: any) {
+      console.error('[Generate Proposal Error]:', err);
+      res.status(500).json({ error: err?.message || 'Erro ao gerar minuta' });
+    }
+  });
+
+  // Envio Direto da Minuta no WhatsApp do Cliente
+  app.post('/api/documents/send-proposal-whatsapp', async (req: Request, res: Response) => {
+    try {
+      const { leadId, proposalId, customMessage } = req.body;
+      const lead = db.leads.find((l) => l.id === leadId);
+      if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+
+      const proposal = lead.proposals?.find((p) => p.id === proposalId) || lead.proposals?.[0];
+      if (!proposal) return res.status(404).json({ error: 'Proposta não encontrada' });
+
+      const isLegal = (lead.workspaceId || '').includes('amaro');
+      const instance = lead.instanceName || (isLegal ? 'amaro-advogados' : db.evolutionConfig.instanceName);
+
+      const serverUrl = process.env.PUBLIC_APP_URL || `${req.protocol}://${req.get('host')}`;
+      const fullPdfUrl = `${serverUrl}${proposal.pdfUrl}`;
+
+      const messageText =
+        customMessage ||
+        (isLegal
+          ? `Olá ${lead.name}! Conforme conversado com o Dr. Bruno Amaro e nossa equipe, elaborei nossa minuta oficial de honorários e proposta de assessoria jurídica em anexo para sua conferência.\n\n📄 *Documento Oficial em PDF:*\n${fullPdfUrl}\n\nVocê pode abrir e ler com calma pelo celular. Estamos à sua inteira disposição para qualquer dúvida antes de iniciarmos os procedimentos! 🏛️⚖️`
+          : `Olá ${lead.name}! Conforme conversamos, segue em anexo a nossa proposta comercial e orçamento oficial detalhado:\n\n📄 *Documento em PDF:*\n${fullPdfUrl}\n\nQualquer dúvida sobre condições ou prazos, fico à disposição! ✨`);
+
+      await sendWhatsAppMessage(lead.phone, messageText, instance);
+
+      proposal.status = 'sent';
+      proposal.sentAt = new Date().toISOString();
+
+      const chatMsg: ChatMessage = {
+        id: `msg-prop-${Date.now()}`,
+        leadId: lead.id,
+        phone: lead.phone,
+        sender: 'ai',
+        text: messageText,
+        timestamp: new Date().toISOString(),
+        status: 'delivered',
+      };
+      db.messages.push(chatMsg);
+      lead.lastInteraction = new Date().toISOString();
+
+      db.saveToFile();
+      res.json({ success: true, message: 'Proposta enviada no WhatsApp com sucesso!', proposal });
+    } catch (err: any) {
+      console.error('[Send Proposal WhatsApp Error]:', err);
+      res.status(500).json({ error: err?.message || 'Falha ao enviar proposta' });
+    }
+  });
+
   // Apply niche preset + auto-provision and connect Evolution instance
   app.post('/api/agent/apply-niche', async (req: Request, res: Response) => {
     try {
@@ -2293,6 +2430,9 @@ async function startServer() {
 
     // Start background sentinel watcher (WhatsApp disconnection and server alerts)
     startSentinelBackgroundWatcher();
+
+    // Start background Anti-Falta smart reminders (24h and 2h before appointments)
+    startReminderScheduler();
 
     // Ensure all official PDF documents exist in /public
     generateAllPdfs().catch((err) => console.warn('[PDF Init Error]:', err));

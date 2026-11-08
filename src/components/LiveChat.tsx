@@ -44,6 +44,7 @@ import {
   Plus,
   Lock,
   MessageSquarePlus,
+  Scale,
 } from 'lucide-react';
 import { Lead, ChatMessage, KanbanStage } from '../types';
 
@@ -2009,6 +2010,102 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
   const [isValidatingPix, setIsValidatingPix] = useState(false);
   const [copiedPix, setCopiedPix] = useState(false);
 
+  // Proposal modal & generation state
+  const isLegal = (activeLead.workspaceId || '').includes('amaro');
+  const [showProposalModal, setShowProposalModal] = useState(false);
+  const [proposalService, setProposalService] = useState(
+    activeLead.dossier?.legalArea || activeLead.interest || (isLegal ? 'Divórcio Consensual e Partilha de Bens' : 'Orçamento de Equipamentos')
+  );
+  const [proposalValue, setProposalValue] = useState<number>(activeLead.value || (isLegal ? 6000 : 4500));
+  const [proposalTerms, setProposalTerms] = useState(
+    isLegal ? 'Entrada de R$ 2.000,00 no Pix + 2x de R$ 2.000,00' : 'À vista no Pix com 5% de desconto ou 12x no cartão'
+  );
+  const [proposalCpf, setProposalCpf] = useState('');
+  const [proposalAddress, setProposalAddress] = useState(isLegal ? 'Moema, São Paulo/SP' : 'São Paulo/SP');
+  const [isGeneratingProposal, setIsGeneratingProposal] = useState(false);
+  const [isSendingProposal, setIsSendingProposal] = useState<string | null>(null);
+  const [proposalActionFeedback, setProposalActionFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    setProposalService(
+      activeLead.dossier?.legalArea || activeLead.interest || (isLegal ? 'Divórcio Consensual e Partilha de Bens' : 'Orçamento de Equipamentos')
+    );
+    setProposalValue(activeLead.value || (isLegal ? 6000 : 4500));
+    setProposalTerms(
+      isLegal ? 'Entrada de R$ 2.000,00 no Pix + 2x de R$ 2.000,00' : 'À vista no Pix com 5% de desconto ou 12x no cartão'
+    );
+    setProposalAddress(isLegal ? 'Moema, São Paulo/SP' : 'São Paulo/SP');
+  }, [activeLead.id]);
+
+  const handleGenerateProposalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsGeneratingProposal(true);
+    setProposalActionFeedback(null);
+    try {
+      const res = await fetch('/api/documents/generate-proposal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: activeLead.id,
+          serviceOrObject: proposalService,
+          totalValue: proposalValue,
+          paymentTerms: proposalTerms,
+          clientCpfOrCnpj: proposalCpf,
+          clientAddress: proposalAddress,
+          workspaceKey: activeLead.workspaceId || (isLegal ? 'amaro' : 'b2b'),
+          documentType: isLegal ? 'honorarios' : 'orcamento',
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (!activeLead.proposals) activeLead.proposals = [];
+        activeLead.proposals.unshift(data.proposal);
+        activeLead.value = proposalValue;
+        setShowProposalModal(false);
+        setProposalActionFeedback('Minuta timbrada gerada com sucesso! Pronto para download ou envio.');
+        onRefreshChat?.();
+        setTimeout(() => setProposalActionFeedback(null), 4000);
+      } else {
+        setProposalActionFeedback(data.error || 'Erro ao gerar minuta.');
+      }
+    } catch (err: any) {
+      setProposalActionFeedback('Falha de conexão ao gerar minuta.');
+    } finally {
+      setIsGeneratingProposal(false);
+    }
+  };
+
+  const handleSendProposalWhatsApp = async (proposalId: string) => {
+    setIsSendingProposal(proposalId);
+    try {
+      const res = await fetch('/api/documents/send-proposal-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: activeLead.id,
+          proposalId: proposalId,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const p = activeLead.proposals?.find((item) => item.id === proposalId);
+        if (p) {
+          p.status = 'sent';
+          p.sentAt = new Date().toISOString();
+        }
+        setProposalActionFeedback('Minuta enviada com sucesso no WhatsApp do cliente! 📲');
+        onRefreshChat?.();
+        setTimeout(() => setProposalActionFeedback(null), 4000);
+      } else {
+        setProposalActionFeedback(data.error || 'Falha ao enviar minuta.');
+      }
+    } catch (err) {
+      setProposalActionFeedback('Erro ao disparar documento no WhatsApp.');
+    } finally {
+      setIsSendingProposal(null);
+    }
+  };
+
   const handleTriggerPixAi = async () => {
     if (!onConfirmPixReceipt) return;
     setIsValidatingPix(true);
@@ -2074,6 +2171,258 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
           </div>
         </div>
       </div>
+
+      {/* 📋 Dossiê Executivo da Triagem (Sofia) */}
+      {(activeLead.dossier || activeLead.executiveSummary || isLegal) && (
+        <div className="bg-amber-50/80 border border-amber-200/90 rounded-xl p-3.5 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+              <Scale className="w-3.5 h-3.5 text-amber-700" />
+              <span>Dossiê da Sofia • Triagem</span>
+            </h3>
+            <span
+              className={`text-[9.5px] px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
+                activeLead.dossier?.urgencyLevel === 'alta_imediata'
+                  ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                  : activeLead.dossier?.urgencyLevel === 'media'
+                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                  : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+              }`}
+            >
+              Urgência: {activeLead.dossier?.urgencyLevel === 'alta_imediata' ? 'Alta' : activeLead.dossier?.urgencyLevel === 'media' ? 'Média' : 'Normal'}
+            </span>
+          </div>
+
+          <div className="space-y-2 text-xs text-amber-950">
+            <div>
+              <span className="text-[10px] text-amber-800 font-bold block uppercase tracking-wider">Matéria / Caso:</span>
+              <span className="font-semibold text-slate-900">
+                {activeLead.dossier?.legalArea || activeLead.interest || 'Consultoria Jurídica'}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-[10px] text-amber-800 font-bold block uppercase tracking-wider">Fatos & Patrimônio Levantado:</span>
+              <p className="text-[11px] text-slate-700 bg-white/90 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
+                {activeLead.dossier?.factsAndAssets || activeLead.notes || 'Triagem inicial em andamento com a Sofia.'}
+              </p>
+            </div>
+
+            {activeLead.dossier?.urgencyNotes && (
+              <div>
+                <span className="text-[10px] text-rose-800 font-bold block uppercase tracking-wider">Prazos & Observações:</span>
+                <span className="text-[11px] text-rose-900 font-medium bg-rose-50 border border-rose-200 px-2 py-1 rounded block">
+                  ⚠️ {activeLead.dossier.urgencyNotes}
+                </span>
+              </div>
+            )}
+
+            <div>
+              <span className="text-[10px] text-amber-800 font-bold block uppercase tracking-wider">Próximo Passo:</span>
+              <span className="text-[11px] text-indigo-900 font-bold bg-indigo-50 border border-indigo-200 px-2 py-1 rounded block">
+                👉 {activeLead.dossier?.nextStep || (activeLead.scheduledDate ? `Consulta agendada para ${activeLead.scheduledDate}` : 'Agendar Consulta de Avaliação Estratégica')}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 📄 Minutas & Propostas em 1 Clique (PDF Timbrado Oficial) */}
+      <div className="bg-slate-900 text-white rounded-xl p-3.5 space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 font-bold text-xs">
+            <FileText className="w-3.5 h-3.5 text-amber-400" />
+            <span>{isLegal ? 'Minuta de Honorários (PDF)' : 'Proposta & Orçamento'}</span>
+          </div>
+          <span className="text-[9.5px] bg-amber-400/20 text-amber-300 font-mono px-2 py-0.5 rounded border border-amber-400/30">
+            {isLegal ? 'OAB/SP Timbrado' : 'Oficial Timbrado'}
+          </span>
+        </div>
+
+        {proposalActionFeedback && (
+          <div className="text-[10.5px] bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 p-2 rounded-lg font-medium">
+            {proposalActionFeedback}
+          </div>
+        )}
+
+        {/* Lista de Minutas Geradas */}
+        {activeLead.proposals && activeLead.proposals.length > 0 ? (
+          <div className="space-y-2">
+            {activeLead.proposals.map((prop) => (
+              <div key={prop.id} className="bg-slate-800/90 border border-slate-700 rounded-lg p-2.5 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-100 truncate max-w-[170px]">
+                    {prop.serviceOrObject}
+                  </span>
+                  <span className="text-[10.5px] font-mono text-emerald-400 font-bold">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(prop.totalValue)}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-400 truncate">{prop.paymentTerms}</p>
+                <div className="flex items-center gap-2 pt-1">
+                  <a
+                    href={prop.pdfUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-semibold py-1 px-2 rounded flex items-center justify-center gap-1 transition-colors"
+                  >
+                    <Download className="w-3 h-3 text-slate-300" />
+                    <span>Baixar PDF</span>
+                  </a>
+                  <button
+                    type="button"
+                    disabled={isSendingProposal === prop.id}
+                    onClick={() => handleSendProposalWhatsApp(prop.id)}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-[10px] font-bold py-1 px-2 rounded flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Send className="w-3 h-3" />
+                    <span>{isSendingProposal === prop.id ? 'Enviando...' : prop.status === 'sent' ? 'Reenviar' : 'Enviar no Zap'}</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            {isLegal
+              ? 'Nenhuma minuta gerada ainda. O Dr. Bruno ou a secretária define os honorários e a Sofia monta o contrato timbrado oficial em 2 segundos.'
+              : 'Nenhuma proposta gerada. Preencha os valores e gere o PDF timbrado para envio imediato.'}
+          </p>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setShowProposalModal(true)}
+          className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 px-2.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
+        >
+          <FileText className="w-3.5 h-3.5 text-slate-950" />
+          <span>+ Gerar Nova Minuta / Contrato</span>
+        </button>
+      </div>
+
+      {/* Modal de Emissão da Minuta / Proposta */}
+      {showProposalModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-800 font-bold">
+                  ⚖️
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {isLegal ? 'Gerar Minuta de Honorários (PDF)' : 'Gerar Orçamento / Proposta'}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Cliente: <strong>{activeLead.name}</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowProposalModal(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleGenerateProposalSubmit} className="space-y-3">
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                  Objeto da Causa / Serviço:
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={proposalService}
+                  onChange={(e) => setProposalService(e.target.value)}
+                  placeholder="Ex: Divórcio Consensual e Partilha de Bens"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-amber-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    Valor dos Honorários (R$):
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    value={proposalValue}
+                    onChange={(e) => setProposalValue(Number(e.target.value))}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-hidden focus:border-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    CPF do Cliente (Opcional):
+                  </label>
+                  <input
+                    type="text"
+                    value={proposalCpf}
+                    onChange={(e) => setProposalCpf(e.target.value)}
+                    placeholder="000.000.000-00"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 focus:outline-hidden focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                  Condições de Pagamento:
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={proposalTerms}
+                  onChange={(e) => setProposalTerms(e.target.value)}
+                  placeholder="Ex: Entrada de R$ 2.000,00 no Pix + 2x de R$ 2.000,00"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                  Endereço / Comarca:
+                </label>
+                <input
+                  type="text"
+                  value={proposalAddress}
+                  onChange={(e) => setProposalAddress(e.target.value)}
+                  placeholder="Moema, São Paulo/SP"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-amber-500"
+                />
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-[10.5px] text-amber-900">
+                💡 <strong>Automação Sofia:</strong> O PDF é emitido com papel timbrado oficial da Amaro Advogados (Moema/SP) e o registro do Dr. Bruno Amaro na OAB/SP, pronto para download ou envio no WhatsApp.
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowProposalModal(false)}
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isGeneratingProposal}
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"
+                >
+                  <FileText className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{isGeneratingProposal ? 'Gerando PDF Timbrado...' : 'Gerar Minuta Oficial (PDF)'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* 💳 Visão Computacional IA — Fechamento & Validação PIX */}
       <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 space-y-2.5">

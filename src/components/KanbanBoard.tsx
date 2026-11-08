@@ -1276,6 +1276,36 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         )
                       )}
 
+                      {/* Dossiê & Minuta Badge (Advocacia & Propostas) */}
+                      {lead.proposals && lead.proposals.length > 0 && (
+                        <div className="p-1.5 mb-2 bg-amber-50/90 border border-amber-300 rounded text-[10px] text-amber-950 flex items-center justify-between font-semibold shadow-2xs">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <span className="text-amber-700">📄</span>
+                            <span className="truncate">
+                              Minuta: {lead.proposals[0].serviceOrObject}
+                            </span>
+                          </div>
+                          <span className="text-[9px] font-mono bg-amber-200/90 text-amber-950 px-1.5 py-0.5 rounded font-bold shrink-0">
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.proposals[0].totalValue)}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Dossiê Sofia Badge */}
+                      {lead.dossier?.legalArea && !lead.proposals?.length && (
+                        <div className="p-1 mb-2 bg-slate-100 border border-slate-200 rounded text-[9.5px] text-slate-800 flex items-center justify-between font-medium">
+                          <span className="truncate">⚖️ {lead.dossier.legalArea}</span>
+                          <span className="text-[9px] bg-slate-200 text-slate-700 px-1 py-0.2 rounded font-bold shrink-0">Dossiê</span>
+                        </div>
+                      )}
+
+                      {/* Anti-Falta Confirmation Badge */}
+                      {lead.reminder24hSent && (
+                        <div className="p-1 mb-2 bg-emerald-50 border border-emerald-200 rounded text-[9.5px] text-emerald-800 flex items-center gap-1 font-semibold">
+                          <span>✅ Lembrete Anti-Falta Confirmado no WhatsApp</span>
+                        </div>
+                      )}
+
                       {/* Base Antiga & Inativos (+6 Meses) */}
                       {(lead.stageId === 'stage-base' ||
                         lead.stageId === 'health-base' ||

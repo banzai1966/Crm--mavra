@@ -76,8 +76,38 @@ export interface Lead {
     vipNotes?: string;
     updatedAt?: string;
   };
+  executiveSummary?: string;
+  dossier?: {
+    legalArea?: string;
+    factsAndAssets?: string;
+    urgencyLevel?: 'baixa' | 'media' | 'alta_imediata';
+    urgencyNotes?: string;
+    nextStep?: string;
+    lastGeneratedAt?: string;
+  };
+  proposals?: ProposalDocument[];
+  reminder24hSent?: boolean;
+  reminder2hSent?: boolean;
+  lastReminderAt?: string;
   workspaceId?: string;
   instanceName?: string;
+}
+
+export interface ProposalDocument {
+  id: string;
+  title: string;
+  documentType: 'honorarios' | 'orcamento' | 'contrato';
+  serviceOrObject: string;
+  totalValue: number;
+  paymentTerms: string;
+  jurisdictionOrNotes?: string;
+  clientCpfOrCnpj?: string;
+  clientAddress?: string;
+  pdfUrl?: string;
+  fileName?: string;
+  status: 'draft' | 'generated' | 'sent' | 'signed';
+  createdAt: string;
+  sentAt?: string;
 }
 
 export interface DeliveryZoneRule {
@@ -277,6 +307,9 @@ export interface AppointmentSlot {
   htmlLink?: string;
   status: 'confirmed' | 'pending' | 'cancelled';
   createdAt: string;
+  reminder24hSent?: boolean;
+  reminder2hSent?: boolean;
+  lastReminderAt?: string;
 }
 
 export interface EvolutionConfig {

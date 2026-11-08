@@ -105,3 +105,26 @@ Sediada no nobre bairro de **Moema**, na capital paulista, a banca atende client
 5. **Horários e Contatos:**
    - Atendimento presencial e reuniões: Segunda a Sexta, das 09h às 18h.
    - WhatsApp Sofia 24/7 para recebimento e triagem inicial de mensagens.
+
+---
+
+## 4. MÓDULO DE AUTOMAÇÃO AVANÇADA: GERAÇÃO DE MINUTA & PROPOSTA EM 1 CLIQUE
+
+### Arquitetura de Assinatura Eletrônica (ZapSign / Clicksign / DocuSign):
+1. **Gatilho de 1 Clique:**
+   - **No CRM:** Na ficha do lead (ex: Mariana Albuquerque), a secretária ou o Dr. Bruno clica em `Gerar Contrato de Honorários` e preenche apenas 3 variáveis:
+     * Área / Objeto: *Divórcio Consensual e Partilha*
+     * Honorários: *R$ 6.000,00*
+     * Condições: *Entrada de R$ 2.000,00 + 2x de R$ 2.000,00 no Pix/Boleto*
+   - **No WhatsApp:** Também pode ser acionado por comando rápido interno da equipe:
+     `/contrato Mariana | R$ 6.000 | 3x | Divorcio Consensual`
+2. **Mesclagem e Papel Timbrado:**
+   - O sistema puxa automaticamente os dados cadastrais coletados pela Sofia (Nome completo, CPF, RG, Endereço e Estado Civil) e injeta no template oficial do escritório com o cabeçalho timbrado de Moema e o registro da OAB/SP.
+3. **Disparo da Assinatura Eletrônica:**
+   - O PDF é transmitido para a API de assinatura (ZapSign, Clicksign ou DocuSign), gerando um link seguro de validação jurídica (com carimbo de tempo, IP e código via WhatsApp/SMS).
+4. **Entrega Acolhedora pela Sofia:**
+   - A Sofia envia o PDF em anexo e o link para o cliente no WhatsApp com mensagem personalizada:
+     *"Mariana, preparei nossa minuta de honorários e contrato de prestação de serviços conforme alinhado com o Dr. Bruno. Segue o documento para sua leitura. Para sua comodidade, você pode assinar diretamente pelo celular com validade jurídica neste link seguro: [Link ZapSign]. Assim que assinado, o Dr. Bruno já inicia as providências!"*
+5. **Automação de Pipeline no CRM:**
+   - O lead se move automaticamente para `Proposta de Honorários Enviada`.
+   - Quando o webhook de assinatura confirmada chega da ZapSign, o card avança sozinho para `Contrato Fechado & Procuração Assinada`, disparando notificação no celular do Dr. Bruno.

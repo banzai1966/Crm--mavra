@@ -16,6 +16,7 @@ import {
   CalendarRange,
   Settings,
   Sparkles,
+  Send,
 } from 'lucide-react';
 import { AppointmentSlot, Lead, AgentConfig } from '../types';
 import {
@@ -98,6 +99,38 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
       }
     } catch (err) {
       console.error('Erro ao carregar agendamentos:', err);
+    }
+  };
+
+  const [reminderFeedback, setReminderFeedback] = useState<{ [id: string]: string }>({});
+  const [isSendingReminder, setIsSendingReminder] = useState<string | null>(null);
+
+  const handleTriggerManualReminder = async (aptId: string, type: '24h' | '2h' = '24h') => {
+    setIsSendingReminder(aptId);
+    try {
+      const res = await fetch(`/api/appointments/${aptId}/send-reminder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setReminderFeedback((prev) => ({ ...prev, [aptId]: 'Enviado com sucesso no WhatsApp! ✅' }));
+        loadAppointments();
+        setTimeout(() => {
+          setReminderFeedback((prev) => {
+            const next = { ...prev };
+            delete next[aptId];
+            return next;
+          });
+        }, 4000);
+      } else {
+        setReminderFeedback((prev) => ({ ...prev, [aptId]: data.error || 'Falha ao enviar' }));
+      }
+    } catch (err: any) {
+      setReminderFeedback((prev) => ({ ...prev, [aptId]: 'Erro ao conectar à VPS' }));
+    } finally {
+      setIsSendingReminder(null);
     }
   };
 
@@ -573,10 +606,47 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
                       {apt.description && (
                         <p className="text-xs text-slate-500 line-clamp-1 mt-1">{apt.description}</p>
                       )}
+
+                      {/* Anti-Falta Status Badges */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <span
+                          className={`text-[9.5px] font-bold px-2 py-0.5 rounded-md border ${
+                            apt.reminder24hSent
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              : 'bg-amber-50 text-amber-800 border-amber-200'
+                          }`}
+                        >
+                          Lembrete 24h: {apt.reminder24hSent ? 'Enviado ✅' : 'Agendado ⏱️'}
+                        </span>
+                        <span
+                          className={`text-[9.5px] font-bold px-2 py-0.5 rounded-md border ${
+                            apt.reminder2hSent
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}
+                        >
+                          Lembrete 2h: {apt.reminder2hSent ? 'Enviado ✅' : 'Aguardando ⏱️'}
+                        </span>
+                        {reminderFeedback[apt.id] && (
+                          <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">
+                            {reminderFeedback[apt.id]}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                  <div className="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0">
+                    <button
+                      type="button"
+                      disabled={isSendingReminder === apt.id}
+                      onClick={() => handleTriggerManualReminder(apt.id, '24h')}
+                      className="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-all shadow-2xs cursor-pointer"
+                      title="Disparar confirmação anti-falta humanizada no WhatsApp do cliente agora"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>{isSendingReminder === apt.id ? 'Disparando...' : 'Confirmar no WhatsApp'}</span>
+                    </button>
                     {apt.htmlLink || apt.googleEventId ? (
                       <a
                         href={apt.htmlLink || `https://calendar.google.com/calendar/u/0/r/eventedit/${apt.googleEventId}`}
