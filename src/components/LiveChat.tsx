@@ -119,7 +119,12 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   const [inputText, setInputText] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [sendViaWhatsApp, setSendViaWhatsApp] = useState(true);
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return true;
+  });
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -862,17 +867,37 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                       {activeStage?.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono flex-wrap">
                     <span className="truncate">{activeLead.phone}</span>
                     <span className="hidden sm:inline">•</span>
                     <span className="text-emerald-700 font-medium hidden sm:inline">WhatsApp Conectado</span>
+                    {(activeLead.dossier || activeLead.executiveSummary) && (
+                      <button
+                        type="button"
+                        onClick={() => setShowDetails(true)}
+                        className="hidden md:inline-flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded text-[10px] font-sans font-bold cursor-pointer transition-colors"
+                        title="Clique para abrir o Dossiê da Sofia"
+                      >
+                        📋 Dossiê da Sofia
+                      </button>
+                    )}
+                    {activeLead.proposals && activeLead.proposals.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowDetails(true)}
+                        className="hidden md:inline-flex items-center gap-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-900 border border-indigo-300 px-1.5 py-0.5 rounded text-[10px] font-sans font-bold cursor-pointer transition-colors"
+                        title="Clique para ver as Minutas em PDF"
+                      >
+                        📄 {activeLead.proposals.length} Minuta(s) PDF
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Action buttons on header */}
               <div className="flex items-center gap-1.5 md:gap-2">
-                {/* Discreet, reassuring Sofia 24h status badge (Zero Vácuo) */}
+                {/* Sofia 24h status badge */}
                 {activeLead.aiPaused ? (
                   <button
                     type="button"
@@ -883,7 +908,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   >
                     <UserCheck className="w-3.5 h-3.5 text-slate-500" />
                     <span className="hidden sm:inline">Operador Humano</span>
-                    <span className="text-[10px] text-emerald-600 font-bold">(Reativar Sofia)</span>
+                    <span className="text-[10px] text-emerald-600 font-bold">(Reativar)</span>
                   </button>
                 ) : (
                   <div
@@ -895,6 +920,29 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                     <span className="sm:hidden">Sofia</span>
                   </div>
                 )}
+
+                {/* Botão em destaque para abrir/fechar Dossiê e Minutas */}
+                <button
+                  type="button"
+                  onClick={() => setShowDetails(!showDetails)}
+                  className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+                    showDetails
+                      ? 'bg-amber-500 border-amber-600 text-slate-950 hover:bg-amber-400'
+                      : 'bg-indigo-600 hover:bg-indigo-700 border-indigo-700 text-white'
+                  }`}
+                  title="Abrir/Fechar Dossiê da Sofia e Minuta de Honorários"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">
+                    {showDetails ? 'Dossiê & Minuta (Aberto)' : '📋 Ver Dossiê & Minuta'}
+                  </span>
+                  <span className="sm:hidden">Dossiê</span>
+                  {showDetails ? (
+                    <PanelRightClose className="w-3.5 h-3.5 opacity-90" />
+                  ) : (
+                    <PanelRightOpen className="w-3.5 h-3.5 opacity-90" />
+                  )}
+                </button>
 
                 <button
                   type="button"
@@ -909,21 +957,6 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   title="Excluir este lead e conversa do sistema"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowDetails(!showDetails)}
-                  className={`p-1.5 rounded-lg border border-slate-200 transition-colors cursor-pointer ${
-                    showDetails ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-100 text-slate-700'
-                  }`}
-                  title="Ver detalhes do lead"
-                >
-                  {showDetails ? (
-                    <PanelRightClose className="w-4 h-4" />
-                  ) : (
-                    <PanelRightOpen className="w-4 h-4" />
-                  )}
                 </button>
               </div>
             </div>
