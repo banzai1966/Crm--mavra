@@ -1261,6 +1261,7 @@ export default function App() {
               onSaveLead={handleSaveLead}
               personaName={agentConfig?.personaName || 'Sofia'}
               pixKey={agentConfig?.pixKey || 'financeiro@nexacrm.com.br'}
+              agentConfig={agentConfig}
             />
           </ErrorBoundary>
         )}

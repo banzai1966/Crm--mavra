@@ -708,6 +708,8 @@ R: Presencial em nossa sede em Moema (Av. Rouxinol, 84, sala 62 - SP) ou Online 
     voiceSpeed: 0.90,
     maxConsecutiveAudios: 4,
     maxAudioChars: 450,
+    dossierModuleEnabled: true,
+    proposalModuleEnabled: true,
   };
 }
 
@@ -874,6 +876,8 @@ R: Nossos atendimentos são exclusivamente particulares, garantindo tempo dedica
       tokenExpiresAt: '02081193cf850572d4e22a378e01dff2',
       accessToken: 'IGAAXFZCbAdp4VBZAGEzaXk4anMxZAkJabmpKS0RLUm44d25hQjFtaGprVGNrb3VPalJ4a3l0T2lzMmgwMFlsWGw4YXZAza3o3bldaRERSWFA1X1QzdTNPUENHc1k4R2psVzRTX01VOFBHZA29oZAFNHU0Q1X2wyVHI0NU5Bd3FIMkJOSQZDZD',
     },
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   };
 
   public documents: KnowledgeDocument[] = [
@@ -1716,6 +1720,30 @@ Grandes Clientes: Shell Brasil, Mutant, Zignet, Bunzl, Grupo Avenida, AON, BR CO
         }
         if (data.appointments && Array.isArray(data.appointments)) {
           this.appointments = data.appointments;
+        }
+        if (!this.appointments || this.appointments.length === 0) {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          tomorrow.setHours(15, 0, 0, 0);
+          const tomorrowEnd = new Date(tomorrow);
+          tomorrowEnd.setHours(16, 0, 0, 0);
+
+          this.appointments = [
+            {
+              id: 'apt-mariana-albuquerque',
+              leadId: 'lead-amaro-2',
+              leadName: 'Mariana Albuquerque',
+              leadPhone: '5511988442211',
+              summary: 'Consulta de Avaliação Estratégica - Divórcio Consensual e Partilha (Dr. Bruno Amaro)',
+              description: 'Consulta jurídica de avaliação e alinhamento do divórcio consensual em cartório e partilha amigável de 2 apartamentos. Atendimento com discrição total.',
+              startIso: tomorrow.toISOString(),
+              endIso: tomorrowEnd.toISOString(),
+              status: 'confirmed',
+              createdAt: new Date().toISOString(),
+              reminder24hSent: true,
+              reminder2hSent: false,
+            },
+          ];
         }
         if (data.activeProfileId) {
           this.activeProfileId = data.activeProfileId;

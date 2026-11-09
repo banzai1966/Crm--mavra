@@ -46,7 +46,7 @@ import {
   MessageSquarePlus,
   Scale,
 } from 'lucide-react';
-import { Lead, ChatMessage, KanbanStage } from '../types';
+import { Lead, ChatMessage, KanbanStage, AgentConfig } from '../types';
 
 interface LiveChatProps {
   leads: Lead[];
@@ -64,6 +64,7 @@ interface LiveChatProps {
   onSaveLead?: (leadData: Partial<Lead>, leadId?: string) => Promise<Lead | undefined>;
   personaName?: string;
   pixKey?: string;
+  agentConfig?: AgentConfig;
 }
 
 const COMMON_EMOJIS = [
@@ -114,6 +115,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   onSaveLead,
   personaName = 'Sofia',
   pixKey = 'financeiro@nexacrm.com.br',
+  agentConfig,
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
@@ -224,6 +226,20 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const activeLead = leads.find((l) => l.id === selectedLeadId) || leads[0];
+
+  // Identifica se o nicho/empresa atual tem o Dossiê e Minutas ativados
+  const isAmaroWorkspace =
+    (activeLead?.workspaceId || '').includes('amaro') ||
+    (agentConfig?.activeWorkspaceName || '').toLowerCase().includes('amaro') ||
+    (agentConfig?.businessName || '').toLowerCase().includes('amaro');
+  const isDossierEnabled =
+    agentConfig?.dossierModuleEnabled !== undefined
+      ? Boolean(agentConfig.dossierModuleEnabled)
+      : isAmaroWorkspace;
+  const isProposalEnabled =
+    agentConfig?.proposalModuleEnabled !== undefined
+      ? Boolean(agentConfig.proposalModuleEnabled)
+      : isAmaroWorkspace;
 
   // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
@@ -871,7 +887,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                     <span className="truncate">{activeLead.phone}</span>
                     <span className="hidden sm:inline">•</span>
                     <span className="text-emerald-700 font-medium hidden sm:inline">WhatsApp Conectado</span>
-                    {(activeLead.dossier || activeLead.executiveSummary) && (
+                    {isDossierEnabled && (activeLead.dossier || activeLead.executiveSummary) && (
                       <button
                         type="button"
                         onClick={() => setShowDetails(true)}
@@ -881,7 +897,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                         📋 Dossiê da Sofia
                       </button>
                     )}
-                    {activeLead.proposals && activeLead.proposals.length > 0 && (
+                    {isProposalEnabled && activeLead.proposals && activeLead.proposals.length > 0 && (
                       <button
                         type="button"
                         onClick={() => setShowDetails(true)}
@@ -921,28 +937,45 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                   </div>
                 )}
 
-                {/* Botão em destaque para abrir/fechar Dossiê e Minutas */}
-                <button
-                  type="button"
-                  onClick={() => setShowDetails(!showDetails)}
-                  className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
-                    showDetails
-                      ? 'bg-amber-500 border-amber-600 text-slate-950 hover:bg-amber-400'
-                      : 'bg-indigo-600 hover:bg-indigo-700 border-indigo-700 text-white'
-                  }`}
-                  title="Abrir/Fechar Dossiê da Sofia e Minuta de Honorários"
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">
-                    {showDetails ? 'Dossiê & Minuta (Aberto)' : '📋 Ver Dossiê & Minuta'}
-                  </span>
-                  <span className="sm:hidden">Dossiê</span>
-                  {showDetails ? (
-                    <PanelRightClose className="w-3.5 h-3.5 opacity-90" />
-                  ) : (
-                    <PanelRightOpen className="w-3.5 h-3.5 opacity-90" />
-                  )}
-                </button>
+                {/* Botão em destaque para abrir/fechar Dossiê e Minutas (somente se habilitado) */}
+                {(isDossierEnabled || isProposalEnabled) ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowDetails(!showDetails)}
+                    className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+                      showDetails
+                        ? 'bg-amber-500 border-amber-600 text-slate-950 hover:bg-amber-400'
+                        : 'bg-indigo-600 hover:bg-indigo-700 border-indigo-700 text-white'
+                    }`}
+                    title="Abrir/Fechar Dossiê da Sofia e Minuta de Honorários"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">
+                      {showDetails ? 'Dossiê & Minuta (Aberto)' : '📋 Ver Dossiê & Minuta'}
+                    </span>
+                    <span className="sm:hidden">Dossiê</span>
+                    {showDetails ? (
+                      <PanelRightClose className="w-3.5 h-3.5 opacity-90" />
+                    ) : (
+                      <PanelRightOpen className="w-3.5 h-3.5 opacity-90" />
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowDetails(!showDetails)}
+                    className={`p-1.5 rounded-lg border border-slate-200 transition-colors cursor-pointer ${
+                      showDetails ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-100 text-slate-700'
+                    }`}
+                    title="Ver detalhes do lead"
+                  >
+                    {showDetails ? (
+                      <PanelRightClose className="w-4 h-4" />
+                    ) : (
+                      <PanelRightOpen className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
 
                 <button
                   type="button"
@@ -1710,6 +1743,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
             onRefreshChat={() => fetchMessages(activeLead.id)}
             pixKey={pixKey}
             onUpdateLeadNotes={onUpdateLeadNotes}
+            dossierEnabled={isDossierEnabled}
+            proposalEnabled={isProposalEnabled}
             onRequestDelete={() =>
               setDeleteTarget({
                 type: 'lead',
@@ -1752,6 +1787,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               onRefreshChat={() => fetchMessages(activeLead.id)}
               pixKey={pixKey}
               onUpdateLeadNotes={onUpdateLeadNotes}
+              dossierEnabled={isDossierEnabled}
+              proposalEnabled={isProposalEnabled}
               onRequestDelete={() =>
                 setDeleteTarget({
                   type: 'lead',
@@ -2024,6 +2061,8 @@ interface DetailsContentProps {
   onUpdateLeadNotes: (leadId: string, notes: string) => void;
   onRequestDelete?: () => void;
   onRequestClear?: () => void;
+  dossierEnabled?: boolean;
+  proposalEnabled?: boolean;
 }
 
 const DetailsContent: React.FC<DetailsContentProps> = ({
@@ -2038,6 +2077,8 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
   onUpdateLeadNotes,
   onRequestDelete,
   onRequestClear,
+  dossierEnabled = false,
+  proposalEnabled = false,
 }) => {
   const [triageDateInput, setTriageDateInput] = useState('Quinta-feira às 14:30');
   const [isValidatingPix, setIsValidatingPix] = useState(false);
@@ -2205,8 +2246,8 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
         </div>
       </div>
 
-      {/* 📋 Dossiê Executivo da Triagem (Sofia) */}
-      {(activeLead.dossier || activeLead.executiveSummary || isLegal) && (
+      {/* 📋 Dossiê Executivo da Triagem (Sofia) - Somente se ativado para a empresa */}
+      {dossierEnabled && (activeLead.dossier || activeLead.executiveSummary || isLegal) && (
         <div className="bg-amber-50/80 border border-amber-200/90 rounded-xl p-3.5 space-y-2.5">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
@@ -2260,8 +2301,9 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
         </div>
       )}
 
-      {/* 📄 Minutas & Propostas em 1 Clique (PDF Timbrado Oficial) */}
-      <div className="bg-slate-900 text-white rounded-xl p-3.5 space-y-3 shadow-xs">
+      {/* 📄 Minutas & Propostas em 1 Clique (PDF Timbrado Oficial) - Somente se ativado para a empresa */}
+      {proposalEnabled && (
+        <div className="bg-slate-900 text-white rounded-xl p-3.5 space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 font-bold text-xs">
             <FileText className="w-3.5 h-3.5 text-amber-400" />
@@ -2332,6 +2374,7 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
           <span>+ Gerar Nova Minuta / Contrato</span>
         </button>
       </div>
+      )}
 
       {/* Modal de Emissão da Minuta / Proposta */}
       {showProposalModal && (

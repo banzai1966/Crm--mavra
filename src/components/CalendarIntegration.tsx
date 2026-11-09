@@ -17,6 +17,12 @@ import {
   Settings,
   Sparkles,
   Send,
+  FileText,
+  Scale,
+  Copy,
+  Check,
+  Share2,
+  X,
 } from 'lucide-react';
 import { AppointmentSlot, Lead, AgentConfig } from '../types';
 import {
@@ -104,6 +110,43 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
 
   const [reminderFeedback, setReminderFeedback] = useState<{ [id: string]: string }>({});
   const [isSendingReminder, setIsSendingReminder] = useState<string | null>(null);
+  const [viewingDossierApt, setViewingDossierApt] = useState<{
+    apt: AppointmentSlot;
+    lead?: Lead;
+  } | null>(null);
+  const [dossierCopiedFeedback, setDossierCopiedFeedback] = useState(false);
+
+  const handleSeedDemoAppointment = async () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(15, 0, 0, 0);
+    const tomorrowEnd = new Date(tomorrow);
+    tomorrowEnd.setHours(16, 0, 0, 0);
+
+    const demoApt = {
+      leadId: 'lead-amaro-2',
+      leadName: 'Mariana Albuquerque',
+      leadPhone: '5511988442211',
+      summary: 'Consulta de Avaliação Estratégica - Divórcio Consensual e Partilha (Dr. Bruno Amaro)',
+      description: 'Consulta jurídica de avaliação e alinhamento do divórcio consensual em cartório e partilha amigável de 2 apartamentos. Atendimento com discrição total.',
+      startIso: tomorrow.toISOString(),
+      endIso: tomorrowEnd.toISOString(),
+      status: 'confirmed',
+      reminder24hSent: true,
+      reminder2hSent: false,
+    };
+
+    try {
+      await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(demoApt),
+      });
+      await loadAppointments();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleTriggerManualReminder = async (aptId: string, type: '24h' | '2h' = '24h') => {
     setIsSendingReminder(aptId);
@@ -545,6 +588,16 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
             <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
               Assim que a Sofia (IA) agendar com um lead no WhatsApp ou você clicar em "Novo Agendamento", as consultas aparecerão organizadas aqui.
             </p>
+            <div className="mt-4 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleSeedDemoAppointment}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>Carregar Consulta Demonstrativa (Mariana Albuquerque)</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -560,6 +613,12 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
                 hour: '2-digit',
                 minute: '2-digit',
               });
+
+              const linkedLead = leads.find(
+                (l) =>
+                  l.id === apt.leadId ||
+                  (apt.leadPhone && l.phone.replace(/\D/g, '').endsWith(apt.leadPhone.replace(/\D/g, '').slice(-8)))
+              );
 
               return (
                 <div
@@ -637,6 +696,16 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setViewingDossierApt({ apt, lead: linkedLead })}
+                      className="flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold rounded-lg transition-all shadow-2xs cursor-pointer"
+                      title="Ver o Dossiê de Pré-Consulta e briefing preparado pela Sofia para o advogado"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-amber-700" />
+                      <span>Dossiê da Consulta</span>
+                    </button>
+
                     <button
                       type="button"
                       disabled={isSendingReminder === apt.id}
@@ -881,6 +950,154 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
               >
                 {isDeleting ? 'Excluindo...' : 'Sim, Excluir Compromisso'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: Briefing Executivo de Pré-Consulta (Notificação do Advogado) */}
+      {viewingDossierApt && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-4 animate-in fade-in zoom-in-95 border border-amber-200">
+            <div className="flex items-center justify-between border-b border-amber-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                  <Scale className="w-5 h-5 text-amber-700" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Briefing de Pré-Consulta (Sofia IA)</h3>
+                  <p className="text-[11px] text-amber-800">Dossiê e apontamentos para o advogado entrar 100% preparado</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingDossierApt(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Cliente & Reunião</span>
+                  <span className="font-bold text-slate-900 text-sm">
+                    {viewingDossierApt.lead?.name || viewingDossierApt.apt.leadName || 'Cliente'}
+                  </span>
+                  <span className="text-[11px] text-slate-500 font-mono block">
+                    {viewingDossierApt.lead?.phone || viewingDossierApt.apt.leadPhone}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Horário</span>
+                  <span className="font-bold text-indigo-700 text-xs">
+                    {new Date(viewingDossierApt.apt.startIso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} às{' '}
+                    {new Date(viewingDossierApt.apt.startIso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              </div>
+
+              {/* Matéria / Caso Jurídico */}
+              <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3 space-y-1">
+                <span className="text-[10.5px] font-bold text-amber-900 uppercase tracking-wider block">
+                  ⚖️ Matéria / Caso Levantado:
+                </span>
+                <p className="font-bold text-slate-900 text-xs">
+                  {viewingDossierApt.lead?.dossier?.legalArea ||
+                    viewingDossierApt.lead?.interest ||
+                    viewingDossierApt.apt.summary}
+                </p>
+              </div>
+
+              {/* Fatos & Patrimônio Levantado */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1">
+                <span className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block">
+                  📋 Fatos & Apontamentos da Triagem:
+                </span>
+                <p className="text-[11.5px] text-slate-700 leading-relaxed bg-white p-2.5 rounded-lg border border-slate-200">
+                  {viewingDossierApt.lead?.dossier?.factsAndAssets ||
+                    viewingDossierApt.lead?.notes ||
+                    viewingDossierApt.apt.description ||
+                    'Triagem realizada pela Sofia pelo WhatsApp. Caso qualificado para consulta estratégica.'}
+                </p>
+              </div>
+
+              {/* Grau de Urgência & Próximo Passo */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="p-2.5 rounded-xl border border-rose-200 bg-rose-50/60">
+                  <span className="text-[10px] font-bold text-rose-800 uppercase block">Grau de Urgência</span>
+                  <span className="font-bold text-rose-900 text-xs">
+                    {viewingDossierApt.lead?.dossier?.urgencyLevel === 'alta_imediata'
+                      ? '⚠️ Alta / Imediata'
+                      : viewingDossierApt.lead?.dossier?.urgencyLevel === 'media'
+                      ? '⚡ Média / Amigável'
+                      : '✅ Normal'}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-xl border border-indigo-200 bg-indigo-50/60">
+                  <span className="text-[10px] font-bold text-indigo-800 uppercase block">Próximo Passo</span>
+                  <span className="font-bold text-indigo-900 text-xs truncate block">
+                    {viewingDossierApt.lead?.dossier?.nextStep || 'Consulta Estratégica'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Ações: Copiar Briefing e Enviar no WhatsApp do Advogado */}
+            <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="w-full sm:w-auto">
+                {dossierCopiedFeedback && (
+                  <span className="text-[11px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-md">
+                    Copiado para a área de transferência! ✅
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const l = viewingDossierApt.lead;
+                    const apt = viewingDossierApt.apt;
+                    const startDate = new Date(apt.startIso);
+                    const formatted = `${startDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} às ${startDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                    const text = `🏛️ *Amaro Advogados • Briefing de Pré-Consulta (Sofia IA)*\n\n📅 *Horário:* ${formatted}\n👤 *Cliente:* ${l?.name || apt.leadName} (${l?.phone || apt.leadPhone})\n⚖️ *Matéria:* ${l?.dossier?.legalArea || l?.interest || apt.summary}\n📋 *Fatos Apurados:* ${l?.dossier?.factsAndAssets || l?.notes || apt.description}\n⚡ *Urgência:* ${l?.dossier?.urgencyLevel || 'Normal'}\n🎯 *Próximo Passo:* ${l?.dossier?.nextStep || 'Consulta com Dr. Bruno Amaro'}`;
+
+                    try {
+                      navigator.clipboard.writeText(text);
+                      setDossierCopiedFeedback(true);
+                      setTimeout(() => setDossierCopiedFeedback(false), 3500);
+                    } catch {
+                      // fallback
+                    }
+                  }}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                  title="Copiar texto pronto do briefing"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copiar Briefing</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const l = viewingDossierApt.lead;
+                    const apt = viewingDossierApt.apt;
+                    const startDate = new Date(apt.startIso);
+                    const formatted = `${startDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} às ${startDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                    const text = encodeURIComponent(
+                      `🏛️ *Amaro Advogados • Briefing de Pré-Consulta (Sofia IA)*\n\n📅 *Horário:* ${formatted}\n👤 *Cliente:* ${l?.name || apt.leadName} (${l?.phone || apt.leadPhone})\n⚖️ *Matéria:* ${l?.dossier?.legalArea || l?.interest || apt.summary}\n📋 *Fatos Apurados:* ${l?.dossier?.factsAndAssets || l?.notes || apt.description}\n⚡ *Urgência:* ${l?.dossier?.urgencyLevel || 'Normal'}\n🎯 *Próximo Passo:* ${l?.dossier?.nextStep || 'Consulta com Dr. Bruno Amaro'}`
+                    );
+                    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+                  }}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                  title="Abrir no WhatsApp do Advogado ou Sócio"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>Enviar ao Advogado</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

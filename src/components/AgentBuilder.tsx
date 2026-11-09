@@ -3249,6 +3249,53 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
             </div>
           </div>
 
+          {/* Módulos Especiais: Dossiê de Triagem e Minutas PDF */}
+          <div className="mt-4 pt-4 border-t border-slate-200/80 bg-amber-50/50 p-5 rounded-xl space-y-4 border border-amber-200/60">
+            <div className="flex items-center gap-2">
+              <Scale className="w-4 h-4 text-amber-700" />
+              <h4 className="text-xs font-bold text-slate-900">
+                Módulos Especiais (Dossiê da Sofia & Minutas/Propostas PDF)
+              </h4>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Ative ou desative se esta empresa precisa do resumo executivo de triagem (Dossiê) e da ferramenta de geração de Minutas/Contratos em PDF timbrado. Se desativado, o CRM funciona em modo padrão limpo.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+              <div className="bg-white border border-amber-200 p-3.5 rounded-lg flex items-center justify-between shadow-2xs">
+                <div>
+                  <span className="text-xs font-bold text-slate-900 block">📋 Dossiê da Sofia (Triagem)</span>
+                  <span className="text-[10.5px] text-slate-500">Resumo de fatos, patrimônio e grau de urgência</span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.dossierModuleEnabled ?? (config.personaName?.toLowerCase().includes('amaro') || false)}
+                    onChange={(e) => handleQuickToggle({ dossierModuleEnabled: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+                </label>
+              </div>
+
+              <div className="bg-white border border-amber-200 p-3.5 rounded-lg flex items-center justify-between shadow-2xs">
+                <div>
+                  <span className="text-xs font-bold text-slate-900 block">📄 Minutas & Propostas (PDF)</span>
+                  <span className="text-[10.5px] text-slate-500">Contratos timbrados oficiais para envio rápido</span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.proposalModuleEnabled ?? (config.personaName?.toLowerCase().includes('amaro') || false)}
+                    onChange={(e) => handleQuickToggle({ proposalModuleEnabled: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
           {/* Follow-up Automático para Leads Dormentes */}
           <div className="mt-4 pt-4 border-t border-slate-200/80 bg-sky-50/50 p-5 rounded-xl space-y-4 border border-sky-200/60">
             <div className="flex items-center justify-between">

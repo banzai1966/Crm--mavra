@@ -258,6 +258,18 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterHotOnly, setFilterHotOnly] = useState(false);
+
+  const isAmaroWorkspace =
+    (agentConfig?.activeWorkspaceName || '').toLowerCase().includes('amaro') ||
+    (agentConfig?.businessName || '').toLowerCase().includes('amaro');
+  const isDossierEnabled =
+    agentConfig?.dossierModuleEnabled !== undefined
+      ? Boolean(agentConfig.dossierModuleEnabled)
+      : isAmaroWorkspace;
+  const isProposalEnabled =
+    agentConfig?.proposalModuleEnabled !== undefined
+      ? Boolean(agentConfig.proposalModuleEnabled)
+      : isAmaroWorkspace;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -1276,8 +1288,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         )
                       )}
 
-                      {/* Dossiê & Minuta Badge (Advocacia & Propostas) */}
-                      {lead.proposals && lead.proposals.length > 0 && (
+                      {/* Dossiê & Minuta Badge (Advocacia & Propostas - Apenas se ativado para o perfil) */}
+                      {isProposalEnabled && lead.proposals && lead.proposals.length > 0 && (
                         <div className="p-1.5 mb-2 bg-amber-50/90 border border-amber-300 rounded text-[10px] text-amber-950 flex items-center justify-between font-semibold shadow-2xs">
                           <div className="flex items-center gap-1.5 truncate">
                             <span className="text-amber-700">📄</span>
@@ -1291,8 +1303,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         </div>
                       )}
 
-                      {/* Dossiê Sofia Badge */}
-                      {lead.dossier?.legalArea && !lead.proposals?.length && (
+                      {/* Dossiê Sofia Badge (Apenas se ativado para o perfil) */}
+                      {isDossierEnabled && lead.dossier?.legalArea && !lead.proposals?.length && (
                         <div className="p-1 mb-2 bg-slate-100 border border-slate-200 rounded text-[9.5px] text-slate-800 flex items-center justify-between font-medium">
                           <span className="truncate">⚖️ {lead.dossier.legalArea}</span>
                           <span className="text-[9px] bg-slate-200 text-slate-700 px-1 py-0.2 rounded font-bold shrink-0">Dossiê</span>
