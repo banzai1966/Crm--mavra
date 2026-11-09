@@ -292,9 +292,6 @@ export interface AgentConfig {
   ownerBriefingPhone?: string;
   ownerBriefingTime?: string;
   activeWorkspaceName?: string;
-  // Módulos Especializados Opcionais (Dossiê Executivo e Minutas de Honorários em PDF)
-  dossierModuleEnabled?: boolean;
-  proposalModuleEnabled?: boolean;
 }
 
 export interface AppointmentSlot {

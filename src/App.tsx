@@ -32,6 +32,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     followUpNiche: 'dental',
     salesGoal: 'Acolher pacientes, realizar pré-triagem de sintomas/horários e agendar consultas e retornos da base antiga',
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu verificar o melhor dia para a sua consulta de avaliação com a Dra. Lucy Murata. Nossa equipe tem horários exclusivos esta semana no consultório do Euroville Mall! 🌿✨',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   cantareira: {
     activeWorkspaceName: 'Cemitério Parque da Cantareira',
@@ -41,6 +43,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     salesGoal: 'Acolher a família com máximo respeito e compaixão, esclarecer dúvidas sobre jazigos, velório 24h, cremação e planos preventivos',
     followUpNiche: 'b2b_services',
     followUpCustomMessage: 'Olá! Tudo bem? Passando para colocar nossa equipe à sua disposição para qualquer dúvida sobre nossos serviços, jazigos ou planejamento preventivo familiar no Parque da Cantareira. Estamos sempre prontos para ampará-los com todo o respeito e acolhimento. 🕊️🌿',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   delivery: {
     activeWorkspaceName: 'Restaurante & Pizzaria Delivery',
@@ -48,6 +52,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     role: 'Atendente Especialista em Pedidos & Delivery Rápido',
     followUpNiche: 'restaurant_delivery',
     salesGoal: 'Anotar pedidos completos, sugerir bebidas/bordas, calcular taxa de entrega por bairro e validar PIX na hora',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   ecommerce: {
     activeWorkspaceName: 'E-commerce & Distribuidora',
@@ -55,6 +61,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     role: 'Especialista em Catálogo, Cotação de Frete e Fechamento PIX',
     followUpNiche: 'retail',
     salesGoal: 'Consultar catálogo completo em PDF, calcular frete por região/CEP, enviar chave PIX e liberar expedição',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   b2b: {
     activeWorkspaceName: 'NEXA B2B & Vendas Comerciais',
@@ -62,6 +70,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     role: 'Especialista em Soluções Comerciais & Fechamento',
     followUpNiche: 'sales',
     salesGoal: 'Qualificar decisores, contornar objeções, apresentar ROI e agendar reunião ou fechar contrato via PIX',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   surfacebrasil: {
     activeWorkspaceName: 'Surfacebrasil – Tratamento por Plasma',
@@ -73,6 +83,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     catalogPdfName: 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf',
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu analisar a viabilidade do tratamento por plasma para as peças da sua fábrica. Nossos engenheiros de aplicação estão com a bancada do Surface Test disponível esta semana para testar suas amostras de material ou agendar uma rápida conversa técnica online. Como está sua disponibilidade? ⚡🔬',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   verzel: {
     activeWorkspaceName: 'Verzel – Fábrica de Software & AI',
@@ -84,6 +96,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     catalogPdfName: 'Dossie_Tecnico_Verzel_Sistemas.pdf',
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os planos para o desenvolvimento do seu projeto de software na Verzel. Nossa equipe de arquitetura técnica está com slots abertos esta semana para uma sessão de Discovery gratuita e mapeamento de escopo. Quer marcar 20 minutinhos online? 💻🚀',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   primo: {
     activeWorkspaceName: 'Primo Equipamentos (Vendas e Equipamentos)',
@@ -94,6 +108,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     followUpNiche: 'b2b_services',
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se você conseguiu avaliar os equipamentos e utensílios que conversamos para o seu negócio na Primo Equipamentos. Temos condições com desconto no Pix e pronta-entrega para agilizar sua cozinha! Qualquer dúvida sobre capacidade ou voltagem, estou por aqui! 🍳🧑‍🍳',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   equipamentospsi: {
     activeWorkspaceName: 'Equipamentos PSI (Terapia EMDR & Psicologia)',
@@ -105,6 +121,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     catalogPdfName: 'Manual_Tecnico_Equipamentos_PSI_EMDR.txt',
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se conseguiu avaliar os detalhes da Barra de Luz e do Aparelho Tátil para os seus atendimentos de EMDR na Equipamentos PSI. Temos condições com desconto especial no Pix e envio ágil para o seu consultório! Qualquer dúvida sobre os modelos ou frete, estou por aqui! 🧠🌿',
+    dossierModuleEnabled: false,
+    proposalModuleEnabled: false,
   },
   amaro: {
     activeWorkspaceName: 'Amaro Advogados (Direito de Família, Sucessões, Trabalhista & Público)',
@@ -116,6 +134,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     catalogPdfName: 'Apresentacao_Amaro_Advogados.pdf',
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se ficou alguma dúvida sobre as orientações iniciais ou se deseja agendar a Consulta de Avaliação com o Dr. Bruno Amaro e nossa equipe de advogados especialistas aqui na Amaro Advogados. Estamos à disposição para acolher o seu caso com total sigilo e discrição. ⚖️🏛️',
+    dossierModuleEnabled: true,
+    proposalModuleEnabled: true,
   },
 };
 
