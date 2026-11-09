@@ -15,6 +15,7 @@ import {
   Stethoscope,
   UtensilsCrossed,
   MessageCircle,
+  Scale,
 } from 'lucide-react';
 
 interface ClientLinkModalProps {
@@ -34,6 +35,15 @@ interface CompanyOption {
 }
 
 const COMPANIES: CompanyOption[] = [
+  {
+    id: 'amaro-advogados',
+    name: 'Amaro Advogados Associados',
+    subtitle: 'Direito de Família, Sucessões & Civil',
+    icon: Scale,
+    tag: 'Advocacia & Jurídico',
+    badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
+    aliases: ['amaro-advogados', 'amaro', 'advocacia', 'juridico'],
+  },
   {
     id: 'clinic',
     name: 'Dra. Lucy Murata',

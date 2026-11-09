@@ -1895,7 +1895,7 @@ async function startServer() {
     if (!lead) {
       return res.status(404).json({ error: 'Nenhum lead encontrado' });
     }
-    const sampleMsg = generateFollowUpMessage(lead, niche || db.agentConfig.followUpNiche || 'dental', customMessage);
+    const sampleMsg = generateFollowUpMessage(lead, niche || db.agentConfig.followUpNiche || 'dental', customMessage, 1, lead.workspaceId);
     res.json({ previewText: sampleMsg, leadName: lead.name });
   });
 

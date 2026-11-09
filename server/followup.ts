@@ -20,9 +20,41 @@ export const followUpLogs: FollowUpLog[] = [];
 export function generateFollowUpMessage(
   lead: Lead,
   niche: BusinessNiche | 'dental' | 'medical' | 'sales' | 'custom' = 'dental',
-  customTemplate?: string
+  customTemplate?: string,
+  followUpStep: number = 1,
+  workspaceId?: string
 ): string {
   const firstName = (lead.name || 'tudo bem').split(' ')[0];
+  const ws = (workspaceId || resolveLeadWorkspaceId(lead) || '').toLowerCase();
+
+  // Se for o 2º follow-up (toque 2), envia uma mensagem amigável e educada de encerramento, personalizada para cada empresa
+  if (followUpStep >= 2) {
+    if (ws.includes('primo') || ws.includes('gastronomia')) {
+      return `Olá, ${firstName}! Tudo bem? Imagino que a rotina da cozinha ou do comércio esteja corrida! Passando só para avisar que a equipe da Primo Equipamentos segue à disposição caso precise de cotações, voltagem ou condições no Pix. Um ótimo dia! 🍳🧑‍🍳`;
+    }
+    if (ws.includes('psi') || ws.includes('emdr')) {
+      return `Olá, ${firstName}! Tudo bem? Sei que a rotina clínica de atendimentos com EMDR costuma ser intensa! Passando só para deixar nosso contato à disposição caso deseje tirar qualquer dúvida sobre a Barra de Luz ou Aparelho Tátil na Equipamentos PSI. Um abraço! 🧠🌿`;
+    }
+    if (ws.includes('cantareira')) {
+      return `Olá, ${firstName}! Tudo bem? Passando com todo o respeito e carinho para deixar a equipe do Parque da Cantareira à disposição da sua família para quando for o melhor momento. Estamos sempre por aqui para acolhê-los. 🕊️🌿`;
+    }
+    if (ws.includes('surface')) {
+      return `Olá, ${firstName}! Tudo bem? Imagino que o ritmo da sua linha fabril esteja acelerado! Passando só para avisar que nossos engenheiros e o laboratório Surface Test seguem disponíveis para testar suas amostras de peças ou bater um papo técnico sobre o plasma. Um abraço! ⚡🔬`;
+    }
+    if (ws.includes('verzel')) {
+      return `Olá, ${firstName}! Tudo bem? Sei que as demandas de tecnologia e projetos costumam ser corridas! Nossa equipe sênior de arquitetura de software da Verzel continua à disposição para quando for o momento oportuno de desenhar o escopo da sua solução. Excelente dia! 💻🚀`;
+    }
+    if (ws.includes('amaro') || niche === 'legal') {
+      return `Olá, ${firstName}! Tudo bem? Sei que sua rotina deve estar corrida! Passando só para avisar que nossa equipe jurídica da Amaro Advogados continua à disposição caso deseje tirar qualquer dúvida sobre o seu caso no momento mais oportuno para você. Um abraço e um ótimo dia! ⚖️🏛️`;
+    }
+    if (ws.includes('lucy') || ws.includes('dental') || niche === 'dental') {
+      return `Olá, ${firstName}! Imagino que seu dia esteja corrido! Só passando para deixar nosso canal aberto caso precise de alguma orientação ou queira reservar sua avaliação integrativa com a Dra. Lucy mais adiante. Tenha uma ótima semana! 🦷🌿`;
+    }
+    if (niche === 'sales') {
+      return `Olá, ${firstName}! Imagino que as coisas estejam corridas por aí! Passando só para deixar nosso contato à disposição caso ainda queira ver as opções de ${lead.interest || 'equipamentos'} ou tirar dúvidas. Conte sempre com a gente! 🚀`;
+    }
+    return `Olá, ${firstName}! Imagino que sua rotina esteja corrida por aí! Passando apenas para deixar o nosso contato à disposição caso queira retomar o atendimento no momento que for melhor para você. Tenha um excelente dia! ✨`;
+  }
 
   if (customTemplate && customTemplate.trim()) {
     return customTemplate
@@ -104,6 +136,14 @@ export async function runFollowUpCycle(): Promise<{ evaluated: number; sent: num
     if (lead.stageId === 'stage-5' || lead.stageId === 'stage-lost') continue;
     if ((lead.followUpCount || 0) >= maxFollowUps) continue;
 
+    // Horário comercial humano (08:30 às 21:00 no horário de Brasília / UTC-3):
+    // Jamais enviar mensagens de madrugada (ex: 01:00 ou 05:00 da manhã) para respeitar o sono do cliente
+    const nowUtc = new Date();
+    const brHour = (nowUtc.getUTCHours() - 3 + 24) % 24;
+    if (brHour < 8 || brHour >= 21) {
+      continue;
+    }
+
     // Check last interaction time
     const lastInteractionTime = lead.lastInteraction ? new Date(lead.lastInteraction).getTime() : 0;
     const timeSinceLastInteraction = now - lastInteractionTime;
@@ -130,10 +170,11 @@ export async function runFollowUpCycle(): Promise<{ evaluated: number; sent: num
     const leadCustomMsg = leadPreset?.agentConfig?.followUpCustomMessage || customMessage;
     const leadInstanceName = leadPreset?.instanceName || undefined;
 
-    // Generate tailored message strictly for this lead's company
-    const messageToSend = generateFollowUpMessage(lead, leadNiche, leadCustomMsg);
+    const nextStep = (lead.followUpCount || 0) + 1;
+    // Generate tailored message strictly for this lead's company (varies text on step 2)
+    const messageToSend = generateFollowUpMessage(lead, leadNiche, leadCustomMsg, nextStep, leadWorkspaceId);
 
-    console.log(`[Follow-Up Automático] Disparando follow-up (${leadWorkspaceId} / ${leadNiche}) para ${lead.name} (${lead.phone})...`);
+    console.log(`[Follow-Up Automático] Disparando follow-up #${nextStep} (${leadWorkspaceId} / ${leadNiche}) para ${lead.name} (${lead.phone})...`);
 
     try {
       await sendWhatsAppMessage(lead.phone, messageToSend, leadInstanceName);

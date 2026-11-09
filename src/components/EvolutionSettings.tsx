@@ -26,6 +26,7 @@ import {
   LogOut,
   Smartphone,
   Code2,
+  Scale,
 } from 'lucide-react';
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
@@ -336,7 +337,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
   // Handle Switch Instance Tab
   const handleSelectInstanceTab = (
-    inst: 'dra-lucy-murata' | 'dental-integrative' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'equipamentospsi' | 'psi' | 'cemiterio-cantareira' | 'custom',
+    inst: 'dra-lucy-murata' | 'dental-integrative' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'equipamentospsi' | 'psi' | 'cemiterio-cantareira' | 'amaro-advogados' | 'custom',
     customName?: string
   ) => {
     setSelectedInstanceTab(inst as any);
@@ -348,6 +349,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
     if (inst === 'primo-equipamentos') targetName = 'primo-equipamentos';
     if (inst === 'equipamentospsi' || inst === 'psi') targetName = 'equipamentospsi';
     if (inst === 'cemiterio-cantareira') targetName = 'cemiterio-cantareira';
+    if (inst === 'amaro-advogados') targetName = 'amaro-advogados';
     if (inst === 'dental-integrative' || inst === 'dra-lucy-murata') targetName = 'dental-integrative';
     if (inst === 'custom') targetName = (customName || newInstanceName || config.instanceName).trim();
 
@@ -717,7 +719,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2.5">
             {/* Tab 1: Instância Primo Equipamentos */}
             <div
               onClick={() => handleSelectInstanceTab('primo-equipamentos')}
@@ -888,6 +890,32 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               </p>
               <span className="inline-block text-[10px] text-slate-700 font-semibold bg-slate-200/70 px-2 py-0.5 rounded mt-2">
                 Número Comercial
+              </span>
+            </div>
+
+            {/* Tab 7: Instância Amaro Advogados */}
+            <div
+              onClick={() => handleSelectInstanceTab('amaro-advogados')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'amaro-advogados' || config.instanceName === 'amaroadvogados'
+                  ? 'border-amber-600 bg-amber-50/50 ring-1 ring-amber-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Scale className="w-3.5 h-3.5 text-amber-600" />
+                  Amaro Advogados
+                </span>
+                {(config.instanceName === 'amaro-advogados' || config.instanceName === 'amaroadvogados') && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-amber-700">amaro-advogados</strong>
+              </p>
+              <span className="inline-block text-[10px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded mt-2">
+                Advocacia & Família
               </span>
             </div>
           </div>
