@@ -860,15 +860,17 @@ export default function App() {
 
   const handleSaveAgentConfig = async (updated: Partial<AgentConfig> | AgentConfig) => {
     try {
-      const merged = { ...agentConfig, ...updated };
+      const targetWorkspace = activeUrlNiche || 'clinic';
+      const merged = { ...agentConfig, ...updated, workspaceId: targetWorkspace };
       setAgentConfig(merged);
-      const res = await fetch('/api/agent-config', {
+      const res = await fetch(`/api/agent-config?workspace=${encodeURIComponent(targetWorkspace)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(merged),
       });
       if (res.ok) {
-        setAgentConfig(await res.json());
+        const savedData = await res.json();
+        setAgentConfig(savedData);
       }
     } catch (err) {
       console.error('Erro ao salvar agente:', err);

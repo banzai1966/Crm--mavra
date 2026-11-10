@@ -964,11 +964,12 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     db.messages.push(aiMsg);
 
     // 9. Send response back to WhatsApp via Evolution API v2
-    // Check if voice note (PTT) is enabled
-    const voiceMode = db.agentConfig.voiceResponseMode || 'smart_discernment';
-    const voiceEnabled = db.agentConfig.voiceResponseEnabled !== false && voiceMode !== 'only_text';
-    const maxChars = db.agentConfig.maxAudioChars ?? 500;
-    const maxConsecutive = db.agentConfig.maxConsecutiveAudios ?? 4;
+    // Check if voice note (PTT) is enabled for this specific company instance
+    const instanceConfig = getAgentConfigForInstance(incomingInstance);
+    const voiceMode = instanceConfig.voiceResponseMode || db.agentConfig.voiceResponseMode || 'smart_discernment';
+    const voiceEnabled = (instanceConfig.voiceResponseEnabled ?? db.agentConfig.voiceResponseEnabled) !== false && voiceMode !== 'only_text';
+    const maxChars = instanceConfig.maxAudioChars ?? db.agentConfig.maxAudioChars ?? 450;
+    const maxConsecutive = instanceConfig.maxConsecutiveAudios ?? db.agentConfig.maxConsecutiveAudios ?? 4;
 
     // Count consecutive audios sent recently to this lead
     const previousAiMessages = leadHistory.filter((m) => m.sender === 'ai');
@@ -1007,9 +1008,8 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     // TRAVAS INTELIGENTES DE ÁUDIO (Economia de tokens, clareza e anti-spam)
     // =========================================================================
     // Trava 1: Se a resposta for excessivamente longa (> maxChars), mandar em TEXTO
-    const effectiveMaxChars = Math.max(maxChars, 450);
-    if (shouldSendVoice && aiResult.replyText.length > effectiveMaxChars) {
-      console.log(`[Trava de Áudio] Mensagem tem ${aiResult.replyText.length} caracteres (> limite ${effectiveMaxChars}). Forçando envio em TEXTO para clareza e economia.`);
+    if (shouldSendVoice && aiResult.replyText.length > maxChars) {
+      console.log(`[Trava de Áudio] Mensagem tem ${aiResult.replyText.length} caracteres (> limite estrito ${maxChars}). Forçando envio em TEXTO para clareza e economia.`);
       shouldSendVoice = false;
     }
 
@@ -1028,8 +1028,6 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       console.log(`[Trava de Áudio] Conteúdo com dados copiáveis/PIX/links detectado. Forçando envio em TEXTO.`);
       shouldSendVoice = false;
     }
-
-    const instanceConfig = getAgentConfigForInstance(incomingInstance);
 
     if (shouldSendVoice) {
       console.log(`[Webhook] Gerando áudio de voz Sofia (${instanceConfig.voiceEngine || 'native_sofia'}) para ${cleanPhone} (Instância: ${incomingInstance})...`);

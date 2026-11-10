@@ -2896,15 +2896,15 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                     <input
                       type="number"
                       min={1}
-                      max={5}
-                      value={config.maxConsecutiveAudios ?? 2}
-                      onChange={(e) => setConfig({ ...config, maxConsecutiveAudios: Math.max(1, parseInt(e.target.value) || 1) })}
+                      max={30}
+                      value={config.maxConsecutiveAudios ?? 8}
+                      onChange={(e) => setConfig({ ...config, maxConsecutiveAudios: Math.max(1, parseInt(e.target.value) || 8) })}
                       className="w-24 bg-white border border-violet-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 font-bold focus:outline-hidden focus:border-violet-500"
                     />
-                    <span className="text-[11px] text-slate-500">áudios consecutivos</span>
+                    <span className="text-[11px] text-slate-500">áudios consecutivos (Recomendado: 8 a 12)</span>
                   </div>
                   <p className="text-[10px] text-slate-500 mt-1">
-                    Após essa quantidade, a Sofia passa a responder em texto para não sobrecarregar o cliente.
+                    Como o áudio é 100% gratuito, um limite maior (ex: 8 a 12) permite que a conversa flua com naturalidade humana quando o lead fala por áudio.
                   </p>
                 </div>
 

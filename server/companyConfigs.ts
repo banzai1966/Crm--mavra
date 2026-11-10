@@ -1080,6 +1080,13 @@ export function getAgentConfigForInstance(instanceName?: string): AgentConfig {
     isGlobalAiActive: savedWorkspaceCfg.isGlobalAiActive ?? baseConfig.isGlobalAiActive ?? true,
     testModeEnabled: savedWorkspaceCfg.testModeEnabled ?? baseConfig.testModeEnabled ?? false,
     testNumberWhitelist: savedWorkspaceCfg.testNumberWhitelist ?? baseConfig.testNumberWhitelist ?? '',
+    voiceVoiceName: savedWorkspaceCfg.voiceVoiceName || baseConfig.voiceVoiceName,
+    voiceEngine: savedWorkspaceCfg.voiceEngine || baseConfig.voiceEngine,
+    voiceSpeed: savedWorkspaceCfg.voiceSpeed ?? baseConfig.voiceSpeed,
+    voiceResponseMode: savedWorkspaceCfg.voiceResponseMode || baseConfig.voiceResponseMode,
+    voiceResponseEnabled: savedWorkspaceCfg.voiceResponseEnabled ?? baseConfig.voiceResponseEnabled,
+    maxConsecutiveAudios: savedWorkspaceCfg.maxConsecutiveAudios ?? baseConfig.maxConsecutiveAudios,
+    maxAudioChars: savedWorkspaceCfg.maxAudioChars ?? baseConfig.maxAudioChars,
   };
 }
 
