@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dossiê Técnico & Alocação de Squads | CodeOn Desenvolvimento de Sistemas</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --emerald: #059669;
+      --secondary: #0f172a;
+      --text: #334155;
+      --text-muted: #64748b;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); color: var(--text); background-color: #f8fafc; line-height: 1.6; padding-bottom: 60px; }
+    .container { max-width: 920px; margin: 0 auto; padding: 30px 24px; }
+    .toolbar { position: sticky; top: 15px; z-index: 100; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); color: #fff; padding: 12px 20px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
+    .toolbar-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .btn { background: #2563eb; color: #white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn:hover { background: #1d4ed8; }
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    h1 { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    h2 { font-size: 18px; font-weight: 700; color: #1e293b; margin-top: 20px; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+    p { margin-bottom: 12px; font-size: 14px; color: #475569; }
+    ul { margin-left: 20px; margin-bottom: 14px; }
+    li { font-size: 14px; color: #475569; margin-bottom: 6px; }
+    .badge { display: inline-block; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; margin-bottom: 16px; }
+    .feature-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+    .feature-box h3 { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+    @media print { .toolbar { display: none; } body { background: #fff; } .card { border: none; box-shadow: none; padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="toolbar">
+      <div class="toolbar-title">
+        <span>💻 Dossiê Técnico Oficial | CodeOn Desenvolvimento de Sistemas</span>
+      </div>
+      <button class="btn" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+    </div>
+
+    <div class="card">
+      <span class="badge">CODEON SQUADS & ENGENHARIA DE SOFTWARE</span>
+      <h1>Alocação Gerenciada de Squads Ágeis & TI</h1>
+      <p>Sede em São Caetano do Sul - SP | Parceria estratégica de engenharia de software para aceleração de roadmaps corporativos e desenvolvimento sob medida.</p>
+
+      <h2>1. Quem Somos & Nossa Proposta de Valor</h2>
+      <p>A <strong>CodeOn</strong> (Codeon Desenvolvimento de Sistemas Ltda.) não é uma consultoria de recrutamento ou agência de hunting tradicional. Nós somos uma empresa de engenharia de software que atua como braço de execução técnica para o ecossistema corporativo.</p>
+      <p>Enquanto agências de hunting tradicionais apenas enviam currículos e transferem 100% do risco operacional para você, a CodeOn oferece <strong>Alocação Gerenciada com Governança Executiva</strong>. Nossa própria liderança técnica acompanha a produtividade, a qualidade do código e os entregáveis da equipe alocada.</p>
+
+      <h2>2. Diferenciais & SLA de Onboarding</h2>
+      <div class="grid">
+        <div class="feature-box">
+          <h3>⚡ SLA de Onboarding (15 Dias)</h3>
+          <p>Colocamos squads completas ou profissionais especialistas operando no seu projeto em até 15 dias, com rituais ágeis estabelecidos.</p>
+        </div>
+        <div class="feature-box">
+          <h3>🛡️ Governança Executiva</h3>
+          <p>Liderança técnica dedicada para mitigar riscos, acompanhar sprints e garantir padrão de engenharia de excelência.</p>
+        </div>
+        <div class="feature-box">
+          <h3>🔄 Substituição Garantida</h3>
+          <p>Garantia contratual de adaptação técnica e cultural, com reposição ágil sem custos ocultos ou burocracia.</p>
+        </div>
+      </div>
+
+      <h2>3. Soluções & Modelos de Contratação</h2>
+      <ul>
+        <li><strong>Squads Ágeis Dedicadas:</strong> Equipe multidisciplinar sob medida (Product Owner, Tech Lead, Devs Frontend, Backend, Mobile, QA e DevOps).</li>
+        <li><strong>Staff Augmentation (Profissionais sob Demanda):</strong> Alocação de especialistas pontuais (júnior, pleno, sênior) para reforçar gargalos no seu time interno.</li>
+        <li><strong>Fábrica de Software Turnkey:</strong> Desenvolvimento de aplicações web, SaaS e mobile do zero com escopo, marcos e cronograma fixados.</li>
+      </ul>
+
+      <h2>4. Cases Homologados de Sucesso</h2>
+      <ul>
+        <li><strong>TOHT:</strong> Plataforma corporativa de feedback contínuo 360° para avaliação de desempenho e cultura empresarial.</li>
+        <li><strong>Motorclick:</strong> Ecossistema inteligente de ordens de serviço, clientes e estoque para oficinas mecânicas.</li>
+        <li><strong>APP Taxa:</strong> Solução financeira e de simulação de taxas corporativas.</li>
+      </ul>
+
+      <h2>5. Próximo Passo: Diagnóstico de Capacidade Técnica</h2>
+      <p>Oferecemos uma sessão online gratuita de 20 minutos de <strong>Diagnóstico de Capacidade Técnica e Discovery Executivo</strong> com nossa liderança de engenharia para mapear suas dores e dimensionar a squad ideal.</p>
+      <p><strong>Canais Oficiais:</strong> Sede em São Caetano do Sul/SP | Site: <a href="https://codeon.com.br" target="_blank">codeon.com.br</a></p>
+    </div>
+  </div>
+</body>
+</html>

@@ -31,6 +31,7 @@ import {
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
 const KNOWN_DEFAULT_KEYS: Record<string, string> = {
+  'codeon': 'CODEON-98F3-4A21-8B7C-E51928374650',
   'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
   'verzel': '8B4CDFF9-8C33-415D-9877-EBE5E74134F4',
   'surfacebrasil': 'DE151DAD-79C8-49F5-BFE3-5E129987F773',
@@ -48,6 +49,14 @@ const KNOWN_DEFAULT_KEYS: Record<string, string> = {
 const MASTER_GLOBAL_TOKEN = 'b2efa885a71ee22edf72b597df1a0ce9';
 
 const MANAGED_COMPANIES = [
+  {
+    instance: 'codeon',
+    company: 'CodeOn Desenvolvimento de Sistemas',
+    niche: 'Squads Ágeis & Engenharia de Software (Sofia)',
+    defaultToken: 'CODEON-98F3-4A21-8B7C-E51928374650',
+    badge: 'bg-blue-100 text-blue-900 border-blue-300',
+    iconColor: 'text-blue-600',
+  },
   {
     instance: 'amaro-advogados',
     company: 'Amaro Advogados Associados',

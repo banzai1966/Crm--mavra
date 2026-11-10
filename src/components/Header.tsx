@@ -189,6 +189,10 @@ export const Header: React.FC<HeaderProps> = ({
         agentConfig.role?.toLowerCase().includes('amaro') ||
         agentConfig.activeWorkspaceName?.toLowerCase().includes('amaro')
       ? 'amaro'
+      : agentConfig.personaName?.toLowerCase().includes('codeon') ||
+        agentConfig.role?.toLowerCase().includes('codeon') ||
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('codeon')
+      ? 'codeon'
       : agentConfig.followUpNiche === 'sales'
       ? 'b2b'
       : 'clinic';
@@ -204,6 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
     surfacebrasil: { label: 'Surfacebrasil (Plasma)', icon: Zap, badge: 'Indústria' },
     verzel: { label: 'Verzel (Software & AI)', icon: Code2, badge: 'Tech' },
     amaro: { label: 'Amaro Advogados', icon: ShieldCheck, badge: 'Jurídico' },
+    codeon: { label: 'CodeOn Squads & TI', icon: Code2, badge: 'Squads' },
   };
 
   const nicheMeta = builtInMeta[currentNiche] || {
@@ -450,6 +455,25 @@ export const Header: React.FC<HeaderProps> = ({
                           {currentNiche === 'amaro' && <span className="text-[10px] text-amber-800 font-bold">(Ativo)</span>}
                         </div>
                         <p className="text-[10px] text-slate-400 font-normal">Foco: Família, Sucessões, Trabalhista, Servidores & OAB</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onSwitchWorkspace('codeon');
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                        currentNiche === 'codeon' ? 'bg-blue-50/80 font-bold text-blue-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <Code2 className="w-4 h-4 text-blue-600" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>CodeOn (Squads & TI)</span>
+                          {currentNiche === 'codeon' && <span className="text-[10px] text-blue-800 font-bold">(Ativo)</span>}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-normal">Foco: Alocação de squads, fábrica de software & SLA</p>
                       </div>
                     </button>
                   </div>

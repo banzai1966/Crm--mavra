@@ -36,6 +36,15 @@ interface CompanyOption {
 
 const COMPANIES: CompanyOption[] = [
   {
+    id: 'codeon',
+    name: 'CodeOn Desenvolvimento de Sistemas',
+    subtitle: 'Alocação de Squads Ágeis & Fábrica de Software',
+    icon: Code2,
+    tag: 'Squads & TI',
+    badgeColor: 'bg-blue-100 text-blue-900 border-blue-300',
+    aliases: ['codeon', 'code-on', 'squad', 'squads'],
+  },
+  {
     id: 'amaro-advogados',
     name: 'Amaro Advogados Associados',
     subtitle: 'Direito de Família, Sucessões & Civil',

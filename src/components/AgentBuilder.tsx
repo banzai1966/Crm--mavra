@@ -77,6 +77,46 @@ export interface AgentPreset {
 
 export const AGENT_PRESETS: AgentPreset[] = [
   {
+    id: 'codeon_squads',
+    name: 'CodeOn – Alocação Gerenciada de Squads Ágeis & TI Corporativa',
+    category: 'TI & Squads Ágeis',
+    tag: 'CodeOn Squads',
+    description: 'Braço de engenharia de software corporativo (São Caetano do Sul/SP). Alocação gerenciada de squads ágeis multidisciplinares e profissionais sob demanda com governança executiva de entrega contínua, onboarding em até 15 dias e cases consolidados (TOHT, Motorclick e APP Taxa).',
+    personaName: 'Sofia da CodeOn',
+    role: 'Consultora Executiva de Negócios & Alocação de Squads Ágeis da CodeOn',
+    toneOfVoice: 'Executiva, consultiva, altamente técnica, orientada a valor de negócio, agilidade e excelência em engenharia de software.',
+    salesGoal: 'Identificar o momento técnico da empresa (necessidade de alocação de squads ágeis, reforço de especialistas sob demanda para destravar roadmap, ou desenvolvimento de software sob medida), entender stack/prazo e agendar um Diagnóstico de Capacidade Técnica / Discovery Executivo online gratuito de 20 minutos com a liderança técnica da CodeOn.',
+    followUpNiche: 'b2b_services',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão as prioridades do roadmap de tecnologia da sua empresa. Nossa liderança técnica da CodeOn tem horários abertos esta semana para uma sessão de Diagnóstico de Capacidade Técnica gratuito (20 min) para mapear stacks e dimensionar a squad ideal. Como está sua agenda? 💻🚀',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (CODEON - ALOCAÇÃO GERENCIADA DE SQUADS & ENGENHARIA DE SOFTWARE):
+
+P: O que é a CodeOn?
+R: A CodeOn (Codeon Desenvolvimento de Sistemas Ltda., sede em São Caetano do Sul/SP) é parceira estratégica de engenharia de software que atua como braço de execução técnica corporativa. Oferecemos alocação gerenciada de tecnologia, squads ágeis e fábrica de software sob medida.
+
+P: Qual o diferencial em relação a consultorias de hunting e RH?
+R: Não somos agência de RH que apenas envia currículos e se isenta de responsabilidade. Nós oferecemos Alocação Gerenciada com Governança Executiva: nossos próprios líderes de engenharia acompanham a produtividade, métricas ágeis e qualidade de entrega contínua com SLA contratual.
+
+P: Qual o prazo de integração (Onboarding)?
+R: SLA rápido de onboarding em até 15 dias úteis, com garantia contratual de substituição ágil sem atrito ou custos adicionais.
+
+P: Cases de sucesso:
+R: Mantemos produtos consolidados de grande escala, como o TOHT (plataforma de feedback contínuo 360° corporativo), Motorclick (SaaS de gestão para oficinas automotivas) e APP Taxa (solução financeira de cálculo de taxas).`,
+    knowledgeCatalog: `SOLUÇÕES & SERVIÇOS CODEON:
+1. Squads Ágeis Gerenciadas & Staff Augmentation (Devs Front, Back, Mobile, QA, DevOps, Tech Leads).
+2. Fábrica de Software Sob Medida & SaaS (React, Node, Python, Java, Mobile iOS/Android).
+3. Modernização de Aplicações e Migração para Cloud (AWS/GCP/Azure).
+4. Diagnóstico de Capacidade Técnica Gratuito (20 minutos online).`,
+    knowledgePricing: `POLÍTICA COMERCIAL CODEON:
+- Alocação recorrente mensal por sprints ágeis ou escopo fechado com entregáveis contratuais.
+- Sessão de Diagnóstico de Capacidade Técnica gratuito online com a liderança técnica.
+- Sede: São Caetano do Sul - SP | Contato oficial: https://codeon.com.br`,
+    knowledgeRules: `DIRETRIZES DA SOFIA (CODEON):
+1. Você é exclusivamente a Sofia da CodeOn (Codeon Desenvolvimento de Sistemas Ltda.).
+2. Identifique o desafio técnico da empresa (destravar roadmap com squad ou novo software sob medida).
+3. Mapeie a stack técnica necessária e prazos.
+4. Agende o Diagnóstico de Capacidade Técnica online gratuito de 20 minutos com a liderança técnica da CodeOn.`
+  },
+  {
     id: 'amaro_advogados',
     name: 'Amaro Advogados – Advocacia Estratégica, Família, Sucessões, Trabalhista & Público',
     category: 'Direito & Advocacia Estratégica',
@@ -2358,13 +2398,15 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           {/* Cards dos Nichos */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {AGENT_PRESETS.map((preset) => {
+              const isCodeOn = preset.id === 'codeon' || preset.id === 'codeon_squads';
+              const isAmaro = preset.id === 'amaro' || preset.id === 'amaro_advogados';
               const isSurface = preset.id === 'surface_brasil_plasma';
               const isVerzel = preset.id === 'verzel_software_consultoria';
               const isDental = preset.id === 'dental' || preset.id === 'dental_integrative' || preset.id === 'dental_general';
               const isMedical = preset.id === 'medical' || preset.id === 'medical_clinic';
               const isRealEstate = preset.id === 'real_estate';
               const isAesthetic = preset.id === 'aesthetic' || preset.id === 'beauty_aesthetic';
-              const isLaw = preset.id === 'law_firm';
+              const isLaw = preset.id === 'law_firm' || isAmaro;
               const isSolar = preset.id === 'solar_energy';
               const isAuto = preset.id === 'auto_dealer' || preset.id === 'automotive';
               const isSaaS = preset.id === 'nexa_crm' || preset.id === 'saas_tech';
@@ -2376,7 +2418,11 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div
                   key={preset.id}
                   className={`border rounded-xl p-4 flex flex-col justify-between hover:shadow-xs transition-all group ${
-                    preset.id === 'surface_brasil_plasma'
+                    isCodeOn
+                      ? 'bg-gradient-to-b from-blue-50/70 via-indigo-50/30 to-white border-blue-300 ring-1 ring-blue-200 shadow-2xs'
+                      : isAmaro
+                      ? 'bg-gradient-to-b from-amber-50/60 via-slate-50 to-white border-amber-300 ring-1 ring-amber-200 shadow-2xs'
+                      : preset.id === 'surface_brasil_plasma'
                       ? 'bg-gradient-to-b from-sky-50/70 to-white border-sky-300 ring-1 ring-sky-200'
                       : preset.id === 'verzel_software_consultoria'
                       ? 'bg-gradient-to-b from-indigo-50/70 via-slate-50 to-white border-indigo-300 ring-1 ring-indigo-200'
@@ -2394,7 +2440,11 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                        preset.id === 'surface_brasil_plasma'
+                        isCodeOn
+                          ? 'text-blue-900 bg-blue-100 border-blue-300 font-bold'
+                          : isAmaro
+                          ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold'
+                          : preset.id === 'surface_brasil_plasma'
                           ? 'text-sky-900 bg-sky-100 border-sky-300 font-bold'
                           : preset.id === 'verzel_software_consultoria'
                           ? 'text-indigo-900 bg-indigo-100 border-indigo-300 font-bold'
@@ -2408,7 +2458,11 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-semibold'
                           : 'text-indigo-700 bg-indigo-50 border-indigo-100'
                       }`}>
-                        {preset.id === 'surface_brasil_plasma'
+                        {isCodeOn
+                          ? '💻 CODEON SQUADS & TI'
+                          : isAmaro
+                          ? '⚖️ AMARO ADVOGADOS'
+                          : preset.id === 'surface_brasil_plasma'
                           ? '⚡ SURFACEBRASIL PLASMA'
                           : preset.id === 'verzel_software_consultoria'
                           ? '💻 VERZEL SOFTWARE & AI'
@@ -2421,6 +2475,8 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                           : (preset.category || 'Nicho')}
                       </span>
                       <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                        {isCodeOn && <Code2 className="w-4 h-4 text-blue-600" />}
+                        {isAmaro && <Scale className="w-4 h-4 text-amber-700" />}
                         {isSurface && <Zap className="w-4 h-4 text-sky-600" />}
                         {isVerzel && <Code2 className="w-4 h-4 text-indigo-600" />}
                         {isPsi && <Activity className="w-4 h-4 text-purple-600" />}
@@ -2429,12 +2485,12 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                         {isMedical && <HeartHandshake className="w-4 h-4" />}
                         {isRealEstate && <Building2 className="w-4 h-4" />}
                         {isAesthetic && <SparklesIcon className="w-4 h-4" />}
-                        {isLaw && <Scale className="w-4 h-4" />}
+                        {isLaw && !isAmaro && <Scale className="w-4 h-4" />}
                         {isSolar && <Sun className="w-4 h-4" />}
                         {isAuto && <Car className="w-4 h-4" />}
                         {isSaaS && <Bot className="w-4 h-4" />}
                         {isRestaurant && !isPrimo && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
-                        {!isSurface && !isVerzel && !isPsi && !isPrimo && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
+                        {!isCodeOn && !isAmaro && !isSurface && !isVerzel && !isPsi && !isPrimo && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
                           <SparklesIcon className="w-4 h-4" />
                         )}
                       </div>

@@ -117,6 +117,17 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber se ficou alguma dúvida sobre as orientações iniciais ou se deseja agendar a Consulta de Avaliação com o Dr. Bruno Amaro e nossa equipe de advogados especialistas aqui na Amaro Advogados. Estamos à disposição para acolher o seu caso com total sigilo e discrição. ⚖️🏛️',
   },
+  codeon: {
+    activeWorkspaceName: 'CodeOn – Alocação Gerenciada de Squads & TI',
+    personaName: 'Sofia da CodeOn',
+    role: 'Consultora Executiva de Negócios & Alocação de Squads Ágeis da CodeOn',
+    toneOfVoice: 'Executiva, consultiva, altamente técnica, orientada a valor de negócio, agilidade e excelência em engenharia de software.',
+    salesGoal: 'Identificar o momento técnico da empresa (necessidade de alocação de squads ágeis, reforço de especialistas sob demanda para destravar roadmap, ou desenvolvimento de software sob medida), entender stack/prazo e agendar um Diagnóstico de Capacidade Técnica / Discovery Executivo online gratuito de 20 minutos com a liderança técnica da CodeOn.',
+    followUpNiche: 'b2b_services',
+    catalogPdfName: 'Dossie_Tecnico_CodeOn_Squads.pdf',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão as prioridades do roadmap de tecnologia da sua empresa. Nossa liderança técnica da CodeOn tem horários abertos esta semana para uma sessão de Diagnóstico de Capacidade Técnica gratuito (20 min) para mapear stacks e dimensionar a squad ideal. Como está sua agenda? 💻🚀',
+  },
 };
 
 export const CLINIC_STAGES: KanbanStage[] = [
@@ -203,7 +214,20 @@ export const AMARO_STAGES: KanbanStage[] = [
   { id: 'stage-sac', name: '⚖️ Prazos & Intimações Urgentes', color: '#ea580c', order: 8 },
 ];
 
+export const CODEON_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base de Empresas / Contatos Anteriores', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação de Roadmap & Tech (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Triagem / Demanda de Squad & TI', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Qualificação de Stack & Modelo', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Discovery Técnico & Diagnóstico Agendado', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Proposta de Alocação / Squad Enviada', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Contrato Assinado / Onboarding & Kickoff', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Standby / Sem Budget Imediato', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '⚙️ Governança Técnica & Alinhamento de SLA', color: '#ea580c', order: 8 },
+];
+
 export function getStagesForNiche(niche?: string): KanbanStage[] {
+  if (niche === 'codeon' || niche === 'code-on' || niche === 'squad' || niche === 'squads') return CODEON_STAGES;
   if (niche === 'primo') return PRIMO_STAGES;
   if (niche === 'surfacebrasil') return SURFACE_STAGES;
   if (niche === 'verzel') return VERZEL_STAGES;
@@ -254,6 +278,9 @@ export function normalizeNicheKey(raw?: string | null): string {
   if (clean.includes('verzel')) {
     return 'verzel';
   }
+  if (clean === 'codeon' || clean === 'code-on' || clean.includes('codeon') || clean.includes('squad')) {
+    return 'codeon';
+  }
   if (clean === 'primo' || clean.includes('primo-equipamento') || clean.includes('primo_equipamento')) {
     return 'primo';
   }
@@ -299,6 +326,7 @@ export function resolveClientLeadWorkspace(lead: Lead): string {
     }
   }
 
+  if (lowerTags.some((t) => t.includes('codeon') || t.includes('squad')) || notes.includes('codeon') || interest.includes('codeon')) return 'codeon';
   if (lowerTags.some((t) => t.includes('primo')) || notes.includes('primo')) return 'primo';
   if (lowerTags.some((t) => t.includes('surface') || t.includes('plasma')) || notes.includes('surface') || interest.includes('sap02')) return 'surfacebrasil';
   if (lowerTags.some((t) => t.includes('verzel')) || notes.includes('verzel') || interest.includes('verzel')) return 'verzel';

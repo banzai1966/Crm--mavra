@@ -159,6 +159,15 @@ async function startServer() {
     res.status(404).send('Manual do Cemitério Parque da Cantareira não encontrado.');
   });
 
+  // Route to view and print the CodeOn PDF / Dossier
+  app.get('/codeon-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'codeon_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual da CodeOn não encontrado.');
+  });
+
   // Route to view and print the Primo Equipamentos PDF / Dossier
   app.get('/primo-manual', (req: Request, res: Response) => {
     const manualPath = path.join(process.cwd(), 'public', 'primo_manual.html');
@@ -1808,6 +1817,23 @@ async function startServer() {
       }
     } catch (err: any) {
       console.error('[Recreate Instance Error]:', err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Delete instance from Evolution API VPS to free space
+  app.post('/api/evolution/delete-instance', async (req: Request, res: Response) => {
+    const { instanceName } = req.body;
+    if (!instanceName) {
+      return res.status(400).json({ success: false, error: 'instanceName é obrigatória' });
+    }
+    const targetInst = normalizeInstanceName(instanceName);
+    try {
+      console.log(`[Delete Instance] Excluindo instância "${targetInst}" da Evolution API...`);
+      const result = await deleteEvolutionInstance(targetInst);
+      res.json(result);
+    } catch (err: any) {
+      console.error('[Delete Instance Error]:', err);
       res.status(500).json({ success: false, error: err.message });
     }
   });
