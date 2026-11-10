@@ -606,6 +606,32 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
   db.messages.push(incomingMsg);
   db.saveToFile();
 
+  // 3.1 LGPD Opt-Out Check ("PARAR", "SAIR", "CANCELAR")
+  const normalizedIncomingClean = messageText.trim().toLowerCase().replace(/[^a-z]/g, '');
+  if (normalizedIncomingClean === 'parar' || normalizedIncomingClean === 'sair' || normalizedIncomingClean === 'cancelar') {
+    console.log(`[LGPD] Cliente ${cleanPhone} solicitou descadastro com a palavra-chave "${normalizedIncomingClean}".`);
+    if (!lead.tags.includes('Descadastrado/LGPD')) {
+      lead.tags.push('Descadastrado/LGPD');
+    }
+    lead.aiPaused = true;
+    const optOutConfirmation = `Entendido! Seu número foi descadastrado com sucesso da nossa lista de novidades em conformidade com a LGPD. Não enviaremos mais comunicados promocionais.\n\nSe precisar de qualquer atendimento ou suporte futuro, estamos sempre à disposição por aqui. Um abraço!`;
+    const aiOptOutMsg: ChatMessage = {
+      id: 'msg-' + Date.now() + '-out',
+      leadId: lead.id,
+      phone: cleanPhone,
+      sender: 'ai',
+      text: optOutConfirmation,
+      timestamp: new Date().toISOString(),
+      status: 'delivered',
+      workspaceId: targetWorkspaceId,
+      instanceName: incomingInstance,
+    };
+    db.messages.push(aiOptOutMsg);
+    db.saveToFile();
+    await sendWhatsAppMessage(cleanPhone, optOutConfirmation, incomingInstance);
+    return;
+  }
+
   const activeInstanceConfig = getAgentConfigForInstance(incomingInstance);
 
   // 4. Check Global AI Switch (ON / OFF)

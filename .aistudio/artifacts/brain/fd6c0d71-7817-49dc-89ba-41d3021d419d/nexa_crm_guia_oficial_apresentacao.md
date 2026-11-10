@@ -1,164 +1,109 @@
-# NEXA CRM — O Seu Gerente Comercial com Inteligência Artificial 24/7
-### Guia Didático de Apresentação Oficial & Manual de Valor para o Empresário
+# NEXA CRM — Guia Didático de Apresentação & Manual de Operação do Cliente
+### Manual Prático de Implantação, Rotina de Uso e Gestão de Atendimento no WhatsApp
 
 ---
 
-## 🌟 O Que É o NEXA CRM?
-O **NEXA CRM** não é apenas mais um software de computador ou aplicativo de mensagens. Ele é o seu **novo funcionário e gerente comercial de elite**, que trabalha dentro do seu WhatsApp e do seu computador:
+## [Modulo 1] O Que E o NEXA CRM?
 
-* **Trabalha 24 horas por dia, 7 dias por semana**, incluindo domingos, noites e feriados.
-* **Nunca se atrasa, nunca falta, nunca fica doente e não exige encargos trabalhistas.**
-* **Responde aos seus clientes em menos de 3 segundos**, tanto por **texto impecável** quanto por **áudios de voz gravados com entonação humana natural**.
-* **Qualifica o cliente**, tira dúvidas sobre seus produtos ou serviços, envia catálogos e orçamentos em PDF com fotos, agenda visitas ou consultas e move o cliente pelas etapas de compra sozinho.
-* **Não exige que você entenda nada de computação**: tudo foi desenhado de forma simples, visual e intuitiva como arrastar um papel na mesa.
+O **NEXA CRM** e uma plataforma de inteligência conversacional e gestão comercial projetada especificamente para o WhatsApp de pequenas e medias empresas:
+
+* **Atendimento Contínuo 24 Horas:** Atende em segundos aos clientes que mandam mensagem no almoço, a noite ou nos finais de semana, evitando que eles procurem a concorrência.
+* **Liberação da Equipe de Vendas:** Assume ate 85% a 90% das duvidas repetitivas sobre catálogos, preços tabelados, formas de pagamento e localização, entregando o cliente qualificado para o vendedor humano finalizar.
+* **Voz Humana Acolhedora:** Ouve áudios enviados pelos clientes e responde com notas de voz gravadas em entonação natural brasileira (sem voz robótica mecânica).
+* **Organização Visual em Funil (Kanban):** Conforme o cliente avança no diálogo, seu cartão se move automaticamente entre as etapas de qualificação, orçamento e fechamento.
+* **Simplicidade Absoluta:** Não exige conhecimento avançado em tecnologia; opera com navegação visual limpa no computador e no celular.
 
 ---
 
-## 📲 Conexão do Seu WhatsApp em 30 Segundos (Tão Simples Quanto o WhatsApp Web)
+## [Modulo 2] Conexão do Seu WhatsApp em 30 Segundos
 
-O empresário não precisa entender nada de servidores, códigos ou configurações complicadas. Conectar o seu número de WhatsApp ao NEXA CRM é exatamente igual a conectar no WhatsApp Web no computador:
+A ativação do seu número no NEXA CRM segue exatamente o mesmo procedimento simples de conectar ao WhatsApp Web:
 
-1. **Passo 1 — Abra a Aba de Conexão no Painel:**
-   No menu superior do seu painel no computador, clique na aba **"Conexão WhatsApp"**. O sistema gerará na hora um **QR Code** exclusivo na tela do seu monitor.
+1. **Passo 1 — Acesse o Painel de Conexão:**
+   No menu superior do seu painel no computador, clique na aba **"Conexão WhatsApp"**. Um **QR Code** exclusivo será gerado na tela.
 2. **Passo 2 — Abra o WhatsApp no Celular:**
-   No seu celular, abra o WhatsApp, toque nos **3 pontinhos** (no Android) ou em **Configurações** (no iPhone) e escolha a opção **"Aparelhos Conectados"** ➔ **"Conectar um Aparelho"**.
-3. **Passo 3 — Aponte a Câmera e Pronto!**
-   Aponte a câmera do seu celular para o QR Code na tela do computador. Em menos de 5 segundos a luzinha verde acende: **a sua IA Sofia já está conectada e de prontidão** para atender seus clientes 24 horas por dia!
+   No seu celular, abra o WhatsApp, acesse **Aparelhos Conectados** e selecione a opção **Conectar um Aparelho**.
+3. **Passo 3 — Aponte a Câmera:**
+   Aponte a câmera do seu celular para o QR Code na tela. Em instantes a indicação verde acende: **a Sofia está conectada e pronta para apoiar seu atendimento**.
 
-> **Tranquilidade Garantida:** Você continua usando seu celular pessoal e comercial normalmente para conversar com clientes, amigos e família. A IA trabalha em segundo plano de forma 100% harmoniosa.
-
----
-
-## 🖥️ Onde Usar: A Dupla Perfeita (Computador + Celular)
-
-Para você extrair 100% do lucro e da organização do NEXA CRM:
-
-### 1. No Computador (O Centro de Comando Oficial — Recomendado):
-* É no monitor do seu computador que a mágica acontece com clareza total.
-* Você enxerga o **Funil Visual (Kanban)** inteiro: vê quem mandou mensagem agora, quem está avaliando orçamento e quem está pronto para pagar.
-* Você tem a **Central de Chat ao Vivo** aberta, podendo acompanhar as conversas em tempo real ou assumir o atendimento com um único clique no botão laranja.
-* **Como instalar no seu computador (Modo PWA):** No topo da tela ou na barra de endereços do Google Chrome, basta clicar em **`[📱 Instalar App]`**. O NEXA se transforma em um aplicativo leve e dedicado no seu computador, abrindo com um duplo clique na sua área de trabalho sem precisar digitar endereços!
-* **Botão Atualizar:** Se quiser recarregar os dados na hora ou verificar novidades, basta clicar no botão verde **`[🔄 Atualizar]`** no topo da tela.
-* **Disparos em Massa & Gestão:** É na tela ampla que você clica para reativar centenas de clientes de uma só vez e enxerga todos os dados com calma.
-
-### 2. No Celular (O Seu Companheiro de Bolso):
-* No celular, o NEXA funciona perfeitamente para quando você estiver na rua, em viagem ou em almoço de negócios.
-* Você pode bater o olho para ver se entrou um novo lead quente ou checar compromissos do dia.
-* Porém, para administrar seu negócio com visão ampla, o computador é o seu verdadeiro posto de comando!
+> **Uso Simultâneo e Seguro:** Você continua usando seu celular pessoal e comercial normalmente para falar com contatos, amigos e fornecedores. A inteligência opera em segundo plano com regras claras de discernimento.
 
 ---
 
-## ⚡ Os Maiores Pilares de Lucro que Fazem o NEXA se Pagar Sozinho
+## [Modulo 3] Onde Usar: Computador e Celular
 
-### 1. O Resgate da Base Antiga com Ciclo Completo da Sofia 💰
-* **Você tem centenas de contatos no WhatsApp que compraram uma vez e sumiram?**
-* O NEXA possui o poderoso botão **`[⚡ Disparar Reativação]`**: ele envia mensagens personalizadas chamando os clientes inativos de volta com ofertas, novidades ou lembretes amigáveis.
-* **O Grande Diferencial:** quando o cliente responde — seja 10 minutos ou 3 dias depois —, **é a própria Sofia (IA) que assume a conversa automaticamente!**
-* A Sofia retoma o diálogo, tira dúvidas, envia áudios e conduz o cliente até o fechamento. Você e sua equipe não precisam perder horas digitando mensagens: **a ferramenta se paga já na primeira ou segunda venda recuperada!**
+### 1. No Computador (Centro de Comando Recomendado):
+* É no monitor do computador que o gestor tem visão completa do **Funil Visual (Kanban)**: enxerga novos contatos, propostas enviadas e pedidos aguardando pagamento.
+* **Central de Chat ao Vivo:** Permite acompanhar as mensagens em tempo real e assumir qualquer conversa com um único clique no botão de transbordo.
+* **Instalação como Aplicativo (PWA):** No navegador Google Chrome, basta clicar em **`[Instalar App]`** para transformar o NEXA em um aplicativo leve na barra de tarefas do seu computador.
 
-### 2. Módulo de Agendamentos Automáticos de Consultas e Reuniões 📅
-* Para consultórios médicos, odontológicos, escritórios de advocacia, imobiliárias, oficinas ou visitas presenciais guiadas:
-* O cliente pede um horário no WhatsApp, a Sofia consulta os horários disponíveis da sua empresa, propõe os melhores intervalos e confirma o compromisso na hora com o cliente.
-* O compromisso é registrado automaticamente na aba **`[📅 Agendamentos]`** do CRM, com um botão exclusivo no topo para o gestor visualizar a grade da semana inteira de forma organizada e limpa!
-
-### 3. Atendimento Humanizado por Áudio e Texto (Sofia IA) 🎙️
-* O cliente manda um áudio perguntando sobre preços, modelos ou localização? **A Sofia ouve o áudio, transcreve e responde com outro áudio com voz humana calorosa e natural!**
-* A Sofia é treinada exclusivamente com os dados da sua empresa: ela não inventa mentiras, não fala de concorrentes e defende a sua marca com elegância.
-
-### 4. Funil Visual Inteligente (Kanban Automático) 📊
-* Esqueça planilhas confusas do Excel ou cadernos de anotações que se perdem.
-* Conforme a Sofia conversa com o cliente no WhatsApp, ela **move o cartão do cliente sozinha**:
-  - `Novo Lead` ➔ `Qualificado / Interesse` ➔ `Proposta / Dossiê Enviado` ➔ `Em Negociação` ➔ `Ganho / Fechado`.
-* Você sabe exatamente em que ponto cada negociação está sem precisar ler 50 mensagens.
-
-### 5. Dossiês Técnicos e Catálogos em PDF Enviados na Hora 📄
-* O cliente pediu fotos, medidas, modelos ou prospecto?
-* A Sofia envia na hora o documento oficial em PDF com fotos em alta definição, tabelas e dados da sua empresa diretamente dentro da conversa do WhatsApp.
-
-### 6. Transbordo Humano em 1 Clique (Assumir Atendimento) 🤝
-* A qualquer momento, se você ou um vendedor da sua equipe quiser intervir na conversa para dar um aperto de mão especial, basta clicar no botão **`[Assumir Atendimento]`**.
-* A inteligência artificial pausa imediatamente para aquele cliente, e você digita ou grava seus áudios normalmente. 
-* Quando terminar, basta clicar em **`[Reativar IA]`** para ela reassumir o pós-atendimento.
-
-### 7. Alertas de Leads Quentes & Fechamentos Prioritários 🔥
-* O cliente pediu dados de pagamento, chave PIX ou disse que quer assinar?
-* O NEXA carimba o cartão com a etiqueta vermelha **`🔥 LEAD QUENTE / FECHAMENTO`** e coloca no topo da sua lista com alerta visual, garantindo que nenhum dinheiro escape da sua empresa por demora no atendimento.
-
-### 8. Economia Brutal de Salários e Encargos 💼
-* Contratar atendentes para cobrir turnos de almoço, noites e fins de semana custa salários, encargos, férias e risco trabalhista.
-* O NEXA substitui todo o esforço repetitivo de triagem e atendimento primário, trabalhando sem intervalo por uma fração minúscula do custo de um único colaborador.
+### 2. No Celular (Acompanhamento Ágil):
+* Perfeito para monitorar atendimentos na rua, checar compromissos do dia e verificar notificações de fechamento.
 
 ---
 
-## 🛡️ SAC & Pós-Venda Inteligente: 90% Pronto vs 10% Setup Exclusivo
+## [Modulo 4] Os Pilares de Apoio Comercial do Sistema
 
-O atendimento de ocorrências e pós-venda é um dos pontos mais sensíveis da experiência do consumidor. O NEXA CRM já vem com um motor de SAC nativo pronto para proteger a reputação da sua marca:
+### 1. Reativação Cadenciada e Segura da Base Inativa
+* Em vez de deixar contatos antigos esquecidos na agenda, o módulo **`[Disparar Reativação]`** envia mensagens amigáveis convidando clientes da base a retomar o contato com novidades ou condições especiais.
+* **Cadência Anti-Spam Humana:** O sistema envia com intervalos aleatórios seguros (15 a 45 segundos) entre cada contato, protegendo o número contra bloqueios.
+* **Conformidade LGPD:** Toda mensagem acompanha a instrução de saída: *"Caso não queira mais receber comunicados, responda 'PARAR'"*. Ao responder, o contato e descadastrado imediatamente.
+* **Retomada Autônoma:** Quando o cliente responde a reativação, a própria Sofia dá continuidade ao diálogo e agenda ou prepara a proposta.
 
-### 1. Os 90% Nativos (Já Incluídos de Fábrica):
-* **Triagem Inicial Humanizada:** A IA identifica que o cliente está relatando uma dúvida técnica, defeito ou solicitação de suporte.
-* **Solicitação Educada de Mídias e Documentos:** Sofia solicita fotos ou vídeos curtos do item e o número da Nota Fiscal, Pedido ou Contrato.
-* **Geração de Protocolo Oficial:** A IA registra a ocorrência e emite na hora um número de protocolo (ex: `#SAC-CRM-4921`).
-* **Cartão de SAC no Kanban:** O chamado é enviado para a coluna de SAC do Kanban, permitindo que a equipe técnica atenda com prioridade.
+### 2. Agendamentos de Consultas e Reuniões
+* Indicado para consultórios, escritórios de advocacia, imobiliárias e prestadores de serviços:
+* A Sofia consulta a grade disponível, propõe horários e confirma compromissos, organizando a agenda na aba **`[Agendamentos]`**.
 
-### 2. Os 10% Setup Exclusivo (Personalização para a Sua Empresa):
-Os 10% restantes referem-se aos dados específicos do seu negócio. Podem ser configurados em dois formatos:
-* **Modo 1 (Carga por Arquivos / Sem API):** Upload de planilhas CSV com listas de assistências técnicas autorizadas por cidade/estado, arquivos PDF com políticas de garantia ou código de chamado padronizado pela própria Nota Fiscal.
-* **Modo 2 (Integração Direct API / ERP):** Conexão direta com a API do seu ERP (TOTVS, SAP, Bling, Tiny) ou transportadoras para verificação automática em tempo real do status da Nota Fiscal ou rastreio de entrega.
+### 3. Atendimento com Voz Neural Acolhedora
+* Se o cliente prefere falar por áudio, a Sofia responde com nota de voz humana.
+* **Regra de Clareza Técnica:** Chaves PIX, links e documentos contratuais são enviados estritamente em **TEXTO** para permitir cópia imediata em 1 toque.
 
----
+### 4. Dossiês Técnicos e Catálogos Oficiais em PDF
+* Ao solicitar fotos, catálogos ou fichas técnicas, a Sofia envia o PDF ilustrado diretamente na conversa do WhatsApp.
 
-## 💬 Protocolo Anti-Vácuo & Atendimento Contínuo 24/7 (Zero Vácuo)
+### 5. Transbordo Humano Imediato (Assumir Atendimento)
+* A qualquer momento, se o vendedor quiser entrar na conversa para negociar diretamente, basta clicar no botão **`[Assumir Atendimento]`**.
+* A inteligência artificial pausa imediatamente para aquele contato. Quando o vendedor finalizar, basta clicar em **`[Reativar IA]`**.
 
-### 🌟 A Regra de Ouro: O Cliente Nunca Fica no Vácuo!
-Em muitas empresas, quando o cliente manda uma foto de defeito ou número de nota à noite ou nos fins de semana, o atendimento "trava" e a pessoa fica em um vazio angustiante sem saber se a mensagem foi recebida.
-
-No **NEXA CRM com Sofia**, isso é **impossível de acontecer**:
-
-1. **Acolhimento Afetuoso 24h:** Mesmo fora do expediente comercial, ao receber a foto ou a nota fiscal, a Sofia responde com extremo respeito e polidez:
-   > *"Perfeito! Já registrei seu chamado no sistema sob o Protocolo Oficial #SAC-CRM-4921. Nossa equipe técnica já foi notificada no Kanban com a sua foto e nota fiscal e assumirá o atendimento em instantes. Por segurança, mantenha o equipamento fora da tomada, tá bom?"*
-2. **Notificação Visual no Kanban:** A equipe da sua empresa enxerga o chamado com todas as mídias anexadas assim que logar no painel.
-3. **Regra de Auto-Reativação por Inatividade do Atendente:**
-   Se um atendente humano assumir uma conversa no chat e esquecer a IA pausada por mais de 10 minutos (ou após um período de silêncio), **a Sofia detecta a pausa e se reativa automaticamente na próxima mensagem do cliente!** Dessa forma, o cliente jamais fica desamparado.
+### 6. Alertas de Leads Quentes & Fechamentos Prioritários
+* Quando o cliente pede a chave PIX, conta bancária ou solicita contrato, o cartão recebe a sinalização de **LEAD QUENTE**, ficando em destaque no topo do funil.
 
 ---
 
-## 📱 Exemplo Real de Atendimento de Ocorrência (Modelo Neutro White-Label)
+## [Modulo 5] SAC & Pós-Venda: Alinhamento Real de Expectativas
 
-Confira a simulação real de uma conversa de SAC no WhatsApp processada pela Sofia:
+O atendimento de suporte e garantias no NEXA CRM foi estruturado para acolher o cliente com seriedade, sem criar falsas promessas de atendimento fora de hora:
 
-* **Cliente:**
-  > *"Comprei um equipamento industrial e a lâmina travou no segundo dia de uso! Preciso de ajuda urgente!"*
+### 1. Coleta Inicial e Emissão de Protocolo
+* A Sofia identifica a solicitação de suporte, solicita fotos ou vídeos da ocorrência e o número da Nota Fiscal ou Pedido.
+* Emite na hora um **Protocolo Oficial de Atendimento** (ex: `#SAC-CRM-4921`) e move o cartão para a coluna de SAC do Kanban.
 
-* **Sofia (IA Especialista):**
-  > *"Sinto muito pelo ocorrido! Vou registrar seu chamado agora mesmo para resolvermos isso o mais rápido possível. Por gentileza, me envie uma foto ou vídeo curto do item e o número da sua Nota Fiscal ou Pedido. Por segurança, mantenha o equipamento fora da tomada, tá bom?"*
+### 2. Alinhamento de Horários e Expectativa Honesta
+* **Durante o Horário Comercial:**
+  > *"Recebi suas informações com sucesso e seu chamado está registrado sob o Protocolo Oficial #SAC-CRM-4921. Nossa equipe técnica já foi notificada no painel e vai te atender por aqui no horário de expediente."*
+* **À Noite, Madrugada ou Finais de Semana:**
+  > *"Recebi seus dados com sucesso e seu chamado está registrado sob o Protocolo Oficial #SAC-CRM-4921. Como estamos fora do horário de expediente da equipe técnica, sua solicitação já está priorizada para o início do próximo dia útil, a partir das 08h. Fique tranquilo que daremos andamento prioritário logo cedo!"*
 
-* **Cliente:**
-  > *[Foto do Equipamento Enviada] - Nota Fiscal nº 8492*
-
-* **Sofia (IA Especialista):**
-  > *"Perfeito! Já registrei seu chamado no sistema sob o Protocolo Oficial #SAC-CRM-4921. Nossa equipe técnica já foi notificada no Kanban com a sua foto e a nota fiscal e vai assumir o atendimento diretamente por aqui em instantes!"*
-
-> **Por Que Este Fluxo Transmite Segurança Total ao Consumidor?**
-> O cliente recebe confirmação imediata com um protocolo numérico oficial, sabe que a foto e a nota já estão com os técnicos e se sente acolhido 24 horas por dia, sem angústia ou dúvida.
+Dessa forma, o cliente nunca fica sem resposta, recebe um comprovante formal numerado e sabe exatamente quando será chamado pelo time técnico, sem falsas expectativas.
 
 ---
 
-## 📋 Como Funciona a Rotina de Quem Usa o NEXA CRM
+## [Modulo 6] A Rotina Prática de Quem Opera o NEXA CRM
 
-1. **Pela Manhã (08h00):**
-   Você abre o computador e dá uma olhada no Kanban.
-   Todos os clientes que mandaram mensagem na madrugada ou no fim de semana já foram acolhidos, já receberam o catálogo em PDF, já tiraram dúvidas e os mais quentes já estão na coluna *"Em Negociação"* esperando apenas o seu *"Bom dia!"*.
-2. **Durante o Dia:**
-   A Sofia atende o grosso das dúvidas repetitivas (horários, endereço, formas de pagamento, modelos disponíveis, prazos, coleta de dados de SAC), liberando você e seus colaboradores para focar no que realmente gera lucro: atender bem quem está pronto para fechar e entregar o serviço.
-3. **À Noite e Finais de Semana:**
-   Sua concorrência fecha as portas e desliga o telefone. A sua empresa continua acordada, acolhendo clientes, captando novos leads, registrando chamados de SAC e agendando para a semana seguinte.
+* **Pela Manhã (08h00):**
+  O gestor abre o Kanban no computador. Todos os clientes que entraram em contato a noite ou no fim de semana já foram acolhidos, receberam informações e estão organizados nas colunas certas, com os casos urgentes sinalizados.
+* **Durante o Expediente:**
+  A Sofia absorve o volume de perguntas repetitivas, permitindo que a equipe comercial dedique seu tempo a quem está pronto para comprar e a equipe técnica atenda os chamados com calma.
+* **À Noite e Finais de Semana:**
+  Sua empresa mantém presença acolhedora ativa, captando novos contatos, tirando dúvidas iniciais e agendando atendimentos para a semana seguinte.
 
 ---
 
-## 🤝 Dúvidas e Demonstração Assistida
-O NEXA CRM foi feito para descomplicar a sua vida e colocar dinheiro no seu caixa de forma organizada e moderna.
+## [Modulo 7] Suporte Técnico & Demonstração Assistida
 
-Para agendar uma demonstração assistida, tirar dúvidas de configuração ou personalizar a inteligência artificial para o seu negócio:
-* **Responsável:** Marco Duarte & Equipe Técnica NEXA CRM
+Para suporte operacional, dúvidas de uso ou treinamento da sua equipe:
+
+* **Responsável Técnico:** Marco Duarte & Equipe NEXA CRM
 * **WhatsApp Oficial:** (11) 97614-3323
-* **Plataforma Online:** `crm.makprojetosmake.com.br`
+* **E-mail de Suporte:** marco.agduarte22@gmail.com
+* **Portal do Sistema:** `crm.makprojetosmake.com.br`

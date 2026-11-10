@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta Comercial Executiva | NEXA CRM - Inteligência no WhatsApp</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #eef2ff;
+      --secondary: #0f172a;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #334155;
+      --text-muted: #64748b;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background-color: #f8fafc;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 30px 24px;
+    }
+
+    /* Print Toolbar */
+    .toolbar {
+      position: sticky;
+      top: 15px;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 12px 20px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      color: #fff;
+    }
+
+    .toolbar-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-live {
+      background: #10b981;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: #10b981;
+    }
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    /* Header */
+    .header-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      color: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.2);
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-card::after {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .header-tag {
+      display: inline-block;
+      background: rgba(79, 70, 229, 0.3);
+      border: 1px solid rgba(129, 140, 248, 0.4);
+      color: #c7d2fe;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .header-subtitle {
+      font-size: 14px;
+      color: #cbd5e1;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    /* Section Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--secondary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 10px;
+    }
+
+    .card-title .tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Pain Points Grid */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 15px;
+    }
+
+    .pain-box {
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .pain-box h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #991b1b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pain-box p {
+      font-size: 12px;
+      color: #7f1d1d;
+      line-height: 1.5;
+    }
+
+    /* Solution Box */
+    .solution-box {
+      background: linear-gradient(to right, #f8fafc, #f1f5f9);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 12px 12px 0;
+      padding: 20px;
+      margin: 15px 0;
+      font-size: 13px;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    /* Feature Pillars */
+    .pillar-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 14px;
+      transition: all 0.2s;
+    }
+
+    .pillar-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.05);
+    }
+
+    .pillar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .pillar-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .pillar-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .pillar-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 15px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .td-highlight {
+      background: #fcfdfe;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .price-tag {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--secondary);
+    }
+
+    .price-period {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* Guarantee & CTA Box */
+    .cta-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      color: #ffffff;
+      padding: 35px;
+      border-radius: 18px;
+      text-align: center;
+      margin-top: 25px;
+      box-shadow: 0 15px 30px -5px rgba(49, 46, 129, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cta-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .cta-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .cta-desc {
+      font-size: 13px;
+      color: #c7d2fe;
+      max-width: 650px;
+      margin: 0 auto 20px auto;
+      line-height: 1.6;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-large {
+      padding: 12px 24px;
+      font-size: 13px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding-bottom: 0;
+      }
+      .toolbar {
+        display: none !important;
+      }
+      .container {
+        padding: 0;
+        max-width: 100%;
+      }
+      .card {
+        box-shadow: none;
+        border: 1px solid #cbd5e1;
+        break-inside: avoid;
+      }
+      .header-card {
+        box-shadow: none;
+        background: #0f172a !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .cta-card {
+        background: #1e1b4b !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Action Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-title">
+        <span>NEXA CRM</span>
+        <span class="badge-live">Proposta Comercial 2026</span>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn" onclick="window.print()">
+          <span>Salvar em PDF / Imprimir</span>
+        </button>
+        <a class="btn btn-success" href="https://wa.me/5511976143323?text=Ol%C3%A1%20Marco!%20Li%20a%20Proposta%20Comercial%20do%20NEXA%20CRM%20e%20quero%20o%20teste%20gr%C3%A1tis%20de%2024h%20no%20meu%20nicho!" target="_blank">
+          <span>Agendar Piloto Grátis</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Executive Header -->
+    <div class="header-card">
+      <div class="header-tag">Apresentação Executiva & Proposta de Valor</div>
+      <h1 class="header-title">NEXA CRM — Inteligência Conversacional & Gestão Comercial no WhatsApp</h1>
+      <p class="header-subtitle">
+        O assistente comercial autônomo que atende dúvidas em segundos por texto e áudio natural, qualifica seus leads e entrega o cliente pronto para a sua equipe fechar.
+      </p>
+    </div>
+
+    <!-- 1. The Real Market Problem -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Diagnóstico] Onde as Empresas Estão Perdendo Vendas no WhatsApp</span>
+        <span class="tag">Gargalos Reais</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="pain-box">
+          <h4>1. O Lead Noturno no Vácuo</h4>
+          <p>Mais de 40% das mensagens chegam no almoço, à noite ou nos fins de semana. Se a resposta demora 10 minutos, o cliente procura o concorrente no Google e fecha lá.</p>
+        </div>
+
+        <div class="pain-box">
+          <h4>2. Equipe Perdendo Tempo</h4>
+          <p>Seus vendedores gastam até 70% do dia respondendo "qual o endereço?", "quanto custa?" e "como funciona?", em vez de focar em negociar e fechar vendas.</p>
+        </div>
+
+        <div class="pain-box">
+          <h4>3. Base Antiga Esquecida</h4>
+          <p>Centenas de clientes que já compraram uma vez ficam esquecidos no WhatsApp porque ninguém tem tempo de mandar mensagem um a um para reativar.</p>
+        </div>
+      </div>
+
+      <div class="solution-box">
+        <b>O Posicionamento do NEXA CRM:</b> O sistema não foi feito para demitir ou substituir seus vendedores. Ele funciona como um <b>filtro de elite</b> que atende o cliente na hora, tira as dúvidas repetitivas pelo catálogo e avisa a sua equipe no momento exato em que o cliente pede PIX ou orçamento formal.
+      </div>
+    </div>
+
+    <!-- 2. The 3 Profit Pillars -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Pilares de Retorno] O Que Faz o Sistema se Pagar Sozinho</span>
+        <span class="tag">Tecnologia & Prática</span>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-header">
+          <span class="pillar-title">1. Atendimento Humanizado com Voz Neural (Sofia)</span>
+          <span class="pillar-badge">Áudio Natural sem Custo</span>
+        </div>
+        <p class="pillar-desc">
+          Se o cliente mandou áudio, a Sofia ouve, transcreve e responde com uma nota de voz com dicção natural brasileira. Para dados bancários, chaves PIX e links, ela responde estritamente por texto para cópia com 1 toque.
+        </p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-header">
+          <span class="pillar-title">2. Funil Visual com Alerta de Fechamento (Kanban Inteligente)</span>
+          <span class="pillar-badge">Visual & Descomplicado</span>
+        </div>
+        <p class="pillar-desc">
+          Chega de planilhas confusas. Conforme o cliente conversa, o cartão dele se move sozinho pelas etapas de qualificação. Se ele pedir chave PIX ou dados de pagamento, ganha destaque prioritário no topo do painel.
+        </p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-header">
+          <span class="pillar-title">3. Reativação Cadenciada da Base Inativa</span>
+          <span class="pillar-badge">Retorno Rápido</span>
+        </div>
+        <p class="pillar-desc">
+          Com um clique, envie convites amigáveis para clientes antigos com ofertas ou lembretes. Quando o cliente responde (seja 10 minutos ou 2 dias depois), a própria Sofia retoma o atendimento e conduz o fechamento.
+        </p>
+      </div>
+    </div>
+
+    <!-- 3. Security & LGPD -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Segurança & LGPD] Proteção Total do Seu Número de WhatsApp</span>
+        <span class="tag">Sem Risco de Banimento</span>
+      </div>
+
+      <div style="font-size: 13px; color: #475569; line-height: 1.6;">
+        <ul style="padding-left: 18px; margin-bottom: 12px;">
+          <li style="margin-bottom: 6px;">
+            <b>Cadência Humana Segura (Anti-Spam):</b> O sistema nunca dispara mensagens em rajada como robôs invasivos. Ele utiliza intervalos aleatórios seguros (15 a 45 segundos) entre cada contato, simulando digitação humana real.
+          </li>
+          <li style="margin-bottom: 6px;">
+            <b>Respeito Estrito à LGPD:</b> Todas as mensagens de reativação acompanham a instrução legal de saída: <i>"Caso não queira mais receber comunicados, responda 'PARAR'"</i>. Ao responder, o contato é descadastrado na hora.
+          </li>
+          <li style="margin-bottom: 6px;">
+            <b>Conexão Ágil e Homologação Corporativa:</b> Conecte em 30 segundos pelo QR Code (igual ao WhatsApp Web) para pilotos e pequenas empresas, com arquitetura pronta para integração à Cloud API Oficial da Meta para operações corporativas.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. Plans & Investment -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Modelos de Implantação] Comparativo de Recursos & Tecnologia</span>
+        <span class="tag">Fase Piloto 2026</span>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Recurso / Funcionalidade</th>
+              <th>Plano Starter</th>
+              <th style="color: var(--primary);">Plano Pro Neural (Mais Escolhido)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Atendimento Autônomo no WhatsApp 24/7</td>
+              <td>Sim (Texto)</td>
+              <td class="td-highlight">Sim (Texto + Áudio Humano)</td>
+            </tr>
+            <tr>
+              <td>Voz Neural da Sofia (Áudios Gravados)</td>
+              <td>—</td>
+              <td class="td-highlight">Ilimitado (Custo R$ 0,00 por áudio)</td>
+            </tr>
+            <tr>
+              <td>Funil Kanban Visual com Alertas de PIX e Fechamentos</td>
+              <td>Incluso</td>
+              <td class="td-highlight">Incluso</td>
+            </tr>
+            <tr>
+              <td>Envio Automático de Catálogos & Dossiês em PDF</td>
+              <td>Incluso</td>
+              <td class="td-highlight">Incluso</td>
+            </tr>
+            <tr>
+              <td>Central de Chat ao Vivo com Transbordo em 1 Clique</td>
+              <td>Incluso</td>
+              <td class="td-highlight">Incluso</td>
+            </tr>
+            <tr>
+              <td>Módulo de Agendamentos & Lembretes</td>
+              <td>Incluso</td>
+              <td class="td-highlight">Incluso</td>
+            </tr>
+            <tr>
+              <td>Reativação Segura de Base Antiga (com LGPD)</td>
+              <td>Até 100 contatos/mês</td>
+              <td class="td-highlight">Até 500 contatos/mês</td>
+            </tr>
+            <tr>
+              <td>Setup & Personalização de IA com Dados da Sua Empresa</td>
+              <td><span style="color: #16a34a; font-weight: 700;">100% Gratuito no Piloto</span></td>
+              <td class="td-highlight"><span style="color: #16a34a; font-weight: 700;">100% Gratuito no Piloto</span></td>
+            </tr>
+            <tr>
+              <td><b>Condição de Investimento Mensal</b></td>
+              <td><span class="price-tag" style="font-size: 13px;">Condição Especial para Clientes Piloto</span></td>
+              <td class="td-highlight"><span class="price-tag" style="font-size: 13px; color: var(--primary);">Condição Especial para Clientes Piloto</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size: 11.5px; color: #64748b; margin-top: 12px; line-height: 1.5;">
+        * <b>Sem Contrato de Fidelidade:</b> O investimento mensal é dimensionado de forma justa e acessível de acordo com o porte da sua empresa após o período de teste de 7 dias. Você só permanece enquanto o sistema trouxer lucro e eficiência para o seu negócio.
+      </p>
+    </div>
+
+    <!-- 5. The Irresistible Offer -->
+    <div class="cta-card">
+      <div class="cta-badge">Oferta de Demonstração Exclusiva</div>
+      <h2 class="cta-title">Teste o NEXA no Seu WhatsApp por 7 Dias Sem Pagar Nada</h2>
+      <p class="cta-desc">
+        "Nós montamos e personalizamos uma versão piloto com o catálogo, preços e regras da sua empresa em 24 horas. Você conecta o seu WhatsApp e testa durante 7 dias sem compromisso. Se sentir a diferença no atendimento e nas vendas, nós conversamos. Se não gostar, desplugamos e continuamos amigos."
+      </p>
+      <div class="cta-actions">
+        <a class="btn btn-success btn-large" href="https://wa.me/5511976143323?text=Ol%C3%A1%20Marco!%20Quero%20montar%20o%20piloto%20gratuito%20de%2024h%20do%20NEXA%20CRM%20para%20a%20minha%20empresa!" target="_blank">
+          <span>Solicitar Piloto Gratuito em 24h</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p><b>NEXA CRM — Inteligência Conversacional & Gestão Autônoma no WhatsApp</b></p>
+      <p>Marco Duarte | Telefone/WhatsApp: (11) 97614-3323 | E-mail: marco.agduarte22@gmail.com | crm.makprojetosmake.com.br</p>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -168,13 +168,22 @@ async function startServer() {
     res.status(404).send('Manual da Primo Equipamentos não encontrado.');
   });
 
-  // Route to view and print the official NEXA CRM Presentation Guide
-  app.get(['/nexa-guia', '/nexa-manual', '/apresentacao-nexa'], (req: Request, res: Response) => {
+  // Route to view and print the official NEXA CRM Presentation Guide (Client Manual)
+  app.get(['/nexa-guia', '/nexa-manual', '/apresentacao-nexa', '/manual-nexa'], (req: Request, res: Response) => {
     const manualPath = path.join(process.cwd(), 'public', 'nexa_guia.html');
     if (fs.existsSync(manualPath)) {
       return res.sendFile(manualPath);
     }
     res.status(404).send('Guia Oficial do NEXA CRM não encontrado.');
+  });
+
+  // Route to view and print the official NEXA CRM Executive Commercial One-Pager Proposal
+  app.get(['/nexa-comercial', '/proposta-nexa', '/comercial-nexa', '/proposta'], (req: Request, res: Response) => {
+    const proposalPath = path.join(process.cwd(), 'public', 'nexa_comercial.html');
+    if (fs.existsSync(proposalPath)) {
+      return res.sendFile(proposalPath);
+    }
+    res.status(404).send('Proposta Comercial do NEXA CRM não encontrada.');
   });
 
   // Simulator route to simulate incoming WhatsApp message directly from the UI
@@ -1930,6 +1939,12 @@ async function startServer() {
       return res.status(404).json({ error: 'Lead não encontrado.' });
     }
 
+    // Skip if user requested opt-out under LGPD
+    if (lead.tags && lead.tags.includes('Descadastrado/LGPD')) {
+      console.log(`[Reativação] Lead ${lead.phone} solicitou descadastro conforme LGPD. Pulando envio.`);
+      return res.status(200).json({ status: 'skipped_opt_out', message: 'Lead descadastrado pela LGPD.' });
+    }
+
     const firstName = (lead.name || 'tudo bem').split(' ')[0];
     const favoriteItem = lead.deliveryInfo?.itemsDescription || lead.interest || 'sua preferência';
     const bizName = db.agentConfig.businessName || 'nossa equipe';
@@ -1941,7 +1956,7 @@ async function startServer() {
       if (vMatch && vMatch[1]) vehicleName = vMatch[1].trim();
     }
 
-    const customizedText = (messageTemplate || 'Olá {nome}, tudo bem? Passando para te dar um oi!')
+    let customizedText = (messageTemplate || 'Olá {nome}, tudo bem? Passando para te dar um oi!')
       .replace(/\{nome\}/gi, firstName)
       .replace(/\{procedimento\}/gi, lead.triage?.procedure || lead.interest || 'atendimento')
       .replace(/\{interesse\}/gi, lead.interest || 'nossos produtos')
@@ -1953,6 +1968,11 @@ async function startServer() {
       .replace(/\{veiculo\}/gi, vehicleName)
       .replace(/\{peca\}/gi, lead.interest || 'a peça cotada')
       .replace(/\{dias_sem_pedir\}/gi, 'mais de 20 dias');
+
+    // Append friendly LGPD opt-out note for text messages
+    if (!sendAsVoice && !customizedText.toLowerCase().includes('parar')) {
+      customizedText += '\n\n(Caso não queira mais receber comunicados, responda "PARAR")';
+    }
 
     try {
       let messageSentType = 'text';

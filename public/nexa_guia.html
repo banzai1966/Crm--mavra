@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia Didático Oficial & Manual do Cliente | NEXA CRM</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #eef2ff;
+      --secondary: #0f172a;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --text: #334155;
+      --text-muted: #64748b;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background-color: #f8fafc;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 24px;
+    }
+
+    /* Print Toolbar */
+    .toolbar {
+      position: sticky;
+      top: 15px;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 12px 20px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      color: #fff;
+    }
+
+    .toolbar-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Header */
+    .header-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      color: #ffffff;
+      padding: 35px;
+      border-radius: 18px;
+      margin-bottom: 25px;
+      box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.15);
+    }
+
+    .header-tag {
+      display: inline-block;
+      background: rgba(79, 70, 229, 0.3);
+      border: 1px solid rgba(129, 140, 248, 0.4);
+      color: #c7d2fe;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .header-title {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Section Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--secondary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 10px;
+    }
+
+    .card-title .tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .step-box {
+      background: #f8fafc;
+      border-left: 3px solid var(--primary);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+
+    .step-number {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .step-text {
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .quote-box {
+      background: #f8fafc;
+      border-left: 4px solid #10b981;
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 12px 0;
+      font-style: italic;
+      color: #1e293b;
+      font-size: 12.5px;
+    }
+
+    .routine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .routine-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .routine-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 6px;
+    }
+
+    .routine-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding-bottom: 0;
+      }
+      .toolbar {
+        display: none !important;
+      }
+      .container {
+        padding: 0;
+        max-width: 100%;
+      }
+      .card {
+        box-shadow: none;
+        border: 1px solid #cbd5e1;
+        break-inside: avoid;
+      }
+      .header-card {
+        background: #0f172a !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="toolbar">
+      <div class="toolbar-title">NEXA CRM — Manual do Cliente & Guia de Uso</div>
+      <button class="btn" onclick="window.print()">Salvar em PDF / Imprimir</button>
+    </div>
+
+    <div class="header-card">
+      <div class="header-tag">Guia Oficial de Implantação & Uso</div>
+      <h1 class="header-title">NEXA CRM — O Seu Assistente Comercial no WhatsApp</h1>
+      <p class="header-subtitle">
+        Manual didático de configuração, rotina prática e boas práticas de atendimento autônomo para o empresário e sua equipe.
+      </p>
+    </div>
+
+    <!-- 1. What is NEXA -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Módulo 1] O Que É o NEXA CRM?</span>
+        <span class="tag">Visão Geral</span>
+      </div>
+      <p style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 12px;">
+        O <b>NEXA CRM</b> é uma plataforma de gestão e automação comercial no WhatsApp que trabalha em sincronia com a sua equipe humana:
+      </p>
+      <ul style="padding-left: 20px; font-size: 13px; color: #475569; line-height: 1.6;">
+        <li><b>Atendimento Contínuo 24 Horas:</b> Acolhe o cliente na hora, inclusive no almoço, à noite e finais de semana.</li>
+        <li><b>Filtro de Dúvidas Repetitivas:</b> Responde até 85% a 90% das dúvidas sobre produtos, catálogos e preços, entregando o lead pronto para o vendedor humano finalizar.</li>
+        <li><b>Voz Humana Acolhedora:</b> Ouve áudios de clientes e responde com áudios naturais com prosódia brasileira acolhedora.</li>
+        <li><b>Funil Visual (Kanban):</b> Move os clientes automaticamente entre as etapas de qualificação e fechamento.</li>
+      </ul>
+    </div>
+
+    <!-- 2. QR Code Connection -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Módulo 2] Como Conectar Seu WhatsApp em 30 Segundos</span>
+        <span class="tag">Passo a Passo</span>
+      </div>
+
+      <div class="step-box">
+        <div class="step-number">Passo 1</div>
+        <div class="step-text">No painel do NEXA no computador, clique na aba <b>"Conexão WhatsApp"</b>. Um QR Code exclusivo será gerado na tela.</div>
+      </div>
+
+      <div class="step-box">
+        <div class="step-number">Passo 2</div>
+        <div class="step-text">No seu celular, abra o WhatsApp, toque em <b>Aparelhos Conectados</b> e selecione <b>Conectar um Aparelho</b>.</div>
+      </div>
+
+      <div class="step-box">
+        <div class="step-number">Passo 3</div>
+        <div class="step-text">Aponte a câmera do celular para o QR Code no monitor. A luz verde acende em menos de 5 segundos e a Sofia já está conectada de prontidão!</div>
+      </div>
+
+      <p style="font-size: 12px; color: #64748b; margin-top: 10px;">
+        <b>Tranquilidade Garantida:</b> Você continua utilizando o WhatsApp no celular normalmente para mensagens particulares e de fornecedores.
+      </p>
+    </div>
+
+    <!-- 3. Safe Re-engagement & LGPD -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Módulo 3] Reativação Segura de Clientes & Conformidade LGPD</span>
+        <span class="tag">Anti-Spam</span>
+      </div>
+
+      <p style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 12px;">
+        Para recuperar clientes antigos sem correr riscos de bloqueio ou reclamações:
+      </p>
+
+      <ul style="padding-left: 20px; font-size: 13px; color: #475569; line-height: 1.6;">
+        <li><b>Cadência Humana (15 a 45s):</b> O sistema nunca dispara em rajada. Ele simula digitação humana com pausas seguras.</li>
+        <li><b>Apenas Base Própria:</b> Nunca envie mensagens para listas frias compradas. Reative apenas clientes que já tiveram contato prévio com a empresa.</li>
+        <li><b>Descadastro em 1 Toque:</b> Toda mensagem de reativação orienta: <i>"Caso não queira mais receber comunicados, responda 'PARAR'"</i>. Ao responder, o contato é descadastrado imediatamente pelo sistema.</li>
+      </ul>
+    </div>
+
+    <!-- 4. SAC and Honest Expectations -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Módulo 4] SAC & Pós-Venda: Alinhamento de Expectativas</span>
+        <span class="tag">Zero Falsas Promessas</span>
+      </div>
+
+      <p style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 12px;">
+        Para não criar a falsa impressão de que haverá atendimento técnico humano no meio da madrugada:
+      </p>
+
+      <div class="quote-box">
+        <b>No Horário Comercial:</b><br>
+        "Recebi suas informações com sucesso e seu chamado está registrado sob o Protocolo Oficial #SAC-CRM-4921. Nossa equipe técnica já foi notificada no painel e vai te atender por aqui em breve."
+      </div>
+
+      <div class="quote-box" style="border-left-color: #f59e0b;">
+        <b>À Noite ou Fins de Semana:</b><br>
+        "Recebi seus dados com sucesso e seu chamado está registrado sob o Protocolo Oficial #SAC-CRM-4921. Como estamos fora do horário de expediente da equipe técnica, sua solicitação já foi priorizada para o início do próximo dia útil, a partir das 08h."
+      </div>
+    </div>
+
+    <!-- 5. Daily Routine -->
+    <div class="card">
+      <div class="card-title">
+        <span>[Módulo 5] A Rotina Prática de Quem Opera o NEXA CRM</span>
+        <span class="tag">Organização</span>
+      </div>
+
+      <div class="routine-grid">
+        <div class="routine-card">
+          <div class="routine-title">Pela Manhã (08h00)</div>
+          <div class="routine-desc">Abra o Kanban. Todos os leads que entraram à noite já foram acolhidos e organizados nas etapas certas, prontos para a equipe dar bom dia.</div>
+        </div>
+
+        <div class="routine-card">
+          <div class="routine-title">Durante o Dia</div>
+          <div class="routine-desc">A Sofia cuida das dúvidas repetitivas, e seus vendedores focam em negociar com os clientes da coluna "Em Negociação" ou "Lead Quente".</div>
+        </div>
+
+        <div class="routine-card">
+          <div class="routine-title">À Noite e Fim de Semana</div>
+          <div class="routine-desc">Sua empresa continua acolhendo contatos, emitindo protocolos de SAC e agendando para a semana seguinte sem deixar o cliente no vácuo.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p><b>NEXA CRM — Inteligência Conversacional & Gestão Autônoma no WhatsApp</b></p>
+      <p>Suporte & Demonstrações: Marco Duarte | (11) 97614-3323 | marco.agduarte22@gmail.com | crm.makprojetosmake.com.br</p>
+    </div>
+  </div>
+
+</body>
+</html>
