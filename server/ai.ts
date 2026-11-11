@@ -325,11 +325,19 @@ export function sanitizeTextForSpeech(rawText: string): string {
     .replace(/\bleds\b/gi, 'ledes')
     // "EMDR" -> falado com pausas naturais para clareza acústica
     .replace(/\bEMDR\b/g, 'E.M.D.R.')
-    // Ajustes fonéticos específicos para Applay, PickPlay e WMS:
-    .replace(/\bApplay\b/g, 'Éplei')
-    .replace(/\bapplay\b/g, 'éplei')
-    .replace(/\bPickPlay\b/g, 'Pik-plêi')
-    .replace(/\bpickplay\b/g, 'pik-plêi')
+    // Ajustes fonéticos e dicção natural em Português do Brasil para Applay, Lab, Ecom, Log e WMS:
+    .replace(/\bApplay\s+LAB\b/gi, 'Áp-lai Láb')
+    .replace(/\bApplay\s+ECOM\b/gi, 'Áp-lai É-com')
+    .replace(/\bApplay\s+LOG\b/gi, 'Áp-lai Lóg')
+    .replace(/\bApplay\b/g, 'Áp-lai')
+    .replace(/\bapplay\b/g, 'áp-lai')
+    .replace(/\bLAB\b/g, 'Láb')
+    .replace(/\blab\b/g, 'láb')
+    .replace(/\bECOM\b/g, 'É-com')
+    .replace(/\becom\b/g, 'é-com')
+    .replace(/\bLOG\b/g, 'Lóg')
+    .replace(/\blog\b/g, 'lóg')
+    .replace(/\bPickPlay\b/gi, 'Pik-plai')
     .replace(/\bWMS\b/g, 'Dáblio M. S.')
     // Converte abertura fria "Nome," em "Nome! " para entonação calorosa e natural na voz
     .replace(/^([A-ZÁÉÍÓÚÂÊÔÃÕ][a-záéíóúâêôãõ]+),\s*/, '$1! ')
