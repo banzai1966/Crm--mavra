@@ -759,25 +759,25 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
       </div>
 
       {/* Reativação de Base de Pacientes Inativos KPI Highlight */}
-      <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 text-white shadow-lg space-y-4">
+      <div className="bg-[#141529] border border-indigo-700/60 rounded-2xl p-4 sm:p-5 text-white shadow-md space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 flex items-center justify-center shrink-0 shadow-inner">
+            <div className="w-12 h-12 rounded-xl bg-indigo-600/30 border border-indigo-400/40 text-indigo-300 flex items-center justify-center shrink-0">
               <Sparkles className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/40">
                   Resgate do "Dinheiro na Gaveta"
                 </span>
-                <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <span className="text-[10px] text-emerald-300 font-bold bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/40">
                   🛡️ Cadência Segura Anti-Bloqueio (25-45s)
                 </span>
               </div>
               <h3 className="text-base font-bold text-white tracking-tight mt-1 flex items-center gap-2">
                 Reativação de Base & Clientes Inativos (Campanhas com IA)
               </h3>
-              <p className="text-xs text-slate-300 mt-0.5 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-200 mt-0.5 max-w-2xl leading-relaxed">
                 Aborda contatos que não compram ou consultam há mais de 30/60/180 dias com mensagens humanizadas personalizadas (com nome ou áudio falado). Quando o cliente responde "oi, tudo bem", a Sofia retoma a conversa e fecha!
               </p>
             </div>
@@ -787,7 +787,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             <button
               type="button"
               onClick={() => setShowReactivationExplainModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer border border-white/10"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-900/70 hover:bg-indigo-800 text-indigo-100 text-xs font-bold transition-all cursor-pointer border border-indigo-500/40"
               title="Ver explicação passo a passo com exemplo de WhatsApp"
             >
               <Info className="w-3.5 h-3.5 text-indigo-300" />
@@ -797,7 +797,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             <button
               type="button"
               onClick={() => onNavigateToTab('kanban')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all cursor-pointer shadow-sm"
             >
               <span>Ver Base no Kanban</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -806,50 +806,50 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         </div>
 
         {/* Métricas da Reativação */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-[#1e2038] border border-indigo-600/40 rounded-xl p-3">
           <div className="text-center sm:text-left">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Na Fila de Resgate</span>
+            <span className="text-[10px] text-slate-300 uppercase font-semibold block">Na Fila de Resgate</span>
             <span className="text-base sm:text-lg font-extrabold text-indigo-300 font-mono">
               {baseAntigaLeads.length} contatos
             </span>
             <span className="text-[10px] text-slate-400 block">Clientes antigos mapeados</span>
           </div>
 
-          <div className="text-center sm:text-left border-l border-white/10 pl-3">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Resgatados / Ativos</span>
+          <div className="text-center sm:text-left border-l border-indigo-700/50 pl-3">
+            <span className="text-[10px] text-slate-300 uppercase font-semibold block">Resgatados / Ativos</span>
             <span className="text-base sm:text-lg font-extrabold text-emerald-400 font-mono">
               {reactivatedLeads.length} ({reactivatedRate}%)
             </span>
-            <span className="text-[10px] text-emerald-300/80 block">Responderam & retomaram</span>
+            <span className="text-[10px] text-emerald-300/90 block">Responderam & retomaram</span>
           </div>
 
-          <div className="text-center sm:text-left border-l border-white/10 pl-3 col-span-2 sm:col-span-1">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Receita Resgatada</span>
+          <div className="text-center sm:text-left border-l border-indigo-700/50 pl-3 col-span-2 sm:col-span-1">
+            <span className="text-[10px] text-slate-300 uppercase font-semibold block">Receita Resgatada</span>
             <span className="text-base sm:text-lg font-extrabold text-amber-300 font-mono">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(reactivatedRevenue)}
             </span>
-            <span className="text-[10px] text-amber-300/80 block">Vendas que estavam perdidas</span>
+            <span className="text-[10px] text-amber-200/90 block">Vendas que estavam perdidas</span>
           </div>
         </div>
       </div>
 
       {/* Módulo SAC & Pós-Venda Inteligente (90% Automatizado) */}
-      <div className="bg-gradient-to-r from-slate-900 via-amber-950/40 to-slate-900 border border-amber-500/30 rounded-2xl p-4 sm:p-5 text-white shadow-lg space-y-4">
+      <div className="bg-[#241705] border border-amber-600/60 rounded-2xl p-4 sm:p-5 text-white shadow-md space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center shrink-0 shadow-inner">
+            <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-400 flex items-center justify-center shrink-0">
               <ShieldCheck className="w-6 h-6 text-amber-400" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/30 text-amber-200 border border-amber-400/30">
+                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/30 text-amber-200 border border-amber-400/40">
                   ✨ Módulo SAC & Pós-Venda Ativo (90% Automatizado)
                 </span>
-                <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <span className="text-[10px] text-emerald-300 font-bold bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/40">
                   🛡️ Blindado por Empresa (Zero Contaminação)
                 </span>
                 {openSacLeads.length > 0 && (
-                  <span className="text-[10px] text-rose-300 font-bold bg-rose-500/20 px-2 py-0.5 rounded-full border border-rose-500/30 animate-pulse">
+                  <span className="text-[10px] text-rose-200 font-bold bg-rose-950/80 px-2 py-0.5 rounded-full border border-rose-500/50 animate-pulse">
                     ⚠️ {openSacLeads.length} chamado(s) em aberto
                   </span>
                 )}
@@ -857,7 +857,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               <h3 className="text-base font-bold text-white tracking-tight mt-1 flex items-center gap-2">
                 {currentNiche.sacTitle || 'Central de SAC, Garantia & Pós-Venda Inteligente'}
               </h3>
-              <p className="text-xs text-slate-300 mt-0.5 max-w-2xl leading-relaxed">
+              <p className="text-xs text-amber-100/90 mt-0.5 max-w-2xl leading-relaxed">
                 {currentNiche.sacDescription || 'A Sofia atende reclamações, defeitos e ocorrências 24h, colhe fotos da avaria e dados da nota fiscal, emite Protocolo Oficial e pausa a IA com transbordo seguro no Kanban!'}
               </p>
             </div>
@@ -867,7 +867,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             <button
               type="button"
               onClick={() => setShowSacExplainModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs font-bold transition-all cursor-pointer border border-amber-400/30"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-900/60 hover:bg-amber-900/80 text-amber-200 text-xs font-bold transition-all cursor-pointer border border-amber-500/40"
               title="Ver detalhes de como o SAC dos 90% funciona e como ativar os 10% de Setup"
             >
               <Info className="w-3.5 h-3.5 text-amber-300" />
@@ -877,7 +877,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             <button
               type="button"
               onClick={() => onNavigateToTab('kanban')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all cursor-pointer shadow-sm"
             >
               <span>Ver Chamados no Kanban</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -886,34 +886,34 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         </div>
 
         {/* 4 Pilares Automatizados dos 90% */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-[#382307] border border-amber-600/40 rounded-xl p-3">
           <div className="text-left space-y-0.5">
-            <span className="text-[10px] text-amber-300 uppercase font-bold block">1. Acolhimento 24/7</span>
+            <span className="text-[10px] text-amber-400 uppercase font-bold block">1. Acolhimento 24/7</span>
             <span className="text-xs font-bold text-white block">Zero Vácuo p/ o Cliente</span>
-            <span className="text-[10px] text-slate-400 block">Atende em 3s com calma e empatia sem discussão.</span>
+            <span className="text-[10px] text-amber-200/80 block">Atende em 3s com calma e empatia sem discussão.</span>
           </div>
 
-          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">
-            <span className="text-[10px] text-amber-300 uppercase font-bold block">2. Coleta de Avaria & NF</span>
+          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-amber-700/50 pt-2 sm:pt-0 sm:pl-3">
+            <span className="text-[10px] text-amber-400 uppercase font-bold block">2. Coleta de Avaria & NF</span>
             <span className="text-xs font-bold text-white block">Triagem Cirúrgica</span>
-            <span className="text-[10px] text-slate-400 block">Pede fotos/vídeos da peça, relato e dados da compra.</span>
+            <span className="text-[10px] text-amber-200/80 block">Pede fotos/vídeos da peça, relato e dados da compra.</span>
           </div>
 
-          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">
-            <span className="text-[10px] text-amber-300 uppercase font-bold block">3. Protocolo Formal</span>
+          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-amber-700/50 pt-2 sm:pt-0 sm:pl-3">
+            <span className="text-[10px] text-amber-400 uppercase font-bold block">3. Protocolo Formal</span>
             <span className="text-xs font-bold text-white block">Postura de Empresa Séria</span>
-            <span className="text-[10px] text-slate-400 block">Gera código rastreável oficial.</span>
+            <span className="text-[10px] text-amber-200/80 block">Gera código rastreável oficial.</span>
           </div>
 
-          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3">
-            <span className="text-[10px] text-amber-300 uppercase font-bold block">4. Transbordo Seguro</span>
+          <div className="text-left space-y-0.5 border-t sm:border-t-0 sm:border-l border-amber-700/50 pt-2 sm:pt-0 sm:pl-3">
+            <span className="text-[10px] text-amber-400 uppercase font-bold block">4. Transbordo Seguro</span>
             <span className="text-xs font-bold text-white block">IA Pausada no Kanban</span>
-            <span className="text-[10px] text-slate-400 block">Sua equipe assume sabendo tudo mastigado.</span>
+            <span className="text-[10px] text-amber-200/80 block">Sua equipe assume sabendo tudo mastigado.</span>
           </div>
         </div>
 
         {/* Setup 10% Upsell Box */}
-        <div className="bg-amber-500/10 border border-amber-400/20 rounded-xl p-3 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-200">
+        <div className="bg-[#382307] border border-amber-500/40 rounded-xl p-3 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-200">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
             <span>
@@ -923,7 +923,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           <button
             type="button"
             onClick={() => setShowSacExplainModal(true)}
-            className="underline font-bold text-white hover:text-amber-300 text-xs whitespace-nowrap cursor-pointer shrink-0"
+            className="underline font-bold text-amber-300 hover:text-white text-xs whitespace-nowrap cursor-pointer shrink-0"
           >
             Saiba mais sobre o Setup
           </button>

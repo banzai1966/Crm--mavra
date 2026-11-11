@@ -32,7 +32,6 @@ import { EvolutionConfig, WebhookEventLog } from '../types';
 
 const KNOWN_DEFAULT_KEYS: Record<string, string> = {
   'applay': '3D6D721E-AB8F-4EB8-9CD6-854A062959B5',
-  'applay-logistica': '3D6D721E-AB8F-4EB8-9CD6-854A062959B5',
   'codeon': 'CODEON-98F3-4A21-8B7C-E51928374650',
   'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
   'verzel': '8B4CDFF9-8C33-415D-9877-EBE5E74134F4',
@@ -740,7 +739,59 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-10 gap-2.5">
+            {/* Tab 0: Instância Applay (Oficial Conectada) */}
+            <div
+              onClick={() => handleSelectInstanceTab('applay')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'applay'
+                  ? 'border-amber-600 bg-amber-50/50 ring-1 ring-amber-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <span className="text-sm">📦</span>
+                  Applay (PickPlay)
+                </span>
+                {config.instanceName === 'applay' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-amber-700">applay</strong>
+              </p>
+              <span className="inline-block text-[10px] text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded mt-2">
+                Sofia • WMS & Picking
+              </span>
+            </div>
+
+            {/* Tab 0.5: Instância CodeOn Desenvolvimento */}
+            <div
+              onClick={() => handleSelectInstanceTab('codeon')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'codeon'
+                  ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Code2 className="w-3.5 h-3.5 text-blue-600" />
+                  CodeOn Sistemas
+                </span>
+                {config.instanceName === 'codeon' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-blue-700">codeon</strong>
+              </p>
+              <span className="inline-block text-[10px] text-blue-800 font-semibold bg-blue-100/70 px-2 py-0.5 rounded mt-2">
+                Sofia • Squads Ágeis
+              </span>
+            </div>
+
             {/* Tab 1: Instância Primo Equipamentos */}
             <div
               onClick={() => handleSelectInstanceTab('primo-equipamentos')}
@@ -1290,9 +1341,11 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               const allList = [...MANAGED_COMPANIES];
               const knownInstances = new Set(MANAGED_COMPANIES.map((m) => m.instance));
 
+              const IGNORED_DUPLICATES = new Set(['applay-logistica', 'amaroadvogados', 'dra-lucy-murata', 'psi', 'cemiterio-cantareira-48zvof']);
+
               if (config.instanceApiKeys) {
                 for (const [instKey, tokenVal] of Object.entries(config.instanceApiKeys)) {
-                  if (!knownInstances.has(instKey) && instKey !== 'psi' && instKey !== 'cemiterio-cantareira-48zvof') {
+                  if (!knownInstances.has(instKey) && !IGNORED_DUPLICATES.has(instKey)) {
                     knownInstances.add(instKey);
                     allList.push({
                       instance: instKey,
@@ -1307,7 +1360,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               }
 
               for (const vpsInst of availableInstances) {
-                if (!knownInstances.has(vpsInst.name) && vpsInst.name !== 'psi' && vpsInst.name !== 'cemiterio-cantareira-48zvof') {
+                if (!knownInstances.has(vpsInst.name) && !IGNORED_DUPLICATES.has(vpsInst.name)) {
                   knownInstances.add(vpsInst.name);
                   allList.push({
                     instance: vpsInst.name,
