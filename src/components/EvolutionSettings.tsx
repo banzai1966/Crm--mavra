@@ -31,7 +31,8 @@ import {
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
 const KNOWN_DEFAULT_KEYS: Record<string, string> = {
-  'applay': 'APPLAY-77E2-4C19-9A3D-F81928374601',
+  'applay': '3D6D721E-AB8F-4EB8-9CD6-854A062959B5',
+  'applay-logistica': '3D6D721E-AB8F-4EB8-9CD6-854A062959B5',
   'codeon': 'CODEON-98F3-4A21-8B7C-E51928374650',
   'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
   'verzel': '8B4CDFF9-8C33-415D-9877-EBE5E74134F4',
@@ -54,7 +55,7 @@ const MANAGED_COMPANIES = [
     instance: 'applay',
     company: 'Applay (PickPlay, Tracking & WMS)',
     niche: 'Supply Chain, Picking & Logística (Sofia)',
-    defaultToken: 'APPLAY-77E2-4C19-9A3D-F81928374601',
+    defaultToken: '3D6D721E-AB8F-4EB8-9CD6-854A062959B5',
     badge: 'bg-amber-100 text-amber-900 border-amber-300',
     iconColor: 'text-amber-600',
   },
