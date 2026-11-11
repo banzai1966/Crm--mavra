@@ -128,6 +128,17 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão as prioridades do roadmap de tecnologia da sua empresa. Nossa liderança técnica da CodeOn tem horários abertos esta semana para uma sessão de Diagnóstico de Capacidade Técnica gratuito (20 min) para mapear stacks e dimensionar a squad ideal. Como está sua agenda? 💻🚀',
   },
+  applay: {
+    activeWorkspaceName: 'Applay – PickPlay, Tracking & WMS Logístico',
+    personaName: 'Sofia da Applay',
+    role: 'Consultora Executiva de Soluções Logísticas & Supply Chain da Applay',
+    toneOfVoice: 'Consultiva, ágil, altamente técnica, orientada a ganhos de produtividade operacional, velocidade de separação e precisão logística.',
+    salesGoal: 'Mapear o volume de pedidos diários e o perfil da operação do cliente (e-commerce, centro de distribuição ou frota própria), diagnosticar gargalos de picking ou entregas, e agendar uma Sessão de Demonstração Técnica Online do PickPlay e do Tracking com a liderança técnica da Applay.',
+    followUpNiche: 'b2b_services',
+    catalogPdfName: 'Dossie_Tecnico_Applay_Logistica.pdf',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os desafios de picking e expedição na sua operação logística. Nossa equipe técnica da Applay tem slots abertos esta semana para uma demonstração rápida do PickPlay e do Tracking ao vivo. Como está sua disponibilidade? 📦⚡',
+  },
 };
 
 export const CLINIC_STAGES: KanbanStage[] = [
@@ -226,7 +237,20 @@ export const CODEON_STAGES: KanbanStage[] = [
   { id: 'stage-sac', name: '⚙️ Governança Técnica & Alinhamento de SLA', color: '#ea580c', order: 8 },
 ];
 
+export const APPLAY_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base de Operações & CDs (+6m)', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação Logística & E-commerce (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Triagem de Volume & Gargalo Operacional', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Diagnóstico de Picking / Frota / WMS', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Demonstração Técnica Agendada (PickPlay / Tracking)', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Proposta Comercial / Prova de Conceito (PoC)', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Contrato Fechado / Rollout de Software', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Standby / Avaliação de Budget', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '⚙️ SAC / Suporte Técnico a Operadores & WMS N1', color: '#ea580c', order: 8 },
+];
+
 export function getStagesForNiche(niche?: string): KanbanStage[] {
+  if (niche === 'applay' || niche === 'applayos' || niche === 'app-lay' || niche === 'pickplay' || niche === 'tracking') return APPLAY_STAGES;
   if (niche === 'codeon' || niche === 'code-on' || niche === 'squad' || niche === 'squads') return CODEON_STAGES;
   if (niche === 'primo') return PRIMO_STAGES;
   if (niche === 'surfacebrasil') return SURFACE_STAGES;
@@ -281,6 +305,9 @@ export function normalizeNicheKey(raw?: string | null): string {
   if (clean === 'codeon' || clean === 'code-on' || clean.includes('codeon') || clean.includes('squad')) {
     return 'codeon';
   }
+  if (clean === 'applay' || clean === 'applayos' || clean === 'app-lay' || clean.includes('applay') || clean.includes('pickplay') || clean.includes('tracking')) {
+    return 'applay';
+  }
   if (clean === 'primo' || clean.includes('primo-equipamento') || clean.includes('primo_equipamento')) {
     return 'primo';
   }
@@ -327,6 +354,7 @@ export function resolveClientLeadWorkspace(lead: Lead): string {
   }
 
   if (lowerTags.some((t) => t.includes('codeon') || t.includes('squad')) || notes.includes('codeon') || interest.includes('codeon')) return 'codeon';
+  if (lowerTags.some((t) => t.includes('applay') || t.includes('pickplay') || t.includes('tracking')) || notes.includes('applay') || interest.includes('applay')) return 'applay';
   if (lowerTags.some((t) => t.includes('primo')) || notes.includes('primo')) return 'primo';
   if (lowerTags.some((t) => t.includes('surface') || t.includes('plasma')) || notes.includes('surface') || interest.includes('sap02')) return 'surfacebrasil';
   if (lowerTags.some((t) => t.includes('verzel')) || notes.includes('verzel') || interest.includes('verzel')) return 'verzel';
@@ -486,13 +514,15 @@ export default function App() {
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('modo') === 'cliente' || params.get('cliente') === 'true' || params.get('client') === 'true') {
+      const isClientUrl =
+        params.get('modo') === 'cliente' ||
+        params.get('cliente') === 'true' ||
+        params.get('client') === 'true';
+      if (isClientUrl) {
         return false;
       }
     }
-    const stored = safeStorage.getItem('nexa_admin_unlocked');
-    if (stored === 'false') return false;
-    // Default to true
+    // If accessing directly without client URL params, Marco is ALWAYS unlocked by default!
     safeStorage.setItem('nexa_admin_unlocked', 'true');
     return true;
   });
@@ -512,6 +542,17 @@ export default function App() {
   const handleUnlockAdmin = () => {
     safeStorage.setItem('nexa_admin_unlocked', 'true');
     setIsAdminUnlocked(true);
+    if (typeof window !== 'undefined') {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('modo');
+        url.searchParams.delete('cliente');
+        url.searchParams.delete('client');
+        window.history.replaceState({}, '', url.toString());
+      } catch (e) {
+        // Ignore if error manipulating URL
+      }
+    }
   };
 
   const handleLockAdmin = () => {

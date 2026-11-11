@@ -16,6 +16,7 @@ import {
   UtensilsCrossed,
   MessageCircle,
   Scale,
+  Package,
 } from 'lucide-react';
 
 interface ClientLinkModalProps {
@@ -35,6 +36,15 @@ interface CompanyOption {
 }
 
 const COMPANIES: CompanyOption[] = [
+  {
+    id: 'applay',
+    name: 'Applay (PickPlay, Tracking & WMS)',
+    subtitle: 'Supply Chain, Picking Ágil de E-commerce & Logística',
+    icon: Package,
+    tag: 'Supply Chain & Logística',
+    badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
+    aliases: ['applay', 'applayos', 'pickplay', 'tracking', 'logistica'],
+  },
   {
     id: 'codeon',
     name: 'CodeOn Desenvolvimento de Sistemas',

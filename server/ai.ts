@@ -325,9 +325,12 @@ export function sanitizeTextForSpeech(rawText: string): string {
     .replace(/\bleds\b/gi, 'ledes')
     // "EMDR" -> falado com pausas naturais para clareza acústica
     .replace(/\bEMDR\b/g, 'E.M.D.R.')
-    // Homógrafos heterofônicos: "sede" de empresa (matriz/local físico) deve soar com 'e' aberto (/séde/), e não com som de água (/sêde/):
-    .replace(/\b(nossa|sua|na|da|pela|uma|a)\s+sede\b/gi, '$1 séde')
-    .replace(/\bsede\s+(da|de|em|na|própria|administrativa|operacional|física)\b/gi, 'séde $1')
+    // Ajustes fonéticos específicos para Applay, PickPlay e WMS:
+    .replace(/\bApplay\b/g, 'Éplei')
+    .replace(/\bapplay\b/g, 'éplei')
+    .replace(/\bPickPlay\b/g, 'Pik-plêi')
+    .replace(/\bpickplay\b/g, 'pik-plêi')
+    .replace(/\bWMS\b/g, 'Dáblio M. S.')
     // Converte abertura fria "Nome," em "Nome! " para entonação calorosa e natural na voz
     .replace(/^([A-ZÁÉÍÓÚÂÊÔÃÕ][a-záéíóúâêôãõ]+),\s*/, '$1! ')
     // 8. Normaliza múltiplos espaços em branco e quebras de linha

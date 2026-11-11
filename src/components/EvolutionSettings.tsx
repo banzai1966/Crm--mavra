@@ -31,6 +31,7 @@ import {
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
 const KNOWN_DEFAULT_KEYS: Record<string, string> = {
+  'applay': 'APPLAY-77E2-4C19-9A3D-F81928374601',
   'codeon': 'CODEON-98F3-4A21-8B7C-E51928374650',
   'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
   'verzel': '8B4CDFF9-8C33-415D-9877-EBE5E74134F4',
@@ -49,6 +50,14 @@ const KNOWN_DEFAULT_KEYS: Record<string, string> = {
 const MASTER_GLOBAL_TOKEN = 'b2efa885a71ee22edf72b597df1a0ce9';
 
 const MANAGED_COMPANIES = [
+  {
+    instance: 'applay',
+    company: 'Applay (PickPlay, Tracking & WMS)',
+    niche: 'Supply Chain, Picking & Logística (Sofia)',
+    defaultToken: 'APPLAY-77E2-4C19-9A3D-F81928374601',
+    badge: 'bg-amber-100 text-amber-900 border-amber-300',
+    iconColor: 'text-amber-600',
+  },
   {
     instance: 'codeon',
     company: 'CodeOn Desenvolvimento de Sistemas',
@@ -346,11 +355,13 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
   // Handle Switch Instance Tab
   const handleSelectInstanceTab = (
-    inst: 'dra-lucy-murata' | 'dental-integrative' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'equipamentospsi' | 'psi' | 'cemiterio-cantareira' | 'amaro-advogados' | 'custom',
+    inst: 'applay' | 'codeon' | 'dra-lucy-murata' | 'dental-integrative' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'equipamentospsi' | 'psi' | 'cemiterio-cantareira' | 'amaro-advogados' | 'custom',
     customName?: string
   ) => {
     setSelectedInstanceTab(inst as any);
     let targetName = 'dental-integrative';
+    if (inst === 'applay') targetName = 'applay';
+    if (inst === 'codeon') targetName = 'codeon';
     if (inst === 'agente-ia') targetName = 'agente-ia';
     if (inst === 'demo-ao-vivo') targetName = 'demo-ao-vivo';
     if (inst === 'verzel') targetName = 'verzel';

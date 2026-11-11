@@ -168,6 +168,24 @@ async function startServer() {
     res.status(404).send('Manual da CodeOn não encontrado.');
   });
 
+  // Route to view and print the Amaro Advogados PDF / Dossier
+  app.get('/amaro-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'amaro_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual da Amaro Advogados não encontrado.');
+  });
+
+  // Route to view and print the Applay PDF / Dossier
+  app.get('/applay-manual', (req: Request, res: Response) => {
+    const manualPath = path.join(process.cwd(), 'public', 'applay_manual.html');
+    if (fs.existsSync(manualPath)) {
+      return res.sendFile(manualPath);
+    }
+    res.status(404).send('Manual da Applay não encontrado.');
+  });
+
   // Route to view and print the Primo Equipamentos PDF / Dossier
   app.get('/primo-manual', (req: Request, res: Response) => {
     const manualPath = path.join(process.cwd(), 'public', 'primo_manual.html');

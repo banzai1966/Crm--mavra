@@ -53,6 +53,7 @@ import {
   Code2,
   ChevronDown,
   Activity,
+  Package,
 } from 'lucide-react';
 import { AgentConfig, KnowledgeDocument, AIProvider, PreRecordedAudio, ClientProfileSummary } from '../types';
 import { AiTestingLabModal } from './AiTestingLabModal';
@@ -76,6 +77,45 @@ export interface AgentPreset {
 }
 
 export const AGENT_PRESETS: AgentPreset[] = [
+  {
+    id: 'applay_logistica',
+    name: 'Applay – PickPlay, Tracking de Entregas & WMS Logístico',
+    category: 'Supply Chain & Logística',
+    tag: 'Applay Logística',
+    description: 'Hub de tecnologia e inovação em logística e supply chain (evolução da iBridge). Especialistas em PickPlay (separação rápida de pedidos no e-commerce), Tracking de motoristas com bipagem e rotas inteligentes, e WMS completo para centros de distribuição.',
+    personaName: 'Sofia da Applay',
+    role: 'Consultora Executiva de Soluções Logísticas & Supply Chain da Applay',
+    toneOfVoice: 'Consultiva, ágil, altamente técnica, orientada a ganhos de produtividade operacional, velocidade de separação e precisão logística.',
+    salesGoal: 'Mapear o volume de pedidos diários e o perfil da operação do cliente (e-commerce, centro de distribuição ou frota própria), diagnosticar gargalos de picking ou entregas, e agendar uma Sessão de Demonstração Técnica Online do PickPlay e do Tracking com a liderança técnica da Applay.',
+    followUpNiche: 'b2b_services',
+    followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os desafios de picking e expedição na sua operação logística. Nossa equipe técnica da Applay tem slots abertos esta semana para uma demonstração rápida do PickPlay e do Tracking ao vivo. Como está sua disponibilidade? 📦⚡',
+    knowledgeFaq: `PERGUNTAS FREQUENTES (APPLAY - SUPPLY CHAIN & LOGÍSTICA):
+
+P: O que é a Applay?
+R: A Applay (applayos.com) é um hub brasileiro de tecnologia especializado em logística, supply chain e e-commerce, evolução da iBridge Solutions (+10 anos de mercado). Sede em São Paulo/SP (Rua Coronel Jordão, 278 - Vila Paiva).
+
+P: Quais os principais produtos da Applay?
+R:
+1. PickPlay: Aplicativo mobile de picking para separação rápida de pedidos no e-commerce, reduzindo erros a zero e aumentando capacidade de envio do CD.
+2. Tracking: Aplicativo para motoristas com rotas inteligentes, bipagem de caixas/sacolas e confirmação digital de entrega.
+3. WMS Applay: Gerenciamento completo de armazém, endereçamento, inventário em tempo real e expedição.
+4. CIA: Movimentação interna para o varejo alimentar e supermercados.
+5. Time to Slot: Agendamento inteligente de docas para evitar filas de carretas.`,
+    knowledgeCatalog: `SOLUÇÕES & PRODUTOS APPLAY:
+1. PickPlay (Separação Ágil de Pedidos no E-commerce com rotas otimizadas).
+2. Tracking (App do Entregador com rotas inteligentes e bipagem de sacolas).
+3. WMS Inteligente (Controle de estoque físico e sistêmico em tempo real).
+4. Demonstração Técnica Online de 25 minutos com especialistas.`,
+    knowledgePricing: `POLÍTICA COMERCIAL APPLAY:
+- Licenciamento SaaS dimensionado por operadores ativos ou volume de pedidos expedidos.
+- Implantação e suporte técnico N1/N2 especializado.
+- Sede: Rua Coronel Jordão, 278 - São Paulo/SP | inovacao@applayos.com | https://applayos.com`,
+    knowledgeRules: `DIRETRIZES DA SOFIA (APPLAY):
+1. Você é exclusivamente a Sofia da Applay (applayos.com).
+2. O nome da empresa é Applay (pronuncia-se foneticamente como 'Éplei').
+3. Entenda se a dor principal é picking no armazém ou tracking na entrega.
+4. Agende uma Demonstração Técnica Online gratuita de 25 minutos com a equipe de engenharia da Applay.`
+  },
   {
     id: 'codeon_squads',
     name: 'CodeOn – Alocação Gerenciada de Squads Ágeis & TI Corporativa',
@@ -2398,6 +2438,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           {/* Cards dos Nichos */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {AGENT_PRESETS.map((preset) => {
+              const isApplay = preset.id === 'applay' || preset.id === 'applay_logistica';
               const isCodeOn = preset.id === 'codeon' || preset.id === 'codeon_squads';
               const isAmaro = preset.id === 'amaro' || preset.id === 'amaro_advogados';
               const isSurface = preset.id === 'surface_brasil_plasma';
@@ -2418,7 +2459,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div
                   key={preset.id}
                   className={`border rounded-xl p-4 flex flex-col justify-between hover:shadow-xs transition-all group ${
-                    isCodeOn
+                    isApplay
+                      ? 'bg-gradient-to-b from-amber-50/70 via-orange-50/20 to-white border-amber-300 ring-1 ring-amber-200 shadow-2xs'
+                      : isCodeOn
                       ? 'bg-gradient-to-b from-blue-50/70 via-indigo-50/30 to-white border-blue-300 ring-1 ring-blue-200 shadow-2xs'
                       : isAmaro
                       ? 'bg-gradient-to-b from-amber-50/60 via-slate-50 to-white border-amber-300 ring-1 ring-amber-200 shadow-2xs'
@@ -2440,7 +2483,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                        isCodeOn
+                        isApplay
+                          ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold'
+                          : isCodeOn
                           ? 'text-blue-900 bg-blue-100 border-blue-300 font-bold'
                           : isAmaro
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold'
@@ -2458,7 +2503,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-semibold'
                           : 'text-indigo-700 bg-indigo-50 border-indigo-100'
                       }`}>
-                        {isCodeOn
+                        {isApplay
+                          ? '📦 APPLAY (PICKPLAY & WMS)'
+                          : isCodeOn
                           ? '💻 CODEON SQUADS & TI'
                           : isAmaro
                           ? '⚖️ AMARO ADVOGADOS'
@@ -2475,6 +2522,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                           : (preset.category || 'Nicho')}
                       </span>
                       <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                        {isApplay && <Package className="w-4 h-4 text-amber-600" />}
                         {isCodeOn && <Code2 className="w-4 h-4 text-blue-600" />}
                         {isAmaro && <Scale className="w-4 h-4 text-amber-700" />}
                         {isSurface && <Zap className="w-4 h-4 text-sky-600" />}

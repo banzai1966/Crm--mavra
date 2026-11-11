@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dossiê Executivo & Soluções Logísticas | Applay (PickPlay, Tracking & WMS)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    :root {
+      --primary: #f59e0b;
+      --primary-dark: #d97706;
+      --primary-light: #fef3c7;
+      --emerald: #059669;
+      --secondary: #0f172a;
+      --text: #334155;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); color: var(--text); background-color: #f8fafc; line-height: 1.6; padding-bottom: 60px; }
+    .container { max-width: 920px; margin: 0 auto; padding: 30px 24px; }
+    .toolbar { position: sticky; top: 15px; z-index: 100; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); color: #fff; padding: 12px 20px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
+    .toolbar-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .btn { background: #f59e0b; color: #0f172a; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn:hover { background: #d97706; color: #fff; }
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    h1 { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    h2 { font-size: 18px; font-weight: 700; color: #1e293b; margin-top: 20px; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+    p { margin-bottom: 12px; font-size: 14px; color: #475569; }
+    ul { margin-left: 20px; margin-bottom: 14px; }
+    li { font-size: 14px; color: #475569; margin-bottom: 6px; }
+    .badge { display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; margin-bottom: 16px; }
+    .feature-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+    .feature-box h3 { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+    @media print { .toolbar { display: none; } body { background: #fff; } .card { border: none; box-shadow: none; padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="toolbar">
+      <div class="toolbar-title">
+        <span>📦 Dossiê Técnico Oficial | Applay (applayos.com)</span>
+      </div>
+      <button class="btn" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+    </div>
+
+    <div class="card">
+      <span class="badge">LOGÍSTICA, SUPPLY CHAIN & E-COMMERCE</span>
+      <h1>Applay – Hub de Inovação em Supply Chain & Varejo</h1>
+      <p>Sede em São Paulo/SP (Vila Paiva - Rua Coronel Jordão, 278) | Soluções em Picking Ágil, Tracking de Entregas e WMS para centros de distribuição e varejistas.</p>
+
+      <h2>1. Quem Somos & Nossa Trajetória</h2>
+      <p>A <strong>Applay</strong> (applayos.com) nasceu como a evolução moderna da <strong>iBridge Solutions</strong> (empresa consolidada com mais de uma década de mercado em automação logística, coletores de dados e WMS). Criada para transformar a produtividade dos centros de distribuição e operações de e-commerce, a Applay combina software ágil, usabilidade intuitiva e conectividade robusta.</p>
+
+      <h2>2. As 5 Grandes Soluções da Applay</h2>
+      <div class="grid">
+        <div class="feature-box">
+          <h3>⚡ 1. PickPlay (Picking de Alta Performance)</h3>
+          <p>Aplicativo mobile para operadores de separação de pedidos. Gera rotas inteligentes dentro do galpão, orienta a coleta por onda ou individual e realiza bipagem conferência eliminando erros de expedição.</p>
+        </div>
+        <div class="feature-box">
+          <h3>🚚 2. Tracking (App do Entregador & Última Milha)</h3>
+          <p>Roteirização inteligente para motoristas, bipagem de caixas e sacolas no embarque e desembarque, controle de check-in/check-out e comprovação digital de entrega em tempo real.</p>
+        </div>
+        <div class="feature-box">
+          <h3>🏭 3. WMS Applay / iBridge (Gestão de Armazém)</h3>
+          <p>Controle total de estoque físico e sistêmico, recebimento com coletores de dados, endereçamento por curva ABC, gestão de validade (FEFO/FIFO), inventário rotativo e expedição.</p>
+        </div>
+        <div class="feature-box">
+          <h3>🛒 4. CIA (Movimentação no Varejo Alimentar)</h3>
+          <p>Aplicativo voltado para movimentações internas, reposição rápida de gôndolas e transferências entre estoques no setor supermercadista.</p>
+        </div>
+        <div class="feature-box">
+          <h3>⏱️ 5. Time to Slot (Gestão de Docas)</h3>
+          <p>Agendamento de janelas de carga e descarga para caminhões e transportadoras, eliminando gargalos de pátio e custos com diárias.</p>
+        </div>
+        <div class="feature-box">
+          <h3>🔌 Integração Completa com ERPs & E-commerce</h3>
+          <p>Conectores prontos para SAP, Totvs Protheus, WinThor, Senior, Sankhya, VTEX, Shopify, Magento e Mercado Livre.</p>
+        </div>
+      </div>
+
+      <h2>3. Demonstração Técnica & Prova de Conceito (PoC)</h2>
+      <p>Nossa equipe técnica realiza sessões executivas online de <strong>25 minutos</strong> para diagnosticar a volumetria de pedidos da sua operação, simular a redução de tempo no picking e estruturar a implantação sem impacto nas rotinas diárias.</p>
+    </div>
+  </div>
+</body>
+</html>
