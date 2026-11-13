@@ -760,8 +760,8 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
               title={
                 agentConfig.isGlobalAiActive !== false
-                  ? 'IA Sofia está Ativa. Clique para pausar.'
-                  : 'IA Sofia está PAUSADA. Clique para reativar.'
+                  ? `IA ${(agentConfig.personaName || 'Sofia').split(' ')[0]} está Ativa. Clique para pausar.`
+                  : `IA ${(agentConfig.personaName || 'Sofia').split(' ')[0]} está PAUSADA. Clique para reativar.`
               }
             >
               <span

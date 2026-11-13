@@ -45,6 +45,10 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   onUpdateAgentConfig,
   onRefreshLeads,
 }) => {
+  const shortPersona = (agentConfig?.personaName || 'Sofia').split(' ')[0] || 'Sofia';
+  const personaOfText = shortPersona.toLowerCase() === 'sofia' ? 'da Sofia' : `de ${shortPersona}`;
+  const personaWithArticleText = shortPersona.toLowerCase() === 'sofia' ? 'a Sofia' : shortPersona;
+
   // Google Auth state
   const [googleUserEmail, setGoogleUserEmail] = useState<string | null>(
     agentConfig.calendarConnectedEmail || null
@@ -441,7 +445,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Settings className="w-4 h-4 text-slate-600" />
-              <span>Regras de Agendamento da Sofia (IA)</span>
+              <span>Regras de Agendamento {personaOfText} (IA)</span>
             </h2>
             {saveSuccessMsg && (
               <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
@@ -543,7 +547,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
             </div>
             <h3 className="text-sm font-semibold text-slate-800">Nenhum compromisso marcado no momento</h3>
             <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
-              Assim que a Sofia (IA) agendar com um lead no WhatsApp ou você clicar em "Novo Agendamento", as consultas aparecerão organizadas aqui.
+              Assim que {personaWithArticleText} (IA) agendar com um lead no WhatsApp ou você clicar em &quot;Novo Agendamento&quot;, os horários aparecerão organizados aqui.
             </p>
           </div>
         ) : (

@@ -312,6 +312,13 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
 }) => {
   const currentNicheKey = agentConfig.followUpNiche || 'dental';
   const currentNiche: NichePreset = NICHE_PRESETS[currentNicheKey] || NICHE_PRESETS.general;
+  const rawPersona = (agentConfig.personaName || 'Sofia').trim();
+  const shortPersona = rawPersona.split(' ')[0] || 'Sofia';
+  const isSofiaPersona = shortPersona.toLowerCase() === 'sofia';
+  const personaWithArticle = isSofiaPersona ? 'a Sofia' : shortPersona;
+  const personaWithCapArticle = isSofiaPersona ? 'A Sofia' : shortPersona;
+  const personaOfArticle = isSofiaPersona ? 'da Sofia' : `de ${shortPersona}`;
+  const isMaCorretora = currentNicheKey === 'macorretora';
 
   const [showResetModal, setShowResetModal] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
@@ -797,7 +804,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 Reativação de Base & Clientes Inativos (Campanhas com IA)
               </h3>
               <p className="text-xs text-slate-200 mt-0.5 max-w-2xl leading-relaxed">
-                Aborda contatos que não compram ou consultam há mais de 30/60/180 dias com mensagens humanizadas personalizadas (com nome ou áudio falado). Quando o cliente responde "oi, tudo bem", a Sofia retoma a conversa e fecha!
+                Aborda contatos que não compram ou consultam há mais de 30/60/180 dias com mensagens humanizadas personalizadas (com nome ou áudio falado). Quando o cliente responde &quot;oi, tudo bem&quot;, {personaWithArticle} retoma a conversa e fecha!
               </p>
             </div>
           </div>
@@ -877,7 +884,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 {currentNiche.sacTitle || 'Central de SAC, Garantia & Pós-Venda Inteligente'}
               </h3>
               <p className="text-xs text-amber-100/90 mt-0.5 max-w-2xl leading-relaxed">
-                {currentNiche.sacDescription || 'A Sofia atende reclamações, defeitos e ocorrências 24h, colhe fotos da avaria e dados da nota fiscal, emite Protocolo Oficial e pausa a IA com transbordo seguro no Kanban!'}
+                {currentNiche.sacDescription || `${personaWithCapArticle} atende reclamações, defeitos e ocorrências 24h, colhe fotos da avaria e dados da nota fiscal, emite Protocolo Oficial e pausa a IA com transbordo seguro no Kanban!`}
               </p>
             </div>
           </div>
@@ -969,7 +976,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 Central de Agendamentos & Lembretes Anti-Falta no WhatsApp
               </h3>
               <p className="text-xs text-slate-500 mt-0.5 max-w-2xl leading-relaxed">
-                A Sofia faz a triagem do paciente (procedimento, particular vs convênio e turno preferido), agenda o horário e dispara lembretes automáticos 24h e 2h antes com confirmação rápida, reduzindo faltas em até 70%!
+                {isMaCorretora
+                  ? `${personaWithCapArticle} faz a triagem do segurado (ramo do seguro, dados do multicálculo e melhor horário), agenda o retorno do corretor e dispara lembretes automáticos 24h e 2h antes com confirmação rápida, evitando perda de cotações!`
+                  : `${personaWithCapArticle} faz a triagem do paciente (procedimento, particular vs convênio e turno preferido), agenda o horário e dispara lembretes automáticos 24h e 2h antes com confirmação rápida, reduzindo faltas em até 70%!`}
               </p>
             </div>
           </div>
@@ -979,7 +988,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               type="button"
               onClick={() => setShowAppointmentExplainModal(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer border border-slate-200"
-              title="Entenda como a Sofia faz a triagem e confirma horários"
+              title={`Entenda como ${personaWithArticle} faz a triagem e confirma horários`}
             >
               <Info className="w-3.5 h-3.5 text-slate-500" />
               <span>Como Funciona o Agendamento</span>
@@ -991,7 +1000,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
             >
               <Calendar className="w-3.5 h-3.5" />
-              <span>Abrir Agenda de Consultas</span>
+              <span>{isMaCorretora ? 'Abrir Agenda de Retornos' : 'Abrir Agenda de Consultas'}</span>
             </button>
           </div>
         </div>
@@ -1007,7 +1016,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               <span className="text-[10px] text-violet-600 font-semibold">{triagedLeads.length} Triados</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Descobre procedimento de interesse, turno desejado (manhã/tarde) e tipo de atendimento sem a secretária precisar digitar.
+              {isMaCorretora
+                ? 'Descobre o ramo do seguro, dados do veículo/vida/saúde e horário ideal sem a equipe precisar digitar nada.'
+                : 'Descobre procedimento de interesse, turno desejado (manhã/tarde) e tipo de atendimento sem a secretária precisar digitar.'}
             </p>
           </div>
 
@@ -1020,7 +1031,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               <span className="text-[10px] text-emerald-600 font-semibold">{confirmedAppointments.length} Confirmados</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              O paciente recebe lembrete no WhatsApp 24h antes e clica para confirmar. Se desmarcar, a recepção é avisada na mesma hora para remanejar a vaga.
+              {isMaCorretora
+                ? 'O segurado recebe lembrete no WhatsApp 24h antes e confirma com 1 clique. Se precisar reagendar, o corretor é avisado na hora.'
+                : 'O paciente recebe lembrete no WhatsApp 24h antes e clica para confirmar. Se desmarcar, a recepção é avisada na mesma hora para remanejar a vaga.'}
             </p>
           </div>
 
@@ -1055,7 +1068,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              A Sofia compila o balanço do dia (Pipeline R$, Pagamentos PIX validados por IA, Agendamentos, Entregas e Urgências) e envia direto no celular do dono.
+              {personaWithCapArticle} compila o balanço do dia (Pipeline R$, Pagamentos PIX validados por IA, Agendamentos, Entregas e Urgências) e envia direto no celular do dono.
             </p>
           </div>
         </div>
@@ -1087,7 +1100,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                     Briefing Executivo no WhatsApp do Dono
                   </h3>
                   <p className="text-[11px] text-slate-500">
-                    Resumo estratégico diário enviado pela IA Sofia no celular do proprietário
+                    Resumo estratégico diário enviado pela IA {shortPersona} no celular do proprietário
                   </p>
                 </div>
               </div>
@@ -1186,7 +1199,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 Experiência do Atendimento com IA: Como Funciona & O Que Esperar
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-                Guia prático para a sua equipe: como conectar o WhatsApp da empresa em 30 segundos, acompanhar os pacientes no CRM em tempo real e os resultados comerciais que você pode esperar.
+                Guia prático para a sua equipe: como conectar o WhatsApp da empresa em 30 segundos, acompanhar {isMaCorretora ? 'os segurados e cotações' : 'os clientes e atendimentos'} no CRM em tempo real e os resultados comerciais que você pode esperar.
               </p>
             </div>
 
@@ -1286,11 +1299,11 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                     </div>
                     <div className="flex items-start gap-2.5">
                       <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">2</span>
-                      <span><strong>Triagem e Avanço de Estágio:</strong> A Sofia descobre interesse, turno de preferência e forma de pagamento, movendo o cartão sozinho para <em>"Em Atendimento"</em> e <em>"Triagem Concluída"</em>.</span>
+                      <span><strong>Triagem e Avanço de Estágio:</strong> {personaWithCapArticle} descobre interesse, turno de preferência e forma de pagamento, movendo o cartão sozinho para <em>&quot;Em Atendimento&quot;</em> e <em>&quot;Triagem Concluída&quot;</em>.</span>
                     </div>
                     <div className="flex items-start gap-2.5">
                       <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">3</span>
-                      <span><strong>Fechamento com PIX ou Pedidos Tabelados:</strong> Se for produto com preço fixo (cardápios, taxas de entrega tabeladas, planos ou itens cadastrados), ou se o cliente pedir a chave PIX, a Sofia envia a chave oficial, lê o comprovante com visão computacional e move o cartão para <em>"Ganho / Pago"</em>!</span>
+                      <span><strong>Fechamento com PIX ou Pedidos Tabelados:</strong> Se for produto com preço fixo (cardápios, taxas de entrega tabeladas, planos ou itens cadastrados), ou se o cliente pedir a chave PIX, {personaWithArticle} envia a chave oficial, lê o comprovante com visão computacional e move o cartão para <em>&quot;Ganho / Pago&quot;</em>!</span>
                     </div>
                   </div>
                 </div>
@@ -1314,7 +1327,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                     </div>
                     <div className="flex items-start gap-2.5">
                       <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">2</span>
-                      <span><strong>A IA Não Chuta Valores:</strong> A Sofia <strong>NUNCA inventa preços</strong> nem fecha no escuro o que precisa de exame! Ela qualifica, tira dúvidas de localização/horários e <strong>agenda a Avaliação Presencial</strong>, deixando o valor final para o profissional fechar cara a cara.</span>
+                      <span><strong>A IA Não Chuta Valores:</strong> {personaWithCapArticle} <strong>NUNCA inventa preços</strong> nem fecha no escuro o que precisa de {isMaCorretora ? 'multicálculo ou análise técnica' : 'exame'}! Ela qualifica, tira dúvidas e <strong>{isMaCorretora ? 'encaminha para cotação ou agendamento' : 'agenda a Avaliação Presencial'}</strong>, deixando o valor oficial fechado com segurança.</span>
                     </div>
                     <div className="flex items-start gap-2.5">
                       <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">3</span>
@@ -1378,7 +1391,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   </div>
                   <h4 className="text-sm font-bold text-white">Resposta "Oi, tudo bem"</h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Quando o cliente responde, a Sofia lê a mensagem que ela mesma mandou antes, acolhe o cliente com simpatia e conduz para o fechamento!
+                    Quando o cliente responde, {personaWithArticle} lê a mensagem que enviou antes, acolhe o cliente com simpatia e conduz para o fechamento!
                   </p>
                 </div>
               </div>
@@ -1421,7 +1434,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   </div>
                   <h4 className="text-sm font-bold text-white">Triagem no WhatsApp</h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    A Sofia pergunta o procedimento ou queixa, se é particular ou convênio, e o turno desejado (manhã ou tarde). Ficha pronta para a recepção.
+                    {isMaCorretora
+                      ? `${personaWithCapArticle} identifica o seguro ou benefício desejado, coleta os dados do multicálculo e o melhor horário para retorno do corretor.`
+                      : `${personaWithCapArticle} pergunta o procedimento ou queixa, se é particular ou convênio, e o turno desejado (manhã ou tarde). Ficha pronta para a recepção.`}
                   </p>
                 </div>
 
@@ -1494,7 +1509,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   </div>
                   <h4 className="text-sm font-bold text-white">Voz Humana com Respiração</h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Se o cliente mandar áudio no WhatsApp, a Sofia escuta, transcreve e responde com áudio falado natural e empático.
+                    Se o cliente mandar áudio no WhatsApp, {personaWithArticle} escuta, transcreve e responde com áudio falado natural e empático.
                   </p>
                 </div>
 
@@ -1875,7 +1890,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                     </div>
                     <div>
                       <strong className="text-slate-900 block text-xs">3. Central de Chat ao Vivo & Intervenção</strong>
-                      <span className="text-[11px] text-slate-500">Leia a conversa ao vivo e, se desejar falar com o paciente pessoalmente, clique em <em>"Assumir Atendimento"</em> para pausar a IA na hora.</span>
+                      <span className="text-[11px] text-slate-500">Leia a conversa ao vivo e, se desejar falar com o {isMaCorretora ? 'segurado' : 'cliente'} pessoalmente, clique em <em>&quot;Assumir Atendimento&quot;</em> para pausar a IA na hora.</span>
                     </div>
                   </div>
                 </div>
@@ -1933,7 +1948,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                     </div>
                     <div>
                       <strong className="text-slate-900 block text-xs">Voz Neural Humanizada em Áudio</strong>
-                      <p className="text-[11px] text-slate-500 leading-relaxed">Se o paciente mandar áudio pelo WhatsApp, a Sofia responde com áudio falado natural com entonação de secretária dedicada.</p>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">Se o {isMaCorretora ? 'segurado' : 'cliente'} mandar áudio pelo WhatsApp, {personaWithArticle} responde com áudio falado natural com entonação humanizada.</p>
                     </div>
                   </div>
 
@@ -1943,7 +1958,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                     </div>
                     <div>
                       <strong className="text-slate-900 block text-xs">Anti-Vácuo & Remarketing Automático</strong>
-                      <p className="text-[11px] text-slate-500 leading-relaxed">Se o paciente sumir no meio do agendamento, o sistema resgata o contato 4 horas depois de forma cordial e amigável.</p>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">Se o {isMaCorretora ? 'segurado' : 'cliente'} sumir no meio do atendimento, o sistema resgata o contato 4 horas depois de forma cordial e amigável.</p>
                     </div>
                   </div>
                 </div>
@@ -2168,9 +2183,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="w-6 h-6 rounded-lg bg-amber-600 text-white font-mono text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">3</span>
                   <div>
-                    <h4 className="font-bold text-slate-900">Personalização com Nome e Retomada Natural da Sofia</h4>
+                    <h4 className="font-bold text-slate-900">Personalização com Nome e Retomada Natural {personaOfArticle}</h4>
                     <p className="text-slate-500 mt-0.5">
-                      O robô troca a tag <code className="bg-amber-100 text-amber-800 px-1 py-0.5 rounded font-mono">&#123;nome&#125;</code> pelo primeiro nome de cada cliente. Quando a pessoa responde, a Sofia já assume a conversa na hora!
+                      O robô troca a tag <code className="bg-amber-100 text-amber-800 px-1 py-0.5 rounded font-mono">&#123;nome&#125;</code> pelo primeiro nome de cada cliente. Quando a pessoa responde, {personaWithArticle} já assume a conversa na hora!
                     </p>
                   </div>
                 </div>
@@ -2181,7 +2196,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 <span className="font-bold text-slate-800 block">Exemplo Real de Conversa de Resgate:</span>
                 <div className="bg-emerald-950/90 rounded-2xl p-4 space-y-3 font-sans border border-emerald-900">
                   <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
-                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA da Clínica):</span>
+                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">
+                      {shortPersona} ({isMaCorretora ? 'IA da MA Corretora' : `IA ${currentNiche.shortName}`}):
+                    </span>
                     Olá Roberto, tudo bem? Passando para te dar um oi! Consegue falar 5 minutinhos hoje?
                   </div>
 
@@ -2191,8 +2208,12 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   </div>
 
                   <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
-                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA da Clínica):</span>
-                    Tudo ótimo por aqui, Roberto! 😊 Estava revisando nossos atendimentos e lembrei de você. Como estão as coisas? Me conta: você gostaria de agendar uma avaliação preventiva essa semana ou prefere no início do próximo mês?
+                    <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">
+                      {shortPersona} ({isMaCorretora ? 'IA da MA Corretora' : `IA ${currentNiche.shortName}`}):
+                    </span>
+                    {isMaCorretora
+                      ? 'Tudo ótimo por aqui, Roberto! 😊 Vi que a renovação do seu seguro auto está se aproximando. Quer que eu já faça um multicálculo atualizado nas 14 seguradoras para garantirmos a melhor condição?'
+                      : 'Tudo ótimo por aqui, Roberto! 😊 Estava revisando nossos atendimentos e lembrei de você. Como estão as coisas? Me conta: você gostaria de agendar uma avaliação preventiva essa semana ou prefere no início do próximo mês?'}
                   </div>
                 </div>
               </div>
@@ -2252,10 +2273,10 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-xs text-slate-600 leading-relaxed">
               <div className="bg-violet-50/70 border border-violet-200/80 rounded-2xl p-4 space-y-2">
                 <span className="font-bold text-violet-900 text-sm flex items-center gap-2">
-                  <span>🛡️ A Dor das Clínicas: Pacientes que Faltam sem Avisar</span>
+                  <span>{isMaCorretora ? '🛡️ O Desafio das Cotações: Retornos e Renovações Esquecidos' : '🛡️ A Dor das Clínicas: Pacientes que Faltam sem Avisar'}</span>
                 </span>
                 <p className="text-violet-950">
-                  Em clínicas e consultórios, de 20% a 35% dos horários agendados são perdidos porque o paciente simplesmente esquece ou surge um imprevisto e ele não avisa a recepção a tempo. A Sofia resolve isso através de confirmações automáticas ativas no WhatsApp.
+                  Em atendimento consultivo, de 20% a 35% dos horários agendados são perdidos porque o cliente simplesmente esquece ou surge um imprevisto e não avisa a tempo. {personaWithCapArticle} resolve isso através de confirmações automáticas ativas no WhatsApp.
                 </p>
               </div>
 
@@ -2266,10 +2287,10 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   <div>
                     <h4 className="font-bold text-slate-900">Triagem Inicial na Conversa</h4>
                     <p className="text-slate-500 mt-0.5">
-                      Quando o paciente demonstra interesse em consultar, a Sofia pergunta:
-                      <br />• Procedimento ou queixa principal (ex: limpeza, clareamento, dor).
-                      <br />• Forma de pagamento (Particular ou Convênio).
-                      <br />• Preferência de turno (Manhã ou Tarde).
+                      Quando o cliente demonstra interesse em atendimento, {personaWithArticle} pergunta:
+                      <br />• {isMaCorretora ? 'Ramo de seguro ou benefício desejado (Auto, Vida, Saúde, Empresa, Consórcio).' : 'Procedimento ou necessidade principal.'}
+                      <br />• {isMaCorretora ? 'Se é seguro novo ou renovação e dados principais para multicálculo.' : 'Forma de pagamento ou modalidade.'}
+                      <br />• Preferência de turno/horário (Manhã ou Tarde).
                     </p>
                   </div>
                 </div>
@@ -2279,7 +2300,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   <div>
                     <h4 className="font-bold text-slate-900">Ficha Mastigada no Calendário</h4>
                     <p className="text-slate-500 mt-0.5">
-                      O agendamento entra automaticamente na aba <strong>Agendamentos</strong> e sincroniza com o Google Agenda. A secretária ou recepcionista não precisa redigitar nada.
+                      O agendamento entra automaticamente na aba <strong>Agendamentos</strong> e sincroniza com o Google Agenda. Sua equipe não precisa redigitar nada.
                     </p>
                   </div>
                 </div>
@@ -2289,9 +2310,9 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   <div>
                     <h4 className="font-bold text-slate-900">Lembrete Automático 24h e 2h Antes no WhatsApp</h4>
                     <p className="text-slate-500 mt-0.5">
-                      No dia anterior, a Sofia manda uma mensagem calorosa pedindo confirmação rápida:
-                      <br />• <strong>Se confirmar:</strong> o status vira "Confirmado" e o profissional tem garantia de atendimento.
-                      <br />• <strong>Se desmarcar:</strong> a secretária é notificada na hora para encaixar outro paciente da lista de espera!
+                      No dia anterior, {personaWithArticle} manda uma mensagem calorosa pedindo confirmação rápida:
+                      <br />• <strong>Se confirmar:</strong> o status vira &quot;Confirmado&quot; e o especialista tem garantia de atendimento.
+                      <br />• <strong>Se desmarcar:</strong> sua equipe é notificada na hora para ajustar a agenda!
                     </p>
                   </div>
                 </div>
@@ -2366,7 +2387,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   <div>
                     <h4 className="font-bold text-slate-900">Acolhimento Imediato sem Discussão (Anti-Estresse)</h4>
                     <p className="text-slate-500 mt-0.5">
-                      Quem está com uma máquina quebrada ou com dor não pode esperar. A Sofia atende em 3 segundos, acolhe o cliente com respeito e tranquiliza que o caso já está sob os cuidados da empresa.
+                      Quem está com uma emergência ou imprevisto não pode esperar. {personaWithCapArticle} atende em 3 segundos, acolhe o cliente com respeito e tranquiliza que o caso já está sob os cuidados da empresa.
                     </p>
                   </div>
                 </div>
@@ -2437,7 +2458,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                       📄 Modo 1: Carga por Arquivos (Excel, CSV, PDF ou Word)
                     </span>
                     <p className="text-[10px] text-slate-300 leading-relaxed">
-                      O cliente nos envia os arquivos do dia a dia (planilhas de pedidos, notas fiscais, catálogos em PDF ou regras de troca). Nossa equipe carrega esses dados na base da Sofia para ela consultar sozinha sem depender de atendente humano.
+                      O cliente nos envia os arquivos do dia a dia (planilhas, tabelas, catálogos em PDF ou regras comerciais). Nossa equipe carrega esses dados na base {personaOfArticle} para consulta automática sem depender de atendente humano.
                     </p>
                   </div>
 
@@ -2446,7 +2467,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                       🔌 Modo 2: Integração Direct API / ERP (100% Automático)
                     </span>
                     <p className="text-[10px] text-slate-300 leading-relaxed">
-                      Se o cliente usa sistema de gestão (ERP, Bling, Tiny, TOTVS ou API de transportadoras), nossa equipe faz a ponte técnica via API. A Sofia valida se a Nota Fiscal ou Contrato é verdadeiro direto no banco do cliente em tempo real!
+                      Se o cliente usa sistema de gestão (ERP, Bling, Tiny, TOTVS ou API própria), nossa equipe faz a ponte técnica via API. {personaWithCapArticle} valida os dados ou contratos direto no sistema do cliente em tempo real!
                     </p>
                   </div>
                 </div>
@@ -2542,7 +2563,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                       </div>
 
                       <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
-                        <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
+                        <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">{shortPersona} (IA Especialista):</span>
                         {dialog.aiMsg1}
                       </div>
 
@@ -2552,7 +2573,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                       </div>
 
                       <div className="bg-emerald-800 text-white p-3 rounded-xl rounded-tr-xs max-w-sm ml-auto text-xs shadow-xs">
-                        <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">Sofia (IA Especialista):</span>
+                        <span className="text-[10px] text-emerald-300 font-bold block mb-0.5">{shortPersona} (IA Especialista):</span>
                         {dialog.aiMsg2}
                       </div>
                     </div>

@@ -237,6 +237,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   isAdmin = false,
   agentConfig,
 }) => {
+  const shortPersona = (agentConfig?.personaName || 'Sofia').split(' ')[0];
   const [searchTerm, setSearchTerm] = useState('');
   const detectedNiche = useMemo(() => detectDefaultNicheFromConfig(agentConfig), [agentConfig]);
   const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>(() => {
@@ -1323,7 +1324,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           <div className="flex items-center gap-1.5 truncate">
                             <Send className="w-3.5 h-3.5 text-pink-600 shrink-0 animate-pulse" />
                             <span className="truncate">
-                              ⚡ Em Reativação Ativa (IA Sofia)
+                              ⚡ Em Reativação Ativa (IA {shortPersona})
                             </span>
                           </div>
                           <span className="text-[9px] bg-pink-100 text-pink-800 border border-pink-300 px-1.5 py-0.5 rounded font-extrabold shrink-0">
@@ -1377,7 +1378,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {lead.cognitiveProfile?.vipNotes && (
                         <div
                           className="px-2 py-1.5 mb-2 bg-indigo-50/60 border border-indigo-100 rounded-lg text-[10px] text-indigo-900 flex items-start gap-1.5"
-                          title={`Memória Cognitiva da IA Sofia: ${(lead.cognitiveProfile.preferences || []).join(', ')}`}
+                          title={`Memória Cognitiva da IA ${shortPersona}: ${(lead.cognitiveProfile.preferences || []).join(', ')}`}
                         >
                           <Sparkles className="w-3 h-3 text-indigo-600 shrink-0 mt-0.5" />
                           <span className="line-clamp-1 font-medium">
