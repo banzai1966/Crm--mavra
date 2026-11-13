@@ -1,6 +1,6 @@
 import { db } from './db';
 import { sendWhatsAppMessage } from './evolution';
-import { getCompanyPresetByInstance, resolveLeadWorkspaceId } from './companyConfigs';
+import { getAgentConfigForInstance, getCompanyPresetByInstance, resolveLeadWorkspaceId } from './companyConfigs';
 import { ChatMessage, Lead, BusinessNiche } from '../src/types';
 
 export interface FollowUpLog {
@@ -29,6 +29,15 @@ export function generateFollowUpMessage(
 
   // Se for o 2º follow-up (toque 2), envia uma mensagem amigável e educada de encerramento, personalizada para cada empresa
   if (followUpStep >= 2) {
+    if (ws.includes('applay') || ws.includes('pickplay') || ws.includes('tracking')) {
+      return `Olá, ${firstName}! Tudo bem? Imagino que a operação do armazém ou e-commerce esteja corrida! Passando só para deixar a equipe da Applay à disposição para quando quiser agendar sua demonstração das divisões ECOM, LOG ou LAB. Um ótimo dia! 📦⚡`;
+    }
+    if (ws.includes('codeon') || ws.includes('squad')) {
+      return `Olá, ${firstName}! Tudo bem? Sei que as demandas de engenharia costumam ser intensas! Passando só para deixar nossa liderança técnica da CodeOn à disposição caso queira retomar o papo sobre alocação de squads ágeis ou projetos sob medida. Excelente dia! 💻🚀`;
+    }
+    if (ws.includes('macorretora') || ws.includes('ma corretora') || ws.includes('corretor')) {
+      return `Olá, ${firstName}! Tudo bem? Passando com carinho para deixar a equipe da MA Corretora de Seguros à disposição quando quiser avançar com sua cotação personalizada nas 14 seguradoras parceiras. Conte com a gente! 🛡️✨`;
+    }
     if (ws.includes('primo') || ws.includes('gastronomia')) {
       return `Olá, ${firstName}! Tudo bem? Imagino que a rotina da cozinha ou do comércio esteja corrida! Passando só para avisar que a equipe da Primo Equipamentos segue à disposição caso precise de cotações, voltagem ou condições no Pix. Um ótimo dia! 🍳🧑‍🍳`;
     }
@@ -51,7 +60,7 @@ export function generateFollowUpMessage(
       return `Olá, ${firstName}! Imagino que seu dia esteja corrido! Só passando para deixar nosso canal aberto caso precise de alguma orientação ou queira reservar sua avaliação integrativa com a Dra. Lucy mais adiante. Tenha uma ótima semana! 🦷🌿`;
     }
     if (niche === 'sales') {
-      return `Olá, ${firstName}! Imagino que as coisas estejam corridas por aí! Passando só para deixar nosso contato à disposição caso ainda queira ver as opções de ${lead.interest || 'equipamentos'} ou tirar dúvidas. Conte sempre com a gente! 🚀`;
+      return `Olá, ${firstName}! Imagino que as coisas estejam corridas por aí! Passando só para deixar nosso contato à disposição caso ainda queira retomar o papo sobre ${lead.interest || 'nossas soluções'} ou tirar dúvidas. Conte sempre com a gente! 🚀`;
     }
     return `Olá, ${firstName}! Imagino que sua rotina esteja corrida por aí! Passando apenas para deixar o nosso contato à disposição caso queira retomar o atendimento no momento que for melhor para você. Tenha um excelente dia! ✨`;
   }
@@ -152,11 +161,10 @@ export async function runFollowUpCycle(): Promise<{ evaluated: number; sent: num
       continue; // Not enough time passed yet
     }
 
-    // Check last message sender: only send follow-up if the last message was from AI/agent OR lead hasn't answered
-    const leadMessages = db.messages.filter((m) => m.leadId === lead.id || m.phone === lead.phone);
+    // Check last message sender strictly within THIS lead's isolated history
+    const leadMessages = db.messages.filter((m) => m.leadId === lead.id);
     if (leadMessages.length === 0) continue;
 
-    const lastMessage = leadMessages[leadMessages.length - 1];
     // If the last message was already a recent follow up sent less than thresholdMs ago, skip
     if (lead.lastFollowUpAt) {
       const timeSinceLastFollowUp = now - new Date(lead.lastFollowUpAt).getTime();
@@ -166,9 +174,10 @@ export async function runFollowUpCycle(): Promise<{ evaluated: number; sent: num
     // Determine lead's company and isolated config
     const leadWorkspaceId = resolveLeadWorkspaceId(lead);
     const leadPreset = getCompanyPresetByInstance(leadWorkspaceId);
-    const leadNiche = (leadPreset?.agentConfig?.followUpNiche || niche) as any;
-    const leadCustomMsg = leadPreset?.agentConfig?.followUpCustomMessage || customMessage;
-    const leadInstanceName = leadPreset?.instanceName || undefined;
+    const leadIsolatedConfig = getAgentConfigForInstance(leadWorkspaceId);
+    const leadNiche = (leadIsolatedConfig?.followUpNiche || leadPreset?.agentConfig?.followUpNiche || niche) as any;
+    const leadCustomMsg = leadIsolatedConfig?.followUpCustomMessage || leadPreset?.agentConfig?.followUpCustomMessage || customMessage;
+    const leadInstanceName = lead.instanceName || leadPreset?.instanceName || undefined;
 
     const nextStep = (lead.followUpCount || 0) + 1;
     // Generate tailored message strictly for this lead's company (varies text on step 2)
@@ -187,6 +196,8 @@ export async function runFollowUpCycle(): Promise<{ evaluated: number; sent: num
         text: messageToSend,
         timestamp: new Date().toISOString(),
         status: 'delivered',
+        workspaceId: leadWorkspaceId,
+        instanceName: leadInstanceName,
       };
       db.messages.push(msgObj);
 

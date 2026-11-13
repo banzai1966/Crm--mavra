@@ -248,12 +248,14 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
 
   const incomingInstance = normalizeInstanceName(rawInstance);
 
-  // Prevent concurrent webhook executions for the same contact number
-  if (phoneInFlight.has(cleanPhone)) {
-    console.log(`[Webhook] Mensagem de ${cleanPhone} já em processamento ativo. Ignorando evento concorrente.`);
+  const inFlightKey = `${incomingInstance}:${cleanPhone}`;
+
+  // Prevent concurrent webhook executions for the same contact number on the same instance
+  if (phoneInFlight.has(inFlightKey)) {
+    console.log(`[Webhook] Mensagem de ${cleanPhone} (${incomingInstance}) já em processamento ativo. Ignorando evento concorrente.`);
     return;
   }
-  phoneInFlight.add(cleanPhone);
+  phoneInFlight.add(inFlightKey);
 
   try {
 
@@ -762,14 +764,16 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
           lead.tags.push(aiResult.extractedInfo.tag);
         }
       }
-      if (aiResult.extractedInfo.channelOrigin === 'mentoria_vip' || /candidatura vip|mentoria|cro\b/i.test(messageText)) {
-        if (!lead.tags.includes('Mentoria VIP')) {
-          lead.tags.push('Mentoria VIP');
-        }
-        lead.notes = `${lead.notes || ''}\n🎓 [MENTORIA VIP ${new Date().toLocaleTimeString('pt-BR')}]: Cirurgião-dentista aplicando para a turma seletiva da Mentoria Dra. Luci Murata.`;
-      } else if (aiResult.extractedInfo.channelOrigin === 'consultorio_clinica' || /consulta|consultorio|dente|dor|sorriso|euroville/i.test(messageText)) {
-        if (!lead.tags.includes('Paciente Consultório') && !lead.tags.includes('Mentoria VIP')) {
-          lead.tags.push('Paciente Consultório');
+      if (targetWorkspaceId === 'clinic') {
+        if (aiResult.extractedInfo.channelOrigin === 'mentoria_vip' || /candidatura vip|mentoria|cro\b/i.test(messageText)) {
+          if (!lead.tags.includes('Mentoria VIP')) {
+            lead.tags.push('Mentoria VIP');
+          }
+          lead.notes = `${lead.notes || ''}\n🎓 [MENTORIA VIP ${new Date().toLocaleTimeString('pt-BR')}]: Cirurgião-dentista aplicando para a turma seletiva da Mentoria Dra. Luci Murata.`;
+        } else if (aiResult.extractedInfo.channelOrigin === 'consultorio_clinica' || /consulta|consultorio|dente|dor|sorriso|euroville/i.test(messageText)) {
+          if (!lead.tags.includes('Paciente Consultório') && !lead.tags.includes('Mentoria VIP')) {
+            lead.tags.push('Paciente Consultório');
+          }
         }
       }
     }
@@ -912,17 +916,17 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       console.log(`[Webhook 💳 PIX VALIDADO PELA IA] Lead ${lead.name} (${cleanPhone}) teve o comprovante validado automaticamente!`);
     }
 
-    // Handle Automatic Delivery / Food Order Detection & Smart Freight Calculation
+    // Handle Automatic Delivery / Food Order Detection & Smart Freight Calculation (strictly scoped to this instance)
     const isFoodOrDeliveryContext =
       aiResult.deliveryOrder?.isDeliveryOrder ||
-      (db.agentConfig.followUpNiche === 'restaurant_delivery') ||
-      (db.agentConfig.personaName?.toLowerCase().includes('pizzaria') || (db.agentConfig.role || '').toLowerCase().includes('delivery') || (db.agentConfig.role || '').toLowerCase().includes('restaurante')) ||
-      /\b(pedido|pizza|burger|hambúrguer|lanche|combo|marmita|marmitex|sushi|temaki|refrigerante|coca|guaraná|batata|borda|delivery|endereço|rua|entregar)\b/i.test(messageText);
+      (targetWorkspaceId === 'delivery') ||
+      (activeInstanceConfig.followUpNiche === 'restaurant_delivery') ||
+      (activeInstanceConfig.personaName?.toLowerCase().includes('pizzaria') || (activeInstanceConfig.role || '').toLowerCase().includes('delivery') || (activeInstanceConfig.role || '').toLowerCase().includes('restaurante'));
 
     if (isFoodOrDeliveryContext && (aiResult.deliveryOrder?.itemsDescription || /\b(pedido|pizza|burger|hambúrguer|combo|marmita|marmitex|sushi|porção)\b/i.test(messageText))) {
       const defaultPin = cleanPhone.slice(-4) || '1234';
       const addressText = (aiResult.deliveryOrder?.deliveryAddress || messageText || '').toLowerCase();
-      const zones = db.agentConfig.deliveryZones || [];
+      const zones = activeInstanceConfig.deliveryZones || [];
       const matchedZone = zones.find((z) =>
         z.keywords
           .toLowerCase()
@@ -933,7 +937,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       );
 
       const subtotal = aiResult.deliveryOrder?.subtotalValue || aiResult.deliveryOrder?.orderValue || lead.value || 65;
-      const freeAbove = db.agentConfig.freeShippingMinimum || 0;
+      const freeAbove = activeInstanceConfig.freeShippingMinimum || 0;
       const calculatedFee =
         freeAbove > 0 && subtotal >= freeAbove
           ? 0
@@ -1229,11 +1233,11 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       }
     }
 
-    // 11. If the lead requested PIX information, send copy-paste key box
-    const targetPixKey = instanceConfig.pixKey || db.agentConfig.pixKey;
+    // 11. If the lead requested PIX information, send copy-paste key box strictly from THIS instance config
+    const targetPixKey = instanceConfig.pixKey;
     if (aiResult.sendPixInfo && targetPixKey) {
       console.log(`[Webhook] Enviando chave PIX oficial para ${cleanPhone} (${incomingInstance})...`);
-      const pixType = instanceConfig.pixKeyType || db.agentConfig.pixKeyType || 'E-mail';
+      const pixType = instanceConfig.pixKeyType || 'E-mail';
       const pixMessage = `💳 *Chave PIX Oficial (${pixType}):*\n\`${targetPixKey}\`\n\nAssim que efetuar o pagamento, basta me enviar o comprovante por aqui! ✨`;
       await sendWhatsAppMessage(cleanPhone, pixMessage, incomingInstance);
       db.messages.push({
@@ -1244,12 +1248,14 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
         text: pixMessage,
         timestamp: new Date().toISOString(),
         status: 'delivered',
+        workspaceId: targetWorkspaceId,
+        instanceName: incomingInstance,
       });
     }
 
-    // 12. Disparo de Áudio Real Pré-Gravado do Especialista / Dono (Decisão Contextual da IA)
-    if (aiResult.dispatchPreRecordedAudioId && db.agentConfig.preRecordedAudiosEnabled !== false) {
-      const audioToDispatch = (db.agentConfig.preRecordedAudios || []).find(
+    // 12. Disparo de Áudio Real Pré-Gravado do Especialista / Dono (estritamente desta empresa)
+    if (aiResult.dispatchPreRecordedAudioId && instanceConfig.preRecordedAudiosEnabled !== false) {
+      const audioToDispatch = (instanceConfig.preRecordedAudios || []).find(
         (a) => a.id === aiResult.dispatchPreRecordedAudioId && a.enabled
       );
 
@@ -1330,6 +1336,6 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     db.saveToFile();
   }
 } finally {
-  phoneInFlight.delete(cleanPhone);
+  phoneInFlight.delete(inFlightKey);
 }
 }
