@@ -1539,6 +1539,15 @@ export function getDocumentsForInstance(instanceName?: string): KnowledgeDocumen
         docContent.includes('amaro advogados')
       );
     }
+    if (companyId === 'applay') {
+      return (
+        docName.includes('applay') ||
+        docName.includes('pickplay') ||
+        docName.includes('tracking') ||
+        docContent.includes('applayos.com') ||
+        docContent.includes('applay')
+      );
+    }
     if (companyId === 'macorretora') {
       return (
         docName.includes('macorretora') ||

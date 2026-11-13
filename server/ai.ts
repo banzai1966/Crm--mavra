@@ -4,9 +4,16 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { db } from './db';
-import { Lead, ChatMessage } from '../src/types';
+import { AgentConfig, Lead, ChatMessage } from '../src/types';
 import { getAgentConfigForInstance, getDocumentsForInstance, getCompanyPresetByInstance } from './companyConfigs';
 import { normalizeInstanceName } from './evolution';
+import { retrieveMaCorretoraContext } from './maCorretoraRag';
+
+export interface SafetyReplyContext {
+  instanceName?: string;
+  presetId?: string;
+  config?: AgentConfig;
+}
 
 export interface AIResponseResult {
   replyText: string;
@@ -77,15 +84,19 @@ export interface AIResponseResult {
  */
 export async function transcribeAudioWithGemini(
   base64Audio: string,
-  mimeType: string = 'audio/ogg'
+  mimeType: string = 'audio/ogg',
+  apiKeyOverride?: string
 ): Promise<string> {
-  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
+  const apiKey = (apiKeyOverride || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
   if (!apiKey) {
     console.warn('[Audio Transcribe] Chave da API Gemini não configurada.');
     return '';
   }
 
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({
+    apiKey,
+    httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
+  });
 
   // Normalise audio mimeType
   let cleanMime = mimeType.split(';')[0].trim().toLowerCase() || 'audio/ogg';
@@ -103,7 +114,7 @@ export async function transcribeAudioWithGemini(
   }
 
   // Candidate models: modern Gemini models supported for audio transcription
-  const candidateModels = ['gemini-3.8-flash', 'gemini-3.5-transcribe', 'gemini-flash-latest', 'gemini-3.1-flash-lite'];
+  const candidateModels = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-3.1-flash-lite'];
 
   for (const model of candidateModels) {
     try {
@@ -150,10 +161,17 @@ export async function transcribeAudioWithGemini(
 export async function analyzeImageWithGemini(
   base64Image: string,
   caption?: string,
-  mimeType: string = 'image/jpeg'
+  mimeType: string = 'image/jpeg',
+  apiKeyOverride?: string
 ): Promise<string> {
-  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
-  const ai = new GoogleGenAI({ apiKey });
+  const apiKey = (apiKeyOverride || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
+  if (!apiKey) {
+    return caption || 'Imagem recebida pelo WhatsApp';
+  }
+  const ai = new GoogleGenAI({
+    apiKey,
+    httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
+  });
 
   const cleanMime = mimeType.split(';')[0].trim() || 'image/jpeg';
   const cleanBase64 = base64Image.replace(/^data:[^;]+;base64,/, '').trim();
@@ -204,10 +222,17 @@ export async function analyzeDocumentWithGemini(
   base64Doc: string,
   fileName?: string,
   caption?: string,
-  mimeType: string = 'application/pdf'
+  mimeType: string = 'application/pdf',
+  apiKeyOverride?: string
 ): Promise<string> {
-  const apiKey = db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY;
-  const ai = new GoogleGenAI({ apiKey });
+  const apiKey = (apiKeyOverride || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
+  if (!apiKey) {
+    return caption || `Documento PDF recebido: ${fileName || 'anexo.pdf'}`;
+  }
+  const ai = new GoogleGenAI({
+    apiKey,
+    httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
+  });
 
   const cleanMime = mimeType.split(';')[0].trim() || 'application/pdf';
   const cleanBase64 = base64Doc.replace(/^data:[^;]+;base64,/, '').trim();
@@ -695,6 +720,16 @@ export async function processAiConversation(
     .map((m) => `${m.sender.toUpperCase()}: ${m.text}`)
     .join('\n');
 
+  let maCorretoraRagSection = '';
+  if (preset.id === 'macorretora') {
+    const recentChatSnippet = chatHistory.slice(-4).map((m) => m.text).join(' ');
+    const maRag = retrieveMaCorretoraContext(incomingMessage, recentChatSnippet, 4, 4200);
+    if (maRag.contextText) {
+      maCorretoraRagSection = maRag.contextText;
+      console.log(`[MA Corretora RAG] Fichas injetadas sob demanda (${maRag.contextText.length} chars): ${maRag.matchedTitles.join(', ')}`);
+    }
+  }
+
   // Exact current date and time in Brasília (America/Sao_Paulo)
   const nowInBrazil = new Date();
   const brazilDateFull = new Intl.DateTimeFormat('pt-BR', {
@@ -984,6 +1019,8 @@ ${deliveryZonesSection}
 
 ${documentsContext ? `[DOCUMENTOS OFICIAIS DA ${preset.companyName.toUpperCase()}]\n${documentsContext}` : ''}
 
+${maCorretoraRagSection ? `${maCorretoraRagSection}\n` : ''}
+
 === DIRETRIZES E REGRAS DE ATENDIMENTO NO WHATSAPP (MUITO IMPORTANTE) ===
 1. Responda SEMPRE em mensagens CURTAS, DINÂMICAS e NATURAIS (máximo de 2 a 3 frases por resposta).
 2. NUNCA envie blocos gigantes de texto. Seja consultivo, caloroso, direto ao ponto e termine sempre com UMA pergunta amigável para continuar a conversa.
@@ -1103,7 +1140,7 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
   },
   "sacTicket": {
     "isSacIncident": true ou false (true se o cliente relatou defeito, avaria, dor aguda clínica, bug ou pedido de suporte/garantia pós-venda),
-    "ticketNumber": "#SAC-PRIMO-1234 ou #SAC-CLINICA-1234 ou #BUG-VERZEL-1234 ou null",
+    "ticketNumber": "#SAC-PROTOCOLO-1234 ou null",
     "incidentType": "defeito" ou "avaria_transporte" ou "urgencia_dor" ou "bug_sistema" ou "garantia" ou "duvida_pos_venda" ou null,
     "invoiceOrOrderNumber": "Número da NF ou Pedido caso informado ou null",
     "reportedProblem": "Resumo objetivo da avaria ou solicitação de suporte em poucas palavras ou null"
@@ -1111,20 +1148,25 @@ Você deve responder EXCLUSIVAMENTE em formato JSON com a seguinte estrutura:
 }`;
 
   const prompt = `HISTÓRICO RECENTE DO CHAT:\n${historyFormatted}\n\nNOVA MENSAGEM DO LEAD:\n${incomingMessage}`;
+  const safetyContext: SafetyReplyContext = {
+    instanceName: cleanInstance,
+    presetId: preset.id,
+    config,
+  };
 
   // Check which provider is active
   const provider = config.activeProvider;
 
   if (provider === 'gemini') {
-    return await callGemini(config.activeModel, systemInstruction, prompt, config.geminiApiKey);
+    return await callGemini(config.activeModel, systemInstruction, prompt, config.geminiApiKey, safetyContext);
   } else if (provider === 'openai') {
-    return await callOpenAI(config.activeModel, systemInstruction, prompt, config.openaiApiKey);
+    return await callOpenAI(config.activeModel, systemInstruction, prompt, config.openaiApiKey, safetyContext);
   } else if (provider === 'anthropic') {
-    return await callAnthropic(config.activeModel, systemInstruction, prompt, config.anthropicApiKey);
+    return await callAnthropic(config.activeModel, systemInstruction, prompt, config.anthropicApiKey, safetyContext);
   }
 
   // Default fallback to Gemini
-  return await callGemini('gemini-3.8-flash', systemInstruction, prompt, config.geminiApiKey);
+  return await callGemini('gemini-3.8-flash', systemInstruction, prompt, config.geminiApiKey, safetyContext);
 }
 
 // 1. Google Gemini via @google/genai SDK with automatic retry & model fallback
@@ -1132,7 +1174,8 @@ async function callGemini(
   modelName: string,
   systemInstruction: string,
   prompt: string,
-  apiKeyOverride?: string
+  apiKeyOverride?: string,
+  safetyContext?: SafetyReplyContext
 ): Promise<AIResponseResult> {
   const apiKey = (apiKeyOverride || db.agentConfig.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
   if (!apiKey) {
@@ -1188,9 +1231,9 @@ async function callGemini(
     }
   }
 
-  // If all models hit 503, quota, or leaked key, provide smart contextual knowledge reply based on DB
-  console.warn('[Gemini] Modelos Gemini indisponíveis. Gerando resposta contextual inteligente pela Base de Conhecimento...');
-  return generateRuleBasedSafetyReply(systemInstruction ? `${systemInstruction}\n\n${prompt}` : prompt);
+  // If all models hit 503, quota, or leaked key, provide smart contextual knowledge reply strictly isolated to this company
+  console.warn(`[Gemini] Modelos Gemini indisponíveis (${safetyContext?.presetId || safetyContext?.instanceName || 'global'}). Gerando resposta contextual pela Base de Conhecimento isolada...`);
+  return generateRuleBasedSafetyReply(prompt, safetyContext);
 }
 
 // Função de teste direto de chave do Gemini com retorno em tempo real
@@ -1234,9 +1277,10 @@ export async function testGeminiApiKey(apiKeyToTest?: string): Promise<{ success
 }
 
 // Resposta contextual de segurança caso a rede do provedor de IA ou a chave esteja temporariamente fora do ar
-export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
-  const persona = db.agentConfig.personaName || 'Sofia';
-
+export function generateRuleBasedSafetyReply(
+  prompt: string,
+  context?: SafetyReplyContext
+): AIResponseResult {
   // Isolate only the incoming user message if a full prompt envelope was provided
   let targetText = prompt || '';
   if (targetText.includes('NOVA MENSAGEM DO LEAD:')) {
@@ -1244,10 +1288,21 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   }
   const lower = targetText.toLowerCase();
 
+  // Resolve isolated tenant identity strictly (NEVER match negative anti-contamination rules from systemInstruction)
+  const resolvedPreset = (context?.presetId || context?.instanceName)
+    ? getCompanyPresetByInstance(context.presetId || context.instanceName)
+    : null;
+  const config = context?.config || (resolvedPreset
+    ? getAgentConfigForInstance(resolvedPreset.instanceName || resolvedPreset.id)
+    : db.agentConfig);
+
+  const persona = config.personaName || 'Sofia';
+  const companyDisplayName = resolvedPreset?.companyName || config.businessName || config.activeWorkspaceName || 'nossa equipe';
+
   // Contextual fallback for incoming documents/PDFs
   if (lower.includes('[documento/pdf') || lower.includes('[documento pdf') || lower.includes('.pdf]') || lower.includes('.pdf')) {
     return {
-      replyText: `Recebi o seu documento aqui! Já estou analisando todas as informações com atenção para te dar um retorno completo.`,
+      replyText: `Recebi o seu documento aqui na ${companyDisplayName}! Já estou analisando todas as informações com atenção para te dar um retorno completo.`,
       providerUsed: 'Base de Conhecimento (Regras)',
       modelUsed: 'offline-safety-rules',
     };
@@ -1256,56 +1311,87 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   // Contextual fallback for incoming images/photos
   if (lower.includes('[imagem recebida') || lower.includes('[análise visual') || lower.includes('[foto/imagem')) {
     return {
-      replyText: `Recebi a sua imagem com sucesso! Já estou dando uma olhadinha aqui. Em que posso te ajudar a respeito dela?`,
+      replyText: `Recebi a sua imagem com sucesso aqui na ${companyDisplayName}! Já estou dando uma olhadinha. Em que posso te ajudar a respeito dela?`,
       providerUsed: 'Base de Conhecimento (Regras)',
       modelUsed: 'offline-safety-rules',
     };
   }
 
-  const config = db.agentConfig;
-  const promptLower = (prompt || '').toLowerCase();
   const lowerRole = (config.role || '').toLowerCase();
   const lowerPersona = (config.personaName || '').toLowerCase();
   const lowerWorkspace = (config.activeWorkspaceName || '').toLowerCase();
-  
-  const isNexaSales = 
-    (lowerRole.includes('nexa') && !lowerRole.includes('surface') && !lowerRole.includes('verzel')) || 
-    lowerPersona.includes('alex') || 
-    (config.followUpNiche === 'nexa_sales');
+  const lowerBusiness = (config.businessName || '').toLowerCase();
+  const identityText = `${lowerWorkspace} ${lowerBusiness} ${lowerRole} ${lowerPersona}`;
 
-  const isPrimo = promptLower.includes('primo') || lowerRole.includes('primo') || lowerPersona.includes('primo') || lowerWorkspace.includes('primo');
-  const isSurface = promptLower.includes('surface') || lowerRole.includes('surface') || lowerPersona.includes('surface') || lowerWorkspace.includes('surface');
-  const isVerzel = promptLower.includes('verzel') || lowerRole.includes('verzel') || lowerPersona.includes('verzel') || lowerWorkspace.includes('verzel');
-  const isPsi = promptLower.includes('equipamentos psi') || promptLower.includes('emdr') || lowerRole.includes('psi') || lowerWorkspace.includes('psi');
-  const isCantareira = promptLower.includes('cantareira') || promptLower.includes('cemitério') || promptLower.includes('jazigo') || lowerRole.includes('cantareira');
-  const isMaCorretora =
-    promptLower.includes('macorretora') ||
-    promptLower.includes('ma corretora') ||
-    promptLower.includes('corretor volante') ||
-    lowerRole.includes('ma corretora') ||
-    lowerWorkspace.includes('ma corretora') ||
-    config.followUpNiche === 'macorretora';
+  let isNexaSales = false;
+  let isPrimo = false;
+  let isSurface = false;
+  let isVerzel = false;
+  let isPsi = false;
+  let isCantareira = false;
+  let isAmaro = false;
+  let isCodeOn = false;
+  let isApplay = false;
+  let isMaCorretora = false;
+  let isDelivery = false;
+  let isLucyOrDental = false;
 
-  const isLucyOrDental = !isNexaSales && !isSurface && !isVerzel && !isPrimo && !isPsi && !isCantareira && !isMaCorretora && (
-    lowerRole.includes('lucy') || 
-    lowerRole.includes('odonto') || 
-    lowerRole.includes('dent') || 
-    lowerRole.includes('biológica') || 
-    lowerRole.includes('biologica') || 
-    lowerRole.includes('clínica') || 
-    lowerRole.includes('clinica') || 
-    (lowerPersona.includes('sofia') && !isPrimo && !isPsi && !isCantareira && !isMaCorretora)
-  );
+  if (resolvedPreset) {
+    // 100% locked by canonical tenant ID — zero chance of cross-tenant bleed
+    isNexaSales = resolvedPreset.id === 'b2b';
+    isPrimo = resolvedPreset.id === 'primo';
+    isSurface = resolvedPreset.id === 'surfacebrasil';
+    isVerzel = resolvedPreset.id === 'verzel';
+    isPsi = resolvedPreset.id === 'equipamentospsi';
+    isCantareira = resolvedPreset.id === 'cantareira';
+    isAmaro = resolvedPreset.id === 'amaro';
+    isCodeOn = resolvedPreset.id === 'codeon';
+    isApplay = resolvedPreset.id === 'applay';
+    isMaCorretora = resolvedPreset.id === 'macorretora';
+    isDelivery = resolvedPreset.id === 'delivery';
+    isLucyOrDental = resolvedPreset.id === 'dental' || resolvedPreset.id === 'clinic';
+  } else {
+    // Legacy fallback without explicit context: match ONLY positive config metadata & user's own message (NEVER systemInstruction)
+    isApplay = identityText.includes('applay') || identityText.includes('pickplay') || lower.includes('applay') || lower.includes('pickplay');
+    isCodeOn = !isApplay && (identityText.includes('codeon') || lower.includes('codeon'));
+    isPrimo = !isApplay && !isCodeOn && (identityText.includes('primo') || lower.includes('primo equipamentos'));
+    isSurface = !isApplay && !isCodeOn && !isPrimo && (identityText.includes('surface') || lower.includes('surfacebrasil'));
+    isVerzel = !isApplay && !isCodeOn && !isPrimo && !isSurface && (identityText.includes('verzel') || lower.includes('verzel'));
+    isPsi = !isApplay && !isCodeOn && !isPrimo && !isSurface && !isVerzel && (identityText.includes('equipamentos psi') || identityText.includes('emdr'));
+    isCantareira = !isApplay && !isCodeOn && !isPrimo && !isSurface && !isVerzel && !isPsi && (identityText.includes('cantareira') || identityText.includes('cemitério'));
+    isAmaro = !isApplay && !isCodeOn && !isPrimo && !isSurface && !isVerzel && !isPsi && !isCantareira && (identityText.includes('amaro') || identityText.includes('advogados'));
+    isMaCorretora = !isApplay && !isCodeOn && !isPrimo && !isSurface && !isVerzel && !isPsi && !isCantareira && !isAmaro && (
+      identityText.includes('ma corretora') ||
+      identityText.includes('macorretora') ||
+      identityText.includes('corretor volante') ||
+      config.followUpNiche === 'macorretora'
+    );
+    isDelivery = !isApplay && !isCodeOn && !isPrimo && !isSurface && !isVerzel && !isPsi && !isCantareira && !isAmaro && !isMaCorretora && (
+      config.followUpNiche === 'restaurant_delivery' || identityText.includes('delivery') || identityText.includes('pizzaria')
+    );
+    isNexaSales = !isApplay && !isCodeOn && !isPrimo && !isSurface && !isVerzel && !isPsi && !isCantareira && !isAmaro && !isMaCorretora && !isDelivery && (
+      (lowerRole.includes('nexa') && !lowerRole.includes('surface') && !lowerRole.includes('verzel')) ||
+      lowerPersona.includes('alex') ||
+      config.followUpNiche === 'nexa_sales'
+    );
+    isLucyOrDental = !isApplay && !isCodeOn && !isPrimo && !isSurface && !isVerzel && !isPsi && !isCantareira && !isAmaro && !isMaCorretora && !isDelivery && !isNexaSales && (
+      lowerRole.includes('lucy') ||
+      lowerRole.includes('odonto') ||
+      lowerRole.includes('dent') ||
+      lowerRole.includes('biológica') ||
+      lowerRole.includes('biologica') ||
+      lowerBusiness.includes('lucy') ||
+      config.followUpNiche === 'dental'
+    );
+  }
 
-  let reply = isNexaSales
-    ? `Perfeito! Estou à disposição para tirar suas dúvidas sobre o NEXA CRM e agendar uma demonstração rápida de 15 minutos ao vivo na tela. Como posso te orientar?`
-    : isPrimo
-    ? `Olá! Sou a Sofia, consultora técnica da Primo Equipamentos Gastronômicos. Estou à sua disposição com nossa tabela oficial de maquinários profissionais e catálogo técnico completo!`
-    : isMaCorretora
-    ? `Olá! Tudo bem? Sou a Sofia da MA Corretora de Seguros! Pensou em Seguros e Benefícios, lembrou da MA Corretora. Como posso te auxiliar com proteção ou soluções financeiras hoje?`
-    : isLucyOrDental
-    ? `Perfeito! Estou à disposição para tirar qualquer dúvida e organizar seu agendamento com a Dra. Lucy aqui no consultório do Euroville Mall. Em que posso te orientar?`
-    : `Perfeito! Estou à disposição para tirar suas dúvidas e dar andamento ao seu atendimento. Como posso te orientar?`;
+  const isUnreadableAudio =
+    lower.includes('não foi possível transcrever') ||
+    lower.includes('nao foi possivel transcrever') ||
+    lower.includes('[áudio recebido') ||
+    lower.includes('[audio recebido');
+
+  let reply = `Olá! Tudo bem? Sou a ${persona} da ${companyDisplayName}. Como posso te ajudar hoje?`;
 
   let suggestedStage: string | undefined = undefined;
   let estimatedValue: number | undefined = undefined;
@@ -1314,7 +1400,10 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   let dispatchAudioId: string | null = null;
 
   if (isNexaSales) {
-    if (
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é da equipe NEXA CRM. Recebi seu áudio, mas não consegui ouvir com nitidez agora. Pode me mandar por texto como posso ajudar a automatizar seu WhatsApp hoje?';
+      suggestedStage = 'stage-1';
+    } else if (
       lower.includes('preço') ||
       lower.includes('preco') ||
       lower.includes('quanto custa') ||
@@ -1347,7 +1436,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('instalação') ||
       lower.includes('instalacao')
     ) {
-      reply = 'A conexão com o seu WhatsApp é feita em menos de 2 minutos lendo um QR Code na tela via Evolution API, de forma 100% segura. O sistema roda na nuvem e não precisa deixar computador ligado! Quer ver uma demonstração de como funciona?';
+      reply = 'A conexão com o seu WhatsApp é feita em menos de 2 minutos lendo um QR Code na tela via sistema seguro na nuvem — não precisa deixar celular ou computador ligado! Quer ver uma demonstração rápida de como funciona?';
       interest = 'Dúvida Conexão WhatsApp';
     } else if (
       lower.includes('áudio') ||
@@ -1355,21 +1444,235 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('voz') ||
       lower.includes('grava')
     ) {
-      reply = 'Sim! O NEXA CRM pode disparar áudios gravados com a sua própria voz no momento certo da conversa e sintetizar voz humana realista. O cliente nem percebe que é uma IA. Gostaria de ouvir um exemplo na demonstração ao vivo?';
+      reply = 'Sim! O NEXA CRM pode disparar áudios gravados com a sua própria voz no momento certo da conversa e sintetizar voz humana realista. Gostaria de ouvir um exemplo na demonstração ao vivo?';
       interest = 'Atendimento em Áudio e Voz';
+    } else {
+      reply = `Olá! Tudo bem? Sou a ${persona} do NEXA CRM. Como posso te ajudar a automatizar o WhatsApp da sua empresa com inteligência artificial hoje?`;
+      suggestedStage = 'stage-1';
+    }
+  } else if (isApplay) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Tudo bem? Aqui é a Sofia da Applay. Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me mandar por texto qual divisão você procura: E-commerce (PickPlay / ECOM), Logística & Frota (Tracking / WMS / LOG) ou Inovação (LAB)?';
+      suggestedStage = 'stage-1';
     } else if (
-      lower.includes('oi') ||
-      lower.includes('olá') ||
-      lower.includes('ola') ||
-      lower.includes('bom dia') ||
-      lower.includes('boa tarde') ||
-      lower.includes('boa noite')
+      lower.includes('ecom') ||
+      lower.includes('pickplay') ||
+      lower.includes('picking') ||
+      lower.includes('separação') ||
+      lower.includes('separacao') ||
+      lower.includes('vtex') ||
+      lower.includes('shopify') ||
+      lower.includes('marketplace')
     ) {
-      reply = 'Olá! Tudo bem? Sou o Alex, especialista comercial da NEXA CRM. Como posso te ajudar a automatizar o WhatsApp da sua empresa com inteligência artificial hoje?';
+      reply = 'Excelente! Nossa divisão Applay ECOM (https://www.applayos.com/ecom) conta com o PickPlay, aplicativo mobile de picking ágil para separar pedidos por onda/lote com zero erros, integrado nativamente a VTEX, Shopify, SAP, Protheus e marketplaces. Quer agendar uma demonstração técnica online de 25 minutos com nossa engenharia?';
+      suggestedStage = 'stage-2';
+      interest = 'Applay ECOM – PickPlay';
+    } else if (
+      lower.includes('log') ||
+      lower.includes('tracking') ||
+      lower.includes('wms') ||
+      lower.includes('frota') ||
+      lower.includes('motorista') ||
+      lower.includes('doca') ||
+      lower.includes('armaz') ||
+      lower.includes('estoque')
+    ) {
+      reply = 'Perfeito! A divisão Applay LOG (https://www.applayos.com/log) reúne o Tracking (app do entregador com rotas inteligentes, bipagem e comprovante digital), o WMS Applay (FEFO/FIFO e curva ABC) e o Time to Slot para agendamento de docas. Qual o maior gargalo da sua operação hoje para agendarmos uma demo de 25 min?';
+      suggestedStage = 'stage-2';
+      interest = 'Applay LOG – Tracking & WMS';
+    } else if (
+      lower.includes('lab') ||
+      lower.includes('poc') ||
+      lower.includes('inova') ||
+      lower.includes('projeto') ||
+      lower.includes('p&d') ||
+      lower.includes('custom')
+    ) {
+      reply = 'Incrível! O Applay LAB (https://www.applayos.com/lab) é nosso laboratório de P&D para Provas de Conceito (PoCs) sob medida, testes de hardware/coletores e soluções proprietárias em supply chain. Qual desafio vocês querem prototipar para agendarmos um papo com nossos engenheiros?';
+      suggestedStage = 'stage-2';
+      interest = 'Applay LAB – Inovação & PoCs';
+    } else if (
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('valor') ||
+      lower.includes('quanto custa') ||
+      lower.includes('demo') ||
+      lower.includes('agendar')
+    ) {
+      reply = 'Na Applay trabalhamos com licenciamento SaaS dimensionado por divisão (ECOM, LOG ou LAB), operadores ativos ou volume de pedidos. Para apresentar a melhor arquitetura, podemos agendar uma Demonstração Técnica gratuita de 25 minutos. Prefere manhã ou tarde?';
+      suggestedStage = 'stage-3';
+      interest = 'Demonstração & Proposta Applay';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia da Applay (applayos.com), hub de inovação em Supply Chain, E-commerce e Logística com as divisões ECOM (PickPlay), LOG (Tracking/WMS) e LAB. Qual desafio operacional da sua empresa você gostaria de destravar hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isCodeOn) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é a Sofia da CodeOn. Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me mandar por texto se você busca Alocação de Squads Ágeis (SLA de 15 dias), profissionais sob demanda ou Desenvolvimento de Software sob medida?';
+      suggestedStage = 'stage-1';
+    } else if (
+      lower.includes('squad') ||
+      lower.includes('aloca') ||
+      lower.includes('time') ||
+      lower.includes('dev') ||
+      lower.includes('react') ||
+      lower.includes('node') ||
+      lower.includes('python') ||
+      lower.includes('mobile')
+    ) {
+      reply = 'Excelente! Na CodeOn oferecemos Alocação Gerenciada de Squads Ágeis e especialistas sob demanda com SLA de onboarding em até 15 dias, governança executiva contínua e substituição garantida. Qual stack e senioridade vocês precisam reforçar agora para agendarmos um Discovery Técnico de 20 min?';
+      suggestedStage = 'stage-2';
+      interest = 'Alocação Gerenciada de Squads – CodeOn';
+    } else if (
+      lower.includes('case') ||
+      lower.includes('portf') ||
+      lower.includes('projeto') ||
+      lower.includes('software') ||
+      lower.includes('app') ||
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('valor')
+    ) {
+      reply = 'Desenvolvemos e sustentamos plataformas robustas como TOHT (Feedback 360°), Motorclick e APP Taxa, além de Fábrica de Software sob medida e alocação de squads. Podemos agendar um Diagnóstico de Capacidade Técnica gratuito de 20 minutos com nossa liderança de engenharia?';
+      suggestedStage = 'stage-2';
+      interest = 'Fábrica de Software & Discovery CodeOn';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia da CodeOn (codeon.com.br). Ajudamos empresas a destravar o roadmap de tecnologia com Alocação Gerenciada de Squads Ágeis (onboarding em até 15 dias) e Engenharia de Software sob medida. Qual desafio técnico você quer acelerar hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isVerzel) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é a Sofia da Verzel. Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me escrever rapidinho qual projeto de software, app ou squad vocês estão planejando?';
+      suggestedStage = 'stage-1';
+    } else if (
+      lower.includes('app') ||
+      lower.includes('mobile') ||
+      lower.includes('sistema') ||
+      lower.includes('software') ||
+      lower.includes('squad') ||
+      /\bia\b/i.test(lower) ||
+      lower.includes('inteligência artificial') ||
+      lower.includes('integra')
+    ) {
+      reply = 'Perfeito! Na Verzel (16+ anos de mercado, cases como Shell, Mutant e Zignet) construímos sistemas sob medida, apps mobile iOS/Android, integrações de ERPs e squads aceleradas pelo nosso AI Talent Hub. Vamos agendar uma Reunião Técnica de Discovery gratuita de 30 minutos com nossos arquitetos?';
+      suggestedStage = 'stage-2';
+      interest = 'Projeto de Software & Discovery Verzel';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia da Verzel Soluções em Sistemas. Atuamos com Fábrica de Software sob medida, Apps Mobile, Integrações e AI Talent Hub. Como podemos apoiar seu projeto de tecnologia hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isSurface) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é a Sofia da Surfacebrasil. Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me informar por texto qual material/polímero (ex: PP, PEAD, PET, Alumínio) e processo de adesão ou pintura você precisa tratar com plasma?';
+      suggestedStage = 'stage-1';
+    } else if (
+      lower.includes('plasma') ||
+      lower.includes('ades') ||
+      lower.includes('pintura') ||
+      lower.includes('cola') ||
+      lower.includes('pp') ||
+      lower.includes('pead') ||
+      lower.includes('pet') ||
+      lower.includes('sap02') ||
+      lower.includes('dyne')
+    ) {
+      reply = 'Perfeito! O tratamento por Plasma Atmosférico a Frio da Surfacebrasil (linha SAP02 e mesas CNC 3 eixos) resolve falhas de colagem, pintura e datação inkjet em polímeros e metais sem fogo ou primers tóxicos. Você quer agendar uma reunião com nossos engenheiros de aplicação ou enviar amostras para teste gratuito no laboratório Surface Test em Campinas/SP?';
+      suggestedStage = 'stage-2';
+      interest = 'Tratamento por Plasma Atmosférico – Surfacebrasil';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia da Surfacebrasil, especialista em equipamentos de tratamento de superfície por Plasma Atmosférico. Qual material ou falha de adesão/pintura na sua linha fabril podemos resolver hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isPsi) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Tudo bem? Aqui é a Sofia da Equipamentos PSI. Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me escrever rapidinho qual equipamento para terapia EMDR você procura (Barra de Luz 74cm, Barra Baby 51cm ou Aparelho Tátil com Pulsers)?';
+      suggestedStage = 'stage-1';
+    } else if (
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('valor') ||
+      lower.includes('barra') ||
+      lower.includes('tátil') ||
+      lower.includes('tatil') ||
+      lower.includes('pulser') ||
+      lower.includes('buzzer') ||
+      lower.includes('emdr')
+    ) {
+      reply = 'Que alegria falar com você! Na Equipamentos PSI temos a Barra de Luz Tradicional 74cm (R$ 1.314,80 a R$ 1.384,00), a Barra Baby 51cm (R$ 1.286,60 a R$ 1.354,32) e o Aparelho Tátil completo com Pulsers (R$ 687,42 a R$ 723,60), todos bivolt com desconto no PIX ou até 12x no cartão. Qual o CEP do seu consultório para eu simular o frete?';
+      suggestedStage = 'stage-2';
+      interest = 'Equipamentos EMDR (Barra de Luz / Tátil)';
+    } else {
+      reply = 'Olá! Que alegria falar com você! Sou a Sofia da Equipamentos PSI, especialista em tecnologia para terapia EMDR (Barra de Luz 74cm, Barra Baby 51cm e Aparelho Tátil com Pulsers). Como posso ajudar nos seus atendimentos hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isCantareira) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é a Sofia do Cemitério Parque da Cantareira. Recebi seu áudio, mas não consegui transcrever com nitidez neste momento. Pode me enviar por texto como podemos amparar você e sua família hoje? (Se for uma emergência funerária 24h, nossa central atende imediatamente pelo (11) 4485-1122.)';
+      suggestedStage = 'stage-1';
+    } else if (
+      lower.includes('emerg') ||
+      lower.includes('falec') ||
+      lower.includes('óbito') ||
+      lower.includes('obito') ||
+      lower.includes('velório') ||
+      lower.includes('velorio')
+    ) {
+      reply = 'Meus sentimentos e todo acolhimento à sua família. Para atendimento funerário e liberação de velório 24 horas imediato, acione nossa Central Emergencial pelo telefone (11) 4485-1122 (ou WhatsApp de plantão (11) 97614-3323). Também oferecemos Locação Emergencial de 4 anos com total amparo.';
+      suggestedStage = 'stage-sac';
+      interest = 'Atendimento Emergencial 24h – Cantareira';
+    } else if (
+      lower.includes('jazigo') ||
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('valor') ||
+      lower.includes('plano') ||
+      lower.includes('prevent') ||
+      lower.includes('visita')
+    ) {
+      reply = 'Com todo carinho: no Cemitério Parque da Cantareira temos Jazigos Perpétuos (Standard 4 módulos, Especial 4 módulos + serviço e Nobre 8 módulos + serviço), todos parceláveis em até 18x sem juros e com desconto à vista no PIX. Gostaria de receber uma simulação ou agendar uma visita guiada gratuita de carrinho elétrico?';
+      suggestedStage = 'stage-2';
+      interest = 'Jazigo Perpétuo / Plano Preventivo Cantareira';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia do Cemitério Parque da Cantareira. Estou aqui para acolher você e sua família com toda serenidade sobre Jazigos Perpétuos, Locação Emergencial, Velório 24h ou Visita Guiada. Como posso auxiliar?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isAmaro) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é a Sofia da Amaro Advogados Associados. Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me informar por texto, com total sigilo, qual é a questão jurídica ou área que você precisa de orientação?';
+      suggestedStage = 'stage-1';
+    } else if (
+      lower.includes('divórcio') ||
+      lower.includes('divorcio') ||
+      lower.includes('pensão') ||
+      lower.includes('pensao') ||
+      lower.includes('guarda') ||
+      lower.includes('inventário') ||
+      lower.includes('inventario') ||
+      lower.includes('trabalh') ||
+      lower.includes('imobili') ||
+      lower.includes('consulta') ||
+      lower.includes('agendar')
+    ) {
+      reply = 'Compreendo perfeitamente e acolhemos seu caso com absoluto sigilo e conformidade com a OAB. Nossos advogados atendem em consulta presencial na nossa sede em Moema (Av. Rouxinol, 84 - SP) ou online via Google Meet. Há alguma intimação com prazo correndo, e qual modalidade de consulta prefere?';
+      suggestedStage = 'stage-2';
+      interest = 'Consulta de Avaliação Jurídica – Amaro Advogados';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia da Amaro Advogados Associados. Atuamos com total discrição e excelência em Família, Sucessões/Inventário, Trabalhista, Imobiliário, Direito Público, Saúde e Digital. Qual questão jurídica você gostaria de avaliar?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isDelivery) {
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é a Sofia da Central de Pedidos. Recebi seu áudio, mas não consegui ouvir com nitidez agora. Pode me mandar por texto os itens do seu pedido e seu endereço/bairro?';
+      suggestedStage = 'stage-1';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia da Central de Pedidos Delivery! Me diga o que você gostaria de pedir hoje e o seu endereço com bairro para eu já calcular rapidinho!';
       suggestedStage = 'stage-1';
     }
   } else if (isPrimo) {
-    if (
+    if (isUnreadableAudio) {
+      reply = 'Olá! Aqui é a Sofia da Primo Equipamentos Gastronômicos. Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me mandar por texto qual equipamento você procura para sua cozinha ou comércio?';
+      suggestedStage = 'stage-1';
+    } else if (
       lower.includes('liquidificador') ||
       lower.includes('skymsen') ||
       lower.includes('baixa rota') ||
@@ -1454,7 +1757,10 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       suggestedStage = 'stage-1';
     }
   } else if (isMaCorretora) {
-    if (
+    if (isUnreadableAudio) {
+      reply = 'Olá! Tudo bem? Aqui é a Sofia da MA Corretora de Seguros! Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me mandar por texto qual seguro ou produto financeiro você gostaria de cotar (Auto, Vida, Saúde/Odonto, Residencial, Empresa, Fiança ou Consórcio)?';
+      suggestedStage = 'stage-1';
+    } else if (
       lower.includes('sinistro') ||
       lower.includes('batida') ||
       lower.includes('bati') ||
@@ -1554,19 +1860,35 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       reply = 'A MA Corretora de Seguros fica na Av. Do Cursino, nº 2400 - Conj 103 - CEP 04132-002 - São Paulo/SP. Nossos canais oficiais são (11) 4305-8905, WhatsApp (11) 97500-2660, comercial@macorretora.com e https://www.macorretora.com/. Atendemos todo o Brasil de forma 100% humanizada! Como posso te ajudar hoje?';
       suggestedStage = 'stage-1';
       interest = 'Localização & Canais MA Corretora';
-    } else {
+    } else if (
+      lower.includes('oi') ||
+      lower.includes('olá') ||
+      lower.includes('ola') ||
+      lower.includes('bom dia') ||
+      lower.includes('boa tarde') ||
+      lower.includes('boa noite') ||
+      lower.includes('quem fala') ||
+      lower.includes('da onde') ||
+      lower.includes('tudo bem')
+    ) {
       reply = 'Olá! Tudo bem? Sou a Sofia da MA Corretora de Seguros (e projeto Corretor Volante). Pensou em Seguros e Benefícios, lembrou da MA Corretora! Trabalhamos com mais de 14 seguradoras em Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência e Produtos Financeiros. Como posso te ajudar hoje?';
       suggestedStage = 'stage-1';
+    } else {
+      const ragFallback = retrieveMaCorretoraContext(targetText || prompt, '', 1, 600);
+      if (ragFallback.topItem) {
+        const snippet = ragFallback.topItem.content.split('•').slice(0, 3).join('. ').slice(0, 260).trim();
+        reply = `Com certeza! Trabalhamos com o ${ragFallback.topItem.title} na MA Corretora (${snippet}...). Para eu montar sua cotação gratuita nas 14 seguradoras parceiras, pode me passar seus dados principais ou o que deseja proteger?`;
+        suggestedStage = 'stage-2';
+        interest = ragFallback.topItem.title;
+      } else {
+        reply = 'Olá! Tudo bem? Sou a Sofia da MA Corretora de Seguros (e projeto Corretor Volante). Pensou em Seguros e Benefícios, lembrou da MA Corretora! Trabalhamos com mais de 14 seguradoras em Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência e Produtos Financeiros. Como posso te ajudar hoje?';
+        suggestedStage = 'stage-1';
+      }
     }
   } else if (isLucyOrDental) {
     // Odontologia Integrativa Dra. Lucy Murata Logic (Objetiva, calorosa, humana e contextual)
-    if (
-      lower.includes('não foi possível transcrever') ||
-      lower.includes('nao foi possivel transcrever') ||
-      lower.includes('[áudio recebido') ||
-      lower.includes('[audio recebido')
-    ) {
-      reply = 'Olá! Recebi seu áudio aqui no consultório, mas não consegui escutar com nitidez por aqui. Você poderia me mandar uma mensagem de texto ou me dizer rapidinho o que precisa? Assim já te respondo na hora!';
+    if (isUnreadableAudio) {
+      reply = 'Olá! Recebi seu áudio aqui no consultório da Dra. Lucy Murata, mas não consegui escutar com nitidez por aqui. Você poderia me mandar uma mensagem de texto ou me dizer rapidinho o que precisa? Assim já te respondo na hora!';
       sendAsVoice = false;
     } else if (
       lower.includes('agend') ||
@@ -1611,7 +1933,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('claro') ||
       lower.includes('por favor')
     ) {
-      if (db.agentConfig.preRecordedAudiosEnabled !== false && (db.agentConfig.preRecordedAudios || []).some((a) => a.id === 'audio-pitch-dra-lucy' && a.enabled)) {
+      if (config.preRecordedAudiosEnabled !== false && (config.preRecordedAudios || []).some((a) => a.id === 'audio-pitch-dra-lucy' && a.enabled)) {
         dispatchAudioId = 'audio-pitch-dra-lucy';
       }
       reply = 'Maravilha! Você prefere atendimento pela manhã ou no período da tarde? E quais dias da semana costumam ficar mais confortáveis na sua rotina para vir ao consultório no Euroville Mall?';
@@ -1678,7 +2000,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('inchado') ||
       lower.includes('sangr')
     ) {
-      if (db.agentConfig.preRecordedAudiosEnabled !== false && (db.agentConfig.preRecordedAudios || []).some((a) => a.id === 'audio-urgency-dra-lucy' && a.enabled)) {
+      if (config.preRecordedAudiosEnabled !== false && (config.preRecordedAudios || []).some((a) => a.id === 'audio-urgency-dra-lucy' && a.enabled)) {
         dispatchAudioId = 'audio-urgency-dra-lucy';
       }
       reply = 'Sinto muito por esse desconforto! Já marquei seu atendimento como PRIORITÁRIO aqui no consultório para verificar um encaixe de urgência com a equipe. Você está com dor intensa neste momento?';
@@ -1742,7 +2064,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('boa noite') ||
       lower.includes('tudo bem')
     ) {
-      if (db.agentConfig.preRecordedAudiosEnabled !== false && (db.agentConfig.preRecordedAudios || []).some((a) => a.id === 'audio-welcome-dra-lucy' && a.enabled)) {
+      if (config.preRecordedAudiosEnabled !== false && (config.preRecordedAudios || []).some((a) => a.id === 'audio-welcome-dra-lucy' && a.enabled)) {
         dispatchAudioId = 'audio-welcome-dra-lucy';
         reply = 'Olá! Tudo bem? Sou a Sofia, secretária da Dra. Lucy Murata aqui no consultório em Bragança Paulista. A própria Dra. Lucy gravou um recadinho carinhoso de boas-vindas pra você, ouça com carinho abaixo! Como posso te ajudar hoje? 😊';
       } else {
@@ -1753,15 +2075,18 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       suggestedStage = 'stage-2';
     }
   } else {
-    // Dynamic Generic Safety Fallback (using configured persona & role, NEVER mentioning NEXA CRM)
-    if (
+    // Dynamic Generic Safety Fallback (isolated to custom tenant, NEVER mentions other businesses)
+    if (isUnreadableAudio) {
+      reply = `Olá! Aqui é a ${persona} (${companyDisplayName}). Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me mandar por texto o que você precisa? Assim já te ajudo na hora!`;
+      suggestedStage = 'stage-1';
+    } else if (
       lower.includes('funciona') ||
       lower.includes('como') ||
       lower.includes('o que é') ||
       lower.includes('oque é') ||
       lower.includes('atendimento')
     ) {
-      reply = `Nosso atendimento é especializado e conduzido por ${config.personaName}, com foco total em tirar dúvidas, acolher suas necessidades e organizar seu agendamento de forma rápida. Em que posso te orientar hoje?`;
+      reply = `Nosso atendimento na ${companyDisplayName} é especializado e conduzido por ${persona}, com foco total em tirar dúvidas, acolher suas necessidades e organizar seu atendimento de forma rápida. Em que posso te orientar hoje?`;
       suggestedStage = 'stage-2';
       interest = 'Dúvidas sobre o Atendimento';
     } else if (
@@ -1771,7 +2096,7 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('quanto custa') ||
       lower.includes('tabela')
     ) {
-      reply = `Para te passar os valores e condições detalhadas com toda a precisão, fazemos uma avaliação inicial das suas necessidades. Gostaria de agendar uma conversa ou receber nossa proposta?`;
+      reply = `Para te passar os valores e condições detalhadas da ${companyDisplayName} com toda a precisão, fazemos uma avaliação inicial das suas necessidades. Gostaria de agendar uma conversa ou receber nossa proposta?`;
       suggestedStage = 'stage-2';
       interest = 'Consulta de Valores';
     } else if (
@@ -1779,11 +2104,11 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       lower.includes('atendente') ||
       lower.includes('falar com alguém')
     ) {
-      reply = 'Com certeza! Já avisei nossa equipe sobre seu contato. Enquanto a atendente finaliza o atendimento anterior, qual seria a sua dúvida para eu já deixar adiantado para ela te atender bem mais rápido?';
+      reply = `Com certeza! Já avisei nossa equipe da ${companyDisplayName} sobre seu contato. Enquanto nossa equipe conclui o atendimento anterior, qual seria a sua dúvida para eu já deixar adiantado?`;
       suggestedStage = 'stage-2';
       interest = 'Solicitação de Atendimento Humano';
     } else {
-      reply = `Olá! Tudo bem? Sou a ${persona}, ${config.role || 'assistente de atendimento'}. Em que posso te ajudar hoje?`;
+      reply = `Olá! Tudo bem? Sou a ${persona}, da ${companyDisplayName}. Em que posso te ajudar hoje?`;
     }
   }
 
@@ -1806,13 +2131,14 @@ async function callOpenAI(
   modelName: string,
   systemInstruction: string,
   prompt: string,
-  apiKeyOverride?: string
+  apiKeyOverride?: string,
+  safetyContext?: SafetyReplyContext
 ): Promise<AIResponseResult> {
   const apiKey = apiKeyOverride || process.env.OPENAI_API_KEY;
   if (!apiKey) {
     // If OpenAI key is not provided, fall back to Gemini smoothly with note
     console.warn('OpenAI API Key não encontrada, usando Gemini como fallback seguro.');
-    return await callGemini('gemini-3.8-flash', systemInstruction, prompt);
+    return await callGemini('gemini-3.8-flash', systemInstruction, prompt, undefined, safetyContext);
   }
 
   const selectedModel = modelName || 'gpt-4o-mini';
@@ -1850,12 +2176,13 @@ async function callAnthropic(
   modelName: string,
   systemInstruction: string,
   prompt: string,
-  apiKeyOverride?: string
+  apiKeyOverride?: string,
+  safetyContext?: SafetyReplyContext
 ): Promise<AIResponseResult> {
   const apiKey = apiKeyOverride || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     console.warn('Anthropic API Key não encontrada, usando Gemini como fallback seguro.');
-    return await callGemini('gemini-3.8-flash', systemInstruction, prompt);
+    return await callGemini('gemini-3.8-flash', systemInstruction, prompt, undefined, safetyContext);
   }
 
   const selectedModel = modelName || 'claude-3-5-sonnet-20241022';

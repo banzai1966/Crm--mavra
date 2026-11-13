@@ -59,14 +59,16 @@ export function getEvolutionApiKey(instanceName?: string): string {
     return 'A91F3C8D-72B4-4E60-9A15-5C8E2F40B719';
   }
 
-  // 2. Fall back to general configured apiKey if valid
+  // 2. Fall back to general configured apiKey ONLY if targeting the primary configured instance or if it's the master key
   const configured = (config.apiKey || '').trim();
-  if (
+  const primaryInstance = normalizeInstanceName(config.instanceName);
+  const isValidConfigured =
     configured &&
     configured !== 'CE08ADFF7647-4B88-91A4-55E66D9A0620' &&
     !configured.includes('seuservidor.com') &&
-    !configured.includes('exemplo')
-  ) {
+    !configured.includes('exemplo');
+
+  if (isValidConfigured && (configured === MASTER_EVOLUTION_KEY || targetInstance === primaryInstance)) {
     return configured;
   }
   return MASTER_EVOLUTION_KEY;
@@ -416,12 +418,14 @@ export async function sendWhatsAppVoiceAudio(
       }
     };
 
+    let activeApiKey = apiKey;
+
     // Attempt 1: Standard sendWhatsAppAudio with raw base64 and encoding: true (WhatsApp PTT voice note)
     let response = await fetchWithTimeout(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: apiKey,
+        apikey: activeApiKey,
       },
       body: JSON.stringify({
         number: cleanPhone,
@@ -431,10 +435,11 @@ export async function sendWhatsAppVoiceAudio(
       }),
     });
 
-    if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+    if (response.status === 401 && activeApiKey !== MASTER_EVOLUTION_KEY) {
+      activeApiKey = MASTER_EVOLUTION_KEY;
       response = await fetchWithTimeout(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', apikey: MASTER_EVOLUTION_KEY },
+        headers: { 'Content-Type': 'application/json', apikey: activeApiKey },
         body: JSON.stringify({ number: cleanPhone, audio: rawBase64, delay: 800, encoding: true }),
       });
       if (response.ok) {
@@ -451,7 +456,7 @@ export async function sendWhatsAppVoiceAudio(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          apikey: apiKey,
+          apikey: activeApiKey,
         },
         body: JSON.stringify({
           number: cleanPhone,
@@ -470,7 +475,7 @@ export async function sendWhatsAppVoiceAudio(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          apikey: apiKey,
+          apikey: activeApiKey,
         },
         body: JSON.stringify({
           number: cleanPhone,
@@ -516,8 +521,8 @@ export async function getBase64FromMediaMessage(
 ): Promise<string | null> {
   const config = db.evolutionConfig;
   const baseUrl = sanitizeEvolutionUrl(config.serverUrl || process.env.EVOLUTION_API_URL || 'https://api.makprojetosmake.com.br');
-  const apiKey = getEvolutionApiKey();
   const instanceName = normalizeInstanceName(instanceNameOverride || config.instanceName || 'dra-lucy-murata');
+  let apiKey = getEvolutionApiKey(instanceName);
 
   if (!baseUrl || !apiKey || !instanceName) {
     console.warn('[Evolution API Media] Configuração incompleta para download de mídia.');
@@ -575,19 +580,31 @@ export async function getBase64FromMediaMessage(
 
   for (let i = 0; i < candidatePayloads.length; i++) {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500); // 3.5s timeout per attempt
+      const doFetch = async (keyToUse: string) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4500);
+        try {
+          return await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: keyToUse,
+            },
+            body: JSON.stringify(candidatePayloads[i]),
+            signal: controller.signal,
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      };
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: apiKey,
-        },
-        body: JSON.stringify(candidatePayloads[i]),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
+      let response = await doFetch(apiKey);
+
+      if (response.status === 401 && apiKey !== MASTER_EVOLUTION_KEY) {
+        console.warn(`[Evolution API Media (${instanceName})] 401 Unauthorized. Retentando com chave mestra...`);
+        apiKey = MASTER_EVOLUTION_KEY;
+        response = await doFetch(apiKey);
+      }
 
       if (response.ok) {
         const data = await response.json();

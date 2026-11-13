@@ -332,8 +332,10 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
 
   let incomingAudioDataUrl: string | undefined = undefined;
 
-  if (!messageText.trim() && isAudioMessage && db.agentConfig.autoTranscribeAudio !== false) {
-    console.log(`[Webhook] Mensagem de áudio recebida de ${cleanPhone}. Processando transcrição de voz com Gemini...`);
+  const instanceConfigForMedia = getAgentConfigForInstance(incomingInstance);
+
+  if (!messageText.trim() && isAudioMessage && instanceConfigForMedia.autoTranscribeAudio !== false) {
+    console.log(`[Webhook] Mensagem de áudio recebida de ${cleanPhone} (${incomingInstance}). Processando transcrição de voz com Gemini...`);
     let base64Audio =
       data?.base64 ||
       body?.base64 ||
@@ -363,7 +365,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
     if (base64Audio) {
       incomingAudioDataUrl = base64Audio.startsWith('data:') ? base64Audio : `data:${mimeType};base64,${base64Audio}`;
       try {
-        const transcribedText = await transcribeAudioWithGemini(base64Audio, mimeType);
+        const transcribedText = await transcribeAudioWithGemini(base64Audio, mimeType, instanceConfigForMedia.geminiApiKey);
         if (transcribedText) {
           messageText = transcribedText;
           isAudioTranscribed = true;
@@ -403,7 +405,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       console.log(`[Webhook] Baixando base64 da imagem diretamente da Evolution API (ID: ${keyToFetch?.id || 'direto'})...`);
 
       for (let attempt = 1; attempt <= 4; attempt++) {
-        base64Image = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
+        base64Image = await getBase64FromMediaMessage(payloadToFetch, keyToFetch, incomingInstance);
         if (base64Image) break;
         if (attempt < 4) {
           console.log(`[Webhook] Imagem ainda não disponível na Evolution API (tentativa ${attempt}/4). Aguardando ${attempt * 700}ms...`);
@@ -414,7 +416,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
 
     if (base64Image) {
       try {
-        const analysis = await analyzeImageWithGemini(base64Image, caption, mimeType);
+        const analysis = await analyzeImageWithGemini(base64Image, caption, mimeType, instanceConfigForMedia.geminiApiKey);
         if (analysis) {
           messageText = caption ? `${caption}\n[Análise Visual da Imagem]: ${analysis}` : `[Imagem Recebida]: ${analysis}`;
           isImageAnalyzed = true;
@@ -454,7 +456,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       console.log(`[Webhook] Baixando base64 do documento/PDF diretamente da Evolution API (ID: ${keyToFetch?.id || 'direto'})...`);
 
       for (let attempt = 1; attempt <= 4; attempt++) {
-        base64Doc = await getBase64FromMediaMessage(payloadToFetch, keyToFetch);
+        base64Doc = await getBase64FromMediaMessage(payloadToFetch, keyToFetch, incomingInstance);
         if (base64Doc) break;
         if (attempt < 4) {
           console.log(`[Webhook] Documento/PDF ainda não disponível na Evolution API (tentativa ${attempt}/4). Aguardando ${attempt * 700}ms...`);
@@ -465,7 +467,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
 
     if (base64Doc) {
       try {
-        const docAnalysis = await analyzeDocumentWithGemini(base64Doc, docFileName, docCaption, docMime);
+        const docAnalysis = await analyzeDocumentWithGemini(base64Doc, docFileName, docCaption, docMime, instanceConfigForMedia.geminiApiKey);
         if (docAnalysis) {
           messageText = docCaption
             ? `${docCaption}\n[Documento/PDF Anexo "${docFileName}"]: ${docAnalysis}`
@@ -1286,8 +1288,12 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
   } catch (aiErr: any) {
     console.error('[Webhook] Falha ao gerar resposta da IA:', aiErr.message);
 
-    // Resposta inteligente da base de conhecimento mesmo em caso de erro da API
-    const fallbackResult = generateRuleBasedSafetyReply(messageText);
+    // Resposta inteligente isolada por empresa mesmo em caso de erro da API
+    const fallbackResult = generateRuleBasedSafetyReply(messageText, {
+      instanceName: incomingInstance,
+      presetId: companyPreset.id,
+      config: activeInstanceConfig,
+    });
     const fallbackText = fallbackResult.replyText;
 
     const aiFallbackMsg: ChatMessage = {
@@ -1300,6 +1306,8 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       status: 'delivered',
       stageTriggered: fallbackResult.stageTriggered,
       extractedInfo: fallbackResult.extractedInfo,
+      workspaceId: targetWorkspaceId,
+      instanceName: incomingInstance,
     };
     db.messages.push(aiFallbackMsg);
 
@@ -1312,9 +1320,11 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       leadId: lead.id,
       phone: cleanPhone,
       sender: 'system',
-      text: `[Sistema]: Sofia ativou modo de contingência inteligente devido a oscilação no provedor de IA (${aiErr.message?.slice(0, 80)}). Mensagem enviada ao lead.`,
+      text: `[Sistema]: Sofia (${companyPreset.companyName}) ativou modo de contingência inteligente devido a oscilação no provedor de IA (${aiErr.message?.slice(0, 80)}). Mensagem enviada ao lead.`,
       timestamp: new Date().toISOString(),
       status: 'delivered',
+      workspaceId: targetWorkspaceId,
+      instanceName: incomingInstance,
     };
     db.messages.push(adminAlertMsg);
     db.saveToFile();
