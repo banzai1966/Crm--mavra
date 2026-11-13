@@ -1,5 +1,6 @@
 import { db } from './db';
 import { sendWhatsAppMessage } from './evolution';
+import { getAgentConfigForInstance } from './companyConfigs';
 import { ChatMessage } from '../src/types';
 
 let reminderInterval: NodeJS.Timeout | null = null;
@@ -168,9 +169,12 @@ export async function sendManualReminder(
     minute: '2-digit',
   });
 
+  const personaName = getAgentConfigForInstance(instanceName).personaName || 'Sofia';
+  const greetingPersona = personaName.toLowerCase().startsWith('sofia') ? 'a Sofia' : personaName;
+
   const msg =
     type === '24h'
-      ? `Olá ${leadName}, tudo bem? Aqui é a Sofia! Passando para confirmar nosso compromisso agendado para às *${aptTimeFormatted}*. Está tudo certo para você? Caso precise de ajuste, nos avise por aqui! 📅`
+      ? `Olá ${leadName}, tudo bem? Aqui é ${greetingPersona}! Passando para confirmar nosso compromisso agendado para às *${aptTimeFormatted}*. Está tudo certo para você? Caso precise de ajuste, nos avise por aqui! 📅`
       : `Olá ${leadName}! Lembrando que nosso compromisso acontece hoje às *${aptTimeFormatted}*. Já estamos com tudo pronto para o seu atendimento. Até breve! ✨`;
 
   await sendWhatsAppMessage(phone, msg, instanceName);

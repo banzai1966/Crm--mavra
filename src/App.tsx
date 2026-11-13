@@ -141,8 +141,8 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
   },
   macorretora: {
     activeWorkspaceName: 'MA Corretora de Seguros – Seguros & Benefícios',
-    personaName: 'Sofia da MA Corretora',
-    role: 'Consultora Especialista em Seguros, Benefícios & Soluções Financeiras da MA Corretora de Seguros',
+    personaName: 'Malves da MA Corretora',
+    role: 'Consultor(a) Especialista em Seguros, Benefícios & Soluções Financeiras da MA Corretora de Seguros',
     toneOfVoice: '100% humanizada, acolhedora, transparente, consultiva, ética e especialista em proteção patrimonial, familiar, saúde e finanças.',
     salesGoal: 'Encantar com atendimento 100% humanizado, identificar o ramo ideal (Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança, Consórcio, Previdência, Financiamento ou Consultoria), coletar os dados para multicálculo nas 14+ seguradoras e direcionar para fechamento ou assistência 24h.',
     followUpNiche: 'macorretora',

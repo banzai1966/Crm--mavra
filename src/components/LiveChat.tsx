@@ -874,14 +874,14 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
               {/* Action buttons on header */}
               <div className="flex items-center gap-1.5 md:gap-2">
-                {/* Sofia 24h status badge */}
+                {/* Persona 24h status badge */}
                 {activeLead.aiPaused ? (
                   <button
                     type="button"
                     id="btn-toggle-ai-chat"
                     onClick={() => onToggleAi(activeLead.id)}
                     className="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-slate-100 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 border border-slate-200 transition-all cursor-pointer shadow-2xs"
-                    title="Clique para reativar o atendimento automático da Sofia 24h"
+                    title={`Clique para reativar o atendimento automático (${(personaName || 'Sofia').split(' ')[0]}) 24h`}
                   >
                     <UserCheck className="w-3.5 h-3.5 text-slate-500" />
                     <span className="hidden sm:inline">Operador Humano</span>
@@ -890,11 +890,15 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                 ) : (
                   <div
                     className="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs select-none"
-                    title="Sofia está ativa 24h acolhendo o cliente e garantindo zero vácuo"
+                    title={`${(personaName || 'Sofia').split(' ')[0]} está em atendimento 24h acolhendo o cliente e garantindo zero vácuo`}
                   >
                     <Bot className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-                    <span className="hidden sm:inline">Sofia Ativa 24h</span>
-                    <span className="sm:hidden">Sofia</span>
+                    <span className="hidden sm:inline">
+                      {(personaName || 'Sofia').split(' ')[0].toLowerCase() === 'sofia'
+                        ? 'Sofia Ativa 24h'
+                        : `${(personaName || 'Sofia').split(' ')[0]} • 24h`}
+                    </span>
+                    <span className="sm:hidden">{(personaName || 'Sofia').split(' ')[0]}</span>
                   </div>
                 )}
 
@@ -1678,6 +1682,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
             onConfirmPixReceipt={onConfirmPixReceipt}
             onRefreshChat={() => fetchMessages(activeLead.id)}
             pixKey={pixKey}
+            personaName={personaName}
             onUpdateLeadNotes={onUpdateLeadNotes}
             onRequestDelete={() =>
               setDeleteTarget({
@@ -1720,6 +1725,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
               onConfirmPixReceipt={onConfirmPixReceipt}
               onRefreshChat={() => fetchMessages(activeLead.id)}
               pixKey={pixKey}
+              personaName={personaName}
               onUpdateLeadNotes={onUpdateLeadNotes}
               onRequestDelete={() =>
                 setDeleteTarget({
@@ -1990,6 +1996,7 @@ interface DetailsContentProps {
   onConfirmPixReceipt?: (leadId: string, paidAmount?: number) => Promise<void> | void;
   onRefreshChat?: () => void;
   pixKey?: string;
+  personaName?: string;
   onUpdateLeadNotes: (leadId: string, notes: string) => void;
   onRequestDelete?: () => void;
   onRequestClear?: () => void;
@@ -2004,6 +2011,7 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
   onConfirmPixReceipt,
   onRefreshChat,
   pixKey = 'financeiro@nexacrm.com.br',
+  personaName = 'Sofia',
   onUpdateLeadNotes,
   onRequestDelete,
   onRequestClear,
@@ -2170,7 +2178,7 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
 
           {activeLead.cognitiveProfile.vipNotes && (
             <div className="text-[10px] bg-white/80 border border-indigo-100 text-indigo-900 p-2 rounded-lg font-medium">
-              💡 <strong>Insight p/ Sofia:</strong> {activeLead.cognitiveProfile.vipNotes}
+              💡 <strong>Insight p/ {(personaName || 'Sofia').split(' ')[0]}:</strong> {activeLead.cognitiveProfile.vipNotes}
             </div>
           )}
         </div>

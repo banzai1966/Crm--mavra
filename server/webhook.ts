@@ -1326,7 +1326,7 @@ async function executeWebhookPipeline(body: any, fallbackInstance?: string): Pro
       leadId: lead.id,
       phone: cleanPhone,
       sender: 'system',
-      text: `[Sistema]: Sofia (${companyPreset.companyName}) ativou modo de contingência inteligente devido a oscilação no provedor de IA (${aiErr.message?.slice(0, 80)}). Mensagem enviada ao lead.`,
+      text: `[Sistema]: ${activeInstanceConfig.personaName || 'Sofia'} (${companyPreset.companyName}) ativou modo de contingência inteligente devido a oscilação no provedor de IA (${aiErr.message?.slice(0, 80)}). Mensagem enviada ao lead.`,
       timestamp: new Date().toISOString(),
       status: 'delivered',
       workspaceId: targetWorkspaceId,
