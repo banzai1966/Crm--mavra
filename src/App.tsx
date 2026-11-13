@@ -139,6 +139,17 @@ export const WORKSPACE_PRESETS: Record<string, Partial<AgentConfig>> = {
     preRecordedAudiosEnabled: false,
     followUpCustomMessage: 'Olá! Tudo bem? Passando para saber como estão os desafios de picking e expedição na sua operação logística. Nossa equipe técnica da Applay tem slots abertos esta semana para uma demonstração rápida do PickPlay e do Tracking ao vivo. Como está sua disponibilidade? 📦⚡',
   },
+  macorretora: {
+    activeWorkspaceName: 'MA Corretora de Seguros – Seguros & Benefícios',
+    personaName: 'Sofia da MA Corretora',
+    role: 'Consultora Especialista em Seguros, Benefícios & Soluções Financeiras da MA Corretora de Seguros',
+    toneOfVoice: '100% humanizada, acolhedora, transparente, consultiva, ética e especialista em proteção patrimonial, familiar, saúde e finanças.',
+    salesGoal: 'Encantar com atendimento 100% humanizado, identificar o ramo ideal (Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança, Consórcio, Previdência, Financiamento ou Consultoria), coletar os dados para multicálculo nas 14+ seguradoras e direcionar para fechamento ou assistência 24h.',
+    followUpNiche: 'macorretora',
+    catalogPdfName: 'Portfolio_Completo_MA_Corretora.pdf',
+    preRecordedAudiosEnabled: false,
+    followUpCustomMessage: 'Olá! Tudo bem? Pensou em Seguros e Benefícios? Lembrou da MA Corretora! Passando para saber se podemos avançar com a sua cotação personalizada nas nossas 14 seguradoras parceiras. Mesmo à distância, garantimos atendimento 100% humanizado! 🛡️✨',
+  },
 };
 
 export const CLINIC_STAGES: KanbanStage[] = [
@@ -249,7 +260,20 @@ export const APPLAY_STAGES: KanbanStage[] = [
   { id: 'stage-sac', name: '⚙️ SAC / Suporte Técnico a Operadores & WMS N1', color: '#ea580c', order: 8 },
 ];
 
+export const MACORRETORA_STAGES: KanbanStage[] = [
+  { id: 'stage-base', name: '📂 Base Segurados / Renovações do Mês', color: '#6366f1', order: 0 },
+  { id: 'stage-reativacao', name: '⚡ Reativação & Cross-Sell (IA)', color: '#ec4899', order: 1 },
+  { id: 'stage-1', name: 'Novo Contato / Interesse em Proteção', color: '#3b82f6', order: 2, isDefault: true },
+  { id: 'stage-2', name: 'Coleta de Perfil & Dados (Multicálculo)', color: '#f59e0b', order: 3 },
+  { id: 'stage-3', name: 'Cotação Comparativa Apresentada (14 Seguradoras)', color: '#8b5cf6', order: 4 },
+  { id: 'stage-4', name: 'Vistoria / Proposta Online & Pagamento', color: '#06b6d4', order: 5 },
+  { id: 'stage-5', name: 'Apólice Emitida / Contrato Fechado', color: '#10b981', order: 6 },
+  { id: 'stage-6', name: 'Declinado / Aguardando Vigência', color: '#ef4444', order: 7 },
+  { id: 'stage-sac', name: '🚨 Sinistros, Assistência 24h & 2ª Via', color: '#ea580c', order: 8 },
+];
+
 export function getStagesForNiche(niche?: string): KanbanStage[] {
+  if (niche === 'macorretora' || niche === 'ma-corretora' || niche === 'corretor-volante' || niche === 'seguros') return MACORRETORA_STAGES;
   if (niche === 'applay' || niche === 'applayos' || niche === 'app-lay' || niche === 'pickplay' || niche === 'tracking') return APPLAY_STAGES;
   if (niche === 'codeon' || niche === 'code-on' || niche === 'squad' || niche === 'squads') return CODEON_STAGES;
   if (niche === 'primo') return PRIMO_STAGES;
@@ -308,6 +332,18 @@ export function normalizeNicheKey(raw?: string | null): string {
   if (clean === 'applay' || clean === 'applayos' || clean === 'app-lay' || clean.includes('applay') || clean.includes('pickplay') || clean.includes('tracking')) {
     return 'applay';
   }
+  if (
+    clean === 'macorretora' ||
+    clean === 'ma-corretora' ||
+    clean === 'ma_corretora' ||
+    clean.includes('macorretora') ||
+    clean.includes('ma-corretora') ||
+    clean.includes('corretor-volante') ||
+    clean.includes('corretorvolante') ||
+    clean === 'seguros'
+  ) {
+    return 'macorretora';
+  }
   if (clean === 'primo' || clean.includes('primo-equipamento') || clean.includes('primo_equipamento')) {
     return 'primo';
   }
@@ -353,6 +389,7 @@ export function resolveClientLeadWorkspace(lead: Lead): string {
     }
   }
 
+  if (lowerTags.some((t) => t.includes('macorretora') || t.includes('ma corretora') || t.includes('corretor volante')) || notes.includes('macorretora') || interest.includes('seguro auto')) return 'macorretora';
   if (lowerTags.some((t) => t.includes('codeon') || t.includes('squad')) || notes.includes('codeon') || interest.includes('codeon')) return 'codeon';
   if (lowerTags.some((t) => t.includes('applay') || t.includes('pickplay') || t.includes('tracking')) || notes.includes('applay') || interest.includes('applay')) return 'applay';
   if (lowerTags.some((t) => t.includes('primo')) || notes.includes('primo')) return 'primo';
@@ -737,6 +774,7 @@ export default function App() {
                 else if (activeUrlNiche === 'amaro' || activeUrlNiche === 'amaroadvogados') targetInst = 'amaro-advogados';
                 else if (activeUrlNiche === 'clinic') targetInst = 'dental-integrative';
                 else if (activeUrlNiche === 'cantareira') targetInst = 'cemiterio-cantareira';
+                else if (activeUrlNiche === 'macorretora') targetInst = 'macorretora';
                 else if (activeUrlNiche === 'b2b') targetInst = 'agente-ia';
                 
                 const targetKey = (targetInst && freshEvo.instanceApiKeys?.[targetInst]) || freshEvo.apiKey;
@@ -1151,6 +1189,8 @@ export default function App() {
         ? 'amaro-advogados'
         : normalizedWk === 'cantareira'
         ? 'cemiterio-cantareira'
+        : normalizedWk === 'macorretora'
+        ? 'macorretora'
         : normalizedWk === 'clinic'
         ? 'dental-integrative'
         : normalizedWk === 'b2b'

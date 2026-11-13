@@ -55,6 +55,10 @@ export function getEvolutionApiKey(instanceName?: string): string {
     return 'cemiterio-cantareira-48zvof';
   }
 
+  if (targetInstance === 'macorretora') {
+    return 'A91F3C8D-72B4-4E60-9A15-5C8E2F40B719';
+  }
+
   // 2. Fall back to general configured apiKey if valid
   const configured = (config.apiKey || '').trim();
   if (
@@ -91,6 +95,17 @@ export function normalizeInstanceName(inst?: string): string {
   }
   if (raw === 'equipamentos-psi' || raw === 'equipamentospsi' || raw === 'psi') {
     return 'equipamentospsi';
+  }
+  if (
+    raw === 'macorretora' ||
+    raw === 'ma-corretora' ||
+    raw === 'ma_corretora' ||
+    raw === 'macorretoradeseguros' ||
+    raw === 'ma-corretora-de-seguros' ||
+    raw === 'corretor-volante' ||
+    raw === 'corretorvolante'
+  ) {
+    return 'macorretora';
   }
   if (raw.startsWith('dental-integrative')) {
     return 'dental-integrative';

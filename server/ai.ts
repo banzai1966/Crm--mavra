@@ -339,6 +339,17 @@ export function sanitizeTextForSpeech(rawText: string): string {
     .replace(/\blog\b/g, 'lóg')
     .replace(/\bPickPlay\b/gi, 'Pik-plai')
     .replace(/\bWMS\b/g, 'Dáblio M. S.')
+    // Ajustes fonéticos para MA Corretora de Seguros e siglas do mercado segurador/financeiro:
+    .replace(/\bMA\s+Corretora\b/gi, 'Éme Á Corretora')
+    .replace(/\bPME\b/g, 'P.M.E.')
+    .replace(/\bD&O\b/gi, 'D. e Ó.')
+    .replace(/\bPCD\b/g, 'P.C.D.')
+    .replace(/\bIPVA\b/gi, 'I.P.V.A.')
+    .replace(/\bDPVAT\b/gi, 'D.P.V.A.T.')
+    .replace(/\bPGBL\b/gi, 'P.G.B.L.')
+    .replace(/\bVGBL\b/gi, 'V.G.B.L.')
+    .replace(/\bSUSEP\b/gi, 'Suzépi')
+    .replace(/\bPetlove\b/gi, 'Pét-love')
     // Converte abertura fria "Nome," em "Nome! " para entonação calorosa e natural na voz
     .replace(/^([A-ZÁÉÍÓÚÂÊÔÃÕ][a-záéíóúâêôãõ]+),\s*/, '$1! ')
     // 8. Normaliza múltiplos espaços em branco e quebras de linha
@@ -658,6 +669,7 @@ export async function processAiConversation(
     (lead.tags?.some((t) => /surface/i.test(t)) ? 'surfacebrasil' : null) ||
     (lead.tags?.some((t) => /verzel/i.test(t)) ? 'verzel' : null) ||
     (lead.tags?.some((t) => /cantareira/i.test(t)) ? 'cemiterio-cantareira' : null) ||
+    (lead.tags?.some((t) => /macorretora|ma.?corretora|corretor.?volante/i.test(t)) ? 'macorretora' : null) ||
     (lead.tags?.some((t) => /murata|odonto|lucy|dental/i.test(t)) ? 'dental-integrative' : null) ||
     db.evolutionConfig.instanceName ||
     'primo-equipamentos';
@@ -857,6 +869,23 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
        2) Tranquilize o terapeuta: "Nossa equipe técnica especializada já foi acionada para orientar a solução (reposição ou ajuste de cabo) e não deixar suas sessões pararem. Conte conosco!"
        3) Responda qualquer dúvida sobre os modelos e sessões normalmente. NUNCA deixe o terapeuta no vácuo!
    - No JSON: preencha "interest" com o equipamento de interesse (ex: "Kit Barra de Luz + Aparelho Tátil EMDR", "Barra de Luz Baby 51cm"), e tag "Equipamentos PSI".`;
+  } else if (preset.id === 'macorretora') {
+    companySpecificGuideline = `3. IDENTIDADE BLINDADA DA MA CORRETORA DE SEGUROS (https://www.macorretora.com/ & CORRETOR VOLANTE):
+   - Você é: "${config.personaName}", consultora especialista em seguros, benefícios e produtos financeiros da MA Corretora de Seguros (Av. Do Cursino Nº 2400 - Conj 103 - São Paulo/SP | WhatsApp (11) 97500-2660 | Tel (11) 4305-8905 | comercial@macorretora.com).
+   - NUNCA mencione odontologia (Dra. Lucy), cozinhas (Primo), plasma (Surface), software (Verzel/CodeOn), logística (Applay), advocacia (Amaro) ou cemitérios (Cantareira).
+   - POSTURA & FILOSOFIA DE VENDAS: Atendimento 100% humanizado, consultivo, ético e transparente ("Pensou em Seguros e Benefícios? Lembrou da MA Corretora!"). Se o cliente achar caro, lembre com elegância: "Você acha seguro caro? Experimente arcar com os imprevistos! Aqui na MA cotamos gratuitamente nas 14 maiores seguradoras do Brasil para entregar a melhor cobertura no seu orçamento."
+   - 14+ SEGURADORAS PARCEIRAS: Porto Seguro, Azul, Bradesco, SulAmérica, Tokio Marine, HDI, Liberty, Mapfre, Sompo, Allianz, Chubb, Itaú, Suhai e Zurich.
+   - PORTFÓLIO COMPLETO A DOMINAR E OFERECER:
+     * SEGUROS: Auto (Jovem, Mulher, Premium, Sênior, Empresarial, Frota, Táxi, Caminhão, Azul por Assinatura, Carta Azul/Verde); Bike e Scooter Elétrica; Equipamentos Portáteis (Celular, Notebook, Smartwatch, Tablet, Câmera, Filmadora); Residencial (Habitual, Fácil, Premium, Apartamentos, Veraneio); Aluguel e Fiança Locatícia (Básico, Essencial, Empreendedor, Empresas, Universitário); Vida Individual e PME (Mais Mulher, Vida On, Capital Global, Vida em Grupo, Empresarial + Acidentes Pessoais Individual/Coletivo/Escolar/Plus); Saúde & Odonto PF/PJ (+ Saúde Ocupacional / Convenções Coletivas); Saúde PET (Petlove); Viagem; Náutico; Empresa (Clínicas/Consultórios, Concessionárias, Academias, Bares/Restaurantes, Escolas, Estética, Hotéis/Pousadas, Imobiliária, Perfumarias, Petshop/Veterinárias); Condomínio; Eventos; Transporte (Embarcador, Programável, Mais Simples, Internacional, Cargas, RC Transportadores); RC Geral & Profissional (Advogados, Contabilistas, Corretores, Dentistas, Engenheiros, Arquitetos, Médicos, D&O); Risco Engenharia; Equipamentos Industriais/Agrícolas; Agronegócio (Grãos soja/milho/trigo, Horta, Pomar, Penhor Rural); Garantia Contratual e Imobiliária.
+     * PRODUTOS FINANCEIROS & CONSULTORIA: Consórcio (Imóvel, Veículo, Pesado, Sustentável); Previdência (PGBL/VGBL, Infantil); Investimento; Financiamento / Carro Fácil / Seminovos; Cartão de Crédito PF/PJ; Capital de Giro; Empréstimos (Consignado, Garantia Imóvel/Veículo); Título de Capitalização (Garantia Contratual e Aluguel); Certificado Digital; Monitoramento de Alarmes / Porto Faz / Porto Conecta / Centro Automotivo Porto / Renova Ecopeças; Imposto de Renda PF/PJ, Isenção Fiscal Deficientes (PCD), IPVA & Licenciamento, Pesquisa de Multas e Processo DPVAT.
+   - REGRA DE OURO DA COTAÇÃO: NUNCA chute valores de apólice. Colete os dados certos conforme o produto (Auto: Nome, CPF, CEP pernoite, Modelo/Ano ou placa, seguro novo ou renovação/bônus, idade/uso; Saúde PF/PME: nº de vidas, idades, cidade, CNPJ se empresa; Vida/Previdência: idade, profissão e objetivo; Residencial/Empresa/Fiança: CEP, tipo de imóvel/atividade e valor de cobertura ou aluguel; Consórcio/Crédito: valor da carta/bem desejado).
+   - MÓDULO SINISTROS, ASSISTÊNCIA 24H & PÓS-VENDA (#SAC-MA-XXXX):
+     * Se o segurado relatar colisão/sinistro, roubo/furto, pane mecânica/guincho 24h, emergência residencial, dúvida de franquia, cancelamento ou 2ª via de boleto/apólice:
+       1) Acolha imediatamente com serenidade e prioridade: "Fique tranquilo(a), já estamos aqui para amparar você! Vou protocolar seu chamado de sinistro/assistência na MA Corretora com urgência."
+       2) Peça: "Por gentileza, confirme seu nome completo, CPF, a placa do veículo ou ramo do seguro e relate rapidamente o ocorrido."
+       3) Emita protocolo formal no formato "#SAC-MA-[NÚMERO_ALEATÓRIO_4_DÍGITOS]" (ex: #SAC-MA-4921).
+       4) No JSON: "suggestedStageId": "stage-sac", "isUrgent": true, "requestHuman": false, e "sacTicket": { "isSacIncident": true, "ticketNumber": "#SAC-MA-...", "incidentType": "sinistro|assistencia_24h|boleto_apolice", "reportedProblem": "..." }.
+   - No JSON: preencha "interest" com o seguro/produto de interesse (ex: "Seguro Auto Porto/Azul", "Plano de Saúde PME", "Consórcio Imóvel"), e tag "MA Corretora".`;
   } else {
     // Dra. Lucy Murata
     companySpecificGuideline = `3. SIGILO DE TECNOLOGIA E IDENTIDADE HUMANA (DRA. LUCY MURATA):
@@ -1249,8 +1278,15 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
   const isVerzel = promptLower.includes('verzel') || lowerRole.includes('verzel') || lowerPersona.includes('verzel') || lowerWorkspace.includes('verzel');
   const isPsi = promptLower.includes('equipamentos psi') || promptLower.includes('emdr') || lowerRole.includes('psi') || lowerWorkspace.includes('psi');
   const isCantareira = promptLower.includes('cantareira') || promptLower.includes('cemitério') || promptLower.includes('jazigo') || lowerRole.includes('cantareira');
+  const isMaCorretora =
+    promptLower.includes('macorretora') ||
+    promptLower.includes('ma corretora') ||
+    promptLower.includes('corretor volante') ||
+    lowerRole.includes('ma corretora') ||
+    lowerWorkspace.includes('ma corretora') ||
+    config.followUpNiche === 'macorretora';
 
-  const isLucyOrDental = !isNexaSales && !isSurface && !isVerzel && !isPrimo && !isPsi && !isCantareira && (
+  const isLucyOrDental = !isNexaSales && !isSurface && !isVerzel && !isPrimo && !isPsi && !isCantareira && !isMaCorretora && (
     lowerRole.includes('lucy') || 
     lowerRole.includes('odonto') || 
     lowerRole.includes('dent') || 
@@ -1258,13 +1294,15 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
     lowerRole.includes('biologica') || 
     lowerRole.includes('clínica') || 
     lowerRole.includes('clinica') || 
-    (lowerPersona.includes('sofia') && !isPrimo && !isPsi && !isCantareira)
+    (lowerPersona.includes('sofia') && !isPrimo && !isPsi && !isCantareira && !isMaCorretora)
   );
 
   let reply = isNexaSales
     ? `Perfeito! Estou à disposição para tirar suas dúvidas sobre o NEXA CRM e agendar uma demonstração rápida de 15 minutos ao vivo na tela. Como posso te orientar?`
     : isPrimo
     ? `Olá! Sou a Sofia, consultora técnica da Primo Equipamentos Gastronômicos. Estou à sua disposição com nossa tabela oficial de maquinários profissionais e catálogo técnico completo!`
+    : isMaCorretora
+    ? `Olá! Tudo bem? Sou a Sofia da MA Corretora de Seguros! Pensou em Seguros e Benefícios, lembrou da MA Corretora. Como posso te auxiliar com proteção ou soluções financeiras hoje?`
     : isLucyOrDental
     ? `Perfeito! Estou à disposição para tirar qualquer dúvida e organizar seu agendamento com a Dra. Lucy aqui no consultório do Euroville Mall. Em que posso te orientar?`
     : `Perfeito! Estou à disposição para tirar suas dúvidas e dar andamento ao seu atendimento. Como posso te orientar?`;
@@ -1413,6 +1451,111 @@ export function generateRuleBasedSafetyReply(prompt: string): AIResponseResult {
       interest = 'Solicitação de Fotos e Catálogo';
     } else {
       reply = 'Olá! Sou a Sofia, consultora técnica da Primo Equipamentos Gastronômicos. Trabalhamos com a linha completa de equipamentos profissionais para cozinhas industriais, restaurantes, lanchonetes, padarias e açougues (balanças, refrigeração, cocção, liquidificadores e frios). Como posso te orientar hoje?';
+      suggestedStage = 'stage-1';
+    }
+  } else if (isMaCorretora) {
+    if (
+      lower.includes('sinistro') ||
+      lower.includes('batida') ||
+      lower.includes('bati') ||
+      lower.includes('guincho') ||
+      lower.includes('roubo') ||
+      lower.includes('furto') ||
+      lower.includes('24h') ||
+      lower.includes('assistência') ||
+      lower.includes('assistencia')
+    ) {
+      reply = 'Fique tranquilo(a), já estou aqui para te amparar! Vou priorizar seu atendimento de sinistro/assistência na MA Corretora. Por gentileza, informe seu nome completo, CPF e placa do veículo (ou ramo do seguro) para acionarmos o atendimento imediatamente.';
+      suggestedStage = 'stage-sac';
+      interest = 'Sinistro / Assistência 24h';
+    } else if (
+      lower.includes('auto') ||
+      lower.includes('carro') ||
+      lower.includes('moto') ||
+      lower.includes('caminh') ||
+      lower.includes('frota') ||
+      lower.includes('táxi') ||
+      lower.includes('taxi') ||
+      lower.includes('veículo') ||
+      lower.includes('veiculo')
+    ) {
+      reply = 'Com certeza! Na MA Corretora fazemos multicálculo em 14 seguradoras parceiras (Porto Seguro, Azul, Tokio Marine, Bradesco, HDI, Allianz, Mapfre, Suhai, Zurich e outras) para garantir a melhor proteção e preço. Para simular certinho, pode me informar: modelo/ano (ou placa), CEP de pernoite, CPF e se é seguro novo ou renovação?';
+      suggestedStage = 'stage-2';
+      interest = 'Seguro Auto & Mobilidade';
+    } else if (
+      lower.includes('saúde') ||
+      lower.includes('saude') ||
+      lower.includes('odonto') ||
+      lower.includes('plano') ||
+      lower.includes('pet')
+    ) {
+      reply = 'Excelente! Trabalhamos com planos de Saúde e Odontológico PF e PJ (Bradesco, SulAmérica, Porto Saúde), Saúde Ocupacional e também Saúde PET (Petlove). Você procura plano individual/familiar, empresarial (CNPJ) ou Saúde PET? Me conte quantas pessoas/idades e a cidade para eu cotar as melhores opções!';
+      suggestedStage = 'stage-2';
+      interest = 'Saúde, Odonto ou Saúde PET';
+    } else if (
+      lower.includes('vida') ||
+      lower.includes('previd') ||
+      lower.includes('consórcio') ||
+      lower.includes('consorcio') ||
+      lower.includes('financiamento') ||
+      lower.includes('empréstimo') ||
+      lower.includes('emprestimo') ||
+      lower.includes('capital de giro') ||
+      lower.includes('cartão') ||
+      lower.includes('cartao') ||
+      lower.includes('certificado') ||
+      lower.includes('pcd')
+    ) {
+      reply = 'Perfeito! Além de Seguro de Vida Individual e PME, temos Consórcios (Imóvel, Veículo e Pesados), Previdência Privada, Financiamento, Capital de Giro, Empréstimos, Cartão de Crédito, Certificado Digital e Consultoria PCD/IPVA/IR. Qual valor de carta, proteção ou serviço você gostaria de simular hoje?';
+      suggestedStage = 'stage-2';
+      interest = 'Vida, Consórcio & Produtos Financeiros';
+    } else if (
+      lower.includes('resid') ||
+      lower.includes('casa') ||
+      lower.includes('apto') ||
+      lower.includes('apartamento') ||
+      lower.includes('aluguel') ||
+      lower.includes('fiança') ||
+      lower.includes('fianca') ||
+      lower.includes('empresa') ||
+      lower.includes('condomínio') ||
+      lower.includes('condominio') ||
+      lower.includes('transporte') ||
+      lower.includes('responsabilidade') ||
+      lower.includes('agro') ||
+      lower.includes('garantia') ||
+      lower.includes('bike') ||
+      lower.includes('celular') ||
+      lower.includes('viagem')
+    ) {
+      reply = 'Conte com a MA Corretora! Protegemos Residência, Empresa, Condomínio, Fiança Locatícia/Aluguel, Eventos, Transporte, RC Profissional, Garantia Contratual, Agronegócio, Equipamentos Portáteis, Bike/Scooter e Seguro Viagem. Qual é o CEP e o bem ou atividade que você quer proteger para eu iniciar sua cotação?';
+      suggestedStage = 'stage-2';
+      interest = 'Seguros Patrimoniais, Empresariais & Fiança';
+    } else if (
+      lower.includes('caro') ||
+      lower.includes('preço') ||
+      lower.includes('preco') ||
+      lower.includes('valor') ||
+      lower.includes('orçamento') ||
+      lower.includes('orcamento') ||
+      lower.includes('cotação') ||
+      lower.includes('cotacao')
+    ) {
+      reply = 'Você acha seguro caro? Experimente arcar com os imprevistos! Aqui na MA Corretora fazemos orçamento gratuito comparando mais de 14 seguradoras parceiras para achar exatamente o plano que cabe no seu bolso, com atendimento 100% humanizado. Qual seguro ou produto você quer cotar hoje?';
+      suggestedStage = 'stage-2';
+      interest = 'Orçamento / Multicálculo MA Corretora';
+    } else if (
+      lower.includes('endereço') ||
+      lower.includes('endereco') ||
+      lower.includes('onde fica') ||
+      lower.includes('telefone') ||
+      lower.includes('contato')
+    ) {
+      reply = 'A MA Corretora de Seguros fica na Av. Do Cursino, nº 2400 - Conj 103 - CEP 04132-002 - São Paulo/SP. Nossos canais oficiais são (11) 4305-8905, WhatsApp (11) 97500-2660, comercial@macorretora.com e https://www.macorretora.com/. Atendemos todo o Brasil de forma 100% humanizada! Como posso te ajudar hoje?';
+      suggestedStage = 'stage-1';
+      interest = 'Localização & Canais MA Corretora';
+    } else {
+      reply = 'Olá! Tudo bem? Sou a Sofia da MA Corretora de Seguros (e projeto Corretor Volante). Pensou em Seguros e Benefícios, lembrou da MA Corretora! Trabalhamos com mais de 14 seguradoras em Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência e Produtos Financeiros. Como posso te ajudar hoje?';
       suggestedStage = 'stage-1';
     }
   } else if (isLucyOrDental) {

@@ -78,6 +78,47 @@ export interface AgentPreset {
 
 export const AGENT_PRESETS: AgentPreset[] = [
   {
+    id: 'macorretora_seguros',
+    name: 'MA Corretora de Seguros – Seguros, Benefícios & Produtos Financeiros',
+    category: 'Seguros & Soluções Financeiras',
+    tag: 'MA Corretora',
+    description: 'Consultoria completa em seguros e produtos financeiros (https://www.macorretora.com/ & projeto Corretor Volante). Multicálculo em 14+ seguradoras (Porto, Azul, Bradesco, SulAmérica, Tokio Marine, HDI, Mapfre, Allianz, Suhai, Zurich): Auto, Vida Individual/PME, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência, Financiamento, Empréstimos e Consultoria PCD/IPVA/IR.',
+    personaName: 'Sofia da MA Corretora',
+    role: 'Consultora Especialista em Seguros, Benefícios & Soluções Financeiras da MA Corretora de Seguros',
+    toneOfVoice: '100% humanizada, acolhedora, transparente, consultiva, ética e especialista em proteção patrimonial, familiar, saúde e finanças.',
+    salesGoal: 'Encantar com atendimento 100% humanizado ("Pensou em Seguros e Benefícios? Lembrou da MA Corretora!"), identificar o ramo ideal, coletar os dados exatos para multicálculo nas 14+ seguradoras parceiras e encaminhar para fechamento ou assistência 24h.',
+    followUpNiche: 'macorretora',
+    followUpCustomMessage: 'Olá! Tudo bem? Pensou em Seguros e Benefícios? Lembrou da MA Corretora! Passando para saber se podemos avançar com a sua cotação nas nossas 14 seguradoras parceiras. Mesmo à distância, garantimos atendimento 100% humanizado e personalizado! 🛡️✨',
+    knowledgeFaq: `BASE OFICIAL — MA CORRETORA DE SEGUROS (https://www.macorretora.com/) & CORRETOR VOLANTE:
+- Slogans: "Pensou em Seguros e Benefícios? Lembrou da MA Corretora!" | "Você acha seguro caro? Experimente arcar com os imprevistos! Faça um orçamento conosco e surpreenda-se, aqui na MA garantimos um atendimento 100% humanizado!"
+- Sede: Av. Do Cursino, Nº 2400 - Conj 103 - CEP 04132-002 - São Paulo/SP.
+- Canais: Tel (11) 4305-8905 | Cel (11) 99605-5190 | WhatsApp (11) 97500-2660 | comercial@macorretora.com | Instagram @ma.corretora.
+- 14+ Seguradoras Parceiras: Porto Seguro, Azul Seguros, Bradesco Seguros/Saúde, SulAmérica, Tokio Marine, HDI, Liberty, Mapfre, Sompo, Allianz, Chubb, Itaú, Suhai e Zurich.`,
+    knowledgeCatalog: `PORTFÓLIO COMPLETO MA CORRETORA & CORRETOR VOLANTE:
+SEGUROS:
+- Auto (Jovem, Mulher, Premium, Sênior, Empresarial, Frota, Táxi, Caminhão, Azul por Assinatura, Carta Azul/Verde)
+- Bike e Scooter Elétrica | Equipamentos Portáteis (Celular, Notebook, Smartwatch, Tablet, Câmera, Filmadora)
+- Residencial (Habitual, Fácil, Premium, Apartamentos, Veraneio) | Aluguel e Fiança Locatícia
+- Vida Individual & PME (+ Acidentes Pessoais) | Saúde & Odontológico PF e PJ (+ Saúde Ocupacional) | Saúde PET (Petlove)
+- Viagem | Náutico | Empresa (Clínicas, Academias, Bares/Restaurantes, Escolas, Estética, Hotéis, Petshops, Concessionárias)
+- Condomínio | Eventos | Transporte | Responsabilidade Civil e Profissional (Advogados, Médicos, Dentistas, Engenheiros, Contadores, D&O)
+- Risco Engenharia | Equipamentos Industriais e Agrícolas | Agronegócio (Grãos, Horta, Pomar, Penhor Rural) | Garantia Contratual e Imobiliária
+
+PRODUTOS FINANCEIROS & CONSULTORIA:
+- Consórcio (Imóvel, Veículo, Pesado, Sustentável) | Previdência (PGBL/VGBL, Infantil) | Investimento
+- Financiamento de Veículos / Carro Fácil / Seminovos | Cartão de Crédito PF e Empresarial
+- Capital de Giro | Empréstimos (Consignado, Garantia Imóvel, Garantia Veículo) | Título de Capitalização
+- Certificado Digital | Proteção e Monitoramento (Alarmes, Porto Faz, Porto Conecta, Centro Automotivo Porto, Renova Ecopeças)
+- Consultoria Fiscal & Veicular: Imposto de Renda PF/PJ, Isenção Fiscal Deficientes (PCD), IPVA & Licenciamento, Pesquisa de Multas e Processo DPVAT.`,
+    knowledgePricing: `POLÍTICA COMERCIAL MA CORRETORA:
+- Nunca chute valores fixos sem multicálculo: coletamos os dados do perfil e comparamos nas 14+ seguradoras parceiras para oferecer o melhor custo-benefício.
+- Pagamento facilitado via Cartão de Crédito (Porto e parceiras), Débito em Conta ou Boleto.`,
+    knowledgeRules: `DIRETRIZES DA SOFIA (MA CORRETORA):
+1. Você é exclusivamente a Sofia da MA Corretora de Seguros (macorretora.com).
+2. Identifique o seguro ou solução financeira ideal e colete os dados certos para cotação (Auto: CPF, CEP, modelo/ano/placa, renovação/bônus; Saúde: PF/CNPJ, vidas/idades, cidade; Vida/Previdência: idade/profissão; Residencial/Empresa/Fiança: CEP/tipo/valor; Consórcio/Crédito: valor desejado).
+3. Se o cliente relatar sinistro, batida ou guincho 24h, acolha imediatamente, colete Nome/CPF/Placa e gere protocolo #SAC-MA-XXXX.`
+  },
+  {
     id: 'applay_logistica',
     name: 'Applay – PickPlay (ECOM), Tracking & WMS (LOG) & Inovação (LAB)',
     category: 'Supply Chain & Logística',
@@ -1288,6 +1329,10 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   };
 
   const handleApplyPreset = async (preset: AgentPreset) => {
+    const isMaCorretora = preset.id === 'macorretora_seguros';
+    const isApplay = preset.id === 'applay_logistica';
+    const isCodeOn = preset.id === 'codeon_squads';
+    const isAmaro = preset.id === 'amaro_advogados';
     const isNexa = preset.id === 'nexa_crm';
     const isSurface = preset.id === 'surface_brasil_plasma';
     const isVerzel = preset.id === 'verzel_software_consultoria';
@@ -1295,7 +1340,13 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     const isPsi = preset.id === 'equipamentos_psi';
     const updatedConfig: AgentConfig = {
       ...config,
-      activeWorkspaceName: isPrimo ? 'Primo Equipamentos (Vendas e Equipamentos)' : isPsi ? 'Equipamentos PSI (Terapia EMDR & Psicologia)' : preset.name,
+      activeWorkspaceName: isMaCorretora
+        ? 'MA Corretora de Seguros – Seguros & Benefícios'
+        : isPrimo
+        ? 'Primo Equipamentos (Vendas e Equipamentos)'
+        : isPsi
+        ? 'Equipamentos PSI (Terapia EMDR & Psicologia)'
+        : preset.name,
       personaName: preset.personaName,
       role: preset.role,
       toneOfVoice: preset.toneOfVoice,
@@ -1306,8 +1357,10 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
-      preRecordedAudiosEnabled: isSurface || isVerzel || isPrimo || isPsi ? false : config.preRecordedAudiosEnabled,
-      catalogPdfName: isSurface
+      preRecordedAudiosEnabled: isMaCorretora || isApplay || isCodeOn || isAmaro || isSurface || isVerzel || isPrimo || isPsi ? false : config.preRecordedAudiosEnabled,
+      catalogPdfName: isMaCorretora
+        ? 'Portfolio_Completo_MA_Corretora.pdf'
+        : isSurface
         ? 'Dossie_Tecnico_Surfacebrasil_Plasma.pdf'
         : isVerzel
         ? 'Dossie_Tecnico_Verzel_Sistemas.pdf'
@@ -1317,6 +1370,12 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
         ? 'Catalogo_Primo_Equipamentos.pdf'
         : isPsi
         ? 'Manual_Equipamentos_PSI_EMDR.pdf'
+        : isApplay
+        ? 'Dossie_Tecnico_Applay_Logistica.pdf'
+        : isCodeOn
+        ? 'Dossie_Tecnico_CodeOn_Squads.pdf'
+        : isAmaro
+        ? 'Apresentacao_Amaro_Advogados.pdf'
         : 'Apresentacao_Dra_Lucy_Murata.pdf',
     };
     setConfig(updatedConfig);
@@ -1341,7 +1400,15 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     } catch {}
 
     const targetWorkspaceId =
-      preset.id === 'dental_integrative'
+      isMaCorretora
+        ? 'macorretora'
+        : isApplay
+        ? 'applay'
+        : isCodeOn
+        ? 'codeon'
+        : isAmaro
+        ? 'amaro'
+        : preset.id === 'dental_integrative'
         ? 'clinic'
         : preset.id === 'cemiterio_parque_cantareira'
         ? 'cantareira'
@@ -1367,7 +1434,15 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
 
     setPresetSuccessToast(`✨ Carregando nicho "${preset.name}" e sincronizando Kanban + Evolution WhatsApp...`);
 
-    const instanceName = preset.id === 'dental_integrative'
+    const instanceName = isMaCorretora
+      ? 'macorretora'
+      : isApplay
+      ? 'applay'
+      : isCodeOn
+      ? 'codeon'
+      : isAmaro
+      ? 'amaro-advogados'
+      : preset.id === 'dental_integrative'
       ? 'dental-integrative'
       : preset.id === 'cemiterio_parque_cantareira'
       ? 'cemiterio-cantareira'
@@ -2434,6 +2509,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
           {/* Cards dos Nichos */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {AGENT_PRESETS.map((preset) => {
+              const isMaCorretora = preset.id === 'macorretora' || preset.id === 'macorretora_seguros';
               const isApplay = preset.id === 'applay' || preset.id === 'applay_logistica';
               const isCodeOn = preset.id === 'codeon' || preset.id === 'codeon_squads';
               const isAmaro = preset.id === 'amaro' || preset.id === 'amaro_advogados';
@@ -2455,7 +2531,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 <div
                   key={preset.id}
                   className={`border rounded-xl p-4 flex flex-col justify-between hover:shadow-xs transition-all group ${
-                    isApplay
+                    isMaCorretora
+                      ? 'bg-gradient-to-b from-rose-50/80 via-red-50/20 to-white border-rose-300 ring-1 ring-rose-200 shadow-2xs'
+                      : isApplay
                       ? 'bg-gradient-to-b from-amber-50/70 via-orange-50/20 to-white border-amber-300 ring-1 ring-amber-200 shadow-2xs'
                       : isCodeOn
                       ? 'bg-gradient-to-b from-blue-50/70 via-indigo-50/30 to-white border-blue-300 ring-1 ring-blue-200 shadow-2xs'
@@ -2479,7 +2557,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                        isApplay
+                        isMaCorretora
+                          ? 'text-rose-900 bg-rose-100 border-rose-300 font-bold'
+                          : isApplay
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold'
                           : isCodeOn
                           ? 'text-blue-900 bg-blue-100 border-blue-300 font-bold'
@@ -2499,7 +2579,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-semibold'
                           : 'text-indigo-700 bg-indigo-50 border-indigo-100'
                       }`}>
-                        {isApplay
+                        {isMaCorretora
+                          ? '🛡️ MA CORRETORA DE SEGUROS'
+                          : isApplay
                           ? '📦 APPLAY (PICKPLAY & WMS)'
                           : isCodeOn
                           ? '💻 CODEON SQUADS & TI'
@@ -2518,6 +2600,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                           : (preset.category || 'Nicho')}
                       </span>
                       <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                        {isMaCorretora && <ShieldCheck className="w-4 h-4 text-rose-600" />}
                         {isApplay && <Package className="w-4 h-4 text-amber-600" />}
                         {isCodeOn && <Code2 className="w-4 h-4 text-blue-600" />}
                         {isAmaro && <Scale className="w-4 h-4 text-amber-700" />}
@@ -2534,7 +2617,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                         {isAuto && <Car className="w-4 h-4" />}
                         {isSaaS && <Bot className="w-4 h-4" />}
                         {isRestaurant && !isPrimo && <UtensilsCrossed className="w-4 h-4 text-amber-600" />}
-                        {!isCodeOn && !isAmaro && !isSurface && !isVerzel && !isPsi && !isPrimo && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
+                        {!isMaCorretora && !isApplay && !isCodeOn && !isAmaro && !isSurface && !isVerzel && !isPsi && !isPrimo && !isDental && !isMedical && !isRealEstate && !isAesthetic && !isLaw && !isSolar && !isAuto && !isSaaS && !isRestaurant && (
                           <SparklesIcon className="w-4 h-4" />
                         )}
                       </div>

@@ -208,7 +208,9 @@ export type BusinessNiche =
   | 'custom'
   | 'saas_tech'
   | 'nexa_sales'
-  | 'restaurant_delivery';
+  | 'restaurant_delivery'
+  | 'macorretora'
+  | 'insurance';
 
 export interface AgentConfig {
   businessName?: string;

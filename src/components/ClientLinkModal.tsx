@@ -37,6 +37,15 @@ interface CompanyOption {
 
 const COMPANIES: CompanyOption[] = [
   {
+    id: 'macorretora',
+    name: 'MA Corretora de Seguros',
+    subtitle: 'Seguros Auto, Vida, Saúde PF/PJ, Pet & Consórcios',
+    icon: ShieldCheck,
+    tag: 'Seguros & Benefícios',
+    badgeColor: 'bg-rose-100 text-rose-900 border-rose-300',
+    aliases: ['macorretora', 'ma-corretora', 'ma_corretora', 'corretor-volante', 'seguros'],
+  },
+  {
     id: 'applay',
     name: 'Applay (PickPlay, Tracking & WMS)',
     subtitle: 'Supply Chain, Picking Ágil de E-commerce & Logística',

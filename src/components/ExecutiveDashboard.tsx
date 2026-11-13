@@ -258,6 +258,25 @@ export const NICHE_PRESETS: Record<string, NichePreset> = {
     sacDescription: 'Acolhe clientes, identifica a área do Direito (Família, Sucessões, Trabalhista, Cível, Digital, Consumidor, Servidores Públicos), coleta documentação e agenda consulta presencial em Moema ou online com Dr. Bruno Amaro e equipe.',
     sacSetupPitch: 'Deseja cadastrar sua tabela de honorários e modelos de procuração da OAB? Ative o Setup Avançado (10%).',
   },
+  macorretora: {
+    id: 'macorretora',
+    name: 'MA Corretora de Seguros (Auto, Vida, Saúde & Consórcio)',
+    shortName: 'MA Corretora',
+    icon: '🛡️',
+    urgencyCardTitle: 'Sinistros & Assistência 24h',
+    urgencyBadge: 'Sinistro / Guincho',
+    urgencyDescription: 'Segurados solicitando guincho, assistência 24h ou abertura urgente de sinistro',
+    urgencyEmptyTitle: 'Nenhum sinistro emergencial pendente!',
+    urgencyEmptyDesc: 'Todos os segurados com assistência ou sinistro já foram atendidos.',
+    leadsCategoryLabel: 'Segurados & Cotações',
+    triagesTitle: 'Cotações & Apólices',
+    triagesSubLabel: 'em multicálculo',
+    actionButtonText: 'Ver Cotações no Funil',
+    sacTitle: 'Central de Sinistros, Assistência 24h & Apólices (MA Corretora)',
+    sacBadge: 'Sinistros & 24h',
+    sacDescription: 'Acolhe o segurado imediatamente em colisões, roubos, guincho 24h ou 2ª via de apólice/boleto, coleta CPF/Placa, gera protocolo #SAC-MA e aciona a equipe MA Corretora.',
+    sacSetupPitch: 'Deseja integrar sua central de multicálculo ou PDFs automáticos de propostas? Ative o Setup Avançado (10%).',
+  },
 };
 
 interface ExecutiveDashboardProps {
@@ -2372,6 +2391,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                           const n = (agentConfig.followUpNiche || 'dental').toLowerCase();
                           const w = (agentConfig.activeWorkspaceName || '').toLowerCase();
                           if (n.includes('cantareira') || w.includes('cantareira')) return '#SAC-CANTAREIRA-4921';
+                          if (n.includes('macorretora') || w.includes('ma corretora')) return '#SAC-MA-4921';
                           if (n.includes('surface') || w.includes('surface')) return '#SAC-SURFACE-4921';
                           if (n.includes('verzel') || w.includes('verzel')) return '#BUG-VERZEL-4921';
                           if (n.includes('psi') || w.includes('psi')) return '#SAC-PSI-4921';
@@ -2461,6 +2481,14 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                     aiMsg1: 'Com certeza! Estamos à sua disposição para auxiliá-los com todo o respeito que sua família merece. Por gentileza, me informe o número do contrato/título ou o nome completo do titular.',
                     userMsg2: 'Contrato 8492 - Titular João Duarte.',
                     aiMsg2: 'Perfeito! Já registrei seu chamado no sistema sob o Protocolo Oficial #SAC-CANTAREIRA-4921. Nossa equipe de acolhimento do Parque Cantareira já recebeu sua solicitação e vai te retornar em breve por aqui!',
+                  };
+                } else if (n.includes('macorretora') || w.includes('ma corretora')) {
+                  dialog = {
+                    code: '#SAC-MA-4921',
+                    userMsg1: 'Preciso acionar a assistência 24h / guincho do meu seguro auto ou verificar a 2ª via da minha apólice.',
+                    aiMsg1: 'Fique tranquilo(a), já estamos aqui para amparar você na MA Corretora! Por gentileza, me informe seu nome completo, CPF e a placa do veículo para protocolarmos com prioridade.',
+                    userMsg2: 'Placa ABC-1D23, CPF 123.456.789-00.',
+                    aiMsg2: 'Perfeito! Registrei seu atendimento sob o Protocolo Oficial #SAC-MA-4921. Nossa equipe de sinistros e relacionamento da MA Corretora já foi notificada e vai te auxiliar agora mesmo!',
                   };
                 } else if (n.includes('surface') || w.includes('surface')) {
                   dialog = {

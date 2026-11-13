@@ -198,6 +198,11 @@ export const Header: React.FC<HeaderProps> = ({
         agentConfig.role?.toLowerCase().includes('applay') ||
         agentConfig.activeWorkspaceName?.toLowerCase().includes('applay')
       ? 'applay'
+      : agentConfig.personaName?.toLowerCase().includes('ma corretora') ||
+        agentConfig.role?.toLowerCase().includes('ma corretora') ||
+        agentConfig.activeWorkspaceName?.toLowerCase().includes('ma corretora') ||
+        agentConfig.followUpNiche === 'macorretora'
+      ? 'macorretora'
       : agentConfig.followUpNiche === 'sales'
       ? 'b2b'
       : 'clinic';
@@ -215,6 +220,7 @@ export const Header: React.FC<HeaderProps> = ({
     amaro: { label: 'Amaro Advogados', icon: ShieldCheck, badge: 'Jurídico' },
     codeon: { label: 'CodeOn Squads & TI', icon: Code2, badge: 'Squads' },
     applay: { label: 'Applay (PickPlay & WMS)', icon: Package, badge: 'Logística' },
+    macorretora: { label: 'MA Corretora de Seguros', icon: ShieldCheck, badge: 'Seguros' },
   };
 
   const nicheMeta = builtInMeta[currentNiche] || {
@@ -499,6 +505,25 @@ export const Header: React.FC<HeaderProps> = ({
                           {currentNiche === 'applay' && <span className="text-[10px] text-amber-800 font-bold">(Ativo)</span>}
                         </div>
                         <p className="text-[10px] text-slate-400 font-normal">Foco: PickPlay, Tracking de entregas & WMS armazém</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onSwitchWorkspace('macorretora');
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-slate-50 transition-colors ${
+                        currentNiche === 'macorretora' ? 'bg-rose-50/80 font-bold text-rose-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <ShieldCheck className="w-4 h-4 text-rose-600" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>MA Corretora de Seguros</span>
+                          {currentNiche === 'macorretora' && <span className="text-[10px] text-rose-800 font-bold">(Ativo)</span>}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-normal">Foco: Seguros Auto, Vida, Saúde PF/PJ & Benefícios</p>
                       </div>
                     </button>
                   </div>

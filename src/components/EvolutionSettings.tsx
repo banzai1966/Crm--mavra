@@ -31,6 +31,7 @@ import {
 import { EvolutionConfig, WebhookEventLog } from '../types';
 
 const KNOWN_DEFAULT_KEYS: Record<string, string> = {
+  'macorretora': 'A91F3C8D-72B4-4E60-9A15-5C8E2F40B719',
   'applay': '3D6D721E-AB8F-4EB8-9CD6-854A062959B5',
   'codeon': 'CODEON-98F3-4A21-8B7C-E51928374650',
   'primo-equipamentos': '43BF031A-3A5D-4C32-81DD-A305F6575384',
@@ -50,6 +51,14 @@ const KNOWN_DEFAULT_KEYS: Record<string, string> = {
 const MASTER_GLOBAL_TOKEN = 'b2efa885a71ee22edf72b597df1a0ce9';
 
 const MANAGED_COMPANIES = [
+  {
+    instance: 'macorretora',
+    company: 'MA Corretora de Seguros',
+    niche: 'Seguros, Benefícios & Produtos Financeiros (Sofia)',
+    defaultToken: 'A91F3C8D-72B4-4E60-9A15-5C8E2F40B719',
+    badge: 'bg-rose-100 text-rose-900 border-rose-300',
+    iconColor: 'text-rose-600',
+  },
   {
     instance: 'applay',
     company: 'Applay (PickPlay, Tracking & WMS)',
@@ -355,11 +364,12 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
 
   // Handle Switch Instance Tab
   const handleSelectInstanceTab = (
-    inst: 'applay' | 'codeon' | 'dra-lucy-murata' | 'dental-integrative' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'equipamentospsi' | 'psi' | 'cemiterio-cantareira' | 'amaro-advogados' | 'custom',
+    inst: 'macorretora' | 'applay' | 'codeon' | 'dra-lucy-murata' | 'dental-integrative' | 'agente-ia' | 'demo-ao-vivo' | 'verzel' | 'surfacebrasil' | 'primo-equipamentos' | 'equipamentospsi' | 'psi' | 'cemiterio-cantareira' | 'amaro-advogados' | 'custom',
     customName?: string
   ) => {
     setSelectedInstanceTab(inst as any);
     let targetName = 'dental-integrative';
+    if (inst === 'macorretora') targetName = 'macorretora';
     if (inst === 'applay') targetName = 'applay';
     if (inst === 'codeon') targetName = 'codeon';
     if (inst === 'agente-ia') targetName = 'agente-ia';
@@ -739,7 +749,33 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-10 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-11 gap-2.5">
+            {/* Tab -0.5: Instância MA Corretora de Seguros */}
+            <div
+              onClick={() => handleSelectInstanceTab('macorretora')}
+              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                config.instanceName === 'macorretora'
+                  ? 'border-rose-600 bg-rose-50/60 ring-1 ring-rose-600 shadow-xs'
+                  : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
+                  MA Corretora
+                </span>
+                {config.instanceName === 'macorretora' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                Instância: <strong className="text-rose-700">macorretora</strong>
+              </p>
+              <span className="inline-block text-[10px] text-rose-800 font-semibold bg-rose-100/70 px-2 py-0.5 rounded mt-2">
+                Seguros & Benefícios
+              </span>
+            </div>
+
             {/* Tab 0: Instância Applay (Oficial Conectada) */}
             <div
               onClick={() => handleSelectInstanceTab('applay')}
@@ -1341,7 +1377,7 @@ export const EvolutionSettings: React.FC<EvolutionSettingsProps> = ({
               const allList = [...MANAGED_COMPANIES];
               const knownInstances = new Set(MANAGED_COMPANIES.map((m) => m.instance));
 
-              const IGNORED_DUPLICATES = new Set(['applay-logistica', 'amaroadvogados', 'dra-lucy-murata', 'psi', 'cemiterio-cantareira-48zvof']);
+              const IGNORED_DUPLICATES = new Set(['ma-corretora', 'ma_corretora', 'corretor-volante', 'applay-logistica', 'amaroadvogados', 'dra-lucy-murata', 'psi', 'cemiterio-cantareira-48zvof']);
 
               if (config.instanceApiKeys) {
                 for (const [instKey, tokenVal] of Object.entries(config.instanceApiKeys)) {
