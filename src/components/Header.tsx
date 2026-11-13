@@ -118,9 +118,17 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Secret keyboard shortcut for master admin: Ctrl + Shift + A or Cmd + Shift + A (Desktop only)
+  // Secret keyboard shortcut for master admin ONLY on main non-client URLs (Ctrl+Shift+A / Cmd+Shift+A)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const isClientUrl =
+          params.get('modo') === 'cliente' ||
+          params.get('cliente') === 'true' ||
+          params.get('client') === 'true';
+        if (isClientUrl) return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
         e.preventDefault();
         onOpenAdminAuth?.();
@@ -804,8 +812,8 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Admin Controls: Grouped cleanly under Settings Dropdown */}
-          {isAdminUnlocked ? (
+          {/* Admin Controls: Grouped cleanly under Settings Dropdown (100% hidden in Client / Locked mode) */}
+          {isAdminUnlocked && (
             <div className="flex items-center gap-1 sm:gap-1.5 pl-1.5 border-l border-slate-200" ref={adminDropdownRef}>
               <div className="relative">
                 <button
@@ -895,7 +903,7 @@ export const Header: React.FC<HeaderProps> = ({
                       >
                         <Database className="w-4 h-4 text-emerald-600" />
                         <div>
-                          <p className="font-semibold">Supabase (PostgreSQL)</p>
+                          <p className="font-semibold">Banco Supabase (PostgreSQL)</p>
                           <p className="text-[10px] text-slate-400 font-normal">Banco de dados em nuvem e backups</p>
                         </div>
                       </button>
@@ -943,18 +951,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               )}
             </div>
-          ) : (
-            onOpenAdminAuth && (
-              <button
-                type="button"
-                onClick={onOpenAdminAuth}
-                className="flex items-center gap-1.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 border border-slate-200 hover:border-indigo-300 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
-                title="Entrar como Administrador / Desbloquear Configurações"
-              >
-                <Lock className="w-3.5 h-3.5 text-slate-500" />
-                <span>Entrar (Admin)</span>
-              </button>
-            )
           )}
         </div>
       </div>

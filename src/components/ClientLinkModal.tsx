@@ -474,7 +474,7 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({
                 </li>
                 <li className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                  Nenhum clique no logo desbloqueia o sistema
+                  Botão "Entrar (Admin)" & atalhos administrativos 100% desativados
                 </li>
               </ul>
             </div>
@@ -484,7 +484,7 @@ export const ClientLinkModal: React.FC<ClientLinkModalProps> = ({
           <div className="bg-slate-100 border border-slate-200 rounded-xl p-2.5 text-[11px] text-slate-700 flex items-start gap-2">
             <Lock className="w-3.5 h-3.5 text-slate-500 mt-0.5 shrink-0" />
             <p className="leading-relaxed">
-              <strong>Acesso Master:</strong> Se você precisar acessar a área técnica no seu computador, basta pressionar o atalho de teclado <code className="bg-white px-1 py-0.5 rounded border border-slate-300 font-mono font-bold">Ctrl + Shift + A</code>.
+              <strong>Blindagem Definitiva:</strong> Nos links de cliente (<code className="bg-white px-1 py-0.5 rounded border border-slate-300 font-mono font-bold">?modo=cliente</code>), não existe nenhum botão nem atalho para abrir o painel administrativo. Você gerencia tudo diretamente pelo seu painel principal do NEXA.
             </p>
           </div>
         </div>

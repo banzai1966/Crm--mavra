@@ -547,17 +547,21 @@ export default function App() {
   const [documents, setDocuments] = useState<KnowledgeDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Admin Mestre state (defaults to true unless explicitly in client mode)
-  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
+  const isClientPortalUrl =
+    typeof window !== 'undefined' &&
+    (() => {
       const params = new URLSearchParams(window.location.search);
-      const isClientUrl =
+      return (
         params.get('modo') === 'cliente' ||
         params.get('cliente') === 'true' ||
-        params.get('client') === 'true';
-      if (isClientUrl) {
-        return false;
-      }
+        params.get('client') === 'true'
+      );
+    })();
+
+  // Admin Mestre state (permanently locked on client URLs; unlocked by default on main NEXA URL)
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
+    if (isClientPortalUrl) {
+      return false;
     }
     // If accessing directly without client URL params, Marco is ALWAYS unlocked by default!
     safeStorage.setItem('nexa_admin_unlocked', 'true');
@@ -577,19 +581,9 @@ export default function App() {
   const [showIOSGuideModal, setShowIOSGuideModal] = useState(false);
 
   const handleUnlockAdmin = () => {
+    if (isClientPortalUrl) return;
     safeStorage.setItem('nexa_admin_unlocked', 'true');
     setIsAdminUnlocked(true);
-    if (typeof window !== 'undefined') {
-      try {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('modo');
-        url.searchParams.delete('cliente');
-        url.searchParams.delete('client');
-        window.history.replaceState({}, '', url.toString());
-      } catch (e) {
-        // Ignore if error manipulating URL
-      }
-    }
   };
 
   const handleLockAdmin = () => {
@@ -663,7 +657,21 @@ export default function App() {
 
       if (stagesRes && stagesRes.ok) {
         const rawStages = await stagesRes.json();
-        if (Array.isArray(rawStages)) setStages(rawStages);
+        const hasDedicatedNicheStages = [
+          'macorretora',
+          'applay',
+          'codeon',
+          'primo',
+          'surfacebrasil',
+          'verzel',
+          'cantareira',
+          'equipamentospsi',
+          'amaro',
+          'clinic',
+        ].includes(activeUrlNiche);
+        if (Array.isArray(rawStages) && !hasDedicatedNicheStages) {
+          setStages(rawStages);
+        }
       }
       if (leadsRes && leadsRes.ok) {
         const loadedLeads = sanitizeLeads(await leadsRes.json());
@@ -1298,7 +1306,7 @@ export default function App() {
         hotCount={hotCount}
         deliveryOrdersCount={deliveryOrdersCount}
         isAdminUnlocked={isAdminUnlocked}
-        onOpenAdminAuth={() => setShowAdminAuthModal(true)}
+        onOpenAdminAuth={!isClientPortalUrl ? () => setShowAdminAuthModal(true) : undefined}
         onLockAdmin={handleLockAdmin}
         onToggleGlobalAi={handleToggleGlobalAi}
         activeWorkspaceId={activeUrlNiche}
@@ -1443,12 +1451,14 @@ export default function App() {
         )}
       </main>
 
-      {/* Admin Authentication Modal */}
-      <AdminAuthModal
-        isOpen={showAdminAuthModal}
-        onClose={() => setShowAdminAuthModal(false)}
-        onSuccess={handleUnlockAdmin}
-      />
+      {/* Admin Authentication Modal (never mounted in client portal URLs) */}
+      {!isClientPortalUrl && (
+        <AdminAuthModal
+          isOpen={showAdminAuthModal}
+          onClose={() => setShowAdminAuthModal(false)}
+          onSuccess={handleUnlockAdmin}
+        />
+      )}
 
       {/* PWA Version Update Banner and iOS Install Modal */}
       <PWAUpdateBanner
