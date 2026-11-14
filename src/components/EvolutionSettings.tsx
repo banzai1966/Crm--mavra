@@ -54,7 +54,7 @@ const MANAGED_COMPANIES = [
   {
     instance: 'macorretora',
     company: 'MA Corretora de Seguros',
-    niche: 'Seguros, Benefícios & Produtos Financeiros (MA Alves)',
+    niche: 'Seguros, Benefícios & Produtos Financeiros (M. Alves)',
     defaultToken: 'A91F3C8D-72B4-4E60-9A15-5C8E2F40B719',
     badge: 'bg-rose-100 text-rose-900 border-rose-300',
     iconColor: 'text-rose-600',

@@ -313,7 +313,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   const currentNicheKey = agentConfig.followUpNiche || 'dental';
   const currentNiche: NichePreset = NICHE_PRESETS[currentNicheKey] || NICHE_PRESETS.general;
   const rawPersona = (agentConfig.personaName || 'Sofia').trim();
-  const shortPersona = /^ma\s+alves/i.test(rawPersona) ? 'MA Alves' : (rawPersona.split(' ')[0] || 'Sofia');
+  const shortPersona = /^m\.?\s*a?\.?\s*alves/i.test(rawPersona) ? 'M. Alves' : (rawPersona.split(' ')[0] || 'Sofia');
   const isSofiaPersona = shortPersona.toLowerCase() === 'sofia';
   const personaWithArticle = isSofiaPersona ? 'a Sofia' : `o ${shortPersona}`;
   const personaWithCapArticle = isSofiaPersona ? 'A Sofia' : `O ${shortPersona}`;

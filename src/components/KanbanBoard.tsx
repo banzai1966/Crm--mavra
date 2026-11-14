@@ -238,7 +238,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   agentConfig,
 }) => {
   const rawPersonaName = (agentConfig?.personaName || 'Sofia').trim();
-  const shortPersona = /^ma\s+alves/i.test(rawPersonaName) ? 'MA Alves' : rawPersonaName.split(' ')[0];
+  const shortPersona = /^m\.?\s*a?\.?\s*alves/i.test(rawPersonaName) ? 'M. Alves' : rawPersonaName.split(' ')[0];
   const [searchTerm, setSearchTerm] = useState('');
   const detectedNiche = useMemo(() => detectDefaultNicheFromConfig(agentConfig), [agentConfig]);
   const [nicheFilter, setNicheFilter] = useState<'all' | 'restaurant' | 'health'>(() => {

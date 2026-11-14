@@ -364,10 +364,11 @@ export function sanitizeTextForSpeech(rawText: string): string {
     .replace(/\blog\b/g, 'lóg')
     .replace(/\bPickPlay\b/gi, 'Pik-plai')
     .replace(/\bWMS\b/g, 'Dáblio M. S.')
-    // Ajustes fonéticos para MA Corretora de Seguros e siglas do mercado segurador/financeiro:
-    .replace(/\bM\.?\s*A\.?\s+Alves\b/gi, 'Má Alves')
-    .replace(/\bM\.?\s*A\.?\s+Corretora\b/gi, 'Má Corretora')
-    .replace(/(?<!-)\bMA\b(?!-)/g, 'Má')
+    // Ajustes fonéticos para MA Corretora de Seguros (letra por letra: Ême Á Corretora) e M. Alves (Ême Alves):
+    .replace(/\bM\.?\s*A\.?\s+Alves\b/gi, 'Ême Alves')
+    .replace(/\bM\.?\s+Alves\b/gi, 'Ême Alves')
+    .replace(/\bM\.?\s*A\.?\s+Corretora\b/gi, 'Ême Á Corretora')
+    .replace(/(?<!-)\bMA\b(?!-)/g, 'Ême Á')
     .replace(/\bPME\b/g, 'P.M.E.')
     .replace(/\bD&O\b/gi, 'D. e Ó.')
     .replace(/\bPCD\b/g, 'P.C.D.')
@@ -909,7 +910,7 @@ d) SE NENHUM ÁUDIO COUBER NESTE TURNO: Preencha "dispatchPreRecordedAudioId": n
    - No JSON: preencha "interest" com o equipamento de interesse (ex: "Kit Barra de Luz + Aparelho Tátil EMDR", "Barra de Luz Baby 51cm"), e tag "Equipamentos PSI".`;
   } else if (preset.id === 'macorretora') {
     companySpecificGuideline = `3. IDENTIDADE BLINDADA DA MA CORRETORA DE SEGUROS (https://www.macorretora.com/ & CORRETOR VOLANTE):
-   - Você é o "${config.personaName}", consultor especialista em seguros, benefícios e produtos financeiros da MA Corretora de Seguros (Av. Do Cursino Nº 2400 - Conj 103 - São Paulo/SP | WhatsApp (11) 97500-2660 | Tel (11) 4305-8905 | comercial@macorretora.com). Sempre se apresente no masculino como "o MA Alves".
+   - Você é o "${config.personaName}", consultor especialista em seguros, benefícios e produtos financeiros da MA Corretora de Seguros (Av. Do Cursino Nº 2400 - Conj 103 - São Paulo/SP | WhatsApp (11) 97500-2660 | Tel (11) 4305-8905 | comercial@macorretora.com). Sempre se apresente no masculino como "o M. Alves".
    - NUNCA mencione odontologia (Dra. Lucy), cozinhas (Primo), plasma (Surface), software (Verzel/CodeOn), logística (Applay), advocacia (Amaro) ou cemitérios (Cantareira).
    - POSTURA & FILOSOFIA DE VENDAS: Atendimento 100% humanizado, consultivo, ético e transparente ("Pensou em Seguros e Benefícios? Lembrou da MA Corretora!"). Se o cliente achar caro, lembre com elegância: "Você acha seguro caro? Experimente arcar com os imprevistos! Aqui na MA cotamos gratuitamente nas 14 maiores seguradoras do Brasil para entregar a melhor cobertura no seu orçamento."
    - 14+ SEGURADORAS PARCEIRAS: Porto Seguro, Azul, Bradesco, SulAmérica, Tokio Marine, HDI, Liberty, Mapfre, Sompo, Allianz, Chubb, Itaú, Suhai e Zurich.
@@ -1808,7 +1809,7 @@ export function generateRuleBasedSafetyReply(
     }
   } else if (isMaCorretora) {
     if (isUnreadableAudio) {
-      reply = 'Olá! Tudo bem? Aqui é o MA Alves da MA Corretora de Seguros! Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me mandar por texto qual seguro ou produto financeiro você gostaria de cotar (Auto, Vida, Saúde/Odonto, Residencial, Empresa, Fiança ou Consórcio)?';
+      reply = 'Olá! Tudo bem? Aqui quem fala é o M. Alves da MA Corretora de Seguros! Recebi seu áudio, mas não consegui transcrever com nitidez agora. Pode me mandar por texto qual seguro ou produto financeiro você gostaria de cotar (Auto, Vida, Saúde/Odonto, Residencial, Empresa, Fiança ou Consórcio)?';
       suggestedStage = 'stage-1';
     } else if (
       lower.includes('sinistro') ||
@@ -1921,7 +1922,7 @@ export function generateRuleBasedSafetyReply(
       lower.includes('da onde') ||
       lower.includes('tudo bem')
     ) {
-      reply = 'Olá! Tudo bem? Sou o MA Alves da MA Corretora de Seguros (e projeto Corretor Volante). Pensou em Seguros e Benefícios, lembrou da MA Corretora! Trabalhamos com mais de 14 seguradoras em Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência e Produtos Financeiros. Como posso te ajudar hoje?';
+      reply = 'Olá! Tudo bem? Aqui quem fala é o M. Alves da MA Corretora de Seguros (e projeto Corretor Volante). Pensou em Seguros e Benefícios, lembrou da MA Corretora! Trabalhamos com mais de 14 seguradoras em Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência e Produtos Financeiros. Como posso te ajudar hoje?';
       suggestedStage = 'stage-1';
     } else {
       const ragFallback = retrieveMaCorretoraContext(targetText || prompt, '', 1, 600);
@@ -1931,7 +1932,7 @@ export function generateRuleBasedSafetyReply(
         suggestedStage = 'stage-2';
         interest = ragFallback.topItem.title;
       } else {
-        reply = 'Olá! Tudo bem? Sou o MA Alves da MA Corretora de Seguros (e projeto Corretor Volante). Pensou em Seguros e Benefícios, lembrou da MA Corretora! Trabalhamos com mais de 14 seguradoras em Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência e Produtos Financeiros. Como posso te ajudar hoje?';
+        reply = 'Olá! Tudo bem? Aqui quem fala é o M. Alves da MA Corretora de Seguros (e projeto Corretor Volante). Pensou em Seguros e Benefícios, lembrou da MA Corretora! Trabalhamos com mais de 14 seguradoras em Auto, Vida, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência e Produtos Financeiros. Como posso te ajudar hoje?';
         suggestedStage = 'stage-1';
       }
     }

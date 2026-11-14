@@ -877,7 +877,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                 {/* Persona 24h status badge */}
                 {(() => {
                   const rawP = (personaName || 'Sofia').trim();
-                  const shortP = /^ma\s+alves/i.test(rawP) ? 'MA Alves' : rawP.split(' ')[0];
+                  const shortP = /^m\.?\s*a?\.?\s*alves/i.test(rawP) ? 'M. Alves' : rawP.split(' ')[0];
                   return activeLead.aiPaused ? (
                     <button
                       type="button"
@@ -2180,7 +2180,7 @@ const DetailsContent: React.FC<DetailsContentProps> = ({
 
           {activeLead.cognitiveProfile.vipNotes && (
             <div className="text-[10px] bg-white/80 border border-indigo-100 text-indigo-900 p-2 rounded-lg font-medium">
-              💡 <strong>Insight p/ {/^ma\s+alves/i.test((personaName || '').trim()) ? 'MA Alves' : (personaName || 'Sofia').split(' ')[0]}:</strong> {activeLead.cognitiveProfile.vipNotes}
+              💡 <strong>Insight p/ {/^m\.?\s*a?\.?\s*alves/i.test((personaName || '').trim()) ? 'M. Alves' : (personaName || 'Sofia').split(' ')[0]}:</strong> {activeLead.cognitiveProfile.vipNotes}
             </div>
           )}
         </div>

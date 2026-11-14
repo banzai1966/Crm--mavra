@@ -761,7 +761,7 @@ export const Header: React.FC<HeaderProps> = ({
               title={
                 (() => {
                   const raw = (agentConfig.personaName || 'Sofia').trim();
-                  const shortName = /^ma\s+alves/i.test(raw) ? 'MA Alves' : raw.split(' ')[0];
+                  const shortName = /^m\.?\s*a?\.?\s*alves/i.test(raw) ? 'M. Alves' : raw.split(' ')[0];
                   return agentConfig.isGlobalAiActive !== false
                     ? `IA ${shortName} está Ativa. Clique para pausar.`
                     : `IA ${shortName} está PAUSADA. Clique para reativar.`;

@@ -83,7 +83,7 @@ export const AGENT_PRESETS: AgentPreset[] = [
     category: 'Seguros & Soluções Financeiras',
     tag: 'MA Corretora',
     description: 'Consultoria completa em seguros e produtos financeiros (https://www.macorretora.com/ & projeto Corretor Volante). Multicálculo em 14+ seguradoras (Porto, Azul, Bradesco, SulAmérica, Tokio Marine, HDI, Mapfre, Allianz, Suhai, Zurich): Auto, Vida Individual/PME, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência, Financiamento, Empréstimos e Consultoria PCD/IPVA/IR.',
-    personaName: 'MA Alves da MA Corretora',
+    personaName: 'M. Alves da MA Corretora',
     role: 'Consultor Especialista em Seguros, Benefícios & Soluções Financeiras da MA Corretora de Seguros',
     toneOfVoice: '100% humanizada, acolhedora, transparente, consultiva, ética e especialista em proteção patrimonial, familiar, saúde e finanças.',
     salesGoal: 'Encantar com atendimento 100% humanizado ("Pensou em Seguros e Benefícios? Lembrou da MA Corretora!"), identificar o ramo ideal, coletar os dados exatos para multicálculo nas 14+ seguradoras parceiras e encaminhar para fechamento ou assistência 24h.',
@@ -113,8 +113,8 @@ PRODUTOS FINANCEIROS & CONSULTORIA:
     knowledgePricing: `POLÍTICA COMERCIAL MA CORRETORA:
 - Nunca chute valores fixos sem multicálculo: coletamos os dados do perfil e comparamos nas 14+ seguradoras parceiras para oferecer o melhor custo-benefício.
 - Pagamento facilitado via Cartão de Crédito (Porto e parceiras), Débito em Conta ou Boleto.`,
-    knowledgeRules: `DIRETRIZES DO MA ALVES (MA CORRETORA):
-1. Você é exclusivamente o MA Alves, consultor da MA Corretora de Seguros (macorretora.com).
+    knowledgeRules: `DIRETRIZES DO M. ALVES (MA CORRETORA):
+1. Você é exclusivamente o M. Alves, consultor da MA Corretora de Seguros (macorretora.com).
 2. Identifique o seguro ou solução financeira ideal e colete os dados certos para cotação (Auto: CPF, CEP, modelo/ano/placa, renovação/bônus; Saúde: PF/CNPJ, vidas/idades, cidade; Vida/Previdência: idade/profissão; Residencial/Empresa/Fiança: CEP/tipo/valor; Consórcio/Crédito: valor desejado).
 3. Se o cliente relatar sinistro, batida ou guincho 24h, acolha imediatamente, colete Nome/CPF/Placa e gere protocolo #SAC-MA-XXXX.`
   },
@@ -1357,6 +1357,9 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
       knowledgeCatalog: preset.knowledgeCatalog,
       knowledgePricing: preset.knowledgePricing,
       knowledgeRules: preset.knowledgeRules,
+      voiceEngine: isMaCorretora ? 'native_sofia' : config.voiceEngine,
+      voiceVoiceName: isMaCorretora ? 'pt-BR-AntonioNeural' : config.voiceVoiceName,
+      voiceSpeed: isMaCorretora ? 1.05 : config.voiceSpeed,
       preRecordedAudiosEnabled: isMaCorretora || isApplay || isCodeOn || isAmaro || isSurface || isVerzel || isPrimo || isPsi ? false : config.preRecordedAudiosEnabled,
       catalogPdfName: isMaCorretora
         ? 'Portfolio_Completo_MA_Corretora.pdf'
@@ -1518,6 +1521,7 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
   const [isTestingVoice, setIsTestingVoice] = useState(false);
   const [voiceTestError, setVoiceTestError] = useState<string | null>(null);
   const [voiceTestSuccess, setVoiceTestSuccess] = useState<string | null>(null);
+  const [customVoiceTestText, setCustomVoiceTestText] = useState('');
 
   // File upload state
   const [uploadFileName, setUploadFileName] = useState('');
@@ -1605,7 +1609,12 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
     setVoiceTestError(null);
     setVoiceTestSuccess(null);
     try {
-      const textToSynthesize = customText || 'Olá! Aqui é a Sofia da nossa equipe de atendimento. Seja muito bem-vindo! Como posso ajudar você hoje?';
+      const activePersona = (config.personaName || 'Sofia').trim();
+      const isMa = config.followUpNiche === 'macorretora' || /^m\.?\s*a?\.?\s*alves/i.test(activePersona);
+      const defaultPreviewText = isMa
+        ? 'Olá! Aqui quem fala é o M. Alves da MA Corretora de Seguros! Aqui na MA garantimos atendimento humanizado. Como posso ajudar você hoje?'
+        : `Olá! Aqui é a ${activePersona}. Seja muito bem-vindo! Como posso ajudar você hoje?`;
+      const textToSynthesize = (customText || customVoiceTestText).trim() || defaultPreviewText;
       const keyToSend = config.voiceEngine === 'elevenlabs' 
         ? config.elevenLabsApiKey 
         : (config.googleTtsApiKey || config.geminiApiKey);
@@ -2963,6 +2972,25 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                     </>
                   )}
                 </button>
+              </div>
+
+              {/* Campo editável para testar qualquer frase e pronúncia na hora */}
+              <div className="pt-1">
+                <label className="block text-[10px] font-semibold text-slate-600 mb-1">
+                  Frase de teste para ouvir (opcional — deixe em branco para usar a apresentação oficial desta empresa):
+                </label>
+                <input
+                  type="text"
+                  id="input-test-voice-phrase"
+                  value={customVoiceTestText}
+                  onChange={(e) => setCustomVoiceTestText(e.target.value)}
+                  placeholder={
+                    config.followUpNiche === 'macorretora' || /^m\.?\s*a?\.?\s*alves/i.test((config.personaName || '').trim())
+                      ? 'Olá! Aqui quem fala é o M. Alves da MA Corretora de Seguros! Aqui na MA garantimos atendimento humanizado.'
+                      : `Olá! Aqui é a ${config.personaName || 'Sofia'}. Seja muito bem-vindo! Como posso ajudar você hoje?`
+                  }
+                  className="w-full bg-slate-50 border border-violet-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:border-violet-400 focus:bg-white"
+                />
               </div>
 
               {/* Informação sobre chaves Google AI Studio vs Google Cloud */}

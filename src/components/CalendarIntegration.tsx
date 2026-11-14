@@ -46,7 +46,7 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   onRefreshLeads,
 }) => {
   const rawPersona = (agentConfig?.personaName || 'Sofia').trim();
-  const shortPersona = /^ma\s+alves/i.test(rawPersona) ? 'MA Alves' : (rawPersona.split(' ')[0] || 'Sofia');
+  const shortPersona = /^m\.?\s*a?\.?\s*alves/i.test(rawPersona) ? 'M. Alves' : (rawPersona.split(' ')[0] || 'Sofia');
   const personaOfText = shortPersona.toLowerCase() === 'sofia' ? 'da Sofia' : `do ${shortPersona}`;
   const personaWithArticleText = shortPersona.toLowerCase() === 'sofia' ? 'a Sofia' : `o ${shortPersona}`;
 
