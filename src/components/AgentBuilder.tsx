@@ -83,8 +83,8 @@ export const AGENT_PRESETS: AgentPreset[] = [
     category: 'Seguros & Soluções Financeiras',
     tag: 'MA Corretora',
     description: 'Consultoria completa em seguros e produtos financeiros (https://www.macorretora.com/ & projeto Corretor Volante). Multicálculo em 14+ seguradoras (Porto, Azul, Bradesco, SulAmérica, Tokio Marine, HDI, Mapfre, Allianz, Suhai, Zurich): Auto, Vida Individual/PME, Saúde/Odonto PF e PJ, Saúde PET, Residencial, Empresa, Fiança Locatícia, Consórcio, Previdência, Financiamento, Empréstimos e Consultoria PCD/IPVA/IR.',
-    personaName: 'Malves da MA Corretora',
-    role: 'Consultor(a) Especialista em Seguros, Benefícios & Soluções Financeiras da MA Corretora de Seguros',
+    personaName: 'MA Alves da MA Corretora',
+    role: 'Consultor Especialista em Seguros, Benefícios & Soluções Financeiras da MA Corretora de Seguros',
     toneOfVoice: '100% humanizada, acolhedora, transparente, consultiva, ética e especialista em proteção patrimonial, familiar, saúde e finanças.',
     salesGoal: 'Encantar com atendimento 100% humanizado ("Pensou em Seguros e Benefícios? Lembrou da MA Corretora!"), identificar o ramo ideal, coletar os dados exatos para multicálculo nas 14+ seguradoras parceiras e encaminhar para fechamento ou assistência 24h.',
     followUpNiche: 'macorretora',
@@ -113,8 +113,8 @@ PRODUTOS FINANCEIROS & CONSULTORIA:
     knowledgePricing: `POLÍTICA COMERCIAL MA CORRETORA:
 - Nunca chute valores fixos sem multicálculo: coletamos os dados do perfil e comparamos nas 14+ seguradoras parceiras para oferecer o melhor custo-benefício.
 - Pagamento facilitado via Cartão de Crédito (Porto e parceiras), Débito em Conta ou Boleto.`,
-    knowledgeRules: `DIRETRIZES DE MALVES (MA CORRETORA):
-1. Você é exclusivamente Malves da MA Corretora de Seguros (macorretora.com).
+    knowledgeRules: `DIRETRIZES DO MA ALVES (MA CORRETORA):
+1. Você é exclusivamente o MA Alves, consultor da MA Corretora de Seguros (macorretora.com).
 2. Identifique o seguro ou solução financeira ideal e colete os dados certos para cotação (Auto: CPF, CEP, modelo/ano/placa, renovação/bônus; Saúde: PF/CNPJ, vidas/idades, cidade; Vida/Previdência: idade/profissão; Residencial/Empresa/Fiança: CEP/tipo/valor; Consórcio/Crédito: valor desejado).
 3. Se o cliente relatar sinistro, batida ou guincho 24h, acolha imediatamente, colete Nome/CPF/Placa e gere protocolo #SAC-MA-XXXX.`
   },
@@ -2887,13 +2887,14 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                       <optgroup label="🆓 Vozes 100% Gratuitas (Custo R$ 0,00 - Sem Limite)">
                         <option value="pt-BR-FranciscaNeural">Sofia Neural Humana (Francisca - pt-BR) [Grátis]</option>
                         <option value="pt-BR-ThalitaNeural">Sofia Jovem & Comercial (Thalita - pt-BR) [Grátis]</option>
-                        <option value="pt-BR-BrendaNeural">Sofia Acolhedora (Brenda - pt-BR) [Grátis]</option>
-                        <option value="pt-BR-AntonioNeural">Executivo Comercial (Antonio Masculino - pt-BR) [Grátis]</option>
-                        <option value="pt-BR-NicolauNeural">Diretor Comercial (Nicolau Masculino - pt-BR) [Grátis]</option>
+                        <option value="pt-BR-AntonioNeural">Executivo Comercial (Antonio Masculino - pt-BR · Recom. 1.05x/1.10x) [Grátis]</option>
                       </optgroup>
                       <optgroup label="✨ Vozes Gemini Live (Consome Tokens da API Gemini)">
-                        <option value="gemini-kore">✨ Sofia Gemini Live (Kore - Feminina Executiva) [Gemini API]</option>
-                        <option value="gemini-aoede">✨ Sofia Gemini Live (Aoede - Feminina Expressiva) [Gemini API]</option>
+                        <option value="gemini-kore">✨ Gemini Live (Kore - Feminina Executiva) [Gemini API]</option>
+                        <option value="gemini-aoede">✨ Gemini Live (Aoede - Feminina Expressiva) [Gemini API]</option>
+                        <option value="gemini-fenrir">✨ Gemini Live (Fenrir - Masculina Firme & Natural) [Gemini API]</option>
+                        <option value="gemini-charon">✨ Gemini Live (Charon - Masculina Consultiva) [Gemini API]</option>
+                        <option value="gemini-puck">✨ Gemini Live (Puck - Masculina Jovem & Ágil) [Gemini API]</option>
                       </optgroup>
                     </>
                   )}
@@ -2912,9 +2913,11 @@ export const AgentBuilder: React.FC<AgentBuilderProps> = ({
                 >
                   <option value="0.80">🐢 0.80x (Muito Pausada & Acolhedora)</option>
                   <option value="0.85">🍃 0.85x (Pausada, Suave & Clara)</option>
-                  <option value="0.90">✨ 0.90x (Cadência Humana Natural - Recomendado)</option>
+                  <option value="0.90">✨ 0.90x (Cadência Humana Natural - Ideal p/ Francisca)</option>
                   <option value="0.95">⏱️ 0.95x (Fluida & Direta)</option>
-                  <option value="1.00">⚡ 1.00x (Padrão Original)</option>
+                  <option value="1.00">⚡ 1.00x (Ritmo Original)</option>
+                  <option value="1.05">🚀 1.05x (Ágil - Ideal p/ Voz Masculina Antonio)</option>
+                  <option value="1.10">🔥 1.10x (Dinâmica - Antonio no mesmo ritmo da Francisca)</option>
                 </select>
               </div>
             </div>

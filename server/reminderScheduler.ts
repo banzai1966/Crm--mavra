@@ -170,7 +170,7 @@ export async function sendManualReminder(
   });
 
   const personaName = getAgentConfigForInstance(instanceName).personaName || 'Sofia';
-  const greetingPersona = personaName.toLowerCase().startsWith('sofia') ? 'a Sofia' : personaName;
+  const greetingPersona = personaName.toLowerCase().startsWith('sofia') ? 'a Sofia' : `o ${personaName}`;
 
   const msg =
     type === '24h'

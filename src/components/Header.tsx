@@ -759,9 +759,13 @@ export const Header: React.FC<HeaderProps> = ({
                   : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-200 animate-pulse'
               }`}
               title={
-                agentConfig.isGlobalAiActive !== false
-                  ? `IA ${(agentConfig.personaName || 'Sofia').split(' ')[0]} está Ativa. Clique para pausar.`
-                  : `IA ${(agentConfig.personaName || 'Sofia').split(' ')[0]} está PAUSADA. Clique para reativar.`
+                (() => {
+                  const raw = (agentConfig.personaName || 'Sofia').trim();
+                  const shortName = /^ma\s+alves/i.test(raw) ? 'MA Alves' : raw.split(' ')[0];
+                  return agentConfig.isGlobalAiActive !== false
+                    ? `IA ${shortName} está Ativa. Clique para pausar.`
+                    : `IA ${shortName} está PAUSADA. Clique para reativar.`;
+                })()
               }
             >
               <span

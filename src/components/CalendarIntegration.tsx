@@ -45,9 +45,10 @@ export const CalendarIntegration: React.FC<CalendarIntegrationProps> = ({
   onUpdateAgentConfig,
   onRefreshLeads,
 }) => {
-  const shortPersona = (agentConfig?.personaName || 'Sofia').split(' ')[0] || 'Sofia';
-  const personaOfText = shortPersona.toLowerCase() === 'sofia' ? 'da Sofia' : `de ${shortPersona}`;
-  const personaWithArticleText = shortPersona.toLowerCase() === 'sofia' ? 'a Sofia' : shortPersona;
+  const rawPersona = (agentConfig?.personaName || 'Sofia').trim();
+  const shortPersona = /^ma\s+alves/i.test(rawPersona) ? 'MA Alves' : (rawPersona.split(' ')[0] || 'Sofia');
+  const personaOfText = shortPersona.toLowerCase() === 'sofia' ? 'da Sofia' : `do ${shortPersona}`;
+  const personaWithArticleText = shortPersona.toLowerCase() === 'sofia' ? 'a Sofia' : `o ${shortPersona}`;
 
   // Google Auth state
   const [googleUserEmail, setGoogleUserEmail] = useState<string | null>(
